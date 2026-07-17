@@ -17,7 +17,8 @@ function ShopContent() {
 
   useEffect(() => {
     // Fetch categories
-    axios.get('http://localhost:3001/categories')
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    axios.get(`${apiUrl}/categories`)
       .then(res => {
         // Filter top-level categories
         const topLevel = res.data.filter((c: any) => c.level === 1);
@@ -29,7 +30,8 @@ function ShopContent() {
   useEffect(() => {
     // Fetch products
     setLoading(true);
-    axios.get('http://localhost:3001/products')
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    axios.get(`${apiUrl}/products`)
       .then(res => {
         let filteredProducts = res.data;
         if (categorySlug) {

@@ -13,7 +13,8 @@ export default function ProductDetailPage() {
     // In a real app, you would have a GET /products/slug/:slug endpoint.
     // For now, let's fetch all and filter, or assume the backend has findBySlug.
     // We didn't create a custom findBySlug endpoint in our controller, so let's fetch all and filter to simulate.
-    axios.get('http://localhost:3001/products')
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    axios.get(`${apiUrl}/products`)
       .then(res => {
         const p = res.data.find((item: any) => item.slug === slug);
         setProduct(p);
