@@ -31,6 +31,7 @@ model User {
   
   cart               Cart?
   orders             Order[]
+  subscriptions      Subscription[]
 }
 
 model Category {
@@ -75,8 +76,9 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
+  cartItems         CartItem[]
+  orderItems        OrderItem[]
+  subscriptionItems SubscriptionItem[]
 }
 
 model Cart {
@@ -136,6 +138,9 @@ model Order {
   
   status          OrderStatus   @default(PENDING)
   
+  subscriptionId  String?       @db.ObjectId
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  
   paymentMethod   PaymentMethod
   paymentStatus   PaymentStatus @default(PENDING)
   paymentTrxId    String?       // For manual payments
@@ -162,4 +167,66 @@ model OrderItem {
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  price       Float
+  isActive    Boolean  @default(true)
+  
+  subscriptions Subscription[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  PAYMENT_FAILED
+}
+
+model Subscription {
+  id              String             @id @default(auto()) @map("_id") @db.ObjectId
+  
+  userId          String             @db.ObjectId
+  user            User               @relation(fields: [userId], references: [id])
+  
+  planId          String?            @db.ObjectId
+  plan            SubscriptionPlan?  @relation(fields: [planId], references: [id])
+  
+  items           SubscriptionItem[]
+  orders          Order[]            // Generated orders
+  
+  totalAmount     Float
+  status          SubscriptionStatus @default(ACTIVE)
+  paymentMethod   PaymentMethod
+  
+  deliveryAddress String
+  contactNumber   String
+  
+  billingDay      Int                // e.g., 5 for 5th of every month
+  nextDeliveryDate DateTime
+  lastBilledCycle String?            // Idempotency key (e.g., "2026-07")
+  
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model SubscriptionItem {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  
+  subscriptionId  String       @db.ObjectId
+  subscription    Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  
+  productId       String       @db.ObjectId
+  product         Product      @relation(fields: [productId], references: [id])
+  
+  quantity        Int
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }

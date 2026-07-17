@@ -12,6 +12,8 @@ import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { StripeModule } from './stripe/stripe.module';
 import { UploadModule } from './upload/upload.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { UploadModule } from './upload/upload.module';
     OrdersModule,
     StripeModule,
     UploadModule,
+    SubscriptionsModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
