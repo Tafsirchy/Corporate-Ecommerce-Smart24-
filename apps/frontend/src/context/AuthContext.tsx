@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 export const apiClient = axios.create({
-  baseURL: 'http://localhost:3001', // Since backend sets global prefix in main.ts, maybe /api/v1 is needed if configured. Let's assume /auth is at root unless configured. Wait, I used /api/v1/auth/refresh in cookie path. I will use http://localhost:3001/api/v1
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1',
   withCredentials: true,
 });
 

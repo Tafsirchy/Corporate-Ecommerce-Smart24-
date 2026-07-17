@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "../context/AuthContext";
+import { CartProvider } from "../context/CartContext";
 import { ToastContainer } from "react-toastify";
 
 const geistSans = Geist({
@@ -32,8 +33,24 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          {children}
-          <ToastContainer position="bottom-right" />
+          <CartProvider>
+            <header className="bg-white shadow-sm sticky top-0 z-10">
+              <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                <a href="/" className="text-xl font-bold text-gray-900">Smart24</a>
+                <nav className="flex items-center gap-6">
+                  <a href="/shop" className="text-gray-600 hover:text-black">Shop</a>
+                  <a href="/account" className="text-gray-600 hover:text-black">Account</a>
+                  <a href="/cart" className="text-gray-600 hover:text-black font-medium">
+                    Cart
+                  </a>
+                </nav>
+              </div>
+            </header>
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
+            <ToastContainer position="bottom-right" />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
