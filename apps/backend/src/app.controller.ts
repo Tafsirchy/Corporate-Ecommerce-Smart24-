@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -8,5 +8,10 @@ export class AppController {
   @Get()
   getHello() {
     return this.appService.getHello();
+  }
+
+  @Post('contact')
+  async submitContact(@Body() body: { name: string; email: string; company?: string; message: string }) {
+    return this.appService.submitContact(body);
   }
 }

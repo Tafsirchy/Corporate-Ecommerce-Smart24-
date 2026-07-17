@@ -5,13 +5,20 @@ import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import { authenticator } from 'otplib';
 import * as crypto from 'crypto';
+import { Resend } from 'resend';
 
 @Injectable()
 export class AuthService {
+  private resend: Resend;
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService
-  ) {}
+  ) {
+    if (process.env.RESEND_API_KEY) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    }
+  }
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
@@ -71,8 +78,23 @@ export class AuthService {
       resetPasswordExpires
     });
     
-    // Mock email for now
-    console.log(`\n\n[MOCK EMAIL] To: ${email}\nSubject: Password Reset\nLink: http://localhost:3000/reset-password?token=${resetToken}\n\n`);
+    if (this.resend) {
+      await this.resend.emails.send({
+        from: 'Smart24 Support <onboarding@resend.dev>', // Should be a verified domain in production
+        to: email,
+        subject: 'Password Reset Request',
+        html: `
+          <h2>Password Reset Request</h2>
+          <p>You requested a password reset. Please click the link below to reset your password:</p>
+          <a href="http://localhost:3000/reset-password?token=${resetToken}">Reset Password</a>
+          <p>This link will expire in 15 minutes.</p>
+          <p>If you didn't request this, you can safely ignore this email.</p>
+        `
+      });
+    } else {
+      // Fallback for development if RESEND_API_KEY is missing
+      console.log(`\n\n[MOCK EMAIL] To: ${email}\nSubject: Password Reset\nLink: http://localhost:3000/reset-password?token=${resetToken}\n\n`);
+    }
     
     return { message: 'Password reset link sent to email' };
   }

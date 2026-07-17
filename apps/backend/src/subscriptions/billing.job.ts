@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SubscriptionRepository } from '../repositories/subscription.repository.service';
 import { OrderRepositoryService } from '../repositories/order.repository.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Resend } from 'resend';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class BillingJob {
   constructor(
     private readonly subscriptionRepo: SubscriptionRepository,
     private readonly orderRepo: OrderRepositoryService,
+    private readonly prisma: PrismaService,
   ) {
     if (process.env.RESEND_API_KEY) {
       this.resend = new Resend(process.env.RESEND_API_KEY);
@@ -41,25 +43,35 @@ export class BillingJob {
             priceAtPurchase: item.product.price // Capture current price
           }));
 
-          const order = await this.orderRepo.createOrder({
-            user: { connect: { id: sub.userId } },
-            subscription: { connect: { id: sub.id } },
-            items: { create: orderItems },
-            totalAmount: sub.totalAmount,
-            deliveryCharge: 0, // Configurable later
-            status: 'PENDING',
-            paymentMethod: sub.paymentMethod,
-            paymentStatus: 'PENDING',
-            shippingAddress: sub.deliveryAddress,
-            contactNumber: sub.contactNumber,
-          });
-
-          // Calculate next delivery date (add 1 month)
           const nextDate = new Date(sub.nextDeliveryDate);
           nextDate.setMonth(nextDate.getMonth() + 1);
 
-          // Update Subscription idempotency key and next date
-          await this.subscriptionRepo.markSubscriptionAsBilled(sub.id, cycleKey, nextDate);
+          const order = await this.prisma.$transaction(async (tx) => {
+            const createdOrder = await tx.order.create({
+              data: {
+                user: { connect: { id: sub.userId } },
+                subscription: { connect: { id: sub.id } },
+                items: { create: orderItems },
+                totalAmount: sub.totalAmount,
+                deliveryCharge: 0, // Configurable later
+                status: 'PENDING',
+                paymentMethod: sub.paymentMethod,
+                paymentStatus: 'PENDING',
+                shippingAddress: sub.deliveryAddress,
+                contactNumber: sub.contactNumber,
+              }
+            });
+
+            await tx.subscription.update({
+              where: { id: sub.id },
+              data: {
+                lastBilledCycle: cycleKey,
+                nextDeliveryDate: nextDate
+              }
+            });
+
+            return createdOrder;
+          });
 
           this.logger.log(`Successfully generated Order ${order.id} for Subscription ${sub.id}`);
 

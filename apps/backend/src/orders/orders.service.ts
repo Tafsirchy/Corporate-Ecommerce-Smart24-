@@ -4,6 +4,7 @@ import { CartRepositoryService } from '../repositories/cart.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
 import { StripeService } from '../stripe/stripe.service';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class OrdersService {
@@ -11,7 +12,8 @@ export class OrdersService {
     private orderRepo: OrderRepositoryService,
     private cartRepo: CartRepositoryService,
     private productRepo: ProductRepository,
-    private stripeService: StripeService
+    private stripeService: StripeService,
+    private prisma: PrismaService
   ) {}
 
   async createOrderFromCart(userId: string, data: {
@@ -48,29 +50,38 @@ export class OrdersService {
     const deliveryCharge = 100; // Fixed delivery charge logic
     const grandTotal = totalAmount + deliveryCharge;
 
-    const order = await this.orderRepo.createOrder({
-      user: { connect: { id: userId } },
-      totalAmount: grandTotal,
-      deliveryCharge,
-      shippingAddress: data.shippingAddress,
-      contactNumber: data.contactNumber,
-      paymentMethod: data.paymentMethod,
-      paymentTrxId: data.paymentTrxId,
-      paymentProofUrl: data.paymentProofUrl,
-      items: {
-        create: orderItems
-      }
-    });
-
-    // Deduct stock
-    for (const item of cart.items) {
-      await this.productRepo.update(item.productId, {
-        stock: item.product.stock - item.quantity
+    const order = await this.prisma.$transaction(async (tx) => {
+      const createdOrder = await tx.order.create({
+        data: {
+          user: { connect: { id: userId } },
+          totalAmount: grandTotal,
+          deliveryCharge,
+          shippingAddress: data.shippingAddress,
+          contactNumber: data.contactNumber,
+          paymentMethod: data.paymentMethod,
+          paymentTrxId: data.paymentTrxId,
+          paymentProofUrl: data.paymentProofUrl,
+          items: {
+            create: orderItems
+          }
+        }
       });
-    }
 
-    // Clear cart
-    await this.cartRepo.clearCart(cart.id);
+      // Deduct stock
+      for (const item of cart.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: item.product.stock - item.quantity }
+        });
+      }
+
+      // Clear cart
+      await tx.cartItem.deleteMany({
+        where: { cartId: cart.id }
+      });
+
+      return createdOrder;
+    });
 
     let clientSecret: string | null = null;
     if (data.paymentMethod === 'STRIPE') {

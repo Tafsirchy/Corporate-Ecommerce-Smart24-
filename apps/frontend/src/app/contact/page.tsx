@@ -6,15 +6,39 @@ import { toast } from 'react-toastify';
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Mock submission
-    setTimeout(() => {
-      toast.success('Thank you! Your message has been sent. We will get back to you shortly.');
+    
+    const formData = new FormData(e.target as HTMLFormElement);
+    const data = {
+      name: formData.get('name'),
+      company: formData.get('company'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      message: formData.get('message'),
+    };
+
+    try {
+      // In production, use process.env.NEXT_PUBLIC_API_URL
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+      const res = await fetch(`${apiUrl}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        toast.success('Thank you! Your message has been sent. We will get back to you shortly.');
+        (e.target as HTMLFormElement).reset();
+      } else {
+        toast.error('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      toast.error('Network error. Please try again later.');
+    } finally {
       setLoading(false);
-      (e.target as HTMLFormElement).reset();
-    }, 1500);
+    }
   };
 
   return (
