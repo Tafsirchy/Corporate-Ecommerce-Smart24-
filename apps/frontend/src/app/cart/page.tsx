@@ -12,7 +12,7 @@ export default function CartPage() {
       {items.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg shadow">
           <p className="text-xl text-gray-500 mb-4">Your cart is empty.</p>
-          <Link href="/shop" className="text-blue-600 hover:underline">
+          <Link href="/shop" className="text-primary-600 hover:underline">
             Continue Shopping
           </Link>
         </div>

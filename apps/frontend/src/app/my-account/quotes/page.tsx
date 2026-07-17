@@ -59,7 +59,7 @@ export default function MyQuotationsPage() {
                 <h3 className="font-semibold text-lg mb-2">Quote #{quote.id.slice(-6)}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Status: <span className={`font-bold uppercase ${
-                    quote.status === 'QUOTED' ? 'text-blue-600' : 
+                    quote.status === 'QUOTED' ? 'text-primary-600' : 
                     quote.status === 'ACCEPTED' ? 'text-green-600' :
                     quote.status === 'REJECTED' ? 'text-red-600' : 'text-yellow-600'
                   }`}>{quote.status}</span>
@@ -78,7 +78,7 @@ export default function MyQuotationsPage() {
                 {quote.status === 'QUOTED' && (
                   <>
                     <p className="text-center text-sm font-bold mb-1">Admin Offer</p>
-                    <p className="text-center text-2xl text-blue-600 font-bold mb-2">৳{quote.offeredPrice}</p>
+                    <p className="text-center text-2xl text-primary-600 font-bold mb-2">৳{quote.offeredPrice}</p>
                     {quote.adminNotes && (
                       <p className="text-xs text-center text-gray-500 mb-4 italic">"{quote.adminNotes}"</p>
                     )}

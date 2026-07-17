@@ -25,7 +25,7 @@ export function ProductCard({ product }: { product: Product }) {
       
       <div className="p-4 flex flex-col flex-1">
         <Link href={`/shop/${product.slug}`}>
-          <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition line-clamp-2">
+          <h3 className="text-lg font-medium text-gray-900 group-hover:text-primary-600 transition line-clamp-2">
             {product.name}
           </h3>
         </Link>

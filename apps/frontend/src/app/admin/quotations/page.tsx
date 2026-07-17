@@ -69,7 +69,7 @@ export default function AdminQuotations() {
                 <h3 className="font-bold text-lg">{quote.companyName}</h3>
                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
                   quote.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                  quote.status === 'QUOTED' ? 'bg-blue-100 text-blue-700' :
+                  quote.status === 'QUOTED' ? 'bg-blue-100 text-primary-700' :
                   quote.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                 }`}>
                   {quote.status}
@@ -113,7 +113,7 @@ export default function AdminQuotations() {
               ) : (
                 <div className="text-center space-y-2">
                   <p className="text-sm text-gray-500">You offered:</p>
-                  <p className="text-3xl font-bold text-blue-600">৳{quote.offeredPrice}</p>
+                  <p className="text-3xl font-bold text-primary-600">৳{quote.offeredPrice}</p>
                   {quote.adminNotes && <p className="text-xs text-gray-500 italic">"{quote.adminNotes}"</p>}
                   {quote.status === 'ACCEPTED' && <p className="text-green-600 font-bold mt-4">Client Accepted</p>}
                   {quote.status === 'REJECTED' && <p className="text-red-600 font-bold mt-4">Client Rejected</p>}

@@ -60,7 +60,7 @@ export default function AdminOrders() {
             {orders.map(order => (
               <tr key={order.id} className="hover:bg-gray-50">
                 <td className="p-4 font-mono text-sm">
-                  <Link href={`/track-order?id=${order.id}`} className="text-blue-600 hover:underline">
+                  <Link href={`/track-order?id=${order.id}`} className="text-primary-600 hover:underline">
                     {order.id.slice(-6).toUpperCase()}
                   </Link>
                 </td>
@@ -107,7 +107,7 @@ export default function AdminOrders() {
                     <select 
                       value={order.paymentStatus}
                       onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
-                      className="text-xs border border-blue-200 text-blue-800 bg-blue-50 rounded px-2 py-1 w-full"
+                      className="text-xs border border-blue-200 text-blue-800 bg-primary-50 rounded px-2 py-1 w-full"
                     >
                       <option value="PENDING">Pay: PENDING</option>
                       <option value="VERIFIED">Pay: VERIFIED</option>

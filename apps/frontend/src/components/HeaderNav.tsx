@@ -25,7 +25,7 @@ export default function HeaderNav() {
         </>
       )}
       {user?.role === 'ADMIN' && (
-        <Link href="/admin" className="text-indigo-600 font-medium hover:text-indigo-800 hidden md:block">Admin</Link>
+        <Link href="/admin" className="text-primary-600 font-medium hover:text-primary-800 hidden md:block">Admin</Link>
       )}
       <Link href="/cart" className="text-gray-600 hover:text-black font-medium">Cart</Link>
     </nav>

@@ -121,7 +121,7 @@ function TrackOrderContent() {
       )}
       
       <div className="mt-8 text-center">
-        <Link href="/shop" className="text-blue-600 hover:underline">
+        <Link href="/shop" className="text-primary-600 hover:underline">
           &larr; Back to Shop
         </Link>
       </div>

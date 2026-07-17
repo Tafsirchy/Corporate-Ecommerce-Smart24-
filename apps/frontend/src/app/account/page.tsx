@@ -72,7 +72,7 @@ export default function AccountPage() {
             ) : orders.length === 0 ? (
               <div>
                 <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
-                <Link href="/shop" className="text-blue-600 hover:underline">Start Shopping</Link>
+                <Link href="/shop" className="text-primary-600 hover:underline">Start Shopping</Link>
               </div>
             ) : (
               <div className="space-y-4">

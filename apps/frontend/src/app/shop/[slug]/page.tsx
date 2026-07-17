@@ -62,7 +62,7 @@ export default function ProductDetailPage() {
           {product.images?.length > 1 && (
             <div className="flex gap-4 mt-4">
               {product.images.slice(1).map((img: string, i: number) => (
-                <div key={i} className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 cursor-pointer hover:border-blue-500">
+                <div key={i} className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 cursor-pointer hover:border-primary-500">
                   <img src={img} alt={`${product.name} ${i+1}`} className="w-full h-full object-cover" />
                 </div>
               ))}
@@ -73,9 +73,9 @@ export default function ProductDetailPage() {
         {/* Product Info */}
         <div className="w-full md:w-1/2">
           <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-          <p className="mt-4 text-3xl font-bold text-blue-600">৳{product.price}</p>
+          <p className="mt-4 text-3xl font-bold text-primary-600">৳{product.price}</p>
           
-          <div className="mt-6 prose prose-blue">
+          <div className="mt-6 prose prose-primary">
             <p className="text-gray-700">{product.description}</p>
           </div>
 
@@ -87,13 +87,13 @@ export default function ProductDetailPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <button 
                 disabled={product.stock <= 0}
-                className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex-1 px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 Add to Cart
               </button>
               <Link 
                 href={`/quotes?productId=${product.id}`}
-                className="flex-1 px-8 py-3 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition text-center"
+                className="flex-1 px-8 py-3 bg-white border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-medium rounded-lg transition text-center"
               >
                 Request Quote
               </Link>

@@ -17,7 +17,7 @@ export function CategorySidebar({ categories }: { categories: Category[] }) {
           <li key={category.id}>
             <Link 
               href={`/shop?category=${category.slug}`}
-              className="block py-2 px-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+              className="block py-2 px-3 text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition"
             >
               {category.name}
             </Link>
@@ -27,7 +27,7 @@ export function CategorySidebar({ categories }: { categories: Category[] }) {
                   <li key={child.id}>
                     <Link 
                       href={`/shop?category=${child.slug}`}
-                      className="block py-1.5 px-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      className="block py-1.5 px-2 text-sm text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition"
                     >
                       {child.name}
                     </Link>

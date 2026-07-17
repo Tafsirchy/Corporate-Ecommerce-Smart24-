@@ -38,7 +38,7 @@ export default function FAQPage() {
         <div className="text-center mb-16">
           <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Frequently Asked Questions</h2>
           <p className="mt-4 text-lg text-gray-500">
-            Can't find the answer you're looking for? Reach out to our <a href="/contact" className="text-indigo-600 font-medium hover:underline">customer support</a> team.
+            Can't find the answer you're looking for? Reach out to our <a href="/contact" className="text-primary-600 font-medium hover:underline">customer support</a> team.
           </p>
         </div>
 
@@ -46,17 +46,17 @@ export default function FAQPage() {
           {faqs.map((faq, index) => (
             <div 
               key={index} 
-              className={`bg-white rounded-2xl shadow-sm border transition-colors ${openIndex === index ? 'border-indigo-200 ring-1 ring-indigo-200' : 'border-gray-100'}`}
+              className={`bg-white rounded-2xl shadow-sm border transition-colors ${openIndex === index ? 'border-primary-200 ring-1 ring-primary-200' : 'border-gray-100'}`}
             >
               <button
                 className="w-full px-6 py-5 flex justify-between items-center focus:outline-none"
                 onClick={() => toggleFaq(index)}
               >
-                <span className={`font-semibold text-left ${openIndex === index ? 'text-indigo-900' : 'text-gray-900'}`}>
+                <span className={`font-semibold text-left ${openIndex === index ? 'text-primary-900' : 'text-gray-900'}`}>
                   {faq.question}
                 </span>
                 <span className="ml-4 flex-shrink-0 text-gray-400">
-                  {openIndex === index ? <ChevronUp className="h-5 w-5 text-indigo-500" /> : <ChevronDown className="h-5 w-5" />}
+                  {openIndex === index ? <ChevronUp className="h-5 w-5 text-primary-500" /> : <ChevronDown className="h-5 w-5" />}
                 </span>
               </button>
               {openIndex === index && (

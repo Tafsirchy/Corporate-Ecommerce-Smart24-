@@ -67,7 +67,7 @@ export default function CheckoutPage() {
       <div className="container mx-auto px-4 py-8 text-center flex-1">
         <h1 className="text-2xl font-bold mb-4">Checkout</h1>
         <p className="text-gray-500">Your cart is empty.</p>
-        <button onClick={() => router.push('/shop')} className="mt-4 text-blue-600 hover:underline">
+        <button onClick={() => router.push('/shop')} className="mt-4 text-primary-600 hover:underline">
           Go to Shop
         </button>
       </div>

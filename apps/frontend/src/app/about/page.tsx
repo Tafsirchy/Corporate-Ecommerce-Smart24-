@@ -4,13 +4,13 @@ export default function AboutPage() {
   return (
     <div className="bg-white">
       {/* Hero */}
-      <div className="relative bg-indigo-800 pb-32">
+      <div className="relative bg-primary-800 pb-32">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-indigo-800 mix-blend-multiply" aria-hidden="true" />
+          <div className="absolute inset-0 bg-primary-800 mix-blend-multiply" aria-hidden="true" />
         </div>
         <div className="relative mx-auto max-w-7xl py-24 px-4 sm:py-32 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">About Smart24</h1>
-          <p className="mx-auto mt-6 max-w-3xl text-xl text-indigo-100">
+          <p className="mx-auto mt-6 max-w-3xl text-xl text-primary-100">
             Transforming corporate procurement in Bangladesh through technology, transparency, and reliable supply chains.
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function AboutPage() {
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to upgrade your procurement?</h3>
               <Link 
                 href="/signup"
-                className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm"
+                className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors shadow-sm"
               >
                 Join Smart24 Today
               </Link>
