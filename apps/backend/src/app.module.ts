@@ -14,6 +14,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { UploadModule } from './upload/upload.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { QuotationsModule } from './quotations/quotations.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     StripeModule,
     UploadModule,
     SubscriptionsModule,
+    QuotationsModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],

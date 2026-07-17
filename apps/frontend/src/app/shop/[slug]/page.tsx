@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -82,12 +83,20 @@ export default function ProductDetailPage() {
               Availability: {product.stock > 0 ? <span className="text-green-600 font-medium">In Stock ({product.stock})</span> : <span className="text-red-600 font-medium">Out of Stock</span>}
             </p>
             
-            <button 
-              disabled={product.stock <= 0}
-              className="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              Add to Cart
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                disabled={product.stock <= 0}
+                className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Add to Cart
+              </button>
+              <Link 
+                href={`/quotes?productId=${product.id}`}
+                className="flex-1 px-8 py-3 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium rounded-lg transition text-center"
+              >
+                Request Quote
+              </Link>
+            </div>
           </div>
           
           {product.brand && (
