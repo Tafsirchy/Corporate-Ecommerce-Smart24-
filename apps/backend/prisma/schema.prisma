@@ -26,8 +26,12 @@ model User {
   updatedAt          DateTime @updatedAt
   
   // For Admin TOTP
-  twoFactorSecret    String?
-  isTwoFactorEnabled Boolean  @default(false)
+  twoFactorSecret      String?
+  isTwoFactorEnabled   Boolean  @default(false)
+  
+  // For Forgot Password
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
   
   cart               Cart?
   orders             Order[]
@@ -119,6 +123,9 @@ enum OrderStatus {
 enum PaymentMethod {
   STRIPE
   MANUAL
+  BKASH
+  NAGAD
+  ROCKET
 }
 
 enum PaymentStatus {

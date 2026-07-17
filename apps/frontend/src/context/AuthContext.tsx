@@ -13,7 +13,8 @@ interface AuthContextType {
   user: any;
   token: string | null;
   loading: boolean;
-  login: (data: any) => Promise<void>;
+  login: (data: any) => Promise<any>;
+  verify2faLogin: (data: any) => Promise<any>;
   signup: (data: any) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -39,14 +40,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (data: any) => {
     try {
       const res = await apiClient.post('/auth/login', data);
+      
+      if (res.data.twoFactorRequired) {
+        return { twoFactorRequired: true, tempToken: res.data.tempToken };
+      }
+
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
       setToken(res.data.access_token);
       setUser(res.data.user);
       toast.success('Logged in successfully!');
       router.push('/account');
+      return { success: true };
     } catch (e: any) {
       toast.error(e.response?.data?.message || 'Login failed');
+      return { success: false };
+    }
+  };
+
+  const verify2faLogin = async (data: any) => {
+    try {
+      const res = await apiClient.post('/auth/verify-2fa-login', data);
+      localStorage.setItem('access_token', res.data.access_token);
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+      setToken(res.data.access_token);
+      setUser(res.data.user);
+      toast.success('Logged in successfully!');
+      router.push('/account');
+      return { success: true };
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || '2FA Verification failed');
+      return { success: false };
     }
   };
 
@@ -79,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

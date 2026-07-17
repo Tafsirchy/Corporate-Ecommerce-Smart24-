@@ -95,10 +95,13 @@ export class OrdersService {
     
     return order;
   }
-
   // Admin endpoints
   async getAllOrders() {
     return this.orderRepo.findAllOrders();
+  }
+
+  async updatePaymentStatus(orderId: string, status: any) {
+    return this.orderRepo.updatePaymentStatus(orderId, status);
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus) {

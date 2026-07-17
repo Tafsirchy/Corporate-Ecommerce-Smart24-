@@ -2,6 +2,7 @@ import { Controller, Post, Body, Res, Req, UnauthorizedException, UseGuards } fr
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
+import * as QRCode from 'qrcode';
 
 @Controller('auth')
 export class AuthController {
@@ -27,6 +28,35 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    if (user.isTwoFactorEnabled) {
+      return { 
+        twoFactorRequired: true, 
+        tempToken: await this.authService.generateTempToken(user) 
+      };
+    }
+
+    const { access_token, refresh_token } = await this.authService.login(user);
+
+    res.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/api/v1/auth/refresh'
+    });
+
+    return { access_token, user };
+  }
+
+  @Post('verify-2fa-login')
+  async verify2faLogin(@Body() body: any, @Res({ passthrough: true }) res: Response) {
+    const { tempToken, code } = body;
+    const user = await this.authService.verifyTempTokenAndCode(tempToken, code);
+    
+    if (!user) {
+      throw new UnauthorizedException('Invalid 2FA code or expired session');
+    }
+
     const { access_token, refresh_token } = await this.authService.login(user);
 
     res.cookie('refresh_token', refresh_token, {
@@ -58,7 +88,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
   async generateTwoFactorAuth(@Req() req: any) {
-    return this.authService.generateTwoFactorAuthSecret(req.user);
+    const { secret, otpauthUrl } = await this.authService.generateTwoFactorAuthSecret(req.user);
+    const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl);
+    return { qrCodeDataUrl, secret };
   }
 
   @UseGuards(JwtAuthGuard)

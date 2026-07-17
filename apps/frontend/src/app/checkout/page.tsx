@@ -13,7 +13,8 @@ export default function CheckoutPage() {
 
   const [shippingAddress, setShippingAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'MANUAL' | 'STRIPE'>('MANUAL');
+  const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET'>('STRIPE');
+  const [paymentTrxId, setPaymentTrxId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState('');
   const [orderId, setOrderId] = useState('');
@@ -40,7 +41,8 @@ export default function CheckoutPage() {
       const res = await apiClient.post('/orders', {
         shippingAddress,
         contactNumber,
-        paymentMethod
+        paymentMethod,
+        paymentTrxId: paymentMethod !== 'STRIPE' ? paymentTrxId : undefined
       });
       
       const { order, clientSecret: secret } = res.data;
@@ -111,33 +113,111 @@ export default function CheckoutPage() {
               </div>
 
               <h2 className="text-xl font-bold mt-8 mb-4">Payment Method</h2>
-              <div className="space-y-2">
-                <label className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="MANUAL"
-                    checked={paymentMethod === 'MANUAL'}
-                    onChange={() => setPaymentMethod('MANUAL')}
-                  />
-                  <div>
-                    <div className="font-medium">Manual Payment (bKash/Nagad/Rocket)</div>
-                    <div className="text-sm text-gray-500">Pay via mobile banking</div>
-                  </div>
-                </label>
-                <label className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
+              <div className="space-y-3">
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'STRIPE' ? 'border-black bg-gray-50' : 'hover:bg-gray-50'}`}>
                   <input 
                     type="radio" 
                     name="paymentMethod" 
                     value="STRIPE"
                     checked={paymentMethod === 'STRIPE'}
                     onChange={() => setPaymentMethod('STRIPE')}
+                    className="w-4 h-4 text-black focus:ring-black"
                   />
                   <div>
-                    <div className="font-medium">Credit/Debit Card (Stripe)</div>
-                    <div className="text-sm text-gray-500">Secure online payment</div>
+                    <div className="font-bold text-gray-900">Credit/Debit Card (Stripe)</div>
+                    <div className="text-sm text-gray-500">Secure online payment via Stripe</div>
                   </div>
                 </label>
+
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'BKASH' ? 'border-pink-500 bg-pink-50' : 'hover:bg-gray-50'}`}>
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="BKASH"
+                    checked={paymentMethod === 'BKASH'}
+                    onChange={() => setPaymentMethod('BKASH')}
+                    className="w-4 h-4 text-pink-600 focus:ring-pink-500"
+                  />
+                  <div>
+                    <div className="font-bold text-gray-900">bKash</div>
+                    <div className="text-sm text-gray-500">Manual payment via bKash Personal</div>
+                  </div>
+                </label>
+                {paymentMethod === 'BKASH' && (
+                  <div className="pl-12 pr-4 pb-4">
+                    <div className="p-4 bg-white border border-pink-200 rounded-md shadow-sm">
+                      <p className="text-sm text-pink-800 font-medium mb-3">Please send <strong>৳{grandTotal}</strong> to our bKash Personal Number: <strong>01700000000</strong></p>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Enter bKash TrxID" 
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500"
+                        value={paymentTrxId}
+                        onChange={(e) => setPaymentTrxId(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'NAGAD' ? 'border-orange-500 bg-orange-50' : 'hover:bg-gray-50'}`}>
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="NAGAD"
+                    checked={paymentMethod === 'NAGAD'}
+                    onChange={() => setPaymentMethod('NAGAD')}
+                    className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                  />
+                  <div>
+                    <div className="font-bold text-gray-900">Nagad</div>
+                    <div className="text-sm text-gray-500">Manual payment via Nagad Personal</div>
+                  </div>
+                </label>
+                {paymentMethod === 'NAGAD' && (
+                  <div className="pl-12 pr-4 pb-4">
+                    <div className="p-4 bg-white border border-orange-200 rounded-md shadow-sm">
+                      <p className="text-sm text-orange-800 font-medium mb-3">Please send <strong>৳{grandTotal}</strong> to our Nagad Personal Number: <strong>01700000000</strong></p>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Enter Nagad TrxID" 
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-orange-500 focus:border-orange-500"
+                        value={paymentTrxId}
+                        onChange={(e) => setPaymentTrxId(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'ROCKET' ? 'border-purple-500 bg-purple-50' : 'hover:bg-gray-50'}`}>
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="ROCKET"
+                    checked={paymentMethod === 'ROCKET'}
+                    onChange={() => setPaymentMethod('ROCKET')}
+                    className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                  />
+                  <div>
+                    <div className="font-bold text-gray-900">Rocket</div>
+                    <div className="text-sm text-gray-500">Manual payment via Rocket Personal</div>
+                  </div>
+                </label>
+                {paymentMethod === 'ROCKET' && (
+                  <div className="pl-12 pr-4 pb-4">
+                    <div className="p-4 bg-white border border-purple-200 rounded-md shadow-sm">
+                      <p className="text-sm text-purple-800 font-medium mb-3">Please send <strong>৳{grandTotal}</strong> to our Rocket Personal Number: <strong>01700000000</strong></p>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Enter Rocket TrxID" 
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500"
+                        value={paymentTrxId}
+                        onChange={(e) => setPaymentTrxId(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <button 

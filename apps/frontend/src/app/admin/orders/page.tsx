@@ -30,6 +30,16 @@ export default function AdminOrders() {
     }
   };
 
+  const handlePaymentStatusChange = async (orderId: string, newStatus: string) => {
+    try {
+      await apiClient.patch(`/orders/${orderId}/payment-status`, { paymentStatus: newStatus });
+      toast.success('Payment status updated');
+      fetchOrders();
+    } catch (error) {
+      toast.error('Failed to update payment status');
+    }
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Manage Orders</h1>
@@ -41,9 +51,9 @@ export default function AdminOrders() {
               <th className="p-4 font-medium text-gray-600">Order ID</th>
               <th className="p-4 font-medium text-gray-600">Customer</th>
               <th className="p-4 font-medium text-gray-600">Total</th>
-              <th className="p-4 font-medium text-gray-600">Method</th>
-              <th className="p-4 font-medium text-gray-600">Status</th>
-              <th className="p-4 font-medium text-gray-600">Action</th>
+              <th className="p-4 font-medium text-gray-600">Payment</th>
+              <th className="p-4 font-medium text-gray-600">Order Status</th>
+              <th className="p-4 font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -56,11 +66,23 @@ export default function AdminOrders() {
                 </td>
                 <td className="p-4 text-gray-500">{order.user?.name || 'User'}</td>
                 <td className="p-4 font-medium">৳{order.totalAmount}</td>
-                <td className="p-4 text-gray-500">{order.paymentMethod}</td>
+                <td className="p-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium text-gray-900">{order.paymentMethod}</span>
+                    {order.paymentTrxId && <span className="text-xs text-gray-500 font-mono">TrxID: {order.paymentTrxId}</span>}
+                    <span className={`w-fit px-2 py-0.5 rounded text-[10px] font-medium 
+                      ${order.paymentStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
+                        order.paymentStatus === 'VERIFIED' ? 'bg-green-100 text-green-800' : 
+                        'bg-red-100 text-red-800'}`}
+                    >
+                      {order.paymentStatus}
+                    </span>
+                  </div>
+                </td>
                 <td className="p-4">
                   <span className={`px-2 py-1 rounded text-xs font-medium 
                     ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                      order.status === 'CONFIRMED' ? 'bg-blue-100 text-blue-800' : 
+                      order.status === 'PROCESSING' ? 'bg-blue-100 text-blue-800' : 
                       order.status === 'SHIPPED' ? 'bg-purple-100 text-purple-800' : 
                       order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' : 
                       'bg-red-100 text-red-800'}`}
@@ -69,17 +91,29 @@ export default function AdminOrders() {
                   </span>
                 </td>
                 <td className="p-4">
-                  <select 
-                    value={order.status}
-                    onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                    className="text-sm border rounded px-2 py-1"
-                  >
-                    <option value="PENDING">PENDING</option>
-                    <option value="CONFIRMED">CONFIRMED</option>
-                    <option value="SHIPPED">SHIPPED</option>
-                    <option value="DELIVERED">DELIVERED</option>
-                    <option value="CANCELLED">CANCELLED</option>
-                  </select>
+                  <div className="flex flex-col gap-2">
+                    <select 
+                      value={order.status}
+                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      className="text-xs border rounded px-2 py-1 w-full bg-gray-50"
+                    >
+                      <option value="PENDING">Set: PENDING</option>
+                      <option value="PROCESSING">Set: PROCESSING</option>
+                      <option value="SHIPPED">Set: SHIPPED</option>
+                      <option value="DELIVERED">Set: DELIVERED</option>
+                      <option value="CANCELLED">Set: CANCELLED</option>
+                    </select>
+                    
+                    <select 
+                      value={order.paymentStatus}
+                      onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
+                      className="text-xs border border-blue-200 text-blue-800 bg-blue-50 rounded px-2 py-1 w-full"
+                    >
+                      <option value="PENDING">Pay: PENDING</option>
+                      <option value="VERIFIED">Pay: VERIFIED</option>
+                      <option value="FAILED">Pay: FAILED</option>
+                    </select>
+                  </div>
                 </td>
               </tr>
             ))}

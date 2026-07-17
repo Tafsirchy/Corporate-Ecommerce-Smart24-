@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import { authenticator } from 'otplib';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -34,28 +35,63 @@ export class AuthService {
     return this.login(user);
   }
 
+  async generateTempToken(user: any) {
+    const payload = { sub: user.id, temp: true };
+    return this.jwtService.sign(payload, { expiresIn: '5m' });
+  }
+
+  async verifyTempTokenAndCode(tempToken: string, code: string) {
+    try {
+      const payload = this.jwtService.verify(tempToken);
+      if (!payload.temp) return null;
+      
+      const user = await this.usersService.findById(payload.sub);
+      if (!user) return null;
+
+      const isCodeValid = await this.verifyTwoFactorAuthCode(user, code);
+      if (!isCodeValid) return null;
+
+      return user;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    const payload = { sub: user.id, reset: true };
-    const resetToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    return { message: 'Password reset link sent to email', resetToken };
+    
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+    
+    await this.usersService.update(user.id, {
+      resetPasswordToken: resetToken,
+      resetPasswordExpires
+    });
+    
+    // Mock email for now
+    console.log(`\n\n[MOCK EMAIL] To: ${email}\nSubject: Password Reset\nLink: http://localhost:3000/reset-password?token=${resetToken}\n\n`);
+    
+    return { message: 'Password reset link sent to email' };
   }
 
   async resetPassword(token: string, newPassword: string) {
-    try {
-      const payload = this.jwtService.verify(token);
-      if (!payload.reset) {
-        throw new UnauthorizedException('Invalid token type');
-      }
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await this.usersService.update(payload.sub, { password: hashedPassword });
-      return { message: 'Password updated successfully' };
-    } catch (e) {
+    const user = await this.usersService.findByResetToken(token);
+    
+    if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
       throw new UnauthorizedException('Invalid or expired token');
     }
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.usersService.update(user.id, { 
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null
+    });
+    
+    return { message: 'Password updated successfully' };
   }
 
   async generateTwoFactorAuthSecret(user: any) {

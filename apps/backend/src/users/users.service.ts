@@ -27,6 +27,10 @@ export class UsersService {
     return this.userRepository.findById(id);
   }
 
+  async findByResetToken(token: string) {
+    return this.userRepository.findByResetToken(token);
+  }
+
   async update(id: string, data: Prisma.UserUpdateInput) {
     return this.userRepository.update(id, data);
   }

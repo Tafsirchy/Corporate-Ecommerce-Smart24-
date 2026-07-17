@@ -3,7 +3,7 @@ import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role, OrderStatus, PaymentMethod } from '@prisma/client';
+import { Role, OrderStatus, PaymentMethod, PaymentStatus } from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Orders')
@@ -51,5 +51,15 @@ export class OrdersController {
     @Body('status') status: OrderStatus
   ) {
     return this.ordersService.updateOrderStatus(id, status);
+  }
+
+  @Patch(':id/payment-status')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Update payment status (Admin only)' })
+  updatePaymentStatus(
+    @Param('id') id: string,
+    @Body('paymentStatus') paymentStatus: PaymentStatus
+  ) {
+    return this.ordersService.updatePaymentStatus(id, paymentStatus);
   }
 }
