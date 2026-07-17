@@ -45,37 +45,37 @@ export default function RootLayout({
             <main className="flex-1 flex flex-col">
               {children}
             </main>
-            <footer className="bg-gray-900 text-white mt-auto py-12">
+            <footer className="bg-primary-900 text-white mt-auto py-12">
               <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                   <h3 className="text-xl font-bold mb-4">Smart24</h3>
-                  <p className="text-gray-400">Your trusted corporate supply chain partner in Bangladesh.</p>
+                  <p className="text-primary-100/70">Your trusted corporate supply chain partner in Bangladesh.</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-4 text-gray-200">Quick Links</h4>
-                  <ul className="space-y-2 text-sm text-gray-400">
-                    <li><Link href="/about" className="hover:text-white">About Us</Link></li>
-                    <li><Link href="/shop" className="hover:text-white">Retail Shop</Link></li>
-                    <li><Link href="/subscriptions" className="hover:text-white">Subscriptions</Link></li>
+                  <h4 className="font-semibold mb-4 text-primary-50">Quick Links</h4>
+                  <ul className="space-y-2 text-sm text-primary-100/70">
+                    <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+                    <li><Link href="/shop" className="hover:text-white transition-colors">Retail Shop</Link></li>
+                    <li><Link href="/subscriptions" className="hover:text-white transition-colors">Subscriptions</Link></li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-4 text-gray-200">Support</h4>
-                  <ul className="space-y-2 text-sm text-gray-400">
-                    <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>
-                    <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
-                    <li><Link href="/track-order" className="hover:text-white">Track Order</Link></li>
+                  <h4 className="font-semibold mb-4 text-primary-50">Support</h4>
+                  <ul className="space-y-2 text-sm text-primary-100/70">
+                    <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+                    <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                    <li><Link href="/track-order" className="hover:text-white transition-colors">Track Order</Link></li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-4 text-gray-200">Legal</h4>
-                  <ul className="space-y-2 text-sm text-gray-400">
-                    <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-                    <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
+                  <h4 className="font-semibold mb-4 text-primary-50">Legal</h4>
+                  <ul className="space-y-2 text-sm text-primary-100/70">
+                    <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                    <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
                   </ul>
                 </div>
               </div>
-              <div className="container mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-sm text-gray-400 text-center">
+              <div className="container mx-auto px-4 mt-8 pt-8 border-t border-primary-800 text-sm text-primary-100/50 text-center">
                 © {new Date().getFullYear()} Smart24. All rights reserved.
               </div>
             </footer>
