@@ -5,7 +5,9 @@ import { ProductCard, Product } from '../../components/ProductCard';
 import { CategorySidebar, Category } from '../../components/CategorySidebar';
 import { useSearchParams } from 'next/navigation';
 
-export default function ShopPage() {
+import { Suspense } from 'react';
+
+function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,5 +94,13 @@ export default function ShopPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ShopContent />
+    </Suspense>
   );
 }

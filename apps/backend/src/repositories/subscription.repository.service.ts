@@ -41,7 +41,7 @@ export class SubscriptionRepository {
     });
   }
 
-  async findDueSubscriptions(todayStr: string): Promise<Subscription[]> {
+  async findDueSubscriptions(todayStr: string) {
     // We fetch active subscriptions whose nextDeliveryDate is on or before today
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
@@ -60,8 +60,8 @@ export class SubscriptionRepository {
         ]
       },
       include: {
-        items: { include: { product: true } },
-        user: true
+        user: true,
+        items: { include: { product: true } }
       }
     });
   }

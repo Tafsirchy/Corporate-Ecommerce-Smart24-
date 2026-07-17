@@ -1,6 +1,7 @@
-import { Controller, Post, Headers, Req, Res, RawBodyRequest, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Headers, Req, Res, HttpStatus } from '@nestjs/common';
+import type { RawBodyRequest } from '@nestjs/common';
 import { StripeService } from './stripe.service';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { OrdersService } from '../orders/orders.service';
 import { OrderStatus } from '@prisma/client';
 
@@ -32,8 +33,8 @@ export class StripeController {
         const orderId = paymentIntent.metadata.orderId;
         
         if (orderId) {
-          // Update order status to CONFIRMED or PAID
-          await this.ordersService.updateOrderStatus(orderId, OrderStatus.CONFIRMED);
+          // Update order status to PROCESSING or PAID
+          await this.ordersService.updateOrderStatus(orderId, OrderStatus.PROCESSING);
         }
       }
 

@@ -5,9 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
-export default function RequestQuotePage() {
+import { Suspense } from "react";
+
+function RequestQuoteForm() {
   const [companyName, setCompanyName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -120,5 +122,13 @@ export default function RequestQuotePage() {
         <Button type="submit" className="w-full" size="lg">Submit Quote Request</Button>
       </form>
     </div>
+  );
+}
+
+export default function RequestQuotePage() {
+  return (
+    <Suspense fallback={<div className="container py-10">Loading...</div>}>
+      <RequestQuoteForm />
+    </Suspense>
   );
 }

@@ -24,7 +24,7 @@ export class SubscriptionsService {
     }
 
     let totalAmount = 0;
-    const itemsData = [];
+    const itemsData: { productId: string; quantity: number }[] = [];
 
     // Verify items and calculate price
     for (const item of data.items) {

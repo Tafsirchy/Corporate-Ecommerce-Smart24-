@@ -11,6 +11,7 @@ export const apiClient = axios.create({
 
 interface AuthContextType {
   user: any;
+  token: string | null;
   loading: boolean;
   login: (data: any) => Promise<void>;
   signup: (data: any) => Promise<void>;
@@ -21,13 +22,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const storedToken = localStorage.getItem('access_token');
+    if (storedToken) {
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      setToken(storedToken);
       setUser({ email: 'loaded@example.com' }); 
     }
     setLoading(false);
@@ -38,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiClient.post('/auth/login', data);
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+      setToken(res.data.access_token);
       setUser(res.data.user);
       toast.success('Logged in successfully!');
       router.push('/account');
@@ -51,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiClient.post('/auth/signup', data);
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+      setToken(res.data.access_token);
       setUser({ email: data.email });
       toast.success('Signed up successfully!');
       router.push('/account');
@@ -64,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await apiClient.post('/auth/logout');
       localStorage.removeItem('access_token');
       delete apiClient.defaults.headers.common['Authorization'];
+      setToken(null);
       setUser(null);
       toast.info('Logged out');
       router.push('/login');
@@ -73,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -131,7 +131,7 @@ function TrackOrderContent() {
 
 export default function TrackOrderPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto p-8">Loading...</div>}>
+    <Suspense fallback={<div className="container py-10 text-center">Loading tracking information...</div>}>
       <TrackOrderContent />
     </Suspense>
   );

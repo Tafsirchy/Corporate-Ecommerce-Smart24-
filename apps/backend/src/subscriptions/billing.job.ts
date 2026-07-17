@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SubscriptionRepository } from '../repositories/subscription.repository.service';
-import { OrderRepository } from '../repositories/order.repository.service';
+import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { Resend } from 'resend';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class BillingJob {
 
   constructor(
     private readonly subscriptionRepo: SubscriptionRepository,
-    private readonly orderRepo: OrderRepository,
+    private readonly orderRepo: OrderRepositoryService,
   ) {
     if (process.env.RESEND_API_KEY) {
       this.resend = new Resend(process.env.RESEND_API_KEY);

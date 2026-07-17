@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CustomPackageBuilder() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [selectedItems, setSelectedItems] = useState<{ productId: string; quantity: number; product: any }[]>([]);
   const [deliveryDay, setDeliveryDay] = useState<number>(5);
   const [deliveryAddress, setDeliveryAddress] = useState("");

@@ -72,7 +72,7 @@ export class OrdersService {
     // Clear cart
     await this.cartRepo.clearCart(cart.id);
 
-    let clientSecret = null;
+    let clientSecret: string | null = null;
     if (data.paymentMethod === 'STRIPE') {
       const paymentIntent = await this.stripeService.createPaymentIntent(grandTotal, 'bdt', order.id);
       clientSecret = paymentIntent.client_secret;

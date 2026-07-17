@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 
 export default function AdminQuotations() {
-  const [quotations, setQuotations] = useState([]);
+  const [quotations, setQuotations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyData, setReplyData] = useState<{ [id: string]: { offeredPrice: number, adminNotes: string } }>({});
   const { token } = useAuth();
