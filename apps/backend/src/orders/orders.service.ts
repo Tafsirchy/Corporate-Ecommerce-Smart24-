@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { CartRepositoryService } from '../repositories/cart.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
+import { StripeService } from '../stripe/stripe.service';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
 
 @Injectable()
@@ -9,7 +10,8 @@ export class OrdersService {
   constructor(
     private orderRepo: OrderRepositoryService,
     private cartRepo: CartRepositoryService,
-    private productRepo: ProductRepository
+    private productRepo: ProductRepository,
+    private stripeService: StripeService
   ) {}
 
   async createOrderFromCart(userId: string, data: {
@@ -70,7 +72,13 @@ export class OrdersService {
     // Clear cart
     await this.cartRepo.clearCart(cart.id);
 
-    return order;
+    let clientSecret = null;
+    if (data.paymentMethod === 'STRIPE') {
+      const paymentIntent = await this.stripeService.createPaymentIntent(grandTotal, 'bdt', order.id);
+      clientSecret = paymentIntent.client_secret;
+    }
+
+    return { order, clientSecret };
   }
 
   async getUserOrders(userId: string) {

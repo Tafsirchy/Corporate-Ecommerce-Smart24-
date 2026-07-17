@@ -10,9 +10,23 @@ import { BrandsModule } from './brands/brands.module';
 import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
+import { StripeModule } from './stripe/stripe.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
-  imports: [PrismaModule, RepositoriesModule, AuthModule, UsersModule, CategoriesModule, BrandsModule, ProductsModule, CartModule, OrdersModule],
+  imports: [
+    PrismaModule,
+    RepositoriesModule,
+    AuthModule,
+    UsersModule,
+    CategoriesModule,
+    BrandsModule,
+    ProductsModule,
+    CartModule,
+    OrdersModule,
+    StripeModule,
+    UploadModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

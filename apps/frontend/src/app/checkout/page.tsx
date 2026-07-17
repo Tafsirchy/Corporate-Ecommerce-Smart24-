@@ -4,6 +4,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth, apiClient } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import StripePaymentWrapper from '../../components/StripePaymentWrapper';
 
 export default function CheckoutPage() {
   const { items, cartTotal, clearCart } = useCart();
@@ -14,6 +15,8 @@ export default function CheckoutPage() {
   const [contactNumber, setContactNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'MANUAL' | 'STRIPE'>('MANUAL');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientSecret, setClientSecret] = useState('');
+  const [orderId, setOrderId] = useState('');
 
   // Delivery charge logic
   const deliveryCharge = 100;
@@ -39,9 +42,17 @@ export default function CheckoutPage() {
         contactNumber,
         paymentMethod
       });
-      toast.success('Order placed successfully!');
+      
+      const { order, clientSecret: secret } = res.data;
       clearCart();
-      router.push(`/track-order?id=${res.data.id}`);
+
+      if (paymentMethod === 'STRIPE' && secret) {
+        setClientSecret(secret);
+        setOrderId(order.id);
+      } else {
+        toast.success('Order placed successfully!');
+        router.push(`/track-order?id=${order.id}`);
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to place order');
     } finally {
@@ -49,7 +60,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && !clientSecret) {
     return (
       <div className="container mx-auto px-4 py-8 text-center flex-1">
         <h1 className="text-2xl font-bold mb-4">Checkout</h1>
@@ -67,70 +78,77 @@ export default function CheckoutPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-lg shadow h-fit">
-          <h2 className="text-xl font-bold mb-4">Shipping Information</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-              <input 
-                type="text" 
-                required
-                value={contactNumber}
-                onChange={e => setContactNumber(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black"
-                placeholder="e.g. +8801700000000"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Shipping Address</label>
-              <textarea 
-                required
-                rows={3}
-                value={shippingAddress}
-                onChange={e => setShippingAddress(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black"
-                placeholder="House, Road, Area, City"
-              />
-            </div>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">Payment Method</h2>
-            <div className="space-y-2">
-              <label className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
+          <h2 className="text-xl font-bold mb-4">
+            {clientSecret ? 'Complete Payment' : 'Shipping Information'}
+          </h2>
+          
+          {clientSecret ? (
+            <StripePaymentWrapper clientSecret={clientSecret} orderId={orderId} />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
                 <input 
-                  type="radio" 
-                  name="paymentMethod" 
-                  value="MANUAL"
-                  checked={paymentMethod === 'MANUAL'}
-                  onChange={() => setPaymentMethod('MANUAL')}
+                  type="text" 
+                  required
+                  value={contactNumber}
+                  onChange={e => setContactNumber(e.target.value)}
+                  className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black"
+                  placeholder="e.g. +8801700000000"
                 />
-                <div>
-                  <div className="font-medium">Manual Payment (bKash/Nagad/Rocket)</div>
-                  <div className="text-sm text-gray-500">Pay via mobile banking</div>
-                </div>
-              </label>
-              <label className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
-                <input 
-                  type="radio" 
-                  name="paymentMethod" 
-                  value="STRIPE"
-                  checked={paymentMethod === 'STRIPE'}
-                  onChange={() => setPaymentMethod('STRIPE')}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Shipping Address</label>
+                <textarea 
+                  required
+                  rows={3}
+                  value={shippingAddress}
+                  onChange={e => setShippingAddress(e.target.value)}
+                  className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black"
+                  placeholder="House, Road, Area, City"
                 />
-                <div>
-                  <div className="font-medium">Credit/Debit Card (Stripe)</div>
-                  <div className="text-sm text-gray-500">Secure online payment</div>
-                </div>
-              </label>
-            </div>
+              </div>
 
-            <button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="w-full mt-6 bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Processing...' : `Place Order (৳${grandTotal})`}
-            </button>
-          </form>
+              <h2 className="text-xl font-bold mt-8 mb-4">Payment Method</h2>
+              <div className="space-y-2">
+                <label className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="MANUAL"
+                    checked={paymentMethod === 'MANUAL'}
+                    onChange={() => setPaymentMethod('MANUAL')}
+                  />
+                  <div>
+                    <div className="font-medium">Manual Payment (bKash/Nagad/Rocket)</div>
+                    <div className="text-sm text-gray-500">Pay via mobile banking</div>
+                  </div>
+                </label>
+                <label className="flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="STRIPE"
+                    checked={paymentMethod === 'STRIPE'}
+                    onChange={() => setPaymentMethod('STRIPE')}
+                  />
+                  <div>
+                    <div className="font-medium">Credit/Debit Card (Stripe)</div>
+                    <div className="text-sm text-gray-500">Secure online payment</div>
+                  </div>
+                </label>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full mt-6 bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
+              >
+                {isSubmitting ? 'Processing...' : `Place Order (৳${grandTotal})`}
+              </button>
+            </form>
+          )}
         </div>
 
         <div className="bg-gray-50 p-6 rounded-lg shadow border border-gray-100 h-fit">

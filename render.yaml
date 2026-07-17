@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: smart24-backend
+    env: node
+    rootDir: apps/backend
+    buildCommand: pnpm install && pnpm prisma generate && pnpm run build
+    startCommand: pnpm run start:prod
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: IMGBB_API_KEY
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
