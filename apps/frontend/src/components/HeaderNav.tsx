@@ -7,6 +7,7 @@ export default function HeaderNav() {
 
   return (
     <nav className="flex items-center gap-6">
+      <Link href="/" className="text-gray-600 hover:text-black font-medium">Home</Link>
       <Link href="/about" className="text-gray-600 hover:text-black">About</Link>
       <Link href="/subscriptions" className="text-gray-600 hover:text-black">Subscriptions</Link>
       <Link href="/shop" className="text-gray-600 hover:text-black">Shop</Link>
