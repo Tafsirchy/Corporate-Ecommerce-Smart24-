@@ -5,8 +5,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { ToastContainer } from "react-toastify";
-import HeaderNav from "../components/HeaderNav";
 import Link from "next/link";
+import Header from "../components/Header";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,12 +37,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           <CartProvider>
-            <header className="bg-white shadow-sm sticky top-0 z-10">
-              <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                <a href="/" className="text-xl font-bold text-gray-900">Smart24</a>
-                <HeaderNav />
-              </div>
-            </header>
+            <Header />
             <main className="flex-1 flex flex-col">
               {children}
             </main>

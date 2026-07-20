@@ -1,43 +1,45 @@
 import Link from "next/link";
 import { ArrowRight, Package, Truck, ShieldCheck, CreditCard } from "lucide-react";
+import { HeroBentoAccordion, HeroAd } from "@/components/HeroBentoAccordion";
+
+const DUMMY_ADS: HeroAd[] = [
+  {
+    id: "1",
+    title: "Corporate Pantry Essentials",
+    subtitle: "Stock up on premium coffee, tea, and snacks for your team.",
+    imageUrl: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070&auto=format&fit=crop",
+    categoryUrl: "/shop/pantry"
+  },
+  {
+    id: "2",
+    title: "Office Electronics",
+    subtitle: "Upgrade your workstations with top-tier monitors and accessories.",
+    imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop",
+    categoryUrl: "/shop/electronics"
+  },
+  {
+    id: "3",
+    title: "Stationery Packages",
+    subtitle: "Never run out of pens, paper, or sticky notes again.",
+    imageUrl: "https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?q=80&w=1935&auto=format&fit=crop",
+    categoryUrl: "/shop/stationery"
+  },
+  {
+    id: "4",
+    title: "Office Furniture",
+    subtitle: "Ergonomic chairs and desks for maximum productivity.",
+    imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=2070&auto=format&fit=crop",
+    categoryUrl: "/shop/furniture"
+  }
+];
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-white pt-16 pb-32 overflow-hidden border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl mb-6">
-              Corporate Supply Chain, <span className="text-primary-600">Simplified</span>
-            </h1>
-            <p className="text-lg text-gray-600 mb-10 leading-relaxed">
-              Smart24 provides seamless B2B procurement, automated monthly subscriptions, and reliable delivery for all your office essentials. From pantry items to stationary, we have got your corporate needs covered.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/subscriptions"
-                className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-              >
-                View Subscription Packages
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-              <Link
-                href="/shop"
-                className="inline-flex items-center justify-center px-8 py-3.5 border border-gray-300 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-              >
-                Browse Retail Shop
-              </Link>
-            </div>
-          </div>
-        </div>
-        
-        {/* Abstract Background Design */}
-        <div className="absolute top-0 inset-x-0 h-full overflow-hidden z-0 pointer-events-none">
-          <div className="absolute -top-1/2 -right-1/4 w-3/4 h-3/4 bg-primary-50 rounded-full blur-3xl opacity-60"></div>
-          <div className="absolute -bottom-1/2 -left-1/4 w-3/4 h-3/4 bg-primary-50 rounded-full blur-3xl opacity-60"></div>
-        </div>
-      </section>
+      <div className="bg-gray-50 border-b border-gray-100">
+        <HeroBentoAccordion ads={DUMMY_ADS} />
+      </div>
 
       {/* Features Section */}
       <section className="py-20 bg-gray-50">
