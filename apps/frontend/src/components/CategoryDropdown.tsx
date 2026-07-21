@@ -90,7 +90,7 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
                 key={l1.id}
                 href={`/shop?category=${l1.slug}`}
                 onMouseEnter={() => { setActiveLevel1(l1.id); setActiveLevel2(null); }}
-                className={`flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${activeLevel1 === l1.id ? 'bg-orange-50 text-orange-500 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                className={`flex items-center justify-between px-4 py-1.5 text-sm transition-colors ${activeLevel1 === l1.id ? 'bg-orange-50 text-orange-500 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
               >
                 {l1.name}
                 {l1.children && l1.children.length > 0 && <ChevronRight size={16} className={activeLevel1 === l1.id ? 'text-orange-500' : 'text-gray-400'} />}
@@ -106,7 +106,7 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
                   key={l2.id}
                   href={`/shop?category=${l2.slug}`}
                   onMouseEnter={() => setActiveLevel2(l2.id)}
-                  className={`flex items-center justify-between px-4 py-2.5 text-[13.5px] transition-colors ${activeLevel2 === l2.id ? 'bg-orange-50 text-orange-500 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`flex items-center justify-between px-4 py-1.5 text-[13.5px] transition-colors ${activeLevel2 === l2.id ? 'bg-orange-50 text-orange-500 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   {l2.name}
                   {l2.children && l2.children.length > 0 && <ChevronRight size={14} className={activeLevel2 === l2.id ? 'text-orange-500' : 'text-gray-400'} />}
@@ -122,7 +122,7 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
                 <Link 
                   key={l3.id}
                   href={`/shop?category=${l3.slug}`}
-                  className="block px-4 py-2.5 text-[13px] text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:font-medium transition-colors"
+                  className="block px-4 py-1.5 text-[13px] text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:font-medium transition-colors"
                 >
                   {l3.name}
                 </Link>

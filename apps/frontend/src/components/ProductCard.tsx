@@ -8,11 +8,12 @@ export interface Product {
   name: string;
   slug: string;
   price: number;
+  description?: string;
   images: string[];
 }
 
 // Helper to generate consistent mock data based on a string (ID)
-const generateMockData = (id: string) => {
+export const generateMockData = (id: string) => {
   const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   
   const discounts = [10, 15, 20, 25, 30, 40, 50, 60, 70];
@@ -30,13 +31,33 @@ const generateMockData = (id: string) => {
   
   const locations = ['Dhaka', 'Chattogram', 'Sylhet', 'Gazipur', 'Narayanganj'];
   const location = locations[hash % locations.length];
+
+  const allColors = ['Black', 'White', 'Red', 'Blue', 'Green', 'Yellow', 'Pink', 'Purple', 'Orange', 'Grey', 'Brown', 'Gold', 'Silver', 'Beige'];
+  const color = allColors[hash % allColors.length];
   
+  const warranties = ['No Warranty', 'Local Seller Warranty', 'Brand Warranty', 'International Manufacturer Warranty'];
+  const warrantyType = warranties[hash % warranties.length];
+
+  const brandComps = ['Apple', 'Samsung', 'Xiaomi', 'Universal', 'Other'];
+  const brandCompatibility = brandComps[hash % brandComps.length];
+
+  const materials = ['Silicone', 'Leather', 'Plastic', 'Metal', 'Glass'];
+  const caseMaterial = materials[hash % materials.length];
+
+  const models = ['iPhone 15 Pro', 'iPhone 14', 'Galaxy S24 Ultra', 'Galaxy A54', 'Universal'];
+  const compatibilityByModel = models[hash % models.length];
+
   return {
     discount,
     rating,
     soldCount,
     reviews,
     location,
+    color,
+    warrantyType,
+    brandCompatibility,
+    caseMaterial,
+    compatibilityByModel,
     isChoice: hash % 3 === 0
   };
 };
