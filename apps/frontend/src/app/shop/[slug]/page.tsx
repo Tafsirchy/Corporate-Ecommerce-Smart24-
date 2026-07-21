@@ -16,7 +16,8 @@ export default function ProductDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
     axios.get(`${apiUrl}/products`)
       .then(res => {
-        const p = res.data.find((item: any) => item.slug === slug);
+        const productsArray = res.data.data || res.data;
+        const p = productsArray.find((item: any) => item.slug === slug);
         setProduct(p);
       })
       .catch(err => console.error(err))
@@ -25,7 +26,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-7xl animate-pulse">
+      <div className="container mx-auto px-4 py-8 animate-pulse">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/2 bg-gray-200 h-96 rounded-xl"></div>
           <div className="w-full md:w-1/2 space-y-4">
@@ -48,7 +49,7 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Product Images */}
         <div className="w-full md:w-1/2">

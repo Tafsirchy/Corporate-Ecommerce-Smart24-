@@ -4,152 +4,138 @@ import slugify from 'slugify';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting corporate data seeding...');
+  console.log('Starting corporate data seeding with deep categories...');
 
-  // 1. Clear existing generic data (Careful not to delete Users/Orders)
+  // 1. Clear existing generic data
   await prisma.product.deleteMany({});
   await prisma.brand.deleteMany({});
   await prisma.category.deleteMany({});
 
   console.log('Cleared existing products, brands, and categories.');
 
-  // 2. Create Corporate Brands
-  const smart24Essentials = await prisma.brand.create({
-    data: {
-      name: 'Smart24 Essentials',
-      slug: slugify('Smart24 Essentials', { lower: true, strict: true }),
-      description: 'High-quality everyday corporate essentials curated by Smart24.'
-    }
-  });
-
-  const freshFarms = await prisma.brand.create({
-    data: {
-      name: 'FreshFarms',
-      slug: slugify('FreshFarms', { lower: true, strict: true }),
-      description: 'Fresh organic produce sourced directly from farmers.'
-    }
-  });
-
-  const techPro = await prisma.brand.create({
-    data: {
-      name: 'TechPro',
-      slug: slugify('TechPro', { lower: true, strict: true }),
-      description: 'Reliable IT and electronic supplies for modern offices.'
-    }
-  });
+  // 2. Brands
+  const apple = await prisma.brand.create({ data: { name: 'Apple', slug: 'apple', description: 'Tech giant' } });
+  const samsung = await prisma.brand.create({ data: { name: 'Samsung', slug: 'samsung', description: 'Electronics leader' } });
+  const nike = await prisma.brand.create({ data: { name: 'Nike', slug: 'nike', description: 'Sports apparel' } });
+  const zara = await prisma.brand.create({ data: { name: 'Zara', slug: 'zara', description: 'Fashion forward' } });
+  const ikea = await prisma.brand.create({ data: { name: 'IKEA', slug: 'ikea', description: 'Home furniture' } });
 
   console.log('Brands created.');
 
-  // 3. Create Corporate Categories
-  const officeSupplies = await prisma.category.create({
-    data: {
-      name: 'Office Supplies',
-      slug: slugify('Office Supplies', { lower: true, strict: true }),
-      level: 1
-    }
-  });
+  // 3. Categories (3-level deep)
+  // L1
+  const fashionW = await prisma.category.create({ data: { name: "Women's & Girls' Fashion", slug: "womens-fashion", level: 1 } });
+  const fashionM = await prisma.category.create({ data: { name: "Men's & Boys' Fashion", slug: "mens-fashion", level: 1 } });
+  const electronics = await prisma.category.create({ data: { name: "Electronics", slug: "electronics", level: 1 } });
+  const home = await prisma.category.create({ data: { name: "Home & Lifestyle", slug: "home-lifestyle", level: 1 } });
 
-  const pantryGroceries = await prisma.category.create({
-    data: {
-      name: 'Pantry & Groceries',
-      slug: slugify('Pantry & Groceries', { lower: true, strict: true }),
-      level: 1
-    }
-  });
+  // L2
+  const bags = await prisma.category.create({ data: { name: "Bags", slug: "bags", level: 2, parentId: fashionW.id } });
+  const clothingW = await prisma.category.create({ data: { name: "Clothing", slug: "clothing-women", level: 2, parentId: fashionW.id } });
+  
+  const shoes = await prisma.category.create({ data: { name: "Shoes", slug: "shoes", level: 2, parentId: fashionM.id } });
+  const clothingM = await prisma.category.create({ data: { name: "Clothing", slug: "clothing-men", level: 2, parentId: fashionM.id } });
 
-  const corporateBundles = await prisma.category.create({
-    data: {
-      name: 'Corporate Bundles',
-      slug: slugify('Corporate Bundles', { lower: true, strict: true }),
-      level: 1
-    }
-  });
+  const mobiles = await prisma.category.create({ data: { name: "Mobile Phones", slug: "mobile-phones", level: 2, parentId: electronics.id } });
+  const accessories = await prisma.category.create({ data: { name: "Accessories", slug: "accessories", level: 2, parentId: electronics.id } });
 
-  const cleaningSupplies = await prisma.category.create({
-    data: {
-      name: 'Cleaning Supplies',
-      slug: slugify('Cleaning Supplies', { lower: true, strict: true }),
-      level: 1
-    }
-  });
+  const furniture = await prisma.category.create({ data: { name: "Furniture", slug: "furniture", level: 2, parentId: home.id } });
+  const decor = await prisma.category.create({ data: { name: "Decor", slug: "decor", level: 2, parentId: home.id } });
 
-  const construction = await prisma.category.create({
-    data: {
-      name: 'Construction & Hardware',
-      slug: slugify('Construction & Hardware', { lower: true, strict: true }),
-      level: 1
-    }
-  });
+  // L3
+  const wallets = await prisma.category.create({ data: { name: "Wallets", slug: "wallets", level: 3, parentId: bags.id } });
+  const backpacks = await prisma.category.create({ data: { name: "Backpacks", slug: "backpacks", level: 3, parentId: bags.id } });
+  const crossbody = await prisma.category.create({ data: { name: "Crossbody & Shoulder Bags", slug: "crossbody", level: 3, parentId: bags.id } });
 
-  console.log('Categories created.');
+  const dresses = await prisma.category.create({ data: { name: "Dresses", slug: "dresses", level: 3, parentId: clothingW.id } });
+  const tops = await prisma.category.create({ data: { name: "Tops", slug: "tops", level: 3, parentId: clothingW.id } });
 
-  // 4. Create Corporate Products
-  await prisma.product.createMany({
-    data: [
-      {
-        name: 'Weekly Veg Box',
-        slug: slugify('Weekly Veg Box', { lower: true, strict: true }),
-        description: 'A curated weekly box of fresh seasonal vegetables. Ideal for corporate cafeterias.',
-        price: 650,
-        stock: 100,
-        categoryId: corporateBundles.id,
-        brandId: freshFarms.id,
-        images: ['https://placehold.co/600x600/16A34A/FFFFFF?text=Weekly+Veg+Box']
-      },
-      {
-        name: 'Cement Bag (50kg)',
-        slug: slugify('Cement Bag (50kg)', { lower: true, strict: true }),
-        description: 'Premium quality Portland cement for corporate construction projects. 50kg bag.',
-        price: 480,
-        stock: 5, // Low stock to trigger warnings if built
-        categoryId: construction.id,
-        brandId: null,
-        images: ['https://placehold.co/600x600/6B7280/FFFFFF?text=Cement+Bag+50kg']
-      },
-      {
-        name: 'A4 Printer Paper (500 Sheets)',
-        slug: slugify('A4 Printer Paper 500 Sheets', { lower: true, strict: true }),
-        description: 'High quality A4 printer paper for all your office documentation needs. 80 GSM, 500 sheets per ream.',
-        price: 450,
-        stock: 500,
-        categoryId: officeSupplies.id,
-        brandId: smart24Essentials.id,
-        images: ['https://placehold.co/600x600/DBEAFE/1E40AF?text=A4+Printer+Paper']
-      },
-      {
-        name: 'Premium Tea Bags (100 Pcs)',
-        slug: slugify('Premium Tea Bags 100 Pcs', { lower: true, strict: true }),
-        description: 'Finest quality black tea bags for the corporate pantry. Box of 100.',
-        price: 250,
-        stock: 200,
-        categoryId: pantryGroceries.id,
-        brandId: smart24Essentials.id,
-        images: ['https://placehold.co/600x600/FEF3C7/92400E?text=Premium+Tea+Bags']
-      },
-      {
-        name: 'Miniket Rice (25kg Bag)',
-        slug: slugify('Miniket Rice 25kg Bag', { lower: true, strict: true }),
-        description: 'Premium sorted Miniket rice for corporate dining facilities. 25kg sack.',
-        price: 1800,
-        stock: 50,
-        categoryId: pantryGroceries.id,
-        brandId: freshFarms.id,
-        images: ['https://placehold.co/600x600/F0FDF4/166534?text=Miniket+Rice+25kg']
-      },
-      {
-        name: 'Office Ergonomic Chair',
-        slug: slugify('Office Ergonomic Chair', { lower: true, strict: true }),
-        description: 'Comfortable mesh ergonomic chair with lumbar support for long working hours.',
-        price: 8500,
-        stock: 15,
-        categoryId: officeSupplies.id,
-        brandId: techPro.id,
-        images: ['https://placehold.co/600x600/F3F4F6/111827?text=Ergonomic+Chair']
-      }
-    ]
-  });
+  const sneakers = await prisma.category.create({ data: { name: "Sneakers", slug: "sneakers", level: 3, parentId: shoes.id } });
+  const formalShoes = await prisma.category.create({ data: { name: "Formal Shoes", slug: "formal-shoes", level: 3, parentId: shoes.id } });
 
-  console.log('Products created.');
+  const tshirts = await prisma.category.create({ data: { name: "T-Shirts", slug: "tshirts", level: 3, parentId: clothingM.id } });
+  const jeans = await prisma.category.create({ data: { name: "Jeans", slug: "jeans", level: 3, parentId: clothingM.id } });
+
+  const smartphones = await prisma.category.create({ data: { name: "Smartphones", slug: "smartphones", level: 3, parentId: mobiles.id } });
+  const earbuds = await prisma.category.create({ data: { name: "Earbuds", slug: "earbuds", level: 3, parentId: accessories.id } });
+
+  const chairs = await prisma.category.create({ data: { name: "Chairs", slug: "chairs", level: 3, parentId: furniture.id } });
+  const tables = await prisma.category.create({ data: { name: "Tables", slug: "tables", level: 3, parentId: furniture.id } });
+  const lighting = await prisma.category.create({ data: { name: "Lighting", slug: "lighting", level: 3, parentId: decor.id } });
+
+  console.log('Categories created (3-level deep).');
+
+  // 4. Products (40+)
+  const products = [
+    { name: "Leather Wallet Minimalist", price: 1200, categoryId: wallets.id, brandId: zara.id },
+    { name: "Zip Around Wallet", price: 1500, categoryId: wallets.id, brandId: zara.id },
+    { name: "Women's Travel Backpack", price: 3500, categoryId: backpacks.id, brandId: nike.id },
+    { name: "Canvas Mini Backpack", price: 2100, categoryId: backpacks.id, brandId: zara.id },
+    { name: "Elegant Crossbody Bag", price: 2800, categoryId: crossbody.id, brandId: zara.id },
+    { name: "Casual Crossbody Purse", price: 1800, categoryId: crossbody.id, brandId: zara.id },
+    
+    { name: "Summer Floral Dress", price: 2200, categoryId: dresses.id, brandId: zara.id },
+    { name: "Evening Maxi Dress", price: 4500, categoryId: dresses.id, brandId: zara.id },
+    { name: "Cotton V-Neck Top", price: 800, categoryId: tops.id, brandId: zara.id },
+    { name: "Silk Blouse", price: 2600, categoryId: tops.id, brandId: zara.id },
+
+    { name: "Air Max Running Sneakers", price: 8500, categoryId: sneakers.id, brandId: nike.id },
+    { name: "Classic White Sneakers", price: 6500, categoryId: sneakers.id, brandId: nike.id },
+    { name: "Oxford Formal Leather Shoes", price: 4200, categoryId: formalShoes.id, brandId: zara.id },
+    { name: "Brown Derby Shoes", price: 3800, categoryId: formalShoes.id, brandId: zara.id },
+
+    { name: "Basic Cotton T-Shirt Black", price: 500, categoryId: tshirts.id, brandId: nike.id },
+    { name: "Graphic Print T-Shirt", price: 800, categoryId: tshirts.id, brandId: nike.id },
+    { name: "Slim Fit Blue Jeans", price: 2500, categoryId: jeans.id, brandId: zara.id },
+    { name: "Relaxed Fit Black Jeans", price: 2400, categoryId: jeans.id, brandId: zara.id },
+
+    { name: "iPhone 15 Pro Max 256GB", price: 155000, categoryId: smartphones.id, brandId: apple.id },
+    { name: "iPhone 14 128GB", price: 85000, categoryId: smartphones.id, brandId: apple.id },
+    { name: "Galaxy S24 Ultra", price: 145000, categoryId: smartphones.id, brandId: samsung.id },
+    { name: "Galaxy A54 5G", price: 45000, categoryId: smartphones.id, brandId: samsung.id },
+
+    { name: "AirPods Pro (2nd Gen)", price: 28000, categoryId: earbuds.id, brandId: apple.id },
+    { name: "Galaxy Buds 2 Pro", price: 18000, categoryId: earbuds.id, brandId: samsung.id },
+    { name: "Nike Sport Earbuds", price: 8000, categoryId: earbuds.id, brandId: nike.id },
+    { name: "Basic Wireless Earbuds", price: 2500, categoryId: earbuds.id, brandId: samsung.id },
+
+    { name: "Ergonomic Office Chair", price: 12000, categoryId: chairs.id, brandId: ikea.id },
+    { name: "Dining Chair Velvet", price: 4500, categoryId: chairs.id, brandId: ikea.id },
+    { name: "Minimalist Desk", price: 8500, categoryId: tables.id, brandId: ikea.id },
+    { name: "Coffee Table Wood", price: 6200, categoryId: tables.id, brandId: ikea.id },
+
+    { name: "Modern Floor Lamp", price: 3500, categoryId: lighting.id, brandId: ikea.id },
+    { name: "LED Desk Lamp", price: 1200, categoryId: lighting.id, brandId: ikea.id },
+    { name: "Pendant Ceiling Light", price: 2800, categoryId: lighting.id, brandId: ikea.id },
+    { name: "Smart LED Bulb Color", price: 1500, categoryId: lighting.id, brandId: samsung.id },
+    
+    // Extra products to reach 40+
+    { name: "Running T-Shirt Dri-Fit", price: 1200, categoryId: tshirts.id, brandId: nike.id },
+    { name: "Training Shorts Men", price: 1500, categoryId: clothingM.id, brandId: nike.id },
+    { name: "Yoga Pants Women", price: 1800, categoryId: clothingW.id, brandId: nike.id },
+    { name: "Sports Bra Core", price: 1400, categoryId: tops.id, brandId: nike.id },
+    { name: "Wireless Charging Pad", price: 2500, categoryId: accessories.id, brandId: samsung.id },
+    { name: "MagSafe Charger", price: 4500, categoryId: accessories.id, brandId: apple.id },
+    { name: "Leather Phone Case", price: 1800, categoryId: accessories.id, brandId: apple.id },
+    { name: "Silicone Watch Band", price: 800, categoryId: accessories.id, brandId: apple.id },
+    { name: "Bookshelf 5-Tier", price: 7500, categoryId: furniture.id, brandId: ikea.id },
+    { name: "TV Cabinet Modern", price: 14000, categoryId: furniture.id, brandId: ikea.id }
+  ];
+
+  const productData = products.map((p, i) => ({
+    name: p.name,
+    slug: slugify(p.name + '-' + Math.random().toString(36).substring(7), { lower: true, strict: true }),
+    description: `High quality ${p.name.toLowerCase()} for your everyday needs. Discover the best in class.`,
+    price: p.price,
+    stock: Math.floor(Math.random() * 100) + 10,
+    categoryId: p.categoryId,
+    brandId: p.brandId,
+    images: [`https://placehold.co/600x600/F3F4F6/4B5563?text=${encodeURIComponent(p.name)}`]
+  }));
+
+  await prisma.product.createMany({ data: productData });
+
+  console.log(`Seeded ${products.length} products successfully!`);
   console.log('Seeding completed successfully!');
 }
 

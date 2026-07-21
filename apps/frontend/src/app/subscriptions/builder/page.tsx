@@ -19,7 +19,7 @@ export default function CustomPackageBuilder() {
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`)
       .then(res => res.json())
-      .then(data => setProducts(data.data || data))
+      .then(data => setProducts(data.data?.data || data.data || data))
       .catch(err => console.error("Error fetching products:", err));
   }, []);
 

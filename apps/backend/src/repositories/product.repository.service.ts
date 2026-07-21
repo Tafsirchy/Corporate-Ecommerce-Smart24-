@@ -31,6 +31,13 @@ export class ProductRepository {
     });
   }
 
+  async count(params: {
+    where?: Prisma.ProductWhereInput;
+  }): Promise<number> {
+    const { where } = params;
+    return this.prisma.product.count({ where });
+  }
+
   async findById(id: string) {
     return this.prisma.product.findUnique({
       where: { id },

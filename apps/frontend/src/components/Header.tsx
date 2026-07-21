@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart } from 'lucide-react';
 import HeaderNav from './HeaderNav';
+import { CategoryDropdown } from './CategoryDropdown';
 
 export default function Header() {
   const pathname = usePathname();
@@ -101,7 +102,10 @@ export default function Header() {
           style={{ top: '100%' }}
         >
           <div className="container mx-auto px-4 py-2 flex justify-between items-center">
-            <a href="/" className={`text-xl font-bold tracking-tight ${isTransparent ? 'text-white' : 'text-gray-900'}`}>Smart24</a>
+            <div className="flex items-center gap-8">
+              <a href="/" className={`text-xl font-bold tracking-tight ${isTransparent ? 'text-white' : 'text-gray-900'}`}>Smart24</a>
+              {pathname === '/shop' && <CategoryDropdown isTransparent={isTransparent} />}
+            </div>
             <HeaderNav isTransparent={isTransparent} />
           </div>
         </div>

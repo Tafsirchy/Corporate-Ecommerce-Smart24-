@@ -27,7 +27,7 @@ export default function AdminProducts() {
   const fetchProducts = async () => {
     try {
       const res = await apiClient.get('/products');
-      setProducts(res.data);
+      setProducts(res.data.data || res.data);
     } catch (error) {
       toast.error('Failed to fetch products');
     }

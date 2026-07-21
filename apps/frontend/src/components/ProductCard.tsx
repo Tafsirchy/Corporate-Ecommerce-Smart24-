@@ -41,7 +41,7 @@ const generateMockData = (id: string) => {
   };
 };
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, viewMode = 'grid' }: { product: Product, viewMode?: 'grid' | 'list' }) {
   const { addToCart } = useCart();
   
   // Generate mock data for the UI since the real DB might not have these yet
@@ -49,10 +49,10 @@ export function ProductCard({ product }: { product: Product }) {
   const originalPrice = Math.round(product.price * (100 / (100 - mock.discount)));
 
   return (
-    <div className="group relative flex flex-col bg-white rounded-xl border border-gray-100 hover:border-primary-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.06)] transition-all duration-300 overflow-hidden cursor-pointer h-full">
+    <div className={`group relative flex bg-white rounded-xl border border-gray-100 hover:border-primary-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.06)] transition-all duration-300 overflow-hidden cursor-pointer h-full ${viewMode === 'list' ? 'flex-row items-stretch' : 'flex-col'}`}>
       
       {/* Product Image */}
-      <Link href={`/shop/${product.slug}`} className="block relative aspect-[5/4] overflow-hidden bg-[#f8f9fa]">
+      <Link href={`/shop/${product.slug}`} className={`block relative overflow-hidden bg-[#f8f9fa] ${viewMode === 'list' ? 'w-48 md:w-64 shrink-0' : 'aspect-[5/4]'}`}>
         <img
           src={product.images?.[0] || 'https://placehold.co/400x320?text=No+Image'}
           alt={product.name}
@@ -68,11 +68,10 @@ export function ProductCard({ product }: { product: Product }) {
       </Link>
       
       {/* Product Details */}
-      <div className="p-2.5 flex flex-col flex-1">
+      <div className={`p-2.5 flex flex-col flex-1 ${viewMode === 'list' ? 'p-4 sm:p-6' : ''}`}>
         
-        {/* Title Row with inline badge */}
-        <Link href={`/shop/${product.slug}`} className="mb-1.5">
-          <h3 className="text-[12px] font-medium text-gray-800 leading-[1.3] line-clamp-2 group-hover:text-primary-600 transition-colors">
+        <Link href={`/shop/${product.slug}`} className="mb-1.5 block">
+          <h3 className={`${viewMode === 'list' ? 'text-base sm:text-lg mb-2' : 'text-[12px] line-clamp-2'} font-medium text-gray-800 leading-[1.3] group-hover:text-primary-600 transition-colors`}>
             {mock.isChoice && !product.name.startsWith('Choice') && (
               <span className="inline-block bg-primary-600 text-white text-[8px] font-bold px-1 py-0.5 rounded-[3px] mr-1 align-middle uppercase tracking-wider">
                 Smart
@@ -81,6 +80,11 @@ export function ProductCard({ product }: { product: Product }) {
             {product.name}
           </h3>
         </Link>
+          {viewMode === 'list' && (
+            <p className="text-sm text-gray-500 mb-4 line-clamp-2 hidden sm:block">
+              {product.description || 'No description available.'}
+            </p>
+          )}
 
         {/* Spacer to push pricing down */}
         <div className="mt-auto">
