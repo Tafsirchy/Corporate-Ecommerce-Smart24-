@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Package, Truck, ShieldCheck, CreditCard } from "lucide-react";
 import { HeroBentoAccordion, HeroAd } from "@/components/HeroBentoAccordion";
+import { WhyChooseUsMarquee } from "@/components/WhyChooseUsMarquee";
+import { OfferSlider } from "@/components/OfferSlider";
 
 const DUMMY_ADS: HeroAd[] = [
   {
@@ -42,50 +44,10 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-base font-semibold text-primary-600 tracking-wide uppercase">Why Choose Smart24</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Everything you need to run your office
-            </p>
-          </div>
+      <WhyChooseUsMarquee />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 inline-flex items-center justify-center rounded-xl bg-primary-100 text-primary-600 mb-5">
-                <Package className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Tailored Packages</h3>
-              <p className="text-gray-500 text-sm">Customized bundles of rice, sugar, tea, and office supplies built specifically for your headcount.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 inline-flex items-center justify-center rounded-xl bg-blue-100 text-primary-600 mb-5">
-                <Truck className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Automated Delivery</h3>
-              <p className="text-gray-500 text-sm">Set your subscription once and receive reliable, on-time deliveries at the start of every month.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 inline-flex items-center justify-center rounded-xl bg-green-100 text-green-600 mb-5">
-                <CreditCard className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Flexible Payments</h3>
-              <p className="text-gray-500 text-sm">Pay seamlessly via Card, Mobile Financial Services (bKash, Nagad), or manual corporate transfer.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 inline-flex items-center justify-center rounded-xl bg-orange-100 text-orange-600 mb-5">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Quality Assured</h3>
-              <p className="text-gray-500 text-sm">All products are sourced directly from verified manufacturers, ensuring premium quality for your team.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Offer Slider */}
+      <OfferSlider />
 
       {/* How it Works */}
       <section className="py-20 bg-white">
