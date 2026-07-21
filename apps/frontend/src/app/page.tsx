@@ -3,6 +3,7 @@ import { ArrowRight, Package, Truck, ShieldCheck, CreditCard } from "lucide-reac
 import { HeroBentoAccordion, HeroAd } from "@/components/HeroBentoAccordion";
 import { WhyChooseUsMarquee } from "@/components/WhyChooseUsMarquee";
 import { OfferSlider } from "@/components/OfferSlider";
+import { PremiumBentoCategories } from "@/components/PremiumBentoCategories";
 
 const DUMMY_ADS: HeroAd[] = [
   {
@@ -48,6 +49,9 @@ export default function Home() {
 
       {/* Offer Slider */}
       <OfferSlider />
+
+      {/* Premium Categories Bento Box */}
+      <PremiumBentoCategories />
 
       {/* How it Works */}
       <section className="py-20 bg-white">
