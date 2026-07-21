@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 
 interface BentoCardProps {
-  title: string;
+  title: React.ReactNode;
   subtitle: string;
   buttonText: string;
   imageUrl: string;
@@ -32,7 +32,7 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
         <div className="absolute inset-0 z-0 flex items-end justify-end p-3">
           <img 
             src={imageUrl} 
-            alt={title}
+            alt={typeof title === 'string' ? title : subtitle}
             className={`object-contain transition-transform duration-700 group-hover:scale-105 mix-blend-multiply ${imageClassName}`}
           />
         </div>
@@ -64,7 +64,7 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
 export const PremiumBentoCategories = () => {
   return (
     <section className="py-8 md:py-12 bg-gray-50">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-6">
