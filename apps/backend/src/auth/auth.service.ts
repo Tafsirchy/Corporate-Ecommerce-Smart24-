@@ -39,7 +39,8 @@ export class AuthService {
 
   async signup(data: Prisma.UserCreateInput) {
     const user = await this.usersService.create(data);
-    return this.login(user);
+    const tokens = await this.login(user);
+    return { ...tokens, user };
   }
 
   async generateTempToken(user: any) {
@@ -71,10 +72,11 @@ export class AuthService {
     }
     
     const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     const resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
     
     await this.usersService.update(user.id, {
-      resetPasswordToken: resetToken,
+      resetPasswordToken: hashedToken,
       resetPasswordExpires
     });
     
@@ -100,7 +102,8 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string) {
-    const user = await this.usersService.findByResetToken(token);
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await this.usersService.findByResetToken(hashedToken);
     
     if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
       throw new UnauthorizedException('Invalid or expired token');

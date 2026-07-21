@@ -49,8 +49,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }));
             setItems(serverItems);
           }
-        } catch (e) {
-          console.error("Failed to load server cart", e);
+        } catch (e: any) {
+          if (e?.response?.status !== 401) {
+            console.error("Failed to load server cart", e);
+          }
         }
       } else {
         // Load local cart

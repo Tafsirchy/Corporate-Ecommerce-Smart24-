@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Res, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { SignupDto, LoginDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
 import * as QRCode from 'qrcode';
@@ -9,8 +10,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() body: any, @Res({ passthrough: true }) res: Response) {
-    const { access_token, refresh_token } = await this.authService.signup(body);
+  async signup(@Body() body: SignupDto, @Res({ passthrough: true }) res: Response) {
+    const { access_token, refresh_token, user } = await this.authService.signup(body);
     
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
@@ -19,11 +20,11 @@ export class AuthController {
       path: '/api/v1/auth/refresh' // Assuming global prefix is /api/v1
     });
 
-    return { access_token };
+    return { access_token, user };
   }
 
   @Post('login')
-  async login(@Body() body: any, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
     const user = await this.authService.validateUser(body.email, body.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

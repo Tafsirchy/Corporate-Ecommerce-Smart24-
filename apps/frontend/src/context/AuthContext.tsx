@@ -9,6 +9,20 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('access_token');
+        // Optional: redirect to login if not already there, 
+        // but removing the token stops the loop.
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 interface AuthContextType {
   user: any;
   token: string | null;
@@ -53,7 +67,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/account');
       return { success: true };
     } catch (e: any) {
-      toast.error(e.response?.data?.message || 'Login failed');
+      const msg = e.response?.data?.message;
+      const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Login failed');
+      toast.error(errorText);
       return { success: false };
     }
   };
@@ -69,7 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/account');
       return { success: true };
     } catch (e: any) {
-      toast.error(e.response?.data?.message || '2FA Verification failed');
+      const msg = e.response?.data?.message;
+      const errorText = Array.isArray(msg) ? msg[0] : (msg || '2FA Verification failed');
+      toast.error(errorText);
       return { success: false };
     }
   };
@@ -80,11 +98,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
       setToken(res.data.access_token);
-      setUser({ email: data.email });
+      setUser(res.data.user);
       toast.success('Signed up successfully!');
       router.push('/account');
     } catch (e: any) {
-      toast.error(e.response?.data?.message || 'Signup failed');
+      const msg = e.response?.data?.message;
+      const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Signup failed');
+      toast.error(errorText);
     }
   };
 

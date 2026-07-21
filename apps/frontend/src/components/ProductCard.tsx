@@ -10,6 +10,16 @@ export interface Product {
   price: number;
   description?: string;
   images: string[];
+  rating?: number;
+  reviewCount?: number;
+  color?: string;
+  warrantyType?: string;
+  brandCompatibility?: string;
+  caseMaterial?: string;
+  compatibilityByModel?: string;
+  location?: string;
+  services?: string[];
+  sellerName?: string;
 }
 
 // Helper to generate consistent mock data based on a string (ID)

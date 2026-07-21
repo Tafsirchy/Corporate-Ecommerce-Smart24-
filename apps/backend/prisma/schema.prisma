@@ -39,6 +39,7 @@ model User {
   orders             Order[]
   subscriptions      Subscription[]
   quotations         Quotation[]
+  reviews            Review[]
 }
 
 model Category {
@@ -74,6 +75,17 @@ model Product {
   stock       Int      @default(0)
   images      String[] 
   
+  rating               Float    @default(0)
+  reviewCount          Int      @default(0)
+  color                String?
+  warrantyType         String?
+  brandCompatibility   String?
+  caseMaterial         String?
+  compatibilityByModel String?
+  location             String   @default("Bangladesh")
+  services             String[] 
+  sellerName           String   @default("Smart24 Official")
+  
   categoryId  String   @db.ObjectId
   category    Category @relation(fields: [categoryId], references: [id])
   
@@ -87,6 +99,7 @@ model Product {
   orderItems        OrderItem[]
   subscriptionItems SubscriptionItem[]
   quotations        Quotation[]
+  reviews           Review[]
 }
 
 model Cart {
@@ -285,4 +298,24 @@ model Banner {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  rating    Int
+  comment   String
+  images    String[]
+  
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  verifiedPurchase Boolean @default(false)
+  
+  @@unique([userId, productId])
 }
