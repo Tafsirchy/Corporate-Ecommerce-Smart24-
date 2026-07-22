@@ -12,6 +12,7 @@ async function main() {
   await prisma.review.deleteMany({}).catch(() => {});
   await prisma.product.deleteMany({});
   await prisma.brand.deleteMany({});
+  await prisma.banner.deleteMany({});
   await prisma.category.deleteMany({ where: { level: 3 } }).catch(() => {});
   await prisma.category.deleteMany({ where: { level: 2 } }).catch(() => {});
   await prisma.category.deleteMany({ where: { level: 1 } }).catch(() => {});
@@ -160,6 +161,38 @@ async function main() {
   await prisma.product.createMany({ data: productData });
 
   console.log(`Seeded ${products.length} products successfully!`);
+
+  // 5. Banners
+  await prisma.banner.createMany({
+    data: [
+      {
+        title: 'Corporate Furniture Sale',
+        imageUrl: 'https://placehold.co/1200x400/2563EB/FFFFFF?text=Corporate+Furniture+Sale+-+Up+to+40%+Off',
+        targetUrl: '/shop',
+        type: 'MAIN_CAROUSEL',
+        isActive: true,
+        order: 1
+      },
+      {
+        title: 'New Office Tech Arrivals',
+        imageUrl: 'https://placehold.co/1200x400/4338CA/FFFFFF?text=New+Tech+Arrivals+-+Equip+Your+Team',
+        targetUrl: '/shop',
+        type: 'MAIN_CAROUSEL',
+        isActive: true,
+        order: 2
+      },
+      {
+        title: 'Special Offer Banner',
+        imageUrl: 'https://placehold.co/1200x200/F59E0B/FFFFFF?text=Special+Corporate+Offer+-+Apply+Now',
+        targetUrl: '/contact',
+        type: 'SPECIAL_OFFER',
+        isActive: true,
+        order: 1
+      }
+    ]
+  });
+  console.log('Banners created.');
+
   console.log('Seeding completed successfully!');
 }
 
