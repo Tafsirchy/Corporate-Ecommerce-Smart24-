@@ -7,9 +7,15 @@ async function main() {
   console.log('Starting corporate data seeding with deep categories...');
 
   // 1. Clear existing generic data
+  await prisma.cartItem.deleteMany({});
+  await prisma.orderItem.deleteMany({}).catch(() => {});
+  await prisma.review.deleteMany({}).catch(() => {});
   await prisma.product.deleteMany({});
   await prisma.brand.deleteMany({});
-  await prisma.category.deleteMany({});
+  await prisma.category.deleteMany({ where: { level: 3 } }).catch(() => {});
+  await prisma.category.deleteMany({ where: { level: 2 } }).catch(() => {});
+  await prisma.category.deleteMany({ where: { level: 1 } }).catch(() => {});
+  await prisma.category.deleteMany({}); // Catch any remaining
 
   console.log('Cleared existing products, brands, and categories.');
 
@@ -122,11 +128,29 @@ async function main() {
     { name: "TV Cabinet Modern", price: 14000, categoryId: furniture.id, brandId: ikea.id }
   ];
 
+  // Add 60 more generic dummy products to test Just For You section
+  for (let i = 1; i <= 60; i++) {
+    const isFlashSale = i <= 15; // Make the first 15 products flash sale
+    const price = Math.floor(Math.random() * 5000) + 1500;
+    const discountPrice = isFlashSale ? Math.floor(price * 0.7) : null; // 30% off for flash sales
+
+    products.push({
+      name: `Just For You Premium Product ${i}`,
+      price: price,
+      discountPrice: discountPrice,
+      isFlashSale: isFlashSale,
+      categoryId: accessories.id,
+      brandId: samsung.id
+    });
+  }
+
   const productData = products.map((p, i) => ({
     name: p.name,
     slug: slugify(p.name + '-' + Math.random().toString(36).substring(7), { lower: true, strict: true }),
     description: `High quality ${p.name.toLowerCase()} for your everyday needs. Discover the best in class.`,
     price: p.price,
+    discountPrice: (p as any).discountPrice || null,
+    isFlashSale: (p as any).isFlashSale || false,
     stock: Math.floor(Math.random() * 100) + 10,
     categoryId: p.categoryId,
     brandId: p.brandId,

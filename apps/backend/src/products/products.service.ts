@@ -28,7 +28,7 @@ export class ProductsService {
     });
   }
 
-  async findAll(pageStr?: string, limitStr?: string, sort?: string) {
+  async findAll(pageStr?: string, limitStr?: string, sort?: string, isFlashSale?: string) {
     let orderBy: any = undefined;
     if (sort === 'price-asc') orderBy = { price: 'asc' };
     else if (sort === 'price-desc') orderBy = { price: 'desc' };
@@ -39,7 +39,11 @@ export class ProductsService {
       // OR we can just return { data, meta } and let the frontend handle it.
       // The prompt asks to add pagination, so returning { data, meta } is the standard way.
       // Let's implement it consistently.
-      const data = await this.productRepository.findAll({ orderBy });
+      let where: any = {};
+      if (isFlashSale === 'true') {
+        where.isFlashSale = true;
+      }
+      const data = await this.productRepository.findAll({ where, orderBy });
       return { data, meta: { total: data.length, page: 1, limit: data.length, totalPages: 1 } };
     }
 
@@ -47,9 +51,14 @@ export class ProductsService {
     const limit = limitStr ? parseInt(limitStr, 10) : 20;
     const skip = (page - 1) * limit;
 
+    let where: any = {};
+    if (isFlashSale === 'true') {
+      where.isFlashSale = true;
+    }
+
     const [data, total] = await Promise.all([
-      this.productRepository.findAll({ skip, take: limit, orderBy }),
-      this.productRepository.count({})
+      this.productRepository.findAll({ where, skip, take: limit, orderBy }),
+      this.productRepository.count(where)
     ]);
 
     return {

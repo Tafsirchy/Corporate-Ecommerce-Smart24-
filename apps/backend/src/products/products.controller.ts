@@ -27,9 +27,10 @@ export class ProductsController {
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-    @Query('sort') sort?: string
+    @Query('sort') sort?: string,
+    @Query('isFlashSale') isFlashSale?: string
   ) {
-    return this.productsService.findAll(page, limit, sort);
+    return this.productsService.findAll(page, limit, sort, isFlashSale);
   }
 
   @Get(':id')

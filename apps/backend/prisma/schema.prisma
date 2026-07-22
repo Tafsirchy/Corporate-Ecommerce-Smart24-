@@ -72,6 +72,8 @@ model Product {
   slug        String   @unique
   description String
   price       Float
+  discountPrice Float?
+  isFlashSale Boolean  @default(false)
   stock       Int      @default(0)
   images      String[] 
   

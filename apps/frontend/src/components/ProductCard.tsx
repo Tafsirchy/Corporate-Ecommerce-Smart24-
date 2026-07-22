@@ -20,6 +20,8 @@ export interface Product {
   location?: string;
   services?: string[];
   sellerName?: string;
+  discountPrice?: number;
+  isFlashSale?: boolean;
 }
 
 // Helper to generate consistent mock data based on a string (ID)
@@ -77,7 +79,15 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
   
   // Generate mock data for the UI since the real DB might not have these yet
   const mock = generateMockData(product.id);
-  const originalPrice = Math.round(product.price * (100 / (100 - mock.discount)));
+  
+  // Use actual discount logic if available
+  const hasRealDiscount = product.discountPrice !== undefined && product.discountPrice !== null;
+  const currentPrice = hasRealDiscount ? product.discountPrice! : product.price;
+  const displayOriginalPrice = hasRealDiscount ? product.price : Math.round(product.price * (100 / (100 - mock.discount)));
+  const displayDiscountPercent = hasRealDiscount 
+    ? Math.round(((product.price - product.discountPrice!) / product.price) * 100) 
+    : mock.discount;
+  const isDiscounted = hasRealDiscount || mock.discount > 0;
 
   return (
     <div className={`group relative flex bg-white rounded-xl border border-gray-100 hover:border-primary-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.06)] transition-all duration-300 overflow-hidden cursor-pointer h-full ${viewMode === 'list' ? 'flex-row items-stretch' : 'flex-col'}`}>
@@ -126,21 +136,23 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
             <div className="flex flex-col gap-1">
               {/* Price & Discount */}
               <div className="flex items-baseline gap-1.5">
-                <span className="text-base font-extrabold text-primary-600">৳{product.price.toLocaleString()}</span>
-                {mock.discount > 0 && (
-                  <span className="text-[9px] text-gray-400 line-through">৳{originalPrice.toLocaleString()}</span>
+                <span className="text-base font-extrabold text-primary-600">৳{currentPrice.toLocaleString()}</span>
+                {isDiscounted && (
+                  <span className="text-[9px] text-gray-400 line-through">৳{displayOriginalPrice.toLocaleString()}</span>
                 )}
               </div>
               
               {/* Tags */}
-              {mock.discount > 0 && (
+              {isDiscounted && (
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="text-[10px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded-[4px]">
-                    {mock.discount}% Off
+                    {displayDiscountPercent}% Off
                   </span>
-                  <span className="text-[10px] font-medium text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded-[4px]">
-                    Coins save ৳ 5
-                  </span>
+                  {product.isFlashSale && (
+                    <span className="text-[10px] font-medium text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded-[4px]">
+                      Flash Sale
+                    </span>
+                  )}
                 </div>
               )}
             </div>

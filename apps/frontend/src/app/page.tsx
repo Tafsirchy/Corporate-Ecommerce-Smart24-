@@ -4,7 +4,9 @@ import { HeroBentoAccordion, HeroAd } from "@/components/HeroBentoAccordion";
 import { WhyChooseUsMarquee } from "@/components/WhyChooseUsMarquee";
 import { OfferSlider } from "@/components/OfferSlider";
 import { SpecialOfferBanner } from "@/components/SpecialOfferBanner";
+import { FlashSale } from "@/components/FlashSale";
 import { PremiumBentoCategories } from "@/components/PremiumBentoCategories";
+import { JustForYou } from "@/components/JustForYou";
 
 const DUMMY_ADS: HeroAd[] = [
   {
@@ -54,8 +56,14 @@ export default function Home() {
       {/* Special Offer Banner before Corporate Collections */}
       <SpecialOfferBanner />
 
+      {/* Flash Sale */}
+      <FlashSale />
+
       {/* Premium Categories Bento Box */}
       <PremiumBentoCategories />
+
+      {/* Just For You Products */}
+      <JustForYou />
 
       {/* How it Works */}
       <section className="py-20 bg-white">
