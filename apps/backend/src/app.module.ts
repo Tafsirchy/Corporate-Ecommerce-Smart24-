@@ -17,6 +17,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { QuotationsModule } from './quotations/quotations.module';
 import { BannersModule } from './banners/banners.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     ScheduleModule.forRoot(),
     BannersModule,
     ReviewsModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

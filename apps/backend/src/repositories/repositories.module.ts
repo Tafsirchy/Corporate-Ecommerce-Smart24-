@@ -7,6 +7,7 @@ import { CartRepositoryService } from './cart.repository.service';
 import { OrderRepositoryService } from './order.repository.service';
 import { SubscriptionRepository } from './subscription.repository.service';
 import { QuotationRepository } from './quotation.repository.service';
+import { WishlistRepositoryService } from './wishlist.repository.service';
 
 @Global()
 @Module({
@@ -18,7 +19,8 @@ import { QuotationRepository } from './quotation.repository.service';
     CartRepositoryService,
     OrderRepositoryService,
     SubscriptionRepository,
-    QuotationRepository
+    QuotationRepository,
+    WishlistRepositoryService
   ],
   exports: [
     UserRepository,
@@ -28,7 +30,8 @@ import { QuotationRepository } from './quotation.repository.service';
     CartRepositoryService,
     OrderRepositoryService,
     SubscriptionRepository,
-    QuotationRepository
+    QuotationRepository,
+    WishlistRepositoryService
   ],
 })
 export class RepositoriesModule {}

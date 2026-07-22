@@ -61,7 +61,7 @@ export const JustForYou = () => {
   if (products.length === 0) return null;
 
   return (
-    <section className="bg-gray-50 py-8">
+    <section id="just-for-you" className="bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Just For You</h2>
         

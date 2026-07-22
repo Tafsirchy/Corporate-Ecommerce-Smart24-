@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingCart } from 'lucide-react';
+import { Search, ShoppingCart, Heart } from 'lucide-react';
 import HeaderNav from './HeaderNav';
 import { CategoryDropdown } from './CategoryDropdown';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Header() {
   const pathname = usePathname();
@@ -15,6 +17,9 @@ export default function Header() {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { totalItems } = useCart();
+  const { items: wishlistItems } = useWishlist();
 
   const handleScroll = useCallback(() => {
     setIsVisible(true);
@@ -83,9 +88,24 @@ export default function Header() {
                   Search
                 </button>
               </form>
-              <Link href="/cart" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-gray-700 hover:text-primary-600'} transition-colors flex-shrink-0`}>
-                <ShoppingCart className="w-5 h-5" />
-              </Link>
+              <div className="flex items-center gap-4 ml-2">
+                <Link href="/wishlist" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-gray-700 hover:text-primary-600'} transition-colors flex-shrink-0 relative`}>
+                  <Heart className="w-5 h-5" />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                      {wishlistItems.length}
+                    </span>
+                  )}
+                </Link>
+                <Link href="/cart" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-gray-700 hover:text-primary-600'} transition-colors flex-shrink-0 relative`}>
+                  <ShoppingCart className="w-5 h-5" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
+              </div>
             </div>
           </div>
         </div>

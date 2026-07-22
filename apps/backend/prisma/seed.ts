@@ -73,7 +73,7 @@ async function main() {
   console.log('Categories created (3-level deep).');
 
   // 4. Products (40+)
-  const products = [
+  const products: any[] = [
     { name: "Leather Wallet Minimalist", price: 1200, categoryId: wallets.id, brandId: zara.id },
     { name: "Zip Around Wallet", price: 1500, categoryId: wallets.id, brandId: zara.id },
     { name: "Women's Travel Backpack", price: 3500, categoryId: backpacks.id, brandId: nike.id },

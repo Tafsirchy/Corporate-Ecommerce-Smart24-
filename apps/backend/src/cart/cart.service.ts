@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CartRepositoryService } from '../repositories/cart.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
 
@@ -22,8 +22,10 @@ export class CartService {
     const product = await this.productRepo.findById(productId);
     if (!product) throw new NotFoundException('Product not found');
     
-    // Check stock if needed
-    // if (quantity > product.stock) throw new BadRequestException('Insufficient stock');
+    // Check stock
+    if (quantity > product.stock) {
+      throw new BadRequestException(`Only ${product.stock} items left in stock`);
+    }
 
     const cart = await this.getCart(userId);
     

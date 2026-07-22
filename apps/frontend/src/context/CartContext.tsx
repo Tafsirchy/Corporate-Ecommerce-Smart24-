@@ -1,12 +1,12 @@
 'use client';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useAuth, apiClient } from './AuthContext';
 import { toast } from 'react-toastify';
 
 export interface CartItem {
   productId: string;
   quantity: number;
-  product?: any; // To store populated details like name, price, images
+  product?: any;
 }
 
 interface CartContextType {
@@ -17,6 +17,8 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   cartTotal: number;
+  pendingItems: Record<string, boolean>;
+  isInitialized: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -25,13 +27,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const { user } = useAuth();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [pendingItems, setPendingItems] = useState<Record<string, boolean>>({});
 
-  // Load cart on mount or auth change
   useEffect(() => {
     const loadCart = async () => {
       if (user) {
         try {
-          // If we had local items, merge them first
           const localItems = JSON.parse(localStorage.getItem('cart') || '[]');
           if (localItems.length > 0) {
             await apiClient.post('/cart/merge', { 
@@ -39,7 +40,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
             });
             localStorage.removeItem('cart');
           }
-          // Fetch server cart
           const res = await apiClient.get('/cart');
           if (res.data?.items) {
             const serverItems = res.data.items.map((i: any) => ({
@@ -55,7 +55,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
         }
       } else {
-        // Load local cart
         const localItems = JSON.parse(localStorage.getItem('cart') || '[]');
         setItems(localItems);
       }
@@ -65,7 +64,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     loadCart();
   }, [user]);
 
-  // Save to local storage when unauthenticated and items change
   useEffect(() => {
     if (isInitialized && !user) {
       localStorage.setItem('cart', JSON.stringify(items));
@@ -73,22 +71,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, user, isInitialized]);
 
   const addToCart = async (product: any, quantity = 1) => {
+    if (pendingItems[product.id]) return;
+
+    setPendingItems(prev => ({ ...prev, [product.id]: true }));
     const existingIndex = items.findIndex(i => i.productId === product.id);
     const currentQty = existingIndex >= 0 ? items[existingIndex].quantity : 0;
     const newQty = currentQty + quantity;
 
-    if (user) {
-      try {
-        await apiClient.post('/cart/items', { productId: product.id, quantity: newQty });
-        toast.success(`${product.name} added to cart`);
-      } catch (e) {
-        toast.error('Failed to add to cart');
-        return;
-      }
-    } else {
-      toast.success(`${product.name} added to cart`);
-    }
-
+    const previousItems = [...items];
     setItems(prev => {
       const newItems = [...prev];
       if (existingIndex >= 0) {
@@ -98,6 +88,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return newItems;
     });
+
+    if (user) {
+      try {
+        await apiClient.post('/cart/items', { productId: product.id, quantity: newQty });
+        toast.success(`${product.name} added to cart`);
+      } catch (e: any) {
+        setItems(previousItems);
+        toast.error(e?.response?.data?.message || 'Failed to add to cart');
+      }
+    } else {
+      toast.success(`${product.name} added to cart`);
+    }
+
+    setPendingItems(prev => ({ ...prev, [product.id]: false }));
   };
 
   const updateQuantity = async (productId: string, quantity: number) => {
@@ -105,42 +109,55 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return removeFromCart(productId);
     }
     
+    const previousItems = [...items];
+    setItems(prev => prev.map(item => item.productId === productId ? { ...item, quantity } : item));
+
     if (user) {
       try {
         await apiClient.post('/cart/items', { productId, quantity });
-      } catch (e) {
-        toast.error('Failed to update quantity');
-        return;
+      } catch (e: any) {
+        setItems(previousItems);
+        toast.error(e?.response?.data?.message || 'Failed to update quantity');
       }
     }
-
-    setItems(prev => prev.map(item => item.productId === productId ? { ...item, quantity } : item));
   };
 
   const removeFromCart = async (productId: string) => {
+    const previousItems = [...items];
+    setItems(prev => prev.filter(item => item.productId !== productId));
+
     if (user) {
       try {
         await apiClient.delete(`/cart/items/${productId}`);
-      } catch (e) {
-        toast.error('Failed to remove item');
-        return;
+      } catch (e: any) {
+        setItems(previousItems);
+        toast.error(e?.response?.data?.message || 'Failed to remove item');
       }
     }
-
-    setItems(prev => prev.filter(item => item.productId !== productId));
   };
 
   const clearCart = () => {
     setItems([]);
     if (!user) localStorage.removeItem('cart');
-    // Note: server cart clearing is usually handled by order placement
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = items.reduce((sum, item) => sum + (item.product?.price || 0) * item.quantity, 0);
 
+  const value = useMemo(() => ({
+    items,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    totalItems,
+    cartTotal,
+    pendingItems,
+    isInitialized
+  }), [items, totalItems, cartTotal, pendingItems, user, isInitialized]);
+
   return (
-    <CartContext.Provider value={{ items, addToCart, updateQuantity, removeFromCart, clearCart, totalItems, cartTotal }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

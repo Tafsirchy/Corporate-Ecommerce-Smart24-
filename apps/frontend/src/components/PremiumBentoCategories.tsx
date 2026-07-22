@@ -63,7 +63,7 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
 
 export const PremiumBentoCategories = () => {
   return (
-    <section className="py-8 md:py-12 bg-gray-50">
+    <section id="categories" className="py-8 md:py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         
         {/* Header Section */}

@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
-import { Star, ShoppingCart, MapPin, Check } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
+import { Star, ShoppingCart, MapPin, Check, Heart, Loader2 } from 'lucide-react';
 
 export interface Product {
   id: string;
@@ -75,7 +76,8 @@ export const generateMockData = (id: string) => {
 };
 
 export function ProductCard({ product, viewMode = 'grid' }: { product: Product, viewMode?: 'grid' | 'list' }) {
-  const { addToCart } = useCart();
+  const { addToCart, pendingItems: cartPending } = useCart();
+  const { toggleWishlist, isInWishlist, pendingItems: wishlistPending } = useWishlist();
   
   // Generate mock data for the UI since the real DB might not have these yet
   const mock = generateMockData(product.id);
@@ -88,6 +90,10 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
     ? Math.round(((product.price - product.discountPrice!) / product.price) * 100) 
     : mock.discount;
   const isDiscounted = hasRealDiscount || mock.discount > 0;
+  
+  const isAddingToCart = cartPending[product.id];
+  const isTogglingWishlist = wishlistPending[product.id];
+  const inWishlist = isInWishlist(product.id);
 
   return (
     <div className={`group relative flex bg-white rounded-xl border border-gray-100 hover:border-primary-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.06)] transition-all duration-300 overflow-hidden cursor-pointer h-full ${viewMode === 'list' ? 'flex-row items-stretch' : 'flex-col'}`}>
@@ -106,6 +112,23 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
             <Check size={8} strokeWidth={3} /> Choice
           </div>
         )}
+        
+        {/* Wishlist Button overlay on image */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            if (!isTogglingWishlist) toggleWishlist(product);
+          }}
+          disabled={isTogglingWishlist}
+          aria-label="Add to wishlist"
+          className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/80 hover:bg-white text-gray-400 hover:text-rose-500 shadow-sm backdrop-blur-sm transition-all z-10"
+        >
+          {isTogglingWishlist ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Heart size={14} className={inWishlist ? "fill-rose-500 text-rose-500" : ""} />
+          )}
+        </button>
       </Link>
       
       {/* Product Details */}
@@ -161,12 +184,13 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                addToCart(product);
+                if (!isAddingToCart) addToCart(product);
               }}
-              className="w-8 h-8 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-all duration-300 shadow-sm shrink-0"
+              disabled={isAddingToCart}
+              className={`w-8 h-8 rounded-full ${isAddingToCart ? 'bg-primary-200 cursor-not-allowed text-primary-400 hover:text-primary-400' : 'bg-primary-50 hover:bg-primary-600 hover:text-white'} text-primary-600 flex items-center justify-center transition-all duration-300 shadow-sm shrink-0`}
               aria-label="Add to cart"
             >
-              <ShoppingCart size={14} strokeWidth={2.5} />
+              {isAddingToCart ? <Loader2 size={14} className="animate-spin" strokeWidth={2.5} /> : <ShoppingCart size={14} strokeWidth={2.5} />}
             </button>
           </div>
 

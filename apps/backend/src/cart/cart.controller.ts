@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, UseGuards, Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { UpdateCartItemDto, MergeCartDto } from './dto/cart-item.dto';
 
 @ApiTags('Cart')
 @ApiBearerAuth()
@@ -18,9 +19,10 @@ export class CartController {
 
   @Post('items')
   @ApiOperation({ summary: 'Add or update item in cart' })
+  @UsePipes(new ValidationPipe({ transform: true }))
   updateItem(
     @Req() req: any,
-    @Body() body: { productId: string; quantity: number }
+    @Body() body: UpdateCartItemDto
   ) {
     return this.cartService.updateItem(req.user.id, body.productId, body.quantity);
   }
@@ -33,9 +35,10 @@ export class CartController {
 
   @Post('merge')
   @ApiOperation({ summary: 'Merge local cart with server cart on login' })
+  @UsePipes(new ValidationPipe({ transform: true }))
   mergeCart(
     @Req() req: any,
-    @Body() body: { items: { productId: string; quantity: number }[] }
+    @Body() body: MergeCartDto
   ) {
     return this.cartService.mergeCart(req.user.id, body.items);
   }

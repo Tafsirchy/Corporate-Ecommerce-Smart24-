@@ -68,32 +68,36 @@ export const FlashSale = () => {
   const pad = (num: number) => num.toString().padStart(2, '0');
 
   return (
-    <section className="bg-white py-8">
+    <section id="flash-sale" className="bg-white py-8">
       <div className="container mx-auto px-4">
         
-        {/* Header Row */}
-        <div className="flex justify-between items-center mb-6 pb-2 border-b border-gray-100">
-          <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-              On Sale Now
-            </h2>
-            <div className="flex items-center gap-1.5 text-rose-500 font-semibold bg-rose-50 px-3 py-1 rounded-full text-sm">
-              <Timer size={16} />
-              <span>Ending in:</span>
-              <span className="flex items-center gap-1">
-                <span className="bg-rose-500 text-white px-1.5 rounded text-xs">{pad(timeLeft.hours)}</span>:
-                <span className="bg-rose-500 text-white px-1.5 rounded text-xs">{pad(timeLeft.minutes)}</span>:
-                <span className="bg-rose-500 text-white px-1.5 rounded text-xs">{pad(timeLeft.seconds)}</span>
-              </span>
+        {/* Header Section */}
+        <div className="mb-6 pb-2 border-b border-gray-100">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+            Flash Sale
+          </h2>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-6">
+              <div className="text-rose-500 font-medium">
+                On Sale Now
+              </div>
+              <div className="flex items-center gap-2 text-gray-700 text-sm">
+                <span>Ending in:</span>
+                <span className="flex items-center gap-1 font-semibold">
+                  <span className="bg-rose-500 text-white px-2 py-0.5 rounded text-sm">{pad(timeLeft.hours)}</span>:
+                  <span className="bg-rose-500 text-white px-2 py-0.5 rounded text-sm">{pad(timeLeft.minutes)}</span>:
+                  <span className="bg-rose-500 text-white px-2 py-0.5 rounded text-sm">{pad(timeLeft.seconds)}</span>
+                </span>
+              </div>
             </div>
+            
+            <Link 
+              href="/flash-sale" 
+              className="text-primary-600 font-medium hover:text-primary-700 border border-primary-600 px-4 py-1.5 rounded-sm hover:bg-primary-50 transition-colors uppercase text-sm"
+            >
+              Shop all product
+            </Link>
           </div>
-          
-          <Link 
-            href="/flash-sale" 
-            className="text-primary-600 font-medium hover:text-primary-700 flex items-center gap-1 border border-primary-100 bg-primary-50 px-4 py-2 rounded-md hover:bg-primary-100 transition-colors"
-          >
-            Shop all product <ArrowRight size={16} />
-          </Link>
         </div>
         
         {/* Products Grid (Exactly 6 items in one row on large screens) */}
