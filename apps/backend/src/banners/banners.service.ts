@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { BannerType } from '@prisma/client';
 
 @Injectable()
 export class BannersService {
@@ -13,9 +14,17 @@ export class BannersService {
     });
   }
 
-  async findAll(activeOnly = false) {
+  async findAll(activeOnly = false, type?: BannerType) {
+    const where: any = {};
+    if (activeOnly) {
+      where.isActive = true;
+    }
+    if (type) {
+      where.type = type;
+    }
+
     return this.prisma.banner.findMany({
-      where: activeOnly ? { isActive: true } : undefined,
+      where,
       orderBy: { order: 'asc' },
     });
   }

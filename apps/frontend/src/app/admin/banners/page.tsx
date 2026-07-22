@@ -9,6 +9,7 @@ export default function AdminBanners() {
   const [title, setTitle] = useState('');
   const [targetUrl, setTargetUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [type, setType] = useState('MAIN_CAROUSEL');
   
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -60,6 +61,7 @@ export default function AdminBanners() {
         imageUrl,
         targetUrl: targetUrl || undefined,
         isActive: true,
+        type,
         order: banners.length
       });
       toast.success('Banner created');
@@ -68,6 +70,7 @@ export default function AdminBanners() {
       setTitle('');
       setTargetUrl('');
       setImageUrl('');
+      setType('MAIN_CAROUSEL');
       
       fetchBanners();
     } catch (error: any) {
@@ -124,6 +127,17 @@ export default function AdminBanners() {
           </div>
 
           <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Banner Type</label>
+            <select 
+              value={type} onChange={e => setType(e.target.value)}
+              className="w-full px-4 py-2 border rounded focus:ring-primary-600 focus:border-primary-600"
+            >
+              <option value="MAIN_CAROUSEL">Main Carousel</option>
+              <option value="SPECIAL_OFFER">Special Offer (Before Corporate Collections)</option>
+            </select>
+          </div>
+
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Upload Banner Image (Landscape Recommended)</label>
             <div className="flex items-center gap-4">
               <input 
@@ -156,6 +170,7 @@ export default function AdminBanners() {
             <tr>
               <th className="p-4 font-medium text-gray-600">Image</th>
               <th className="p-4 font-medium text-gray-600">Title</th>
+              <th className="p-4 font-medium text-gray-600">Type</th>
               <th className="p-4 font-medium text-gray-600">Status</th>
               <th className="p-4 font-medium text-gray-600 text-right">Actions</th>
             </tr>
@@ -163,7 +178,7 @@ export default function AdminBanners() {
           <tbody className="divide-y divide-gray-100">
             {banners.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-8 text-center text-gray-500">No banners found</td>
+                <td colSpan={5} className="p-8 text-center text-gray-500">No banners found</td>
               </tr>
             ) : (
               banners.map(banner => (
@@ -174,6 +189,11 @@ export default function AdminBanners() {
                   <td className="p-4">
                     <div className="font-medium text-gray-900">{banner.title}</div>
                     {banner.targetUrl && <div className="text-sm text-gray-500">{banner.targetUrl}</div>}
+                  </td>
+                  <td className="p-4">
+                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded">
+                      {banner.type === 'SPECIAL_OFFER' ? 'Special Offer' : 'Main Carousel'}
+                    </span>
                   </td>
                   <td className="p-4">
                     <button 

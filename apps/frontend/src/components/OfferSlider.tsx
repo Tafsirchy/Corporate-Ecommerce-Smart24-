@@ -19,7 +19,7 @@ export const OfferSlider = () => {
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const res = await apiClient.get('/banners?activeOnly=true');
+        const res = await apiClient.get('/banners?activeOnly=true&type=MAIN_CAROUSEL');
         setBanners(res.data);
       } catch (error) {
         console.error('Failed to fetch banners:', error);

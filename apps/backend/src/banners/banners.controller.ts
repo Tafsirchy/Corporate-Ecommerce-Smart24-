@@ -5,7 +5,7 @@ import { UpdateBannerDto } from './dto/update-banner.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role, BannerType } from '@prisma/client';
 
 @Controller('banners')
 export class BannersController {
@@ -19,8 +19,11 @@ export class BannersController {
   }
 
   @Get()
-  findAll(@Query('activeOnly') activeOnly?: string) {
-    return this.bannersService.findAll(activeOnly === 'true');
+  findAll(
+    @Query('activeOnly') activeOnly?: string,
+    @Query('type') type?: BannerType
+  ) {
+    return this.bannersService.findAll(activeOnly === 'true', type);
   }
 
   @Get(':id')

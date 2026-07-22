@@ -1,4 +1,5 @@
-import { IsString, IsOptional, IsBoolean, IsInt, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsInt, IsUrl, IsEnum } from 'class-validator';
+import { BannerType } from '@prisma/client';
 
 export class CreateBannerDto {
   @IsString()
@@ -18,4 +19,8 @@ export class CreateBannerDto {
   @IsOptional()
   @IsInt()
   order?: number;
+
+  @IsOptional()
+  @IsEnum(BannerType)
+  type?: BannerType;
 }
