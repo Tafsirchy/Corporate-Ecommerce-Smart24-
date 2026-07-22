@@ -2,11 +2,15 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from '../repositories/product.repository.service';
+import { PrismaService } from '../prisma/prisma.service';
 import slugify from 'slugify';
 
 @Injectable()
 export class ProductsService {
-  constructor(private productRepository: ProductRepository) {}
+  constructor(
+    private productRepository: ProductRepository,
+    private prisma: PrismaService
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const slug = slugify(createProductDto.name, { lower: true, strict: true });
@@ -59,6 +63,90 @@ export class ProductsService {
     const [data, total] = await Promise.all([
       this.productRepository.findAll({ where, skip, take: limit, orderBy }),
       this.productRepository.count(where)
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+
+  async search(query: string, pageStr?: string, limitStr?: string) {
+    const page = pageStr ? parseInt(pageStr, 10) : 1;
+    const limit = limitStr ? parseInt(limitStr, 10) : 10;
+    const skip = (page - 1) * limit;
+
+    // Tokenize query into separate words
+    const tokens = query.trim().split(/\s+/).filter(t => t.length > 0);
+
+    if (tokens.length === 0) {
+      return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
+    }
+
+    // 1. Resolve Category IDs for EACH token
+    const tokenCategoryMap = new Map<string, string[]>();
+
+    for (const token of tokens) {
+      const matchingCategories = await this.prisma.category.findMany({
+        where: { name: { contains: token, mode: 'insensitive' as any } },
+        select: { id: true }
+      });
+      
+      let allCategoryIds = matchingCategories.map(c => c.id);
+      
+      if (allCategoryIds.length > 0) {
+        const subCategories = await this.prisma.category.findMany({
+          where: { parentId: { in: allCategoryIds } },
+          select: { id: true }
+        });
+        const subCategoryIds = subCategories.map(c => c.id);
+        allCategoryIds = [...allCategoryIds, ...subCategoryIds];
+        
+        if (subCategoryIds.length > 0) {
+          const subSubCategories = await this.prisma.category.findMany({
+            where: { parentId: { in: subCategoryIds } },
+            select: { id: true }
+          });
+          allCategoryIds = [...allCategoryIds, ...subSubCategories.map(c => c.id)];
+        }
+      }
+      
+      tokenCategoryMap.set(token, allCategoryIds);
+    }
+
+    // 2. Build AND conditions for multi-token matching
+    const andConditions = tokens.map(token => {
+      const catIds = tokenCategoryMap.get(token) || [];
+      return {
+        OR: [
+          { name: { contains: token, mode: 'insensitive' as any } },
+          { description: { contains: token, mode: 'insensitive' as any } },
+          { color: { contains: token, mode: 'insensitive' as any } },
+          { warrantyType: { contains: token, mode: 'insensitive' as any } },
+          { caseMaterial: { contains: token, mode: 'insensitive' as any } },
+          { brand: { name: { contains: token, mode: 'insensitive' as any } } },
+          ...(catIds.length > 0 ? [{ categoryId: { in: catIds } }] : [])
+        ]
+      };
+    });
+
+    const where = {
+      AND: andConditions
+    };
+
+    const [data, total] = await Promise.all([
+      this.productRepository.findAll({ 
+        where, 
+        skip, 
+        take: limit, 
+        orderBy: { createdAt: 'desc' }
+      }),
+      this.productRepository.count({ where })
     ]);
 
     return {

@@ -33,6 +33,19 @@ export class ProductsController {
     return this.productsService.findAll(page, limit, sort, isFlashSale);
   }
 
+  @Get('search')
+  @ApiOperation({ summary: 'Search products by title, description, or category' })
+  search(
+    @Query('q') query: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string
+  ) {
+    if (!query || query.trim().length === 0) {
+      return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 0 } };
+    }
+    return this.productsService.search(query.trim(), page, limit);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by ID' })
   findOne(@Param('id') id: string) {
