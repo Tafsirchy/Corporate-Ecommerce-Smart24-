@@ -145,6 +145,14 @@ async function main() {
     });
   }
 
+  const validImages = [
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600&h=600',
+    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600&h=600',
+    'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=600&h=600',
+    'https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&q=80&w=600&h=600',
+    'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&q=80&w=600&h=600'
+  ];
+
   const productData = products.map((p, i) => ({
     name: p.name,
     slug: slugify(p.name + '-' + Math.random().toString(36).substring(7), { lower: true, strict: true }),
@@ -155,7 +163,7 @@ async function main() {
     stock: Math.floor(Math.random() * 100) + 10,
     categoryId: p.categoryId,
     brandId: p.brandId,
-    images: [`https://placehold.co/600x600/F3F4F6/4B5563?text=${encodeURIComponent(p.name)}`]
+    images: [validImages[i % validImages.length]]
   }));
 
   await prisma.product.createMany({ data: productData });
@@ -167,7 +175,7 @@ async function main() {
     data: [
       {
         title: 'Corporate Furniture Sale',
-        imageUrl: 'https://placehold.co/1200x400/2563EB/FFFFFF?text=Corporate+Furniture+Sale+-+Up+to+40%+Off',
+        imageUrl: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=1200&h=400',
         targetUrl: '/shop',
         type: 'MAIN_CAROUSEL',
         isActive: true,
@@ -175,7 +183,7 @@ async function main() {
       },
       {
         title: 'New Office Tech Arrivals',
-        imageUrl: 'https://placehold.co/1200x400/4338CA/FFFFFF?text=New+Tech+Arrivals+-+Equip+Your+Team',
+        imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200&h=400',
         targetUrl: '/shop',
         type: 'MAIN_CAROUSEL',
         isActive: true,
@@ -183,7 +191,7 @@ async function main() {
       },
       {
         title: 'Special Offer Banner',
-        imageUrl: 'https://placehold.co/1200x200/F59E0B/FFFFFF?text=Special+Corporate+Offer+-+Apply+Now',
+        imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200&h=200',
         targetUrl: '/contact',
         type: 'SPECIAL_OFFER',
         isActive: true,
