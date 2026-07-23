@@ -8,7 +8,7 @@ export default function AboutPage() {
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-primary-800 mix-blend-multiply" aria-hidden="true" />
         </div>
-        <div className="relative mx-auto max-w-7xl py-24 px-4 sm:py-32 sm:px-6 lg:px-8 text-center">
+        <div className="relative container mx-auto py-24 px-4 sm:py-32 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">About Smart24</h1>
           <p className="mx-auto mt-6 max-w-3xl text-xl text-primary-100">
             Transforming corporate procurement in Bangladesh through technology, transparency, and reliable supply chains.
@@ -18,7 +18,7 @@ export default function AboutPage() {
 
       {/* Content */}
       <div className="relative -mt-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="container mx-auto px-4 mb-24">
           <div className="rounded-2xl bg-white shadow-xl px-6 py-12 sm:px-12 lg:px-16 text-gray-700">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg leading-8 mb-8">

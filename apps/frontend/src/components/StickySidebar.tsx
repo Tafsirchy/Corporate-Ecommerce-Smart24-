@@ -61,11 +61,11 @@ export default function StickySidebar() {
         <LayoutGrid size={22} />
       </Link>
 
-      {/* Just For You (Profile Icon) */}
+      {/* Account / Profile Icon */}
       <Link 
-        href="/#just-for-you"
+        href="/account"
         className="p-3 text-gray-500 hover:text-primary-600 hover:bg-primary-50 flex flex-col items-center justify-center transition-colors"
-        title="Just For You"
+        title="Account"
       >
         <User size={22} />
       </Link>
