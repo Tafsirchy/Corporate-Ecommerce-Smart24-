@@ -138,11 +138,19 @@ export default function ProfilePage() {
               {/* Row 2 */}
               <div>
                 <p className="text-[13px] text-gray-500 mb-2">Birthday</p>
-                <p className="text-[14px] text-gray-400">Please enter your birthday</p>
+                {user.birthday ? (
+                  <p className="text-[14px] text-gray-800">{user.birthday}</p>
+                ) : (
+                  <p className="text-[14px] text-gray-400">Please enter your birthday</p>
+                )}
               </div>
               <div>
                 <p className="text-[13px] text-gray-500 mb-2">Gender</p>
-                <p className="text-[14px] text-gray-400">Please enter your gender</p>
+                {user.gender ? (
+                  <p className="text-[14px] text-gray-800">{user.gender}</p>
+                ) : (
+                  <p className="text-[14px] text-gray-400">Please enter your gender</p>
+                )}
               </div>
               <div className="hidden md:block"></div>
             </div>

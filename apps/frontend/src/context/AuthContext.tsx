@@ -31,6 +31,7 @@ interface AuthContextType {
   verify2faLogin: (data: any) => Promise<any>;
   signup: (data: any) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: any) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,16 +47,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedToken) {
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
       setToken(storedToken);
-      try {
-        const payloadStr = atob(storedToken.split('.')[1]);
-        const payload = JSON.parse(payloadStr);
-        setUser({ id: payload.sub, email: payload.email, role: payload.role, phone: payload.phone }); 
-      } catch (e) {
-        // Fallback if parsing fails
-        setUser({ email: 'loaded@example.com' });
-      }
+      
+      apiClient.get('/users/profile')
+        .then(res => {
+          setUser(res.data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Failed to fetch user profile", err);
+          // Fallback to parsing token if profile fetch fails
+          try {
+            const payloadStr = atob(storedToken.split('.')[1]);
+            const payload = JSON.parse(payloadStr);
+            setUser({ id: payload.sub, email: payload.email, role: payload.role, phone: payload.phone }); 
+          } catch (e) {
+            setUser({ email: 'loaded@example.com' });
+          }
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = async (data: any) => {
@@ -129,8 +141,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateProfile = async (data: any) => {
+    try {
+      const res = await apiClient.patch('/users/profile', data);
+      setUser(res.data);
+      toast.success('Profile updated successfully!');
+      return true;
+    } catch (e: any) {
+      const msg = e.response?.data?.message;
+      const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Failed to update profile');
+      toast.error(errorText);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
