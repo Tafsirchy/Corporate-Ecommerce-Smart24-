@@ -19,6 +19,8 @@ import { BannersModule } from './banners/banners.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 
+import { AddressesModule } from './addresses/addresses.module';
+
 @Module({
   imports: [
     PrismaModule,
@@ -38,6 +40,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     BannersModule,
     ReviewsModule,
     WishlistModule,
+    AddressesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
