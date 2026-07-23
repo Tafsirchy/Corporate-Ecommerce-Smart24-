@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function AdminSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -23,7 +25,12 @@ export default function AdminSubscriptions() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Manage Subscriptions</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Manage Subscriptions</h1>
+        <Link href="/admin/subscriptions/plans">
+          <Button variant="outline">Manage Fixed Plans</Button>
+        </Link>
+      </div>
       
       <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="w-full text-left border-collapse">

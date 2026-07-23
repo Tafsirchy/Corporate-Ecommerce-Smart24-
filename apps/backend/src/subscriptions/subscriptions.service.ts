@@ -10,7 +10,18 @@ export class SubscriptionsService {
   ) {}
 
   async createPlan(data: any) {
-    return this.subscriptionRepo.createPlan(data);
+    const { name, description, price, items } = data;
+    const planItems = items ? items.map((item: any) => ({
+      product: { connect: { id: item.productId } },
+      quantity: item.quantity
+    })) : [];
+
+    return this.subscriptionRepo.createPlan({
+      name,
+      description,
+      price,
+      items: { create: planItems }
+    });
   }
 
   async getAllPlans() {
@@ -50,6 +61,38 @@ export class SubscriptionsService {
       user: { connect: { id: userId } },
       items: { create: itemsData },
       totalAmount,
+      deliveryAddress: data.deliveryAddress,
+      contactNumber: data.contactNumber,
+      billingDay: data.billingDay,
+      nextDeliveryDate: nextDelivery,
+      paymentMethod: data.paymentMethod || 'MANUAL',
+      status: 'ACTIVE'
+    });
+  }
+
+  async createFixedSubscription(userId: string, data: any) {
+    const plan = await this.subscriptionRepo.findPlanById(data.planId);
+    if (!plan) throw new NotFoundException('Subscription Plan not found');
+
+    const nextDelivery = new Date();
+    nextDelivery.setDate(data.billingDay);
+    if (nextDelivery < new Date()) {
+      nextDelivery.setMonth(nextDelivery.getMonth() + 1);
+    }
+
+    // Inherit items from plan
+    // But Subscription has its own items, so we map plan items to subscription items
+    // Since SubscriptionPlanItem is different from SubscriptionItem, we create them
+    const itemsData = (plan as any).items.map((item: any) => ({
+      productId: item.productId,
+      quantity: item.quantity
+    }));
+
+    return this.subscriptionRepo.createSubscription({
+      user: { connect: { id: userId } },
+      plan: { connect: { id: plan.id } },
+      items: { create: itemsData },
+      totalAmount: plan.price,
       deliveryAddress: data.deliveryAddress,
       contactNumber: data.contactNumber,
       billingDay: data.billingDay,

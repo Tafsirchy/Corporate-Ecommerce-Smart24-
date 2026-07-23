@@ -11,7 +11,16 @@ export class SubscriptionRepository {
   }
 
   async findAllPlans(): Promise<SubscriptionPlan[]> {
-    return this.prisma.subscriptionPlan.findMany();
+    return this.prisma.subscriptionPlan.findMany({
+      include: { items: { include: { product: true } } }
+    });
+  }
+
+  async findPlanById(id: string): Promise<SubscriptionPlan | null> {
+    return this.prisma.subscriptionPlan.findUnique({
+      where: { id },
+      include: { items: { include: { product: true } } }
+    });
   }
 
   async createSubscription(data: Prisma.SubscriptionCreateInput): Promise<Subscription> {

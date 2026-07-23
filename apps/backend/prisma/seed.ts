@@ -266,6 +266,63 @@ async function main() {
   });
   console.log('FAQs created.');
 
+  // 8. Subscription Plans
+  await prisma.subscriptionPlan.deleteMany({});
+  
+  const savedProducts = await prisma.product.findMany({ take: 10 });
+
+  if (savedProducts.length >= 6) {
+    // Create Basic Office Supplies Plan
+    await prisma.subscriptionPlan.create({
+      data: {
+        name: 'Basic Office Supplies',
+        description: 'A monthly refill of essential office items like paper, pens, and notepads.',
+        price: 5000,
+        isActive: true,
+        items: {
+          create: [
+            { productId: savedProducts[0].id, quantity: 2 },
+            { productId: savedProducts[1].id, quantity: 1 }
+          ]
+        }
+      }
+    });
+
+    // Create Premium Pantry Plan
+    await prisma.subscriptionPlan.create({
+      data: {
+        name: 'Premium Pantry Box',
+        description: 'Keep your team energized with a monthly supply of premium coffee, tea, and snacks.',
+        price: 12000,
+        isActive: true,
+        items: {
+          create: [
+            { productId: savedProducts[2].id, quantity: 5 },
+            { productId: savedProducts[3].id, quantity: 3 }
+          ]
+        }
+      }
+    });
+
+    // Create Executive Box
+    await prisma.subscriptionPlan.create({
+      data: {
+        name: 'Executive Tech Refresh',
+        description: 'Quarterly/Monthly tech accessories and premium lifestyle items for executives.',
+        price: 25000,
+        isActive: true,
+        items: {
+          create: [
+            { productId: savedProducts[4].id, quantity: 1 },
+            { productId: savedProducts[5].id, quantity: 1 }
+          ]
+        }
+      }
+    });
+  }
+
+  console.log('Subscription Plans created.');
+
   console.log('Seeding completed successfully!');
 }
 

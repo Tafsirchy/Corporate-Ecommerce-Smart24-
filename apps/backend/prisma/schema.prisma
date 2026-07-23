@@ -127,7 +127,8 @@ model Product {
   cartItems         CartItem[]
   wishlistItems     WishlistItem[]
   orderItems        OrderItem[]
-  subscriptionItems SubscriptionItem[]
+  subscriptionItems SubscriptionPlanItem[]
+  customSubscriptionItems SubscriptionItem[]
   quotations        Quotation[]
   reviews           Review[]
 }
@@ -263,9 +264,25 @@ model SubscriptionPlan {
   isActive    Boolean  @default(true)
   
   subscriptions Subscription[]
+  items       SubscriptionPlanItem[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model SubscriptionPlanItem {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  
+  planId          String           @db.ObjectId
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  
+  productId       String           @db.ObjectId
+  product         Product          @relation(fields: [productId], references: [id])
+  
+  quantity        Int
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 enum SubscriptionStatus {

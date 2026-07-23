@@ -29,6 +29,11 @@ export class SubscriptionsController {
     return this.subscriptionsService.createCustomSubscription(req.user.userId, body);
   }
 
+  @Post('fixed')
+  createFixedSubscription(@Req() req: any, @Body() body: any) {
+    return this.subscriptionsService.createFixedSubscription(req.user.userId, body);
+  }
+
   @Get('my-subscriptions')
   getMySubscriptions(@Req() req: any) {
     return this.subscriptionsService.getUserSubscriptions(req.user.userId);

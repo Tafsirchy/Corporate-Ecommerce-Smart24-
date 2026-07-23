@@ -2,11 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
+import { X } from "lucide-react";
 
 export default function SubscriptionsPage() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [deliveryDay, setDeliveryDay] = useState<number>(5);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { user, token } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -25,8 +39,60 @@ export default function SubscriptionsPage() {
     fetchPlans();
   }, []);
 
+  const handleSubscribeClick = (plan: any) => {
+    if (!user) {
+      toast.error("Please login to subscribe");
+      router.push("/login?redirect=/subscriptions");
+      return;
+    }
+    setSelectedPlan(plan);
+  };
+
+  const handleConfirmSubscription = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPlan) return;
+    
+    if (!deliveryAddress || !contactNumber) {
+      toast.error("Delivery details are required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        planId: selectedPlan.id,
+        billingDay: deliveryDay,
+        deliveryAddress,
+        contactNumber,
+        paymentMethod: 'MANUAL'
+      };
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/fixed`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        toast.success(`Successfully subscribed to ${selectedPlan.name}!`);
+        setSelectedPlan(null);
+        router.push("/my-account/subscriptions");
+      } else {
+        const err = await res.json();
+        toast.error(err.message || "Failed to create subscription");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto p-6 max-w-5xl mt-10">
+    <div className="container mx-auto p-6 max-w-5xl mt-10 relative">
       <div className="flex flex-col md:flex-row items-center justify-between bg-primary/10 p-8 rounded-lg mb-10">
         <div>
           <h1 className="text-4xl font-bold mb-4">Corporate Subscriptions</h1>
@@ -47,15 +113,64 @@ export default function SubscriptionsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan: any) => (
-            <div key={plan.id} className="border p-6 rounded-lg shadow-sm hover:shadow-md transition">
+            <div key={plan.id} className="border p-6 rounded-lg shadow-sm hover:shadow-md transition bg-white flex flex-col">
               <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
-              <p className="text-muted-foreground mb-4 h-12">{plan.description}</p>
+              <p className="text-muted-foreground mb-4 flex-grow">{plan.description}</p>
+              
+              {plan.items && plan.items.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm font-semibold mb-1">Includes:</p>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    {plan.items.slice(0, 3).map((item: any) => (
+                      <li key={item.id}>• {item.product.name} (x{item.quantity})</li>
+                    ))}
+                    {plan.items.length > 3 && <li>• ...and {plan.items.length - 3} more</li>}
+                  </ul>
+                </div>
+              )}
+
               <p className="text-3xl font-bold mb-6">৳{plan.price} <span className="text-sm font-normal text-muted-foreground">/ month</span></p>
-              <Button className="w-full" variant="outline" onClick={() => alert('Fixed plan subscription coming soon! Please use Custom Builder for now.')}>
+              <Button className="w-full mt-auto" variant="outline" onClick={() => handleSubscribeClick(plan)}>
                 Subscribe to {plan.name}
               </Button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Subscription Modal */}
+      {selectedPlan && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 relative">
+            <button 
+              onClick={() => setSelectedPlan(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <h3 className="text-2xl font-bold mb-2">Subscribe to {selectedPlan.name}</h3>
+            <p className="text-gray-500 mb-6">Total: ৳{selectedPlan.price} / month</p>
+
+            <form onSubmit={handleConfirmSubscription} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Delivery Day (Every Month)</label>
+                <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(parseInt(e.target.value))} required />
+                <p className="text-xs text-gray-500 mt-1">Select a date between 1 and 28.</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Delivery Address</label>
+                <Input value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="e.g. 123 Corporate Tower, Gulshan" required />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Contact Number</label>
+                <Input value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} placeholder="e.g. 01700000000" required />
+              </div>
+              <Button type="submit" className="w-full mt-4" disabled={isSubmitting}>
+                {isSubmitting ? "Processing..." : "Confirm Subscription"}
+              </Button>
+            </form>
+          </div>
         </div>
       )}
     </div>
