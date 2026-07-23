@@ -43,6 +43,7 @@ model User {
   orders             Order[]
   subscriptions      Subscription[]
   quotations         Quotation[]
+  followedBrands     FollowedBrand[]
   reviews            Review[]
   addresses          Address[]
   savedPaymentMethods SavedPaymentMethod[]
@@ -69,8 +70,23 @@ model Brand {
   logoUrl     String?
   description String?
   products    Product[]
+  followers   FollowedBrand[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model FollowedBrand {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  brandId   String   @db.ObjectId
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, brandId])
 }
 
 model Product {
