@@ -134,9 +134,16 @@ function TrackOrderContent() {
               <h2 className="font-bold text-xl">Order #{order.id.substring(0, 8).toUpperCase()}</h2>
               <p className="text-sm text-gray-500 mt-1">Placed on {new Date(order.createdAt).toLocaleString()}</p>
             </div>
-            <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${getStatusColor(order.status)}`}>
-              {order.status}
-            </span>
+            <div className="flex flex-col items-end">
+              <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${getStatusColor(order.status)}`}>
+                {order.status}
+              </span>
+              {order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && (
+                <p className="text-xs font-semibold text-primary-600 mt-2">
+                  Est. Delivery: {new Date(new Date(order.createdAt).getTime() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                </p>
+              )}
+            </div>
           </div>
           
           <div className="px-6 py-2">

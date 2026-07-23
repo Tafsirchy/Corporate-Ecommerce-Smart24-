@@ -7,6 +7,9 @@ async function main() {
   console.log('Starting corporate data seeding with deep categories...');
 
   // 1. Clear existing generic data
+  await prisma.supportTicket.deleteMany({});
+  await prisma.faq.deleteMany({});
+  await prisma.setting.deleteMany({});
   await prisma.cartItem.deleteMany({});
   await prisma.orderItem.deleteMany({}).catch(() => {});
   await prisma.review.deleteMany({}).catch(() => {});
@@ -200,6 +203,68 @@ async function main() {
     ]
   });
   console.log('Banners created.');
+
+  // 6. Settings
+  await prisma.setting.createMany({
+    data: [
+      { key: 'SUPPORT_EMAIL', value: 'support@smart24.com' },
+      { key: 'CONTACT_PHONE', value: '+880 1234 567890' },
+      { key: 'OFFICE_ADDRESS', value: '123 Business Avenue, Dhaka, Bangladesh' },
+    ]
+  });
+  console.log('Settings (Support details) created.');
+
+  // 7. FAQs
+  await prisma.faq.createMany({
+    data: [
+      {
+        category: 'Orders & Tracking',
+        question: 'How can I track my order?',
+        answer: 'You can track your order by going to the "Track Order" page and entering your Order ID.',
+        isActive: true,
+        order: 1,
+        helpfulCount: 45,
+        notHelpfulCount: 2
+      },
+      {
+        category: 'Orders & Tracking',
+        question: 'What is the estimated delivery time?',
+        answer: 'Typically, orders are delivered within 4 business days after processing.',
+        isActive: true,
+        order: 2,
+        helpfulCount: 30,
+        notHelpfulCount: 5
+      },
+      {
+        category: 'Returns & Refunds',
+        question: 'How do I return a damaged product?',
+        answer: 'Please go to the Contact Us page, select "Order Issue", choose the linked order, and provide a screenshot of the damaged product. Our team will assist you within 24 hours.',
+        isActive: true,
+        order: 3,
+        helpfulCount: 65,
+        notHelpfulCount: 1
+      },
+      {
+        category: 'Returns & Refunds',
+        question: 'How long does a refund take?',
+        answer: 'Refunds usually take 5-7 business days to reflect in your account once the returned item is inspected.',
+        isActive: true,
+        order: 4,
+        helpfulCount: 22,
+        notHelpfulCount: 0
+      },
+      {
+        category: 'General',
+        question: 'Do you offer international shipping?',
+        answer: 'Currently, we only ship within Bangladesh.',
+        isActive: true,
+        order: 5,
+        helpfulCount: 15,
+        notHelpfulCount: 12
+      }
+    ]
+  });
+  console.log('FAQs created.');
 
   console.log('Seeding completed successfully!');
 }

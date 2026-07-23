@@ -21,6 +21,9 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { PaymentOptionsModule } from './payment-options/payment-options.module';
 import { ReturnsModule } from './returns/returns.module';
+import { SupportTicketsModule } from './support-tickets/support-tickets.module';
+import { FaqsModule } from './faqs/faqs.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -44,6 +47,9 @@ import { ReturnsModule } from './returns/returns.module';
     AddressesModule,
     PaymentOptionsModule,
     ReturnsModule,
+    SupportTicketsModule,
+    FaqsModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -61,9 +61,10 @@ export default function RootLayout({
                   <div>
                     <h4 className="font-semibold mb-4 text-primary-50">Support</h4>
                     <ul className="space-y-2 text-sm text-primary-100/70">
-                      <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-                      <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
-                      <li><Link href="/track-order" className="hover:text-white transition-colors">Track Order</Link></li>
+                      <li><Link href="/support" className="hover:text-white transition-colors">Help Center Hub</Link></li>
+                      <li><Link href="/track-order" className="hover:text-white transition-colors">Track an Order</Link></li>
+                      <li><Link href="/support/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                      <li><Link href="/support/faq" className="hover:text-white transition-colors">FAQs</Link></li>
                     </ul>
                   </div>
                   <div>
