@@ -23,6 +23,7 @@ export class OrdersController {
       paymentMethod: PaymentMethod;
       paymentTrxId?: string;
       paymentProofUrl?: string;
+      paymentAccountNumber?: string;
     }
   ) {
     return this.ordersService.createOrderFromCart(req.user.id, body);

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth, apiClient } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -15,9 +15,22 @@ export default function CheckoutPage() {
   const [contactNumber, setContactNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET'>('STRIPE');
   const [paymentTrxId, setPaymentTrxId] = useState('');
+  const [paymentAccountNumber, setPaymentAccountNumber] = useState('');
+  const [selectedSavedPayment, setSelectedSavedPayment] = useState<string>('NEW'); // 'NEW' or saved payment id
+  const [savedPaymentMethods, setSavedPaymentMethods] = useState<any[]>([]);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState('');
   const [orderId, setOrderId] = useState('');
+
+  // Fetch saved payment methods on mount
+  useEffect(() => {
+    if (user) {
+      apiClient.get('/payment-options')
+        .then(res => setSavedPaymentMethods(res.data))
+        .catch(err => console.error('Failed to fetch payment options', err));
+    }
+  }, [user]);
 
   // Delivery charge logic
   const deliveryCharge = 100;
@@ -38,12 +51,18 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await apiClient.post('/orders', {
+      const payload: any = {
         shippingAddress,
         contactNumber,
         paymentMethod,
-        paymentTrxId: paymentMethod !== 'STRIPE' ? paymentTrxId : undefined
-      });
+      };
+
+      if (paymentMethod !== 'STRIPE') {
+        payload.paymentTrxId = paymentTrxId;
+        payload.paymentAccountNumber = paymentAccountNumber;
+      }
+
+      const res = await apiClient.post('/orders', payload);
       
       const { order, clientSecret: secret } = res.data;
       clearCart();
@@ -60,6 +79,92 @@ export default function CheckoutPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const renderManualPaymentFields = (providerName: string, providerEnum: string, instructions: string) => {
+    if (paymentMethod !== providerEnum) return null;
+    
+    const availableOptions = savedPaymentMethods.filter(opt => opt.provider === providerEnum);
+
+    // Auto-select first saved option if available and user just switched to this provider
+    useEffect(() => {
+      if (paymentMethod === providerEnum && availableOptions.length > 0 && selectedSavedPayment === 'NEW') {
+         // Optionally you could auto select, but leaving as NEW is safer
+      }
+    }, [paymentMethod]);
+
+    return (
+      <div className="pl-12 pr-4 pb-4">
+        <div className="p-4 bg-white border rounded-md shadow-sm border-gray-200">
+          <p className="text-sm font-medium mb-4">{instructions}</p>
+          
+          <div className="space-y-4">
+            {availableOptions.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Select your account</label>
+                <div className="space-y-2">
+                  {availableOptions.map(opt => (
+                    <label key={opt.id} className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === opt.id ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
+                      <input 
+                        type="radio" 
+                        name={`savedPayment_${providerEnum}`} 
+                        checked={selectedSavedPayment === opt.id}
+                        onChange={() => {
+                          setSelectedSavedPayment(opt.id);
+                          setPaymentAccountNumber(opt.accountNumber);
+                        }}
+                        className="text-primary-600 focus:ring-primary-500"
+                      />
+                      <span className="font-medium text-gray-800">{opt.accountNumber}</span>
+                    </label>
+                  ))}
+                  <label className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === 'NEW' ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
+                    <input 
+                      type="radio" 
+                      name={`savedPayment_${providerEnum}`} 
+                      checked={selectedSavedPayment === 'NEW'}
+                      onChange={() => {
+                        setSelectedSavedPayment('NEW');
+                        setPaymentAccountNumber('');
+                      }}
+                      className="text-primary-600 focus:ring-primary-500"
+                    />
+                    <span className="font-medium text-gray-800">Use a different {providerName} number</span>
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {(selectedSavedPayment === 'NEW' || availableOptions.length === 0) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Your {providerName} Account Number</label>
+                <input 
+                  type="text" 
+                  required 
+                  placeholder={`Enter your ${providerName} number`}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                  value={paymentAccountNumber}
+                  onChange={(e) => setPaymentAccountNumber(e.target.value)}
+                />
+                <p className="text-xs text-gray-500 mt-1">This will be automatically saved for future checkouts.</p>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Transaction ID (TrxID)</label>
+              <input 
+                type="text" 
+                required 
+                placeholder={`Enter ${providerName} TrxID`}
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                value={paymentTrxId}
+                onChange={(e) => setPaymentTrxId(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (items.length === 0 && !clientSecret) {
@@ -120,7 +225,11 @@ export default function CheckoutPage() {
                     name="paymentMethod" 
                     value="STRIPE"
                     checked={paymentMethod === 'STRIPE'}
-                    onChange={() => setPaymentMethod('STRIPE')}
+                    onChange={() => {
+                      setPaymentMethod('STRIPE');
+                      setPaymentAccountNumber('');
+                      setPaymentTrxId('');
+                    }}
                     className="w-4 h-4 text-black focus:ring-black"
                   />
                   <div>
@@ -135,7 +244,12 @@ export default function CheckoutPage() {
                     name="paymentMethod" 
                     value="BKASH"
                     checked={paymentMethod === 'BKASH'}
-                    onChange={() => setPaymentMethod('BKASH')}
+                    onChange={() => {
+                      setPaymentMethod('BKASH');
+                      setPaymentTrxId('');
+                      setSelectedSavedPayment('NEW');
+                      setPaymentAccountNumber('');
+                    }}
                     className="w-4 h-4 text-pink-600 focus:ring-pink-500"
                   />
                   <div>
@@ -143,21 +257,7 @@ export default function CheckoutPage() {
                     <div className="text-sm text-gray-500">Manual payment via bKash Personal</div>
                   </div>
                 </label>
-                {paymentMethod === 'BKASH' && (
-                  <div className="pl-12 pr-4 pb-4">
-                    <div className="p-4 bg-white border border-pink-200 rounded-md shadow-sm">
-                      <p className="text-sm text-pink-800 font-medium mb-3">Please send <strong>৳{grandTotal}</strong> to our bKash Personal Number: <strong>01700000000</strong></p>
-                      <input 
-                        type="text" 
-                        required 
-                        placeholder="Enter bKash TrxID" 
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-pink-500 focus:border-pink-500"
-                        value={paymentTrxId}
-                        onChange={(e) => setPaymentTrxId(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
+                {renderManualPaymentFields('bKash', 'BKASH', `Please send ৳${grandTotal} to our bKash Personal Number: 01700000000`)}
 
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'NAGAD' ? 'border-orange-500 bg-orange-50' : 'hover:bg-gray-50'}`}>
                   <input 
@@ -165,7 +265,12 @@ export default function CheckoutPage() {
                     name="paymentMethod" 
                     value="NAGAD"
                     checked={paymentMethod === 'NAGAD'}
-                    onChange={() => setPaymentMethod('NAGAD')}
+                    onChange={() => {
+                      setPaymentMethod('NAGAD');
+                      setPaymentTrxId('');
+                      setSelectedSavedPayment('NEW');
+                      setPaymentAccountNumber('');
+                    }}
                     className="w-4 h-4 text-orange-600 focus:ring-orange-500"
                   />
                   <div>
@@ -173,21 +278,7 @@ export default function CheckoutPage() {
                     <div className="text-sm text-gray-500">Manual payment via Nagad Personal</div>
                   </div>
                 </label>
-                {paymentMethod === 'NAGAD' && (
-                  <div className="pl-12 pr-4 pb-4">
-                    <div className="p-4 bg-white border border-orange-200 rounded-md shadow-sm">
-                      <p className="text-sm text-orange-800 font-medium mb-3">Please send <strong>৳{grandTotal}</strong> to our Nagad Personal Number: <strong>01700000000</strong></p>
-                      <input 
-                        type="text" 
-                        required 
-                        placeholder="Enter Nagad TrxID" 
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-orange-500 focus:border-orange-500"
-                        value={paymentTrxId}
-                        onChange={(e) => setPaymentTrxId(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
+                {renderManualPaymentFields('Nagad', 'NAGAD', `Please send ৳${grandTotal} to our Nagad Personal Number: 01700000000`)}
 
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'ROCKET' ? 'border-purple-500 bg-purple-50' : 'hover:bg-gray-50'}`}>
                   <input 
@@ -195,7 +286,12 @@ export default function CheckoutPage() {
                     name="paymentMethod" 
                     value="ROCKET"
                     checked={paymentMethod === 'ROCKET'}
-                    onChange={() => setPaymentMethod('ROCKET')}
+                    onChange={() => {
+                      setPaymentMethod('ROCKET');
+                      setPaymentTrxId('');
+                      setSelectedSavedPayment('NEW');
+                      setPaymentAccountNumber('');
+                    }}
                     className="w-4 h-4 text-purple-600 focus:ring-purple-500"
                   />
                   <div>
@@ -203,21 +299,7 @@ export default function CheckoutPage() {
                     <div className="text-sm text-gray-500">Manual payment via Rocket Personal</div>
                   </div>
                 </label>
-                {paymentMethod === 'ROCKET' && (
-                  <div className="pl-12 pr-4 pb-4">
-                    <div className="p-4 bg-white border border-purple-200 rounded-md shadow-sm">
-                      <p className="text-sm text-purple-800 font-medium mb-3">Please send <strong>৳{grandTotal}</strong> to our Rocket Personal Number: <strong>01700000000</strong></p>
-                      <input 
-                        type="text" 
-                        required 
-                        placeholder="Enter Rocket TrxID" 
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500"
-                        value={paymentTrxId}
-                        onChange={(e) => setPaymentTrxId(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
+                {renderManualPaymentFields('Rocket', 'ROCKET', `Please send ৳${grandTotal} to our Rocket Personal Number: 01700000000`)}
               </div>
 
               <button 

@@ -9,6 +9,7 @@ import { SubscriptionRepository } from './subscription.repository.service';
 import { QuotationRepository } from './quotation.repository.service';
 import { WishlistRepositoryService } from './wishlist.repository.service';
 import { AddressRepository } from './address.repository.service';
+import { PaymentOptionRepository } from './payment-option.repository.service';
 
 @Global()
 @Module({
@@ -22,7 +23,8 @@ import { AddressRepository } from './address.repository.service';
     SubscriptionRepository,
     QuotationRepository,
     WishlistRepositoryService,
-    AddressRepository
+    AddressRepository,
+    PaymentOptionRepository
   ],
   exports: [
     UserRepository,
@@ -34,7 +36,8 @@ import { AddressRepository } from './address.repository.service';
     SubscriptionRepository,
     QuotationRepository,
     WishlistRepositoryService,
-    AddressRepository
+    AddressRepository,
+    PaymentOptionRepository
   ],
 })
 export class RepositoriesModule {}

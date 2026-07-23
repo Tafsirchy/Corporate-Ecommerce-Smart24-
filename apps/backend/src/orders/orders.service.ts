@@ -6,6 +6,8 @@ import { StripeService } from '../stripe/stripe.service';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
+import { PaymentOptionRepository } from '../repositories/payment-option.repository.service';
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -13,7 +15,8 @@ export class OrdersService {
     private cartRepo: CartRepositoryService,
     private productRepo: ProductRepository,
     private stripeService: StripeService,
-    private prisma: PrismaService
+    private prisma: PrismaService,
+    private paymentOptionRepo: PaymentOptionRepository
   ) {}
 
   async createOrderFromCart(userId: string, data: {
@@ -22,6 +25,7 @@ export class OrdersService {
     paymentMethod: PaymentMethod;
     paymentTrxId?: string;
     paymentProofUrl?: string;
+    paymentAccountNumber?: string;
   }) {
     const cart = await this.cartRepo.getCartByUserId(userId);
     if (!cart || cart.items.length === 0) {
@@ -87,6 +91,20 @@ export class OrdersService {
     if (data.paymentMethod === 'STRIPE') {
       const paymentIntent = await this.stripeService.createPaymentIntent(grandTotal, 'bdt', order.id);
       clientSecret = paymentIntent.client_secret;
+    } else if (data.paymentAccountNumber) {
+      // Auto-save the payment option for non-STRIPE payments if an account number is provided
+      const existing = await this.paymentOptionRepo.findByUserIdAndProviderAndAccountNumber(
+        userId,
+        data.paymentMethod,
+        data.paymentAccountNumber
+      );
+      if (!existing) {
+        await this.paymentOptionRepo.create({
+          provider: data.paymentMethod,
+          accountNumber: data.paymentAccountNumber,
+          user: { connect: { id: userId } }
+        });
+      }
     }
 
     return { order, clientSecret };

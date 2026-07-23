@@ -18,8 +18,8 @@ import { QuotationsModule } from './quotations/quotations.module';
 import { BannersModule } from './banners/banners.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { WishlistModule } from './wishlist/wishlist.module';
-
 import { AddressesModule } from './addresses/addresses.module';
+import { PaymentOptionsModule } from './payment-options/payment-options.module';
 
 @Module({
   imports: [
@@ -41,6 +41,7 @@ import { AddressesModule } from './addresses/addresses.module';
     ReviewsModule,
     WishlistModule,
     AddressesModule,
+    PaymentOptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
