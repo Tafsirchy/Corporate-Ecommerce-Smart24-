@@ -10,6 +10,7 @@ import { QuotationRepository } from './quotation.repository.service';
 import { WishlistRepositoryService } from './wishlist.repository.service';
 import { AddressRepository } from './address.repository.service';
 import { PaymentOptionRepository } from './payment-option.repository.service';
+import { ReturnRepositoryService } from './return.repository.service';
 
 @Global()
 @Module({
@@ -24,7 +25,8 @@ import { PaymentOptionRepository } from './payment-option.repository.service';
     QuotationRepository,
     WishlistRepositoryService,
     AddressRepository,
-    PaymentOptionRepository
+    PaymentOptionRepository,
+    ReturnRepositoryService
   ],
   exports: [
     UserRepository,
@@ -37,7 +39,8 @@ import { PaymentOptionRepository } from './payment-option.repository.service';
     QuotationRepository,
     WishlistRepositoryService,
     AddressRepository,
-    PaymentOptionRepository
+    PaymentOptionRepository,
+    ReturnRepositoryService
   ],
 })
 export class RepositoriesModule { }

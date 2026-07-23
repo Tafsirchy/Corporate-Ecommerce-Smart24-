@@ -182,6 +182,8 @@ export default function ProductDetailPage() {
   const hasFreeShipping = product.services?.includes('free-shipping') || false;
   const hasCOD = product.services?.includes('cod') || true;
   
+  const returnPolicy = (product as any).returnPolicy || '7 Days Return';
+  
   const originalPrice = Math.round(product.price * 1.25);
   const discountPercent = Math.round(((originalPrice - product.price) / originalPrice) * 100);
 
@@ -338,7 +340,7 @@ export default function ProductDetailPage() {
               <div className="flex gap-3 mb-4">
                 <ShieldCheck size={20} className="text-gray-400 shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-800">7 Days Returns</p>
+                  <p className="text-sm text-gray-800">{returnPolicy}</p>
                   <p className="text-xs text-gray-500 mt-0.5">Change of mind is not applicable</p>
                 </div>
               </div>

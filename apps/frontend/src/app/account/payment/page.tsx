@@ -127,7 +127,7 @@ export default function PaymentOptionsPage() {
               </ul>
             </div>
             <div>
-              <Link href="/account"><h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">My Orders</h3></Link>
+              <Link href="/account/orders"><h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">My Orders</h3></Link>
               <ul className="space-y-2 pl-4">
                 <li><Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">My Returns</Link></li>
                 <li><Link href="/account/cancellations" className="text-gray-500 hover:text-primary-600 text-[14px]">My Cancellations</Link></li>

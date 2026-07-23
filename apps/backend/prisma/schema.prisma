@@ -46,6 +46,7 @@ model User {
   reviews            Review[]
   addresses          Address[]
   savedPaymentMethods SavedPaymentMethod[]
+  returnRequests      ReturnRequest[]
 }
 
 model Category {
@@ -93,6 +94,9 @@ model Product {
   location             String   @default("Bangladesh")
   services             String[] 
   sellerName           String   @default("Smart24 Official")
+  
+  returnPolicy         String?  @default("7 Days Return")
+  returnWindowDays     Int?     @default(7)
   
   categoryId  String   @db.ObjectId
   category    Category @relation(fields: [categoryId], references: [id])
@@ -208,6 +212,8 @@ model Order {
   
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  
+  returnRequests  ReturnRequest[]
 }
 
 model OrderItem {
@@ -224,6 +230,8 @@ model OrderItem {
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  
+  returnRequests  ReturnRequest[]
 }
 
 model SubscriptionPlan {
@@ -390,4 +398,31 @@ model SavedPaymentMethod {
   updatedAt      DateTime      @updatedAt
   
   @@unique([userId, provider, accountNumber])
+}
+
+enum ReturnStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
+}
+
+model ReturnRequest {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String        @db.ObjectId
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  orderId         String        @db.ObjectId
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  orderItemId     String?       @db.ObjectId
+  orderItem       OrderItem?    @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
+  
+  reason          String
+  comments        String?
+  status          ReturnStatus  @default(PENDING)
+  refundAmount    Float?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }

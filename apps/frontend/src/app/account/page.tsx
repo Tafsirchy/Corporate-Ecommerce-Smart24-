@@ -96,7 +96,7 @@ export default function AccountPage() {
             </div>
 
             <div>
-              <Link href="/account">
+              <Link href="/account/orders">
                 <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
                   My Orders
                 </h3>
