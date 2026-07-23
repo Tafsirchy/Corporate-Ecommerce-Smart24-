@@ -17,7 +17,7 @@ export class OrdersService {
     private stripeService: StripeService,
     private prisma: PrismaService,
     private paymentOptionRepo: PaymentOptionRepository
-  ) {}
+  ) { }
 
   async createOrderFromCart(userId: string, data: {
     shippingAddress: string;
@@ -40,9 +40,9 @@ export class OrdersService {
       if (item.product.stock < item.quantity) {
         throw new BadRequestException(`Insufficient stock for product ${item.product.name}`);
       }
-      
+
       totalAmount += item.product.price * item.quantity;
-      
+
       orderItems.push({
         productId: item.productId,
         quantity: item.quantity,
@@ -117,11 +117,11 @@ export class OrdersService {
   async getOrderDetails(userId: string, orderId: string, isAdmin: boolean) {
     const order = await this.orderRepo.findOrderById(orderId);
     if (!order) throw new NotFoundException('Order not found');
-    
+
     if (!isAdmin && order.userId !== userId) {
       throw new NotFoundException('Order not found'); // Hide existence
     }
-    
+
     return order;
   }
   // Admin endpoints

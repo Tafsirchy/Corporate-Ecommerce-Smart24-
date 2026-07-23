@@ -40,4 +40,4 @@ import { PaymentOptionRepository } from './payment-option.repository.service';
     PaymentOptionRepository
   ],
 })
-export class RepositoriesModule {}
+export class RepositoriesModule { }

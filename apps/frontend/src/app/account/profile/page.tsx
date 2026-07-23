@@ -65,11 +65,6 @@ export default function ProfilePage() {
                     My Payment Options
                   </Link>
                 </li>
-                <li>
-                  <Link href="/account/wallet" className="text-gray-500 hover:text-primary-600 text-[14px]">
-                    Smart Wallet
-                  </Link>
-                </li>
               </ul>
             </div>
 

@@ -124,7 +124,6 @@ export default function PaymentOptionsPage() {
                 <li><Link href="/account/profile" className="text-gray-500 hover:text-primary-600 text-[14px]">My Profile</Link></li>
                 <li><Link href="/account/address" className="text-gray-500 hover:text-primary-600 text-[14px]">Address Book</Link></li>
                 <li><Link href="/account/payment" className="text-primary-600 font-semibold text-[14px]">My Payment Options</Link></li>
-                <li><Link href="/account/wallet" className="text-gray-500 hover:text-primary-600 text-[14px]">Smart Wallet</Link></li>
               </ul>
             </div>
             <div>

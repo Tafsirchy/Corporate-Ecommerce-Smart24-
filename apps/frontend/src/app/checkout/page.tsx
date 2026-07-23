@@ -18,7 +18,7 @@ export default function CheckoutPage() {
   const [paymentAccountNumber, setPaymentAccountNumber] = useState('');
   const [selectedSavedPayment, setSelectedSavedPayment] = useState<string>('NEW'); // 'NEW' or saved payment id
   const [savedPaymentMethods, setSavedPaymentMethods] = useState<any[]>([]);
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState('');
   const [orderId, setOrderId] = useState('');
@@ -63,7 +63,7 @@ export default function CheckoutPage() {
       }
 
       const res = await apiClient.post('/orders', payload);
-      
+
       const { order, clientSecret: secret } = res.data;
       clearCart();
 
@@ -83,13 +83,13 @@ export default function CheckoutPage() {
 
   const renderManualPaymentFields = (providerName: string, providerEnum: string, instructions: string) => {
     if (paymentMethod !== providerEnum) return null;
-    
+
     const availableOptions = savedPaymentMethods.filter(opt => opt.provider === providerEnum);
 
     // Auto-select first saved option if available and user just switched to this provider
     useEffect(() => {
       if (paymentMethod === providerEnum && availableOptions.length > 0 && selectedSavedPayment === 'NEW') {
-         // Optionally you could auto select, but leaving as NEW is safer
+        // Optionally you could auto select, but leaving as NEW is safer
       }
     }, [paymentMethod]);
 
@@ -97,7 +97,7 @@ export default function CheckoutPage() {
       <div className="pl-12 pr-4 pb-4">
         <div className="p-4 bg-white border rounded-md shadow-sm border-gray-200">
           <p className="text-sm font-medium mb-4">{instructions}</p>
-          
+
           <div className="space-y-4">
             {availableOptions.length > 0 && (
               <div>
@@ -105,9 +105,9 @@ export default function CheckoutPage() {
                 <div className="space-y-2">
                   {availableOptions.map(opt => (
                     <label key={opt.id} className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === opt.id ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
-                      <input 
-                        type="radio" 
-                        name={`savedPayment_${providerEnum}`} 
+                      <input
+                        type="radio"
+                        name={`savedPayment_${providerEnum}`}
                         checked={selectedSavedPayment === opt.id}
                         onChange={() => {
                           setSelectedSavedPayment(opt.id);
@@ -119,9 +119,9 @@ export default function CheckoutPage() {
                     </label>
                   ))}
                   <label className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === 'NEW' ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
-                    <input 
-                      type="radio" 
-                      name={`savedPayment_${providerEnum}`} 
+                    <input
+                      type="radio"
+                      name={`savedPayment_${providerEnum}`}
                       checked={selectedSavedPayment === 'NEW'}
                       onChange={() => {
                         setSelectedSavedPayment('NEW');
@@ -138,9 +138,9 @@ export default function CheckoutPage() {
             {(selectedSavedPayment === 'NEW' || availableOptions.length === 0) && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Your {providerName} Account Number</label>
-                <input 
-                  type="text" 
-                  required 
+                <input
+                  type="text"
+                  required
                   placeholder={`Enter your ${providerName} number`}
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
                   value={paymentAccountNumber}
@@ -152,9 +152,9 @@ export default function CheckoutPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Transaction ID (TrxID)</label>
-              <input 
-                type="text" 
-                required 
+              <input
+                type="text"
+                required
                 placeholder={`Enter ${providerName} TrxID`}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
                 value={paymentTrxId}
@@ -182,21 +182,21 @@ export default function CheckoutPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl flex-1">
       <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-lg shadow h-fit">
           <h2 className="text-xl font-bold mb-4">
             {clientSecret ? 'Complete Payment' : 'Shipping Information'}
           </h2>
-          
+
           {clientSecret ? (
             <StripePaymentWrapper clientSecret={clientSecret} orderId={orderId} />
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   value={contactNumber}
                   onChange={e => setContactNumber(e.target.value)}
@@ -204,10 +204,10 @@ export default function CheckoutPage() {
                   placeholder="e.g. +8801700000000"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Full Shipping Address</label>
-                <textarea 
+                <textarea
                   required
                   rows={3}
                   value={shippingAddress}
@@ -220,9 +220,9 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-bold mt-8 mb-4">Payment Method</h2>
               <div className="space-y-3">
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'STRIPE' ? 'border-black bg-gray-50' : 'hover:bg-gray-50'}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
+                  <input
+                    type="radio"
+                    name="paymentMethod"
                     value="STRIPE"
                     checked={paymentMethod === 'STRIPE'}
                     onChange={() => {
@@ -239,9 +239,9 @@ export default function CheckoutPage() {
                 </label>
 
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'BKASH' ? 'border-pink-500 bg-pink-50' : 'hover:bg-gray-50'}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
+                  <input
+                    type="radio"
+                    name="paymentMethod"
                     value="BKASH"
                     checked={paymentMethod === 'BKASH'}
                     onChange={() => {
@@ -260,9 +260,9 @@ export default function CheckoutPage() {
                 {renderManualPaymentFields('bKash', 'BKASH', `Please send ৳${grandTotal} to our bKash Personal Number: 01700000000`)}
 
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'NAGAD' ? 'border-orange-500 bg-orange-50' : 'hover:bg-gray-50'}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
+                  <input
+                    type="radio"
+                    name="paymentMethod"
                     value="NAGAD"
                     checked={paymentMethod === 'NAGAD'}
                     onChange={() => {
@@ -281,9 +281,9 @@ export default function CheckoutPage() {
                 {renderManualPaymentFields('Nagad', 'NAGAD', `Please send ৳${grandTotal} to our Nagad Personal Number: 01700000000`)}
 
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'ROCKET' ? 'border-purple-500 bg-purple-50' : 'hover:bg-gray-50'}`}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
+                  <input
+                    type="radio"
+                    name="paymentMethod"
                     value="ROCKET"
                     checked={paymentMethod === 'ROCKET'}
                     onChange={() => {
@@ -302,8 +302,8 @@ export default function CheckoutPage() {
                 {renderManualPaymentFields('Rocket', 'ROCKET', `Please send ৳${grandTotal} to our Rocket Personal Number: 01700000000`)}
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSubmitting}
                 className="w-full mt-6 bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
               >
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
-          
+
           <div className="border-t border-gray-200 pt-4 space-y-2">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
