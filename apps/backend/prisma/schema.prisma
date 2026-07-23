@@ -18,6 +18,16 @@ enum Role {
   ADMIN
 }
 
+enum OfferType {
+  AMOUNT_BASED
+  FIXED_PACKAGE
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FLAT
+}
+
 model User {
   id                 String   @id @default(auto()) @map("_id") @db.ObjectId
   email              String   @unique
@@ -266,6 +276,8 @@ model SubscriptionPlan {
   subscriptions Subscription[]
   items       SubscriptionPlanItem[]
   
+  offer       Offer?
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -314,6 +326,9 @@ model Subscription {
   billingDay      Int                // e.g., 5 for 5th of every month
   nextDeliveryDate DateTime
   lastBilledCycle String?            // Idempotency key (e.g., "2026-07")
+  
+  appliedOfferId  String?            @db.ObjectId
+  discountAmount  Float              @default(0)
   
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
@@ -511,4 +526,28 @@ model Setting {
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Offer {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  type            OfferType
+  discountType    DiscountType
+  discountValue   Float
+  
+  // For AMOUNT_BASED
+  minAmount       Float?
+  priority        Int          @default(0)
+  
+  // For FIXED_PACKAGE
+  planId          String?      @unique @db.ObjectId
+  plan            SubscriptionPlan? @relation(fields: [planId], references: [id])
+  
+  isFreeDelivery  Boolean      @default(false)
+  isActive        Boolean      @default(true)
+  startDate       DateTime?
+  endDate         DateTime?
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }

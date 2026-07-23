@@ -134,7 +134,26 @@ export default function SubscriptionsPage() {
                 </div>
               )}
 
-              <p className="text-3xl font-bold mb-6">৳{plan.price} <span className="text-sm font-normal text-muted-foreground">/ month</span></p>
+              {plan.offer && plan.offer.isActive ? (
+                <>
+                  <div className="mb-2">
+                    <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
+                      {plan.offer.discountType === 'PERCENTAGE' 
+                        ? `${plan.offer.discountValue}% OFF` 
+                        : `৳${plan.offer.discountValue} OFF`}
+                    </span>
+                  </div>
+                  <p className="text-xl text-muted-foreground line-through">৳{plan.price}</p>
+                  <p className="text-3xl font-bold mb-6">
+                    ৳{plan.offer.discountType === 'PERCENTAGE' 
+                        ? plan.price - (plan.price * plan.offer.discountValue / 100)
+                        : plan.price - plan.offer.discountValue} 
+                    <span className="text-sm font-normal text-muted-foreground">/ month</span>
+                  </p>
+                </>
+              ) : (
+                <p className="text-3xl font-bold mb-6">৳{plan.price} <span className="text-sm font-normal text-muted-foreground">/ month</span></p>
+              )}
               <Button className="w-full mt-auto" variant="outline" onClick={() => handleSubscribeClick(plan)}>
                 Subscribe to {plan.name}
               </Button>
@@ -155,7 +174,17 @@ export default function SubscriptionsPage() {
             </button>
             
             <h3 className="text-2xl font-bold mb-2">Subscribe to {selectedPlan.name}</h3>
-            <p className="text-gray-500 mb-6">Total: ৳{selectedPlan.price} / month</p>
+            {selectedPlan.offer && selectedPlan.offer.isActive ? (
+              <p className="text-gray-500 mb-6">
+                Total: ৳{
+                  selectedPlan.offer.discountType === 'PERCENTAGE'
+                    ? selectedPlan.price - (selectedPlan.price * selectedPlan.offer.discountValue / 100)
+                    : selectedPlan.price - selectedPlan.offer.discountValue
+                } / month (Discount Applied)
+              </p>
+            ) : (
+              <p className="text-gray-500 mb-6">Total: ৳{selectedPlan.price} / month</p>
+            )}
 
             <form onSubmit={handleConfirmSubscription} className="space-y-4">
               <div>

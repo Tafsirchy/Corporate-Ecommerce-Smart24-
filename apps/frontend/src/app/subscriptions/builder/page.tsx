@@ -13,6 +13,7 @@ export default function CustomPackageBuilder() {
   const [deliveryDay, setDeliveryDay] = useState<number | string>(5);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [activeOffers, setActiveOffers] = useState<any[]>([]);
   const { user, token } = useAuth();
   const router = useRouter();
 
@@ -21,6 +22,11 @@ export default function CustomPackageBuilder() {
       .then(res => res.json())
       .then(data => setProducts(data.data?.data || data.data || data))
       .catch(err => console.error("Error fetching products:", err));
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/active`)
+      .then(res => res.json())
+      .then(data => setActiveOffers(data))
+      .catch(err => console.error("Error fetching offers:", err));
   }, []);
 
   const addItem = (product: any) => {
@@ -37,7 +43,22 @@ export default function CustomPackageBuilder() {
     setSelectedItems(selectedItems.filter(i => i.productId !== productId));
   };
 
-  const totalPrice = selectedItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  const subtotalPrice = selectedItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  
+  const eligibleOffer = activeOffers.find(o => !o.minAmount || subtotalPrice >= o.minAmount);
+  
+  const sortedOffers = [...activeOffers].sort((a, b) => (a.minAmount || 0) - (b.minAmount || 0));
+  const nextOffer = sortedOffers.find(o => o.minAmount && subtotalPrice < o.minAmount);
+
+  let discountAmount = 0;
+  if (eligibleOffer) {
+    if (eligibleOffer.discountType === 'PERCENTAGE') {
+      discountAmount = (subtotalPrice * eligibleOffer.discountValue) / 100;
+    } else {
+      discountAmount = eligibleOffer.discountValue;
+    }
+  }
+  const totalPrice = Math.max(0, subtotalPrice - discountAmount);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,9 +155,33 @@ export default function CustomPackageBuilder() {
                 </div>
               </div>
             ))}
-            <div className="border-t pt-4 flex justify-between font-bold">
-              <span>Total / Month:</span>
-              <span>৳{totalPrice}</span>
+            <div className="border-t pt-4 font-bold">
+              <div className="flex justify-between text-muted-foreground font-normal mb-1">
+                <span>Subtotal:</span>
+                <span>৳{subtotalPrice}</span>
+              </div>
+              {eligibleOffer && (
+                <div className="flex justify-between text-green-600 mb-2">
+                  <span>
+                    Discount ({eligibleOffer.discountType === 'PERCENTAGE' ? `${eligibleOffer.discountValue}%` : `৳${eligibleOffer.discountValue}`}):
+                  </span>
+                  <span>-৳{discountAmount}</span>
+                </div>
+              )}
+              {eligibleOffer?.isFreeDelivery && (
+                <div className="flex justify-between text-green-600 text-sm mb-2 font-normal">
+                  <span>+ Free Delivery</span>
+                </div>
+              )}
+              {nextOffer && (
+                <div className="text-sm text-blue-600 font-normal mb-2 bg-blue-50 p-2 rounded">
+                  Add ৳{nextOffer.minAmount - subtotalPrice} more to get {nextOffer.discountType === 'PERCENTAGE' ? `${nextOffer.discountValue}%` : `৳${nextOffer.discountValue}`} OFF{nextOffer.isFreeDelivery && ' + Free Delivery'}!
+                </div>
+              )}
+              <div className="flex justify-between text-lg mt-2">
+                <span>Total / Month:</span>
+                <span>৳{totalPrice}</span>
+              </div>
             </div>
           </div>
         )}

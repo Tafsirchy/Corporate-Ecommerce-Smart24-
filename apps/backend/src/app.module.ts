@@ -24,6 +24,7 @@ import { ReturnsModule } from './returns/returns.module';
 import { SupportTicketsModule } from './support-tickets/support-tickets.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { SettingsModule } from './settings/settings.module';
+import { OffersModule } from './offers/offers.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { SettingsModule } from './settings/settings.module';
     SupportTicketsModule,
     FaqsModule,
     SettingsModule,
+    OffersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

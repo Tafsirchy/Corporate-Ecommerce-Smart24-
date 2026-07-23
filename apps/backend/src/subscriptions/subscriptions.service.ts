@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { SubscriptionRepository } from '../repositories/subscription.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
+import { OfferRepository } from '../repositories/offer.repository.service';
 
 @Injectable()
 export class SubscriptionsService {
   constructor(
     private readonly subscriptionRepo: SubscriptionRepository,
-    private readonly productRepo: ProductRepository
+    private readonly productRepo: ProductRepository,
+    private readonly offerRepo: OfferRepository
   ) {}
 
   async createPlan(data: any) {
@@ -57,10 +59,30 @@ export class SubscriptionsService {
       nextDelivery.setMonth(nextDelivery.getMonth() + 1);
     }
 
+    // Apply Offer
+    let finalTotalAmount = totalAmount;
+    let appliedOfferId = undefined;
+    let discountAmount = 0;
+
+    const activeOffers = await this.offerRepo.findActiveAmountBasedOffers();
+    const eligibleOffer = activeOffers.find(o => !o.minAmount || totalAmount >= o.minAmount);
+    
+    if (eligibleOffer) {
+      appliedOfferId = eligibleOffer.id;
+      if (eligibleOffer.discountType === 'PERCENTAGE') {
+        discountAmount = (totalAmount * eligibleOffer.discountValue) / 100;
+      } else {
+        discountAmount = eligibleOffer.discountValue;
+      }
+      finalTotalAmount = Math.max(0, totalAmount - discountAmount);
+    }
+
     return this.subscriptionRepo.createSubscription({
       user: { connect: { id: userId } },
       items: { create: itemsData },
-      totalAmount,
+      totalAmount: finalTotalAmount,
+      discountAmount,
+      ...(appliedOfferId && { appliedOfferId }),
       deliveryAddress: data.deliveryAddress,
       contactNumber: data.contactNumber,
       billingDay: data.billingDay,
@@ -88,11 +110,34 @@ export class SubscriptionsService {
       quantity: item.quantity
     }));
 
+    let finalTotalAmount = plan.price;
+    let appliedOfferId = undefined;
+    let discountAmount = 0;
+
+    const offer = (plan as any).offer;
+    if (offer && offer.isActive) {
+      const now = new Date();
+      const isStarted = !offer.startDate || new Date(offer.startDate) <= now;
+      const isNotEnded = !offer.endDate || new Date(offer.endDate) >= now;
+
+      if (isStarted && isNotEnded) {
+        appliedOfferId = offer.id;
+        if (offer.discountType === 'PERCENTAGE') {
+          discountAmount = (plan.price * offer.discountValue) / 100;
+        } else {
+          discountAmount = offer.discountValue;
+        }
+        finalTotalAmount = Math.max(0, plan.price - discountAmount);
+      }
+    }
+
     return this.subscriptionRepo.createSubscription({
       user: { connect: { id: userId } },
       plan: { connect: { id: plan.id } },
       items: { create: itemsData },
-      totalAmount: plan.price,
+      totalAmount: finalTotalAmount,
+      discountAmount,
+      ...(appliedOfferId && { appliedOfferId }),
       deliveryAddress: data.deliveryAddress,
       contactNumber: data.contactNumber,
       billingDay: data.billingDay,
