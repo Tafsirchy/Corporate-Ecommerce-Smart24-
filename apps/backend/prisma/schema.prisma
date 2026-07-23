@@ -194,6 +194,7 @@ enum PaymentMethod {
   BKASH
   NAGAD
   ROCKET
+  COD
 }
 
 enum PaymentStatus {

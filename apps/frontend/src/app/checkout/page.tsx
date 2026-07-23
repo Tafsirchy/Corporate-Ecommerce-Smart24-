@@ -13,7 +13,7 @@ export default function CheckoutPage() {
 
   const [shippingAddress, setShippingAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET'>('STRIPE');
+  const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET' | 'COD'>('STRIPE');
   const [paymentTrxId, setPaymentTrxId] = useState('');
   const [paymentAccountNumber, setPaymentAccountNumber] = useState('');
   const [selectedSavedPayment, setSelectedSavedPayment] = useState<string>('NEW'); // 'NEW' or saved payment id
@@ -300,6 +300,26 @@ export default function CheckoutPage() {
                   </div>
                 </label>
                 {renderManualPaymentFields('Rocket', 'ROCKET', `Please send ৳${grandTotal} to our Rocket Personal Number: 01700000000`)}
+
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'COD' ? 'border-green-500 bg-green-50' : 'hover:bg-gray-50'}`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="COD"
+                    checked={paymentMethod === 'COD'}
+                    onChange={() => {
+                      setPaymentMethod('COD');
+                      setPaymentTrxId('');
+                      setSelectedSavedPayment('NEW');
+                      setPaymentAccountNumber('');
+                    }}
+                    className="w-4 h-4 text-green-600 focus:ring-green-500"
+                  />
+                  <div>
+                    <div className="font-bold text-gray-900">Cash on Delivery</div>
+                    <div className="text-sm text-gray-500">Pay with cash upon delivery</div>
+                  </div>
+                </label>
               </div>
 
               <button

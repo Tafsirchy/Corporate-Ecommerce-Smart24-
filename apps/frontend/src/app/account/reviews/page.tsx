@@ -99,7 +99,7 @@ export default function MyReviewsPage() {
               </Link>
             </div>
             <div>
-              <Link href="/wishlist">
+              <Link href="/account/wishlist">
                 <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
                   My Wishlist & Followed Stores
                 </h3>

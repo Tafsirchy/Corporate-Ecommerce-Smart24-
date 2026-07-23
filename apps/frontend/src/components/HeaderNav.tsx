@@ -73,7 +73,7 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
                   My Reviews
                 </Link>
 
-                <Link href="/wishlist" className="block text-[14px] font-semibold text-gray-800 hover:text-primary-600">
+                <Link href="/account/wishlist" className="block text-[14px] font-semibold text-gray-800 hover:text-primary-600">
                   My Wishlist & Followed Stores
                 </Link>
               </div>

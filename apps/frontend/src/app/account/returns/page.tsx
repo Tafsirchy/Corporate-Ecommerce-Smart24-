@@ -105,7 +105,7 @@ export default function MyReturnsPage() {
             </div>
 
             <div><h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer"><Link href="/account/reviews">My Reviews</Link></h3></div>
-            <div><h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer"><Link href="/wishlist">My Wishlist & Followed Stores</Link></h3></div>
+            <div><h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer"><Link href="/account/wishlist">My Wishlist & Followed Stores</Link></h3></div>
           </div>
         </div>
 
