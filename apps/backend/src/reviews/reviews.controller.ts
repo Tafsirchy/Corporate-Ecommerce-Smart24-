@@ -16,6 +16,22 @@ export class ReviewsController {
     return this.reviewsService.create(userId, createReviewDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('me')
+  findUserReviews(@Req() req) {
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+    return this.reviewsService.findUserReviews(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('me/pending')
+  findPendingReviews(@Req() req) {
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+    return this.reviewsService.findPendingReviews(userId);
+  }
+
   // Changed path to allow fetching by product ID
   @Get('product/:productId')
   findAllByProduct(@Param('productId') productId: string) {

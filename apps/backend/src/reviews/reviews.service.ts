@@ -73,6 +73,53 @@ export class ReviewsService {
     });
   }
 
+  async findUserReviews(userId: string) {
+    return this.prisma.review.findMany({
+      where: { userId },
+      include: {
+        product: { select: { id: true, name: true, slug: true, images: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async findPendingReviews(userId: string) {
+    // Products from delivered orders
+    const deliveredItems = await this.prisma.orderItem.findMany({
+      where: {
+        order: {
+          userId,
+          status: 'DELIVERED'
+        }
+      },
+      include: {
+        product: { select: { id: true, name: true, slug: true, images: true, price: true } },
+        order: { select: { id: true, createdAt: true } }
+      }
+    });
+
+    // Products already reviewed by this user
+    const userReviews = await this.prisma.review.findMany({
+      where: { userId },
+      select: { productId: true }
+    });
+    const reviewedProductIds = new Set(userReviews.map(r => r.productId));
+
+    // Filter pending items
+    const pendingProducts = new Map();
+    for (const item of deliveredItems) {
+      if (!reviewedProductIds.has(item.productId) && !pendingProducts.has(item.productId)) {
+        pendingProducts.set(item.productId, {
+          product: item.product,
+          orderId: item.orderId,
+          orderDate: item.order.createdAt
+        });
+      }
+    }
+
+    return Array.from(pendingProducts.values());
+  }
+
   async update(userId: string, reviewId: string, updateReviewDto: any) {
     const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
     if (!review) throw new NotFoundException('Review not found');
