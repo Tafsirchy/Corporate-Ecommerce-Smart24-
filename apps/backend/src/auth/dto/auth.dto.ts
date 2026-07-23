@@ -13,6 +13,10 @@ export class SignupDto {
   @IsString()
   @IsNotEmpty({ message: 'Name is required' })
   name: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Phone number is required' })
+  phone: string;
 }
 
 export class LoginDto {

@@ -59,80 +59,170 @@ export default function AccountPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
-          <div className="bg-white shadow rounded-lg p-4 h-fit">
-            <ul className="space-y-1">
-              <li>
-                <Link href="/account" className="block px-4 py-2.5 text-primary-600 font-semibold bg-primary-50 rounded-md">
+          <div className="mb-6">
+            <p className="text-gray-600 text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
+            <div className="inline-flex items-center gap-1 bg-[#4CAF50] text-white text-xs font-semibold px-2 py-1 rounded-sm">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Verified Account
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            <div>
+              <Link href="/account">
+                <h3 className="text-[15px] font-semibold text-primary-600 mb-2 hover:text-primary-700 cursor-pointer">
                   Manage My Account
-                </Link>
-              </li>
-              <li>
-                <Link href="/account" className="block px-4 py-2.5 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition">
+                </h3>
+              </Link>
+              <ul className="space-y-2 pl-4">
+                <li>
+                  <Link href="/account/profile" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    My Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/account/address" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    Address Book
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/account/payment" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    My Payment Options
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/account/wallet" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    Smart Wallet
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <Link href="/account">
+                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
                   My Orders
-                </Link>
-              </li>
-              <li>
-                <Link href="/wishlist" className="block px-4 py-2.5 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition">
-                  My Wishlist & Followed Stores
-                </Link>
-              </li>
-              <li>
-                <Link href="/account" className="block px-4 py-2.5 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition">
-                  My Reviews
-                </Link>
-              </li>
-              <li>
-                <Link href="/account" className="block px-4 py-2.5 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition">
-                  My Returns & Cancellations
-                </Link>
-              </li>
-            </ul>
+                </h3>
+              </Link>
+              <ul className="space-y-2 pl-4">
+                <li>
+                  <Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    My Returns
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/account/cancellations" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    My Cancellations
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+                <Link href="/account/reviews">My Reviews</Link>
+              </h3>
+            </div>
+
+            <div>
+              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+                <Link href="/wishlist">My Wishlist & Followed Stores</Link>
+              </h3>
+            </div>
           </div>
         </div>
 
         {/* Main Content Area */}
-        <div className="lg:col-span-3 space-y-8">
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4 border-b pb-2">Profile Information</h2>
-            <p className="text-gray-700 mb-2"><strong>Email:</strong> {user.email}</p>
-            {user.role && <p className="text-gray-700 mb-2"><strong>Role:</strong> {user.role}</p>}
+        <div className="lg:col-span-3 space-y-6">
+          <h2 className="text-[22px] text-gray-800 font-normal">Manage My Account</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Personal Profile */}
+            <div className="bg-white p-6 flex flex-col">
+              <div className="flex items-center gap-2 mb-6">
+                <h3 className="text-[15px] text-gray-800 font-medium">Personal Profile</h3>
+                <span className="text-gray-300">|</span>
+                <Link href="/account/profile/edit" className="text-[#1a9cb7] text-[13px] hover:underline uppercase">Edit</Link>
+              </div>
+              <div className="flex-1">
+                <p className="text-[14px] text-gray-800 mb-4">{user.email || 'tafsirchy@gmail.com'}</p>
+                <label className="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-sm" />
+                  Receive marketing SMS
+                </label>
+              </div>
+            </div>
+
+            {/* Address Book */}
+            <div className="bg-white p-6 col-span-1 md:col-span-2 relative">
+              <div className="flex items-center gap-2 mb-6">
+                <h3 className="text-[15px] text-gray-800 font-medium">Address Book</h3>
+                <span className="text-gray-300">|</span>
+                <Link href="/account/address/edit" className="text-[#1a9cb7] text-[13px] hover:underline uppercase">Edit</Link>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+                <div className="flex-1">
+                  <p className="text-[12px] text-gray-500 mb-4 uppercase">Default Shipping Address</p>
+                  <p className="text-[14px] font-semibold text-gray-800 mb-1">{user.name || 'User Name'}</p>
+                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">House 21, Road 6/A, Sector 12, Uttara, Dhaka...</p>
+                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">Dhaka - Dhaka - North - Uttara Sector 12</p>
+                  <p className="text-[13px] text-gray-600">(+880) {user.phone || '1633996633'}</p>
+                </div>
+
+                <div className="hidden md:block absolute top-0 bottom-0 left-1/2 w-px bg-gray-100 -ml-[1px]"></div>
+
+                <div className="flex-1">
+                  <p className="text-[12px] text-gray-500 mb-4 uppercase">Default Billing Address</p>
+                  <p className="text-[14px] font-semibold text-gray-800 mb-1">{user.name || 'User Name'}</p>
+                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">House 21, Road 6/A, Sector 12, Uttara, Dhaka...</p>
+                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">Dhaka - Dhaka - North - Uttara Sector 12</p>
+                  <p className="text-[13px] text-gray-600">(+880) {user.phone || '1633996633'}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-6 border-b pb-2">My Orders</h2>
+          <div className="bg-white p-6">
+            <h3 className="text-[15px] text-gray-800 font-medium mb-4">Recent Orders</h3>
             
             {loadingOrders ? (
-              <p className="text-gray-500">Loading orders...</p>
+              <p className="text-[13px] text-gray-500 py-4">Loading orders...</p>
             ) : orders.length === 0 ? (
-              <div>
-                <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
-                <Link href="/shop" className="text-primary-600 hover:underline">Start Shopping</Link>
-              </div>
+              <p className="text-[13px] text-gray-500 py-4">You haven't placed any orders yet.</p>
             ) : (
-              <div className="space-y-4">
-                {orders.map(order => (
-                  <div key={order.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between md:items-center gap-4 hover:shadow-md transition">
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="font-bold text-lg">#{order.id.substring(0, 8).toUpperCase()}</span>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(order.status)}`}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
-                    </div>
-                    
-                    <div className="flex flex-col md:items-end gap-2">
-                      <span className="font-bold">৳{order.totalAmount}</span>
-                      <Link 
-                        href={`/track-order?id=${order.id}`}
-                        className="text-sm border border-black text-black px-4 py-1 rounded hover:bg-black hover:text-white transition text-center"
-                      >
-                        View Details
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="bg-[#f5f5f5] text-gray-500 text-[13px]">
+                      <th className="py-3 px-4 font-normal w-1/4">Order #</th>
+                      <th className="py-3 px-4 font-normal w-1/4">Placed On</th>
+                      <th className="py-3 px-4 font-normal w-1/4">Items</th>
+                      <th className="py-3 px-4 font-normal w-1/6 text-right">Total</th>
+                      <th className="py-3 px-4 font-normal w-1/12 text-right"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.slice(0, 5).map((order) => (
+                      <tr key={order.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+                        <td className="py-4 px-4 text-[13px] text-gray-800">{order.id.substring(0, 15)}</td>
+                        <td className="py-4 px-4 text-[13px] text-gray-800">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
+                        <td className="py-4 px-4">
+                          {/* Display thumbnail based on order items if available, else placeholder */}
+                          <div className="w-10 h-10 bg-gray-200 rounded">
+                            <img src="https://via.placeholder.com/40" alt="Item" className="w-full h-full object-cover rounded" />
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-[13px] text-gray-800 text-right">৳ {order.totalAmount}</td>
+                        <td className="py-4 px-4 text-[13px] text-right">
+                          <Link href={`/track-order?id=${order.id}`} className="text-[#1a9cb7] font-medium hover:underline uppercase">Manage</Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

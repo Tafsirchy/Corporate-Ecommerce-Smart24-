@@ -46,7 +46,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedToken) {
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
       setToken(storedToken);
-      setUser({ email: 'loaded@example.com' }); 
+      try {
+        const payloadStr = atob(storedToken.split('.')[1]);
+        const payload = JSON.parse(payloadStr);
+        setUser({ id: payload.sub, email: payload.email, role: payload.role, phone: payload.phone }); 
+      } catch (e) {
+        // Fallback if parsing fails
+        setUser({ email: 'loaded@example.com' });
+      }
     }
     setLoading(false);
   }, []);
