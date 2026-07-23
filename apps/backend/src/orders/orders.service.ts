@@ -124,6 +124,19 @@ export class OrdersService {
 
     return order;
   }
+
+  async cancelOrder(userId: string, orderId: string, reason: string) {
+    const order = await this.orderRepo.findOrderById(orderId);
+    if (!order || order.userId !== userId) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (order.status !== 'PENDING') {
+      throw new BadRequestException('Only pending orders can be cancelled');
+    }
+
+    return this.orderRepo.cancelOrder(orderId, reason);
+  }
   // Admin endpoints
   async getAllOrders() {
     return this.orderRepo.findAllOrders();

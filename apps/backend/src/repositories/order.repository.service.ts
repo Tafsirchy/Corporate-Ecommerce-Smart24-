@@ -59,10 +59,20 @@ export class OrderRepositoryService {
     });
   }
 
-  async updateOrderStatus(id: string, status: OrderStatus) {
+  async updateOrderStatus(id: string, status: any) {
     return this.prisma.order.update({
       where: { id },
       data: { status }
+    });
+  }
+
+  async cancelOrder(id: string, reason: string) {
+    return this.prisma.order.update({
+      where: { id },
+      data: { 
+        status: 'CANCELLED',
+        cancellationReason: reason
+      }
     });
   }
 

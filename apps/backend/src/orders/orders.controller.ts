@@ -44,6 +44,16 @@ export class OrdersController {
     return this.ordersService.getOrderDetails(req.user.id, id, req.user.role === Role.ADMIN);
   }
 
+  @Patch(':id/cancel')
+  @ApiOperation({ summary: 'Cancel a pending order' })
+  cancelOrder(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body('reason') reason: string
+  ) {
+    return this.ordersService.cancelOrder(req.user.id, id, reason);
+  }
+
   @Patch(':id/status')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update order status (Admin only)' })

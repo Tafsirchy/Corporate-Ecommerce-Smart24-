@@ -4,15 +4,12 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export default function MyOrdersPage() {
+export default function MyCancellationsPage() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const tabs = ['All', 'To Pay', 'To ship', 'To Receive', 'To Review'];
 
   useEffect(() => {
     if (!loading && !user) {
@@ -34,24 +31,20 @@ export default function MyOrdersPage() {
     }
   };
 
-  const filteredOrders = orders.filter(order => {
-    // Basic status mapping for tabs
-    let matchesTab = true;
-    if (activeTab === 'To Pay') matchesTab = order.paymentStatus === 'PENDING' || order.status === 'PENDING';
-    if (activeTab === 'To ship') matchesTab = order.status === 'CONFIRMED';
-    if (activeTab === 'To Receive') matchesTab = order.status === 'SHIPPED';
-    if (activeTab === 'To Review') matchesTab = order.status === 'DELIVERED';
-    
-    // Search filtering
+  const cancelledOrders = orders.filter(o => o.status === 'CANCELLED');
+
+  const filteredOrders = cancelledOrders.filter(order => {
     const searchLower = searchQuery.toLowerCase();
     let matchesSearch = true;
     if (searchQuery) {
       const idMatch = order.id.toLowerCase().includes(searchLower);
-      const productMatch = order.items.some((item: any) => item.product?.name?.toLowerCase().includes(searchLower));
-      matchesSearch = idMatch || productMatch; // Add seller name later if we support multi-vendor
+      const productMatch = order.items.some((item: any) => 
+        item.product?.name?.toLowerCase().includes(searchLower)
+      );
+      matchesSearch = idMatch || productMatch;
     }
 
-    return matchesTab && matchesSearch;
+    return matchesSearch;
   });
 
   if (loading) return <div className="p-8 text-center flex-1">Loading...</div>;
@@ -98,13 +91,13 @@ export default function MyOrdersPage() {
 
             <div>
               <Link href="/account/orders">
-                <h3 className="text-[15px] font-semibold text-primary-600 mb-2 hover:text-primary-700 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
                   My Orders
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li><Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">My Returns</Link></li>
-                <li><Link href="/account/cancellations" className="text-gray-500 hover:text-primary-600 text-[14px]">My Cancellations</Link></li>
+                <li><Link href="/account/cancellations" className="text-primary-600 font-medium text-[14px]">My Cancellations</Link></li>
               </ul>
             </div>
 
@@ -115,30 +108,9 @@ export default function MyOrdersPage() {
 
         {/* Main Content Area */}
         <div className="lg:col-span-3">
-          <h2 className="text-[22px] text-gray-800 font-normal mb-6">My Orders</h2>
+          <h2 className="text-[22px] text-gray-800 font-normal mb-6">My Cancellations</h2>
           
           <div className="bg-white rounded-md shadow-sm border border-gray-200">
-            {/* Tabs */}
-            <div className="flex border-b border-gray-200 px-2 overflow-x-auto scrollbar-hide">
-              {tabs.map((tab) => {
-                 let countText = tab;
-                 if (tab === 'To Review' && activeTab === tab) {
-                    const count = orders.filter(o => o.status === 'DELIVERED').length;
-                    countText = `${tab}(${count})`;
-                 }
-                 
-                 return (
-                  <button
-                    key={tab}
-                    className={`px-6 py-4 text-[15px] font-medium whitespace-nowrap transition ${activeTab === tab ? 'text-[#1a9cb7] border-b-2 border-[#1a9cb7]' : 'text-gray-600 hover:text-gray-900'}`}
-                    onClick={() => setActiveTab(tab)}
-                  >
-                    {countText}
-                  </button>
-                 );
-              })}
-            </div>
-
             {/* Search Bar */}
             <div className="p-4 bg-gray-50 border-b border-gray-200">
               <div className="relative">
@@ -149,7 +121,7 @@ export default function MyOrdersPage() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search by seller name, order ID or product name"
+                  placeholder="Search by Order ID or product name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-gray-400 sm:text-[14px]"
@@ -160,24 +132,29 @@ export default function MyOrdersPage() {
             {/* Orders List */}
             <div className="p-4 space-y-4">
               {loadingOrders ? (
-                <div className="py-12 text-center text-gray-500">Loading orders...</div>
+                <div className="py-12 text-center text-gray-500">Loading cancellations...</div>
               ) : filteredOrders.length === 0 ? (
-                <div className="py-12 text-center text-gray-500">No orders found.</div>
+                <div className="py-12 text-center text-gray-500">No cancelled orders found.</div>
               ) : (
                 filteredOrders.map(order => (
                   <div key={order.id} className="border border-gray-200 rounded-sm bg-white overflow-hidden">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                    <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 bg-purple-800 rounded-full flex items-center justify-center text-white text-[9px] font-bold tracking-tighter">
-                          S24
-                        </div>
-                        <span className="font-semibold text-[14px] text-gray-800">Smart24 Official</span>
+                        <span className="font-semibold text-[14px] text-gray-800">Order ID: {order.id.substring(0, 10).toUpperCase()}</span>
                       </div>
-                      <span className="bg-[#f0f2f5] text-gray-600 text-[12px] px-3 py-1 rounded-full font-medium uppercase tracking-wide">
-                        {order.status === 'PENDING' ? 'Pending' : order.status === 'CONFIRMED' ? 'Confirmed' : order.status === 'SHIPPED' ? 'Shipped' : order.status === 'DELIVERED' ? 'Completed' : 'Cancelled'}
+                      <span className="bg-red-100 text-red-800 text-[12px] px-3 py-1 rounded-full font-medium uppercase tracking-wide">
+                        {order.status}
                       </span>
                     </div>
+
+                    {/* Reason */}
+                    {order.cancellationReason && (
+                      <div className="px-4 py-3 bg-red-50 text-red-800 text-sm border-b border-red-100 flex gap-2 items-start">
+                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span><span className="font-semibold">Reason:</span> {order.cancellationReason}</span>
+                      </div>
+                    )}
 
                     {/* Items */}
                     <div className="p-4">
@@ -200,7 +177,6 @@ export default function MyOrdersPage() {
                               <Link href={`/product/${item.product.slug}`} className="text-[14px] font-medium text-gray-800 hover:text-[#1a9cb7] line-clamp-2">
                                 {item.product.name}
                               </Link>
-                              <p className="text-[12px] text-gray-400 mt-1">Scent: Fresh</p>
                             </div>
                           </div>
                           
@@ -214,25 +190,10 @@ export default function MyOrdersPage() {
 
                     {/* Footer Actions */}
                     <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 items-center">
-                      <span className="mr-auto text-[13px] text-gray-500">Order ID: {order.id.substring(0, 10)}</span>
+                      <span className="mr-auto text-[14px] font-bold text-gray-900">Total: ৳{order.totalAmount.toLocaleString()}</span>
                       <Link href={`/track-order?id=${order.id}`} className="px-5 py-1.5 text-[13px] text-gray-700 border border-gray-300 bg-white rounded-sm hover:bg-gray-50 transition font-medium">
                         View Order
                       </Link>
-                      {order.status === 'PENDING' && (
-                        <Link href={`/account/cancellations/request?orderId=${order.id}`} className="px-5 py-1.5 text-[13px] text-red-600 border border-red-600 bg-white rounded-sm hover:bg-red-50 transition font-medium">
-                          Cancel Order
-                        </Link>
-                      )}
-                      {order.status === 'DELIVERED' && (
-                        <>
-                          <Link href={`/account/returns/request?orderId=${order.id}`} className="px-5 py-1.5 text-[13px] text-[#1a9cb7] border border-[#1a9cb7] bg-white rounded-sm hover:bg-[#e6f4f7] transition font-medium">
-                            Return Order
-                          </Link>
-                          <Link href="/account/reviews" className="px-5 py-1.5 text-[13px] text-white bg-[#f85606] border border-[#f85606] rounded-sm hover:bg-[#d84b05] transition font-medium">
-                            Write a Review
-                          </Link>
-                        </>
-                      )}
                     </div>
                   </div>
                 ))
