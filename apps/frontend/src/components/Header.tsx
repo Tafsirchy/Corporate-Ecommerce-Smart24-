@@ -297,7 +297,7 @@ export default function Header() {
           <div className="container mx-auto px-4 py-2 flex justify-between items-center">
             <div className="flex items-center gap-8">
               <a href="/" className={`text-xl font-bold tracking-tight ${isTransparent ? 'text-white' : 'text-gray-900'}`}>Smart24</a>
-              {pathname === '/shop' && <CategoryDropdown isTransparent={isTransparent} />}
+              {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>
             <HeaderNav isTransparent={isTransparent} />
           </div>
