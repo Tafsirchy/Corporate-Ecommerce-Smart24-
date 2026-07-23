@@ -8,12 +8,12 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Subscriptions')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller({ path: 'subscriptions', version: '1' })
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   @Post('plans')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   createPlan(@Body() body: any) {
     return this.subscriptionsService.createPlan(body);
@@ -25,27 +25,33 @@ export class SubscriptionsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   createCustomSubscription(@Req() req: any, @Body() body: any) {
-    return this.subscriptionsService.createCustomSubscription(req.user.userId, body);
+    return this.subscriptionsService.createCustomSubscription(req.user.id, body);
   }
 
   @Post('fixed')
+  @UseGuards(JwtAuthGuard)
   createFixedSubscription(@Req() req: any, @Body() body: any) {
-    return this.subscriptionsService.createFixedSubscription(req.user.userId, body);
+    return this.subscriptionsService.createFixedSubscription(req.user.id, body);
   }
 
   @Get('my-subscriptions')
+  @UseGuards(JwtAuthGuard)
   getMySubscriptions(@Req() req: any) {
-    return this.subscriptionsService.getUserSubscriptions(req.user.userId);
+    return this.subscriptionsService.getUserSubscriptions(req.user.id);
   }
 
   @Get('admin/all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   getAllSubscriptions() {
     return this.subscriptionsService.getAllSubscriptions();
   }
 
   @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   updateStatus(@Param('id') id: string, @Body('status') status: string) {
     return this.subscriptionsService.updateStatus(id, status);
   }

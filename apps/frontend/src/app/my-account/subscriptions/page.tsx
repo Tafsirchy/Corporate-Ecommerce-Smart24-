@@ -42,7 +42,7 @@ export default function MySubscriptions() {
   if (loading) return <div className="p-6">Loading...</div>;
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl">
+    <div className="container mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold mb-6">My Subscriptions</h1>
       
       {subscriptions.length === 0 ? (

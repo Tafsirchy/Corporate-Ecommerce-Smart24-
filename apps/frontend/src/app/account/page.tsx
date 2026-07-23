@@ -212,7 +212,7 @@ export default function AccountPage() {
                         </td>
                         <td className="py-4 px-4 text-[13px] text-gray-800 text-right">৳ {order.totalAmount}</td>
                         <td className="py-4 px-4 text-[13px] text-right">
-                          <Link href={`/track-order?id=${order.id}`} className="text-[#1a9cb7] font-medium hover:underline uppercase">Manage</Link>
+                          <Link href={`/track-order?id=${order.id}`} className="text-green-600 font-medium hover:underline uppercase">Track</Link>
                         </td>
                       </tr>
                     ))}

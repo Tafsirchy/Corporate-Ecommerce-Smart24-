@@ -14,7 +14,7 @@ export default function SubscriptionsPage() {
   const [loading, setLoading] = useState(true);
   
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
-  const [deliveryDay, setDeliveryDay] = useState<number>(5);
+  const [deliveryDay, setDeliveryDay] = useState<number | string>(5);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,16 +92,21 @@ export default function SubscriptionsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl mt-10 relative">
+    <div className="container mx-auto px-4 py-10 relative">
       <div className="flex flex-col md:flex-row items-center justify-between bg-primary/10 p-8 rounded-lg mb-10">
         <div>
           <h1 className="text-4xl font-bold mb-4">Corporate Subscriptions</h1>
           <p className="text-lg text-muted-foreground mb-6">
             Get your monthly supplies delivered automatically. Choose a fixed package or build your own custom package.
           </p>
-          <Link href="/subscriptions/builder">
-            <Button size="lg" className="text-lg">Build Custom Package</Button>
-          </Link>
+          <div className="flex gap-4">
+            <Link href="/subscriptions/builder">
+              <Button size="lg" className="text-lg">Build Custom Package</Button>
+            </Link>
+            <Link href="/my-account/subscriptions">
+              <Button size="lg" variant="outline" className="text-lg bg-white">My Subscriptions</Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -155,7 +160,7 @@ export default function SubscriptionsPage() {
             <form onSubmit={handleConfirmSubscription} className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Delivery Day (Every Month)</label>
-                <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(parseInt(e.target.value))} required />
+                <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
                 <p className="text-xs text-gray-500 mt-1">Select a date between 1 and 28.</p>
               </div>
               <div>

@@ -10,7 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function CustomPackageBuilder() {
   const [products, setProducts] = useState<any[]>([]);
   const [selectedItems, setSelectedItems] = useState<{ productId: string; quantity: number; product: any }[]>([]);
-  const [deliveryDay, setDeliveryDay] = useState<number>(5);
+  const [deliveryDay, setDeliveryDay] = useState<number | string>(5);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const { user, token } = useAuth();
@@ -86,7 +86,7 @@ export default function CustomPackageBuilder() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div className="md:col-span-2 space-y-6">
         <h1 className="text-3xl font-bold">Custom Package Builder</h1>
         <p className="text-muted-foreground">Select at least 2 items to build your monthly corporate package.</p>
@@ -144,7 +144,7 @@ export default function CustomPackageBuilder() {
         <form onSubmit={handleSubmit} className="space-y-4 mt-6 border-t pt-4">
           <div>
             <label className="text-sm font-medium">Delivery Day (Every Month)</label>
-            <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(parseInt(e.target.value))} required />
+            <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
             <p className="text-xs text-muted-foreground mt-1">Select a date between 1 and 28.</p>
           </div>
           <div>
