@@ -175,4 +175,29 @@ export class LoyaltyService {
 
     return userReward;
   }
+
+  // --- Admin Methods for Rewards ---
+
+  async getAllLoyaltyRewards() {
+    return this.prisma.loyaltyReward.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async createLoyaltyReward(data: any) {
+    return this.prisma.loyaltyReward.create({ data });
+  }
+
+  async updateLoyaltyReward(id: string, data: any) {
+    return this.prisma.loyaltyReward.update({
+      where: { id },
+      data
+    });
+  }
+
+  async deleteLoyaltyReward(id: string) {
+    return this.prisma.loyaltyReward.delete({
+      where: { id }
+    });
+  }
 }

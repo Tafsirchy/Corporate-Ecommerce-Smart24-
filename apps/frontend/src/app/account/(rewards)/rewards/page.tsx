@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { apiClient } from '../../../context/AuthContext';
-import Link from 'next/link';
+import { apiClient } from '@/context/AuthContext';
 
 export default function RewardsPage() {
   const [activeTab, setActiveTab] = useState<'MARKETPLACE' | 'MY_REWARDS'>('MARKETPLACE');
@@ -44,17 +43,13 @@ export default function RewardsPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <>
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Rewards Ecosystem</h1>
           <p className="text-gray-600">Your Balance: <span className="font-bold text-[#FBBF24] text-xl">{points} pts</span></p>
         </div>
-        <Link href="/account" className="text-primary-600 hover:underline">
-          &larr; Back to Account
-        </Link>
       </div>
-
+      
       <div className="flex space-x-4 border-b border-gray-200 mb-6">
         <button
           className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MARKETPLACE' ? 'border-b-2 border-primary-600 text-primary-600' : 'text-gray-500 hover:text-gray-700'}`}
@@ -137,6 +132,6 @@ export default function RewardsPage() {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

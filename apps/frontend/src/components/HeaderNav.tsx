@@ -35,6 +35,17 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
       <Link href="/" className={getLinkClass('/')}>Home</Link>
       <Link href="/shop" className={getLinkClass('/shop')}>Shop</Link>
       <Link href="/subscriptions" className={getLinkClass('/subscriptions')}>Subscriptions</Link>
+      <div className="relative group py-2">
+        <Link href="/account/rewards" className={getLinkClass('/account/rewards')}>Rewards</Link>
+        <div className="absolute top-full left-0 mt-0 w-48 bg-white rounded-md shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-4">
+          <div className="absolute -top-1.5 left-6 w-3 h-3 bg-white border-l border-t border-gray-100 rotate-45"></div>
+          <div className="relative space-y-3 z-10 bg-white text-left">
+            <Link href="/account/membership" className="block text-[14px] text-gray-700 hover:text-primary-600">My Membership</Link>
+            <Link href="/account/rewards" className="block text-[14px] text-gray-700 hover:text-primary-600">Reward Marketplace</Link>
+            <Link href="/account/points-history" className="block text-[14px] text-gray-700 hover:text-primary-600">Points History</Link>
+          </div>
+        </div>
+      </div>
       <Link href="/about" className={getLinkClass('/about')}>About</Link>
       <div className="relative group py-2">
         <Link href="/support" className={getLinkClass('/support')}>Support</Link>

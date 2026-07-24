@@ -349,9 +349,77 @@ async function main() {
       { name: "Gold", requiredAmount: 75000, pointMultiplier: 1.5, priority: 3, benefits: ["Gold Badge", "Premium Offers", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
       { name: "Platinum", requiredAmount: 150000, pointMultiplier: 2.0, priority: 4, benefits: ["Platinum Badge", "VIP Offers", "Higher Point Multiplier", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
       { name: "Diamond", requiredAmount: 250000, pointMultiplier: 3.0, priority: 5, benefits: ["Diamond Badge", "Highest Point Multiplier", "Exclusive Diamond Rewards", "Priority Customer Support", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
+      { name: "Signature Elite", requiredAmount: 500000, pointMultiplier: 4.0, priority: 6, benefits: ["Signature Elite Badge", "Dedicated Account Manager", "Free Lifetime Premium Subscription", "VIP Event Invites", "Early Access to Corporate Gadgets", "Zero Delivery Fees", "24/7 Priority VIP Support", "Custom B2B Pricing Rates", "Extended 1-Year Warranty on Gadgets"] },
     ]
   });
   console.log('Membership Levels created.');
+
+  // 11. Loyalty Rewards Seed
+  await prisma.loyaltyReward.deleteMany({});
+  const reward1 = await prisma.loyaltyReward.create({
+    data: {
+      title: "50% Off Corporate Gadgets",
+      description: "Get 50% off on your next corporate gadgets purchase.",
+      pointCost: 500,
+      type: "COUPON",
+      minMembershipPriority: 2, // Silver Priority
+    }
+  });
+
+  const reward2 = await prisma.loyaltyReward.create({
+    data: {
+      title: "Free Executive Mousepad",
+      description: "Claim a premium leather mousepad for your desk.",
+      pointCost: 200,
+      type: "OFFER",
+      minMembershipPriority: 1, // Bronze Priority
+    }
+  });
+  console.log('Loyalty Rewards created.');
+
+  // 12. Seed data for user tafsirchy@gmail.com
+  const user = await prisma.user.findUnique({
+    where: { email: 'tafsirchy@gmail.com' }
+  });
+
+  if (user) {
+    const diamondLevel = await prisma.membershipLevel.findFirst({ where: { name: 'Diamond' } });
+    
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        lifetimeSpent: 260000,
+        rewardPoints: 1250,
+        membershipId: diamondLevel?.id,
+      }
+    });
+
+    // Clear old transactions and rewards for this user
+    await prisma.rewardTransaction.deleteMany({ where: { userId: user.id } });
+    await prisma.userReward.deleteMany({ where: { userId: user.id } });
+
+    // Give some transactions
+    await prisma.rewardTransaction.createMany({
+      data: [
+        { userId: user.id, earn: 2000, redeem: 0, balance: 2000, reason: 'WELCOME_BONUS', description: 'Welcome to Smart24 Rewards!' },
+        { userId: user.id, earn: 0, redeem: 750, balance: 1250, reason: 'REWARD_REDEEM', description: 'Redeemed for 50% Off Corporate Gadgets' },
+      ]
+    });
+
+    // Give a claimed reward
+    await prisma.userReward.create({
+      data: {
+        userId: user.id,
+        rewardId: reward1.id,
+        status: 'AVAILABLE',
+        code: 'CMP-ABCD12',
+      }
+    });
+
+    console.log('Seeded loyalty data for tafsirchy@gmail.com');
+  } else {
+    console.log('User tafsirchy@gmail.com not found, skipped user loyalty seeding.');
+  }
 
   console.log('Seeding completed successfully!');
 }
