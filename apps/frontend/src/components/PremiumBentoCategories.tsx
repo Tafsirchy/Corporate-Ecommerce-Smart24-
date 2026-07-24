@@ -1,5 +1,7 @@
-import React from 'react';
+'use client';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { apiClient } from '../context/AuthContext';
 
 interface BentoCardProps {
   title: React.ReactNode;
@@ -14,14 +16,14 @@ interface BentoCardProps {
 
 const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, imageClassName, isLarge }: BentoCardProps) => {
   return (
-    <Link 
+    <Link
       href={href}
       className={`group relative overflow-hidden rounded-[24px] bg-[#f0f0f0] transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col p-5 md:p-6 ${className}`}
     >
       {/* Background Image Setup */}
       {isLarge ? (
         <>
-          <div 
+          <div
             className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
             style={{ backgroundImage: `url(${imageUrl})` }}
           />
@@ -30,8 +32,8 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
         </>
       ) : (
         <div className="absolute inset-0 z-0 flex items-end justify-end p-3">
-          <img 
-            src={imageUrl} 
+          <img
+            src={imageUrl}
             alt={typeof title === 'string' ? title : subtitle}
             className={`object-contain transition-transform duration-700 group-hover:scale-105 mix-blend-multiply ${imageClassName}`}
           />
@@ -48,11 +50,10 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
         </p>
 
         <div className={`mt-auto pt-6`}>
-          <span className={`inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold transition-colors ${
-            isLarge 
-              ? 'bg-white text-black hover:bg-gray-100' 
-              : 'bg-transparent border border-gray-900 text-gray-900 group-hover:bg-gray-900 group-hover:text-white'
-          }`}>
+          <span className={`inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold transition-colors ${isLarge
+            ? 'bg-white text-black hover:bg-gray-100'
+            : 'bg-transparent border border-gray-900 text-gray-900 group-hover:bg-gray-900 group-hover:text-white'
+            }`}>
             {buttonText}
           </span>
         </div>
@@ -61,11 +62,67 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
   );
 };
 
+// Default layout configuration for the 8 slots to preserve the premium bento grid exactly
+const layoutConfig = [
+  { position: 1, isLarge: true, className: "md:col-span-2 md:row-span-2", imageClassName: "" },
+  { position: 2, isLarge: false, className: "", imageClassName: "w-full h-full object-right-bottom" },
+  { position: 3, isLarge: false, className: "md:col-start-2 lg:col-start-3 md:row-start-3 lg:row-start-2 md:row-span-2 lg:row-span-2", imageClassName: "w-[85%] h-[85%] object-right-bottom pb-2" },
+  { position: 4, isLarge: false, className: "lg:col-start-1 lg:row-start-3", imageClassName: "w-full h-full object-right-bottom" },
+  { position: 5, isLarge: false, className: "lg:col-start-2 lg:row-start-3", imageClassName: "w-full h-full object-right-bottom" },
+  { position: 6, isLarge: false, className: "lg:col-start-1 lg:row-start-4", imageClassName: "w-full h-full object-right-bottom" },
+  { position: 7, isLarge: false, className: "lg:col-start-2 lg:row-start-4", imageClassName: "w-full h-full object-right-bottom" },
+  { position: 8, isLarge: false, className: "lg:col-start-3 lg:row-start-4", imageClassName: "w-full h-full object-right-bottom" }
+];
+
+const fallbackData = [
+  { position: 1, title: "Elevate your workspace.", subtitle: "SPRING COLLECTION 2024", buttonText: "Shop Now", targetUrl: "/shop/office-setup", imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800&h=600" },
+  { position: 2, title: "SMART DEVICES", subtitle: "Connected Living", buttonText: "Explore", targetUrl: "/shop/smart-devices", imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600&h=600" },
+  { position: 3, title: "FURNITURE", subtitle: "Timeless Pieces", buttonText: "Shop Sofa", targetUrl: "/shop/furniture", imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=600&h=600" },
+  { position: 4, title: "DESIGN LAMPS", subtitle: "Stylish pendant", buttonText: "Discover", targetUrl: "/shop/lighting", imageUrl: "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&q=80&w=600&h=600" },
+  { position: 5, title: "PREMIUM TECH", subtitle: "Noise-canceling", buttonText: "Shop Audio", targetUrl: "/shop/audio", imageUrl: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&q=80&w=600&h=600" },
+  { position: 6, title: "PANTRY WARE", subtitle: "Quality essentials", buttonText: "Browse", targetUrl: "/shop/pantry", imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600&h=600" },
+  { position: 7, title: "APPAREL", subtitle: "Quality linen shirt", buttonText: "New Arrivals", targetUrl: "/shop/apparel", imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600&h=600" },
+  { position: 8, title: "HOME DECOR", subtitle: "Premium lifestyle", buttonText: "View Collection", targetUrl: "/shop/decor", imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=600&h=600" }
+];
+
 export const PremiumBentoCategories = () => {
+  const [collections, setCollections] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await apiClient.get('/corporate-collections');
+        setCollections(res.data || []);
+      } catch (error) {
+        console.error('Failed to fetch corporate collections:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
+  // Merge fetched data with layout configuration. Use fallback data if DB data is missing for a slot.
+  const cards = layoutConfig.map(config => {
+    const fetchedData = collections.find(c => c.position === config.position);
+    const fallback = fallbackData.find(f => f.position === config.position)!;
+
+    return {
+      ...config,
+      title: fetchedData?.title || fallback.title,
+      subtitle: fetchedData?.subtitle || fallback.subtitle,
+      buttonText: fetchedData?.buttonText || fallback.buttonText,
+      targetUrl: fetchedData?.targetUrl || fallback.targetUrl,
+      imageUrl: fetchedData?.imageUrl || fallback.imageUrl,
+    };
+  });
+
   return (
     <section id="categories" className="py-8 md:py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-6">
           <div>
@@ -81,94 +138,23 @@ export const PremiumBentoCategories = () => {
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 auto-rows-[180px]">
-          
-          {/* Card A: 2x2 Large */}
-          <BentoCard
-            title={<>Elevate your<br/>workspace.</>}
-            subtitle="SPRING COLLECTION 2024"
-            buttonText="Shop Now"
-            imageUrl="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop"
-            href="/shop/office-setup"
-            className="md:col-span-2 md:row-span-2"
-            isLarge={true}
-          />
-
-          {/* Card B: 1x1 Top Right */}
-          <BentoCard
-            title="SMART DEVICES"
-            subtitle="Connected Living"
-            buttonText="Explore"
-            imageUrl="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/smart-devices"
-            imageClassName="w-3/4 h-3/4 object-right-bottom"
-          />
-
-          {/* Card C: 1x2 Middle Right */}
-          <BentoCard
-            title="FURNITURE"
-            subtitle="Timeless Pieces"
-            buttonText="Shop Sofa"
-            imageUrl="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/furniture"
-            className="md:col-start-2 lg:col-start-3 md:row-start-3 lg:row-start-2 md:row-span-2 lg:row-span-2"
-            imageClassName="w-[90%] h-[70%] object-bottom pb-2"
-          />
-
-          {/* Card D: 1x1 */}
-          <BentoCard
-            title="DESIGN LAMPS"
-            subtitle="Stylish pendant"
-            buttonText="Discover"
-            imageUrl="https://images.unsplash.com/photo-1513506003901-1e6a229e9d15?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/lighting"
-            className="lg:col-start-1 lg:row-start-3"
-            imageClassName="w-2/3 h-2/3 object-right-bottom mb-2"
-          />
-
-          {/* Card E: 1x1 */}
-          <BentoCard
-            title="PREMIUM TECH"
-            subtitle="Noise-canceling"
-            buttonText="Shop Audio"
-            imageUrl="https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/audio"
-            className="lg:col-start-2 lg:row-start-3"
-            imageClassName="w-2/3 h-2/3 object-right-bottom"
-          />
-
-          {/* Card F: 1x1 */}
-          <BentoCard
-            title="PANTRY WARE"
-            subtitle="Quality essentials"
-            buttonText="Browse"
-            imageUrl="https://images.unsplash.com/photo-1610348725531-843dff563e2c?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/pantry"
-            className="lg:col-start-1 lg:row-start-4"
-            imageClassName="w-2/3 h-2/3 object-right-bottom"
-          />
-
-          {/* Card G: 1x1 */}
-          <BentoCard
-            title="APPAREL"
-            subtitle="Quality linen shirt"
-            buttonText="New Arrivals"
-            imageUrl="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/apparel"
-            className="lg:col-start-2 lg:row-start-4"
-            imageClassName="w-2/3 h-2/3 object-right-bottom"
-          />
-
-          {/* Card H: 1x1 */}
-          <BentoCard
-            title="HOME DECOR"
-            subtitle="Premium lifestyle"
-            buttonText="View Collection"
-            imageUrl="https://images.unsplash.com/photo-1600164318353-847e0bc27833?q=80&w=2000&auto=format&fit=crop&bg=ffffff"
-            href="/shop/decor"
-            className="lg:col-start-3 lg:row-start-4"
-            imageClassName="w-3/4 h-3/4 object-right-bottom"
-          />
-
+          {isLoading ? (
+            <div className="md:col-span-3 h-full flex items-center justify-center py-20 text-gray-400">Loading collections...</div>
+          ) : (
+            cards.map(card => (
+              <BentoCard
+                key={card.position}
+                title={card.title}
+                subtitle={card.subtitle}
+                buttonText={card.buttonText}
+                imageUrl={card.imageUrl}
+                href={card.targetUrl}
+                className={card.className}
+                imageClassName={card.imageClassName}
+                isLarge={card.isLarge}
+              />
+            ))
+          )}
         </div>
       </div>
     </section>

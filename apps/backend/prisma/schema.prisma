@@ -551,3 +551,15 @@ model Offer {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 }
+model CorporateCollection {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  subtitle    String
+  buttonText  String
+  imageUrl    String
+  targetUrl   String
+  position    Int      @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

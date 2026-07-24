@@ -25,6 +25,7 @@ import { SupportTicketsModule } from './support-tickets/support-tickets.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { SettingsModule } from './settings/settings.module';
 import { OffersModule } from './offers/offers.module';
+import { CorporateCollectionsModule } from './corporate-collections/corporate-collections.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { OffersModule } from './offers/offers.module';
     FaqsModule,
     SettingsModule,
     OffersModule,
+    CorporateCollectionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
