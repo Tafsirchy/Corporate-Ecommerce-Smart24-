@@ -98,7 +98,7 @@ export default function AccountPage() {
             {/* Smart24 Rewards Ecosystem */}
             <div>
               <h3 className="text-[15px] font-semibold text-gray-800 mb-2">
-                Smart24 Rewards
+                Loyalty and Reward
               </h3>
               <ul className="space-y-2 pl-4">
                 <li>

@@ -24,7 +24,7 @@ export default function RewardsLayout({ children }: { children: React.ReactNode 
         {/* Sidebar / Aside */}
         <aside className="lg:w-1/4 w-full shrink-0">
           <div className="bg-white border rounded-xl p-6 sticky top-24">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Smart24 Rewards</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Loyalty and Reward</h3>
             <ul className="space-y-3">
               <li>
                 <Link href="/account/membership" className={`block transition-colors ${pathname.includes('membership') ? 'text-primary-600 font-bold' : 'text-gray-500 hover:text-primary-600'}`}>
