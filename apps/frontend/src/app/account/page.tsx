@@ -95,6 +95,30 @@ export default function AccountPage() {
               </ul>
             </div>
 
+            {/* Smart24 Rewards Ecosystem */}
+            <div>
+              <h3 className="text-[15px] font-semibold text-gray-800 mb-2">
+                Smart24 Rewards
+              </h3>
+              <ul className="space-y-2 pl-4">
+                <li>
+                  <Link href="/account/membership" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    My Membership
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/account/rewards" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    Reward Marketplace
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/account/points-history" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                    Points History
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
             <div>
               <Link href="/account/orders">
                 <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">

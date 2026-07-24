@@ -26,6 +26,9 @@ import { FaqsModule } from './faqs/faqs.module';
 import { SettingsModule } from './settings/settings.module';
 import { OffersModule } from './offers/offers.module';
 import { CorporateCollectionsModule } from './corporate-collections/corporate-collections.module';
+import { LoyaltyModule } from './loyalty/loyalty.module';
+import { MembershipsModule } from './memberships/memberships.module';
+import { RewardsModule } from './rewards/rewards.module';
 
 @Module({
   imports: [
@@ -54,6 +57,9 @@ import { CorporateCollectionsModule } from './corporate-collections/corporate-co
     SettingsModule,
     OffersModule,
     CorporateCollectionsModule,
+    LoyaltyModule,
+    MembershipsModule,
+    RewardsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

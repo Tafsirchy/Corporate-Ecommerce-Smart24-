@@ -59,6 +59,16 @@ model User {
   savedPaymentMethods SavedPaymentMethod[]
   returnRequests      ReturnRequest[]
   supportTickets      SupportTicket[]
+  
+  // Loyalty & Rewards Ecosystem
+  lifetimeSpent        Float    @default(0)
+  rewardPoints         Float    @default(0)
+  membershipId         String?  @db.ObjectId
+  membership           MembershipLevel? @relation(fields: [membershipId], references: [id])
+  rewardTransactions   RewardTransaction[]
+  userRewards          UserReward[]
+  subscriptionClaims   SubscriptionClaim[]
+  notifications        Notification[]
 }
 
 model Category {
@@ -243,6 +253,7 @@ model Order {
   updatedAt       DateTime      @updatedAt
   
   cancellationReason String?
+  earnedPoints       Float?       @default(0)
 
   returnRequests  ReturnRequest[]
   supportTickets  SupportTicket[]
@@ -562,4 +573,148 @@ model CorporateCollection {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// LOYALTY, MEMBERSHIP & REWARDS ECOSYSTEM
+// ----------------------------------------------------
+
+model MembershipLevel {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String   @unique
+  requiredAmount  Float
+  pointMultiplier Float    @default(1.0)
+  priority        Int      @default(0) // e.g. 1=Bronze, 5=Diamond
+  benefits        String[]
+  badgeUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  users           User[]
+}
+
+enum RewardType {
+  OFFER
+  COUPON
+  TICKET
+  SUBSCRIPTION
+}
+
+enum RewardClaimType {
+  DIRECT
+  POINT_REDEEM
+}
+
+enum RewardStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model LoyaltyReward {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String?
+  type            RewardType
+  claimType       RewardClaimType @default(POINT_REDEEM)
+  pointCost       Float           @default(0)
+  minMembershipPriority Int       @default(0) // E.g., 1 for Bronze+
+  expiryDays      Int?            // Expiry after claim (e.g. 30)
+  status          RewardStatus    @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Specific relations
+  offerId         String?         @db.ObjectId // If type = OFFER
+  couponId        String?         @db.ObjectId // If type = COUPON
+  
+  userRewards     UserReward[]
+}
+
+model Coupon {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  code            String       @unique
+  discountType    DiscountType
+  discountValue   Float
+  minOrderAmount  Float?
+  maxDiscount     Float?
+  usageLimit      Int?         // Total uses
+  currentUses     Int          @default(0)
+  expiryDate      DateTime?
+  status          RewardStatus @default(ACTIVE)
+  
+  // For loyalty mapping
+  pointCost       Float?       @default(0)
+  minMembershipPriority Int?   @default(0)
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+enum UserRewardStatus {
+  AVAILABLE
+  USED
+  EXPIRED
+}
+
+model UserReward {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String       @db.ObjectId
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  rewardId        String       @db.ObjectId
+  reward          LoyaltyReward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  
+  status          UserRewardStatus @default(AVAILABLE)
+  claimedAt       DateTime     @default(now())
+  expiresAt       DateTime?
+  usedAt          DateTime?
+  
+  // Example code for ticket/coupon
+  code            String?      
+}
+
+model SubscriptionClaim {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String       @db.ObjectId
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  membershipId    String       @db.ObjectId
+  claimYear       Int          
+  
+  claimedAt       DateTime     @default(now())
+}
+
+enum TransactionReason {
+  ORDER_EARN
+  REWARD_REDEEM
+  ADMIN_ADJUSTMENT
+  WELCOME_BONUS
+  REFUND_DEDUCT
+}
+
+model RewardTransaction {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String       @db.ObjectId
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  earn            Float        @default(0)
+  redeem          Float        @default(0)
+  balance         Float
+  reason          TransactionReason
+  description     String?
+  
+  orderId         String?      @db.ObjectId // If linked to order
+  
+  createdAt       DateTime     @default(now())
+}
+
+model Notification {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String       @db.ObjectId
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  message         String
+  isRead          Boolean      @default(false)
+  type            String?      // e.g., 'MEMBERSHIP_UPGRADE', 'REWARD_CLAIM'
+  createdAt       DateTime     @default(now())
 }

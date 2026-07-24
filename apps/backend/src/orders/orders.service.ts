@@ -5,6 +5,7 @@ import { ProductRepository } from '../repositories/product.repository.service';
 import { StripeService } from '../stripe/stripe.service';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { LoyaltyService } from '../loyalty/loyalty.service';
 
 import { PaymentOptionRepository } from '../repositories/payment-option.repository.service';
 
@@ -16,7 +17,8 @@ export class OrdersService {
     private productRepo: ProductRepository,
     private stripeService: StripeService,
     private prisma: PrismaService,
-    private paymentOptionRepo: PaymentOptionRepository
+    private paymentOptionRepo: PaymentOptionRepository,
+    private loyaltyService: LoyaltyService
   ) { }
 
   async createOrderFromCart(userId: string, data: {
@@ -147,6 +149,15 @@ export class OrdersService {
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus) {
-    return this.orderRepo.updateOrderStatus(orderId, status);
+    const order = await this.orderRepo.updateOrderStatus(orderId, status);
+    
+    // Loyalty Ecosystem Hook
+    if (status === 'DELIVERED') {
+      await this.loyaltyService.processOrderCompletion(orderId).catch(err => {
+        console.error(`Failed to process loyalty for order ${orderId}:`, err);
+      });
+    }
+
+    return order;
   }
 }

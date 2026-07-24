@@ -340,6 +340,19 @@ async function main() {
   });
   console.log('Corporate Collections created.');
 
+  // 10. Loyalty & Membership
+  await prisma.membershipLevel.deleteMany({});
+  await prisma.membershipLevel.createMany({
+    data: [
+      { name: "Bronze", requiredAmount: 5000, pointMultiplier: 1.0, priority: 1, benefits: ["Basic Reward Points", "Bronze Badge", "Bronze Coupons", "Basic Promotional Offers"] },
+      { name: "Silver", requiredAmount: 25000, pointMultiplier: 1.2, priority: 2, benefits: ["Higher Point Bonus", "Silver Badge", "Exclusive Offers", "Silver Coupons", "Monthly Ticket Access"] },
+      { name: "Gold", requiredAmount: 75000, pointMultiplier: 1.5, priority: 3, benefits: ["Gold Badge", "Premium Offers", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
+      { name: "Platinum", requiredAmount: 150000, pointMultiplier: 2.0, priority: 4, benefits: ["Platinum Badge", "VIP Offers", "Higher Point Multiplier", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
+      { name: "Diamond", requiredAmount: 250000, pointMultiplier: 3.0, priority: 5, benefits: ["Diamond Badge", "Highest Point Multiplier", "Exclusive Diamond Rewards", "Priority Customer Support", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
+    ]
+  });
+  console.log('Membership Levels created.');
+
   console.log('Seeding completed successfully!');
 }
 
