@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
-import { Loader2, Mail, MessageSquare, Clock, CheckCircle2 } from 'lucide-react';
+import { Loader2, Mail, MessageSquare, Clock, CheckCircle2, Trash2 } from 'lucide-react';
 
 interface Ticket {
   id: string;
@@ -42,6 +42,17 @@ export default function AdminSupportTickets() {
     } catch (error) {
       console.error('Failed to update status:', error);
       alert('Failed to update status');
+    }
+  };
+
+  const deleteTicket = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this support ticket?')) return;
+    try {
+      await apiClient.delete(`/support-tickets/${id}`);
+      fetchTickets(); // Refresh
+    } catch (error) {
+      console.error('Failed to delete ticket:', error);
+      alert('Failed to delete ticket');
     }
   };
 
@@ -127,16 +138,25 @@ export default function AdminSupportTickets() {
                       </div>
                     </td>
                     <td className="p-4 text-right space-x-2">
-                      <select
-                        value={ticket.status}
-                        onChange={(e) => updateStatus(ticket.id, e.target.value)}
-                        className="text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary-500"
-                      >
-                        <option value="OPEN">Open</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="CLOSED">Closed</option>
-                      </select>
+                      <div className="flex items-center justify-end gap-2">
+                        <select
+                          value={ticket.status}
+                          onChange={(e) => updateStatus(ticket.id, e.target.value)}
+                          className="text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                        >
+                          <option value="OPEN">Open</option>
+                          <option value="IN_PROGRESS">In Progress</option>
+                          <option value="RESOLVED">Resolved</option>
+                          <option value="CLOSED">Closed</option>
+                        </select>
+                        <button
+                          onClick={() => deleteTicket(ticket.id)}
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Ticket"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

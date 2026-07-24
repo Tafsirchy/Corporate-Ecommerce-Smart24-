@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, Req } from '@nestjs/common';
 import { SupportTicketsService } from './support-tickets.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -51,5 +51,14 @@ export class SupportTicketsController {
     @Body('status') status: SupportTicketStatus
   ) {
     return this.supportTicketsService.updateTicketStatus(id, status);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Delete a ticket (Admin only)' })
+  deleteTicket(@Param('id') id: string) {
+    return this.supportTicketsService.deleteTicket(id);
   }
 }
