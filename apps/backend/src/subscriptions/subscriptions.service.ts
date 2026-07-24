@@ -61,7 +61,7 @@ export class SubscriptionsService {
 
     // Apply Offer
     let finalTotalAmount = totalAmount;
-    let appliedOfferId = undefined;
+    let appliedOfferId: string | undefined = undefined;
     let discountAmount = 0;
 
     const activeOffers = await this.offerRepo.findActiveAmountBasedOffers();
@@ -82,7 +82,7 @@ export class SubscriptionsService {
       items: { create: itemsData },
       totalAmount: finalTotalAmount,
       discountAmount,
-      ...(appliedOfferId && { appliedOfferId }),
+      ...(appliedOfferId ? { appliedOfferId } : {}),
       deliveryAddress: data.deliveryAddress,
       contactNumber: data.contactNumber,
       billingDay: data.billingDay,
@@ -111,7 +111,7 @@ export class SubscriptionsService {
     }));
 
     let finalTotalAmount = plan.price;
-    let appliedOfferId = undefined;
+    let appliedOfferId: string | undefined = undefined;
     let discountAmount = 0;
 
     const offer = (plan as any).offer;
@@ -137,7 +137,7 @@ export class SubscriptionsService {
       items: { create: itemsData },
       totalAmount: finalTotalAmount,
       discountAmount,
-      ...(appliedOfferId && { appliedOfferId }),
+      ...(appliedOfferId ? { appliedOfferId } : {}),
       deliveryAddress: data.deliveryAddress,
       contactNumber: data.contactNumber,
       billingDay: data.billingDay,
