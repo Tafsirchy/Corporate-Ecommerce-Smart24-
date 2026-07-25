@@ -28,6 +28,7 @@ export class OrdersService {
     paymentTrxId?: string;
     paymentProofUrl?: string;
     paymentAccountNumber?: string;
+    promoCode?: string;
   }) {
     const cart = await this.cartRepo.getCartByUserId(userId);
     if (!cart || cart.items.length === 0) {
@@ -54,7 +55,21 @@ export class OrdersService {
 
     // Determine delivery charge based on simple logic for now
     const deliveryCharge = 100; // Fixed delivery charge logic
-    const grandTotal = totalAmount + deliveryCharge;
+    
+    let discountAmount = 0;
+    let appliedCouponId: string | undefined;
+    let appliedUserRewardId: string | undefined;
+
+    if (data.promoCode) {
+      const validation = await this.validatePromo(userId, data.promoCode, totalAmount);
+      if (validation.valid) {
+        discountAmount = validation.discountAmount;
+        if (validation.type === 'COUPON') appliedCouponId = validation.couponId;
+        if (validation.type === 'REWARD') appliedUserRewardId = validation.userRewardId;
+      }
+    }
+
+    const grandTotal = totalAmount - discountAmount + deliveryCharge;
 
     const order = await this.prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
@@ -62,6 +77,9 @@ export class OrdersService {
           user: { connect: { id: userId } },
           totalAmount: grandTotal,
           deliveryCharge,
+          discountAmount,
+          couponId: appliedCouponId,
+          userRewardId: appliedUserRewardId,
           shippingAddress: data.shippingAddress,
           contactNumber: data.contactNumber,
           paymentMethod: data.paymentMethod,
@@ -85,6 +103,20 @@ export class OrdersService {
       await tx.cartItem.deleteMany({
         where: { cartId: cart.id }
       });
+
+      // Update coupon or reward usage
+      if (appliedCouponId) {
+        await tx.coupon.update({
+          where: { id: appliedCouponId },
+          data: { currentUses: { increment: 1 } }
+        });
+      }
+      if (appliedUserRewardId) {
+        await tx.userReward.update({
+          where: { id: appliedUserRewardId },
+          data: { status: 'USED', usedAt: new Date() }
+        });
+      }
 
       return createdOrder;
     });
@@ -110,6 +142,74 @@ export class OrdersService {
     }
 
     return { order, clientSecret };
+  }
+
+  async validatePromo(userId: string, promoCode: string, cartTotal: number) {
+    if (!promoCode) {
+      throw new BadRequestException('Promo code is required');
+    }
+
+    // 1. Check Coupon
+    const coupon = await this.prisma.coupon.findUnique({ where: { code: promoCode } });
+    if (coupon) {
+      if (coupon.status !== 'ACTIVE') throw new BadRequestException('Coupon is inactive');
+      if (coupon.usageLimit && coupon.currentUses >= coupon.usageLimit) throw new BadRequestException('Coupon usage limit reached');
+      if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) throw new BadRequestException('Coupon has expired');
+      if (coupon.minOrderAmount && cartTotal < coupon.minOrderAmount) throw new BadRequestException(`Minimum order amount of ৳${coupon.minOrderAmount} required`);
+      
+      let discountAmount = 0;
+      if (coupon.discountType === 'PERCENTAGE') {
+        discountAmount = (cartTotal * coupon.discountValue) / 100;
+        if (coupon.maxDiscount && discountAmount > coupon.maxDiscount) {
+          discountAmount = coupon.maxDiscount;
+        }
+      } else {
+        discountAmount = coupon.discountValue;
+      }
+      
+      discountAmount = Math.min(discountAmount, cartTotal);
+      return { valid: true, type: 'COUPON', discountAmount, couponId: coupon.id };
+    }
+
+    // 2. Check UserReward
+    const userReward = await this.prisma.userReward.findFirst({
+      where: { userId, code: promoCode, status: 'AVAILABLE' },
+      include: { reward: true }
+    });
+
+    if (userReward) {
+      if (userReward.expiresAt && new Date(userReward.expiresAt) < new Date()) {
+        throw new BadRequestException('Reward ticket has expired');
+      }
+
+      let discountAmount = 0;
+      if (userReward.reward.type === 'COUPON' && userReward.reward.couponId) {
+        const linkedCoupon = await this.prisma.coupon.findUnique({
+          where: { id: userReward.reward.couponId }
+        });
+
+        if (linkedCoupon) {
+          if (linkedCoupon.minOrderAmount && cartTotal < linkedCoupon.minOrderAmount) {
+            throw new BadRequestException(`Minimum order amount of ৳${linkedCoupon.minOrderAmount} required for this ticket`);
+          }
+          if (linkedCoupon.discountType === 'PERCENTAGE') {
+            discountAmount = (cartTotal * linkedCoupon.discountValue) / 100;
+            if (linkedCoupon.maxDiscount && discountAmount > linkedCoupon.maxDiscount) {
+              discountAmount = linkedCoupon.maxDiscount;
+            }
+          } else {
+            discountAmount = linkedCoupon.discountValue;
+          }
+        }
+      } else {
+        throw new BadRequestException('This type of reward cannot be applied as a promo code');
+      }
+
+      discountAmount = Math.min(discountAmount, cartTotal);
+      return { valid: true, type: 'REWARD', discountAmount, userRewardId: userReward.id };
+    }
+
+    throw new BadRequestException('Invalid promo code or ticket');
   }
 
   async getUserOrders(userId: string) {

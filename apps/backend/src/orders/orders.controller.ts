@@ -29,6 +29,16 @@ export class OrdersController {
     return this.ordersService.createOrderFromCart(req.user.id, body);
   }
 
+  @Post('validate-promo')
+  @ApiOperation({ summary: 'Validate a promo code (Coupon or Reward ticket)' })
+  validatePromo(
+    @Req() req: any,
+    @Body('promoCode') promoCode: string,
+    @Body('cartTotal') cartTotal: number
+  ) {
+    return this.ordersService.validatePromo(req.user.id, promoCode, cartTotal);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get user orders (Admin sees all)' })
   getOrders(@Req() req: any) {

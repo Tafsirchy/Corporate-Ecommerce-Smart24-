@@ -27,6 +27,11 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState('');
   const [orderId, setOrderId] = useState('');
 
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+
   // Fetch saved payment methods on mount
   useEffect(() => {
     if (user) {
@@ -38,7 +43,35 @@ export default function CheckoutPage() {
 
   // Delivery charge logic
   const deliveryCharge = 100;
-  const grandTotal = cartTotal + deliveryCharge;
+  const grandTotal = cartTotal - discountAmount + deliveryCharge;
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setIsApplyingPromo(true);
+    try {
+      const res = await apiClient.post('/orders/validate-promo', {
+        promoCode,
+        cartTotal
+      });
+      if (res.data.valid) {
+        setDiscountAmount(res.data.discountAmount);
+        setAppliedPromo(promoCode);
+        toast.success('Promo code applied successfully!');
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Invalid promo code');
+      setDiscountAmount(0);
+      setAppliedPromo('');
+    } finally {
+      setIsApplyingPromo(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setPromoCode('');
+    setAppliedPromo('');
+    setDiscountAmount(0);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +94,7 @@ export default function CheckoutPage() {
         shippingAddress,
         contactNumber,
         paymentMethod,
+        promoCode: appliedPromo || undefined,
       };
 
       if (paymentMethod !== 'STRIPE') {
@@ -432,11 +466,54 @@ export default function CheckoutPage() {
             ))}
           </div>
 
+          <div className="border-t border-gray-200 pt-4 pb-4">
+            <h3 className="text-sm font-bold text-gray-700 mb-2">Have a coupon or reward ticket?</h3>
+            {!appliedPromo ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter code"
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black uppercase"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  disabled={isApplyingPromo}
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  disabled={isApplyingPromo || !promoCode.trim()}
+                  className="px-4 py-2 bg-black text-white rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+                >
+                  Apply
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded text-sm">
+                <div>
+                  <span className="font-bold text-green-700">{appliedPromo}</span> applied
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemovePromo}
+                  className="text-red-500 hover:underline text-xs font-medium"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="border-t border-gray-200 pt-4 space-y-2">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
               <span>৳{cartTotal}</span>
             </div>
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-green-600 font-medium">
+                <span>Discount</span>
+                <span>-৳{discountAmount}</span>
+              </div>
+            )}
             <div className="flex justify-between text-gray-600">
               <span>Delivery Charge</span>
               <span>৳{deliveryCharge}</span>

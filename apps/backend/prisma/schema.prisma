@@ -307,6 +307,12 @@ model Order {
   cancellationReason String?
   earnedPoints       Float?       @default(0)
 
+  discountAmount     Float?       @default(0)
+  couponId           String?      @db.ObjectId
+  coupon             Coupon?      @relation(fields: [couponId], references: [id])
+  userRewardId       String?      @db.ObjectId
+  userReward         UserReward?  @relation(fields: [userRewardId], references: [id])
+
   returnRequests  ReturnRequest[]
   supportTickets  SupportTicket[]
 }
@@ -700,6 +706,8 @@ model Coupon {
 
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+
+  orders          Order[]
 }
 
 enum UserRewardStatus {
@@ -723,6 +731,8 @@ model UserReward {
   
   // Example code for ticket/coupon
   code            String?      
+
+  orders          Order[]
 }
 
 model SubscriptionClaim {
