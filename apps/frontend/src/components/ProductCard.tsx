@@ -201,13 +201,13 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
               <span className="text-gray-300">|</span>
               <div className="flex items-center">
                 <Star size={10} className="fill-amber-400 text-amber-400 mr-0.5" />
-                <span>{mock.rating}</span>
+                <span>{product.rating ?? mock.rating}</span>
               </div>
             </div>
             
             <div className="flex items-center gap-1 text-gray-400">
               <MapPin size={10} />
-              <span className="truncate max-w-[65px]">{mock.location}</span>
+              <span className="truncate max-w-[65px]">{product.location || mock.location}</span>
             </div>
           </div>
         </div>

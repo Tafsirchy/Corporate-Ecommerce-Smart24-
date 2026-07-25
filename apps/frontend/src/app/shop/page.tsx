@@ -37,65 +37,15 @@ function ShopContent() {
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
 
-  const serviceOptions: FilterOption[] = [
-    { id: 'free-shipping', label: 'Free Shipping', value: 'free-shipping' },
-    { id: 'cod', label: 'Cash On Delivery', value: 'cod' },
-    { id: 'best-price', label: 'Best Price Guaranteed', value: 'best-price' },
-    { id: 'installment', label: 'Installment', value: 'installment' },
-  ];
-
-  const locationOptions: FilterOption[] = [
-    { id: 'bd', label: 'Bangladesh', value: 'bd' },
-    { id: 'overseas', label: 'Overseas', value: 'overseas' },
-  ];
-
-  const colorOptions: FilterOption[] = [
-    { id: 'black', label: 'Black', value: 'Black' },
-    { id: 'white', label: 'White', value: 'White' },
-    { id: 'red', label: 'Red', value: 'Red' },
-    { id: 'blue', label: 'Blue', value: 'Blue' },
-    { id: 'green', label: 'Green', value: 'Green' },
-    { id: 'yellow', label: 'Yellow', value: 'Yellow' },
-    { id: 'pink', label: 'Pink', value: 'Pink' },
-    { id: 'purple', label: 'Purple', value: 'Purple' },
-    { id: 'orange', label: 'Orange', value: 'Orange' },
-    { id: 'grey', label: 'Grey', value: 'Grey' },
-    { id: 'brown', label: 'Brown', value: 'Brown' },
-    { id: 'gold', label: 'Gold', value: 'Gold' },
-    { id: 'silver', label: 'Silver', value: 'Silver' },
-    { id: 'beige', label: 'Beige', value: 'Beige' },
-  ];
-
-  const warrantyOptions: FilterOption[] = [
-    { id: 'no-warranty', label: 'No Warranty', value: 'No Warranty' },
-    { id: 'local-seller', label: 'Local Seller Warranty', value: 'Local Seller Warranty' },
-    { id: 'brand', label: 'Brand Warranty', value: 'Brand Warranty' },
-    { id: 'international', label: 'International Manufacturer Warranty', value: 'International Manufacturer Warranty' },
-  ];
-
-  const brandCompOptions: FilterOption[] = [
-    { id: 'apple', label: 'Apple', value: 'Apple' },
-    { id: 'samsung', label: 'Samsung', value: 'Samsung' },
-    { id: 'xiaomi', label: 'Xiaomi', value: 'Xiaomi' },
-    { id: 'universal', label: 'Universal', value: 'Universal' },
-    { id: 'other', label: 'Other', value: 'Other' },
-  ];
-
-  const materialOptions: FilterOption[] = [
-    { id: 'silicone', label: 'Silicone', value: 'Silicone' },
-    { id: 'leather', label: 'Leather', value: 'Leather' },
-    { id: 'plastic', label: 'Plastic', value: 'Plastic' },
-    { id: 'metal', label: 'Metal', value: 'Metal' },
-    { id: 'glass', label: 'Glass', value: 'Glass' },
-  ];
-
-  const modelOptions: FilterOption[] = [
-    { id: 'iphone15pro', label: 'iPhone 15 Pro', value: 'iPhone 15 Pro' },
-    { id: 'iphone14', label: 'iPhone 14', value: 'iPhone 14' },
-    { id: 'galaxys24', label: 'Galaxy S24 Ultra', value: 'Galaxy S24 Ultra' },
-    { id: 'galaxya54', label: 'Galaxy A54', value: 'Galaxy A54' },
-    { id: 'universal-model', label: 'Universal', value: 'Universal' },
-  ];
+  const [dynamicOptions, setDynamicOptions] = useState({
+    colors: [] as FilterOption[],
+    warranties: [] as FilterOption[],
+    brandComps: [] as FilterOption[],
+    materials: [] as FilterOption[],
+    models: [] as FilterOption[],
+    services: [] as FilterOption[],
+    locations: [] as FilterOption[],
+  });
 
   useEffect(() => {
     // Fetch categories
@@ -133,7 +83,45 @@ function ShopContent() {
     setLoading(true);
     axios.get(`${apiUrl}/products?limit=1000`)
       .then(res => {
-        setAllProducts(res.data.data || res.data);
+        const products = res.data.data || res.data;
+        setAllProducts(products);
+        
+        // Extract unique filter options
+        const uniqueColors = new Set<string>();
+        const uniqueWarranties = new Set<string>();
+        const uniqueBrandComps = new Set<string>();
+        const uniqueMaterials = new Set<string>();
+        const uniqueModels = new Set<string>();
+        const uniqueLocations = new Set<string>();
+        const uniqueServices = new Set<string>();
+
+        products.forEach((p: any) => {
+          if (p.color) uniqueColors.add(p.color);
+          if (p.warrantyType) uniqueWarranties.add(p.warrantyType);
+          if (p.brandCompatibility) uniqueBrandComps.add(p.brandCompatibility);
+          if (p.caseMaterial) uniqueMaterials.add(p.caseMaterial);
+          if (p.compatibilityByModel) uniqueModels.add(p.compatibilityByModel);
+          if (p.location) uniqueLocations.add(p.location);
+          if (p.services && Array.isArray(p.services)) p.services.forEach((s: string) => uniqueServices.add(s));
+        });
+
+        setDynamicOptions({
+          colors: Array.from(uniqueColors).map(c => ({ id: c, label: c, value: c })),
+          warranties: Array.from(uniqueWarranties).map(w => ({ id: w, label: w, value: w })),
+          brandComps: Array.from(uniqueBrandComps).map(b => ({ id: b, label: b, value: b })),
+          materials: Array.from(uniqueMaterials).map(m => ({ id: m, label: m, value: m })),
+          models: Array.from(uniqueModels).map(m => ({ id: m, label: m, value: m })),
+          locations: Array.from(uniqueLocations).map(l => ({ id: l, label: l, value: l })),
+          services: Array.from(uniqueServices).map(s => {
+            const labels: Record<string, string> = {
+              'free-shipping': 'Free Shipping',
+              'cod': 'Cash On Delivery',
+              'best-price': 'Best Price Guaranteed',
+              'installment': 'Installment'
+            };
+            return { id: s, label: labels[s] || s.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), value: s };
+          })
+        });
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -201,37 +189,36 @@ function ShopContent() {
     // 5. Rating
     if (selectedRating !== null) {
       filteredProducts = filteredProducts.filter((p: any) => {
-        const mock = generateMockData(p.id);
-        return mock.rating >= selectedRating;
+        return (p.rating || 0) >= selectedRating;
       });
     }
     // 6. Color
     if (selectedColors.length > 0) {
-      filteredProducts = filteredProducts.filter((p: any) => selectedColors.includes(generateMockData(p.id).color));
+      filteredProducts = filteredProducts.filter((p: any) => p.color && selectedColors.includes(p.color));
     }
     // 7. Warranties
     if (selectedWarranties.length > 0) {
-      filteredProducts = filteredProducts.filter((p: any) => selectedWarranties.includes(generateMockData(p.id).warrantyType));
+      filteredProducts = filteredProducts.filter((p: any) => p.warrantyType && selectedWarranties.includes(p.warrantyType));
     }
     // 8. Brand Compatibility
     if (selectedBrandComps.length > 0) {
-      filteredProducts = filteredProducts.filter((p: any) => selectedBrandComps.includes(generateMockData(p.id).brandCompatibility));
+      filteredProducts = filteredProducts.filter((p: any) => p.brandCompatibility && selectedBrandComps.includes(p.brandCompatibility));
     }
     // 9. Case Material
     if (selectedMaterials.length > 0) {
-      filteredProducts = filteredProducts.filter((p: any) => selectedMaterials.includes(generateMockData(p.id).caseMaterial));
+      filteredProducts = filteredProducts.filter((p: any) => p.caseMaterial && selectedMaterials.includes(p.caseMaterial));
     }
     // 10. Compatibility by Model
     if (selectedModels.length > 0) {
-      filteredProducts = filteredProducts.filter((p: any) => selectedModels.includes(generateMockData(p.id).compatibilityByModel));
+      filteredProducts = filteredProducts.filter((p: any) => p.compatibilityByModel && selectedModels.includes(p.compatibilityByModel));
     }
-    // 11. Shipped From (mock location)
+    // 11. Shipped From
     if (selectedLocations.length > 0) {
-      filteredProducts = filteredProducts.filter((p: any) => {
-        const loc = generateMockData(p.id).location;
-        const isBD = loc !== 'Overseas';
-        return selectedLocations.includes(isBD ? 'bd' : 'overseas');
-      });
+      filteredProducts = filteredProducts.filter((p: any) => p.location && selectedLocations.includes(p.location));
+    }
+    // 12. Services
+    if (selectedServices.length > 0) {
+      filteredProducts = filteredProducts.filter((p: any) => p.services && selectedServices.every((s: string) => p.services.includes(s)));
     }
 
     // Apply Sorting
@@ -272,12 +259,14 @@ function ShopContent() {
               onChange={setSelectedBrands} 
             />
           )}
-          <FilterSidebar 
-            title="Service & Promotion" 
-            options={serviceOptions} 
-            selectedValues={selectedServices} 
-            onChange={setSelectedServices} 
-          />
+          {dynamicOptions.services.length > 0 && (
+            <FilterSidebar 
+              title="Service & Promotion" 
+              options={dynamicOptions.services} 
+              selectedValues={selectedServices} 
+              onChange={setSelectedServices} 
+            />
+          )}
           <PriceFilter 
             minPrice={minPrice} 
             maxPrice={maxPrice} 
@@ -290,42 +279,54 @@ function ShopContent() {
             selectedRating={selectedRating} 
             onChange={setSelectedRating} 
           />
-          <FilterSidebar 
-            title="Color Family" 
-            options={colorOptions} 
-            selectedValues={selectedColors} 
-            onChange={setSelectedColors} 
-          />
-          <FilterSidebar 
-            title="Warranty Type" 
-            options={warrantyOptions} 
-            selectedValues={selectedWarranties} 
-            onChange={setSelectedWarranties} 
-          />
-          <FilterSidebar 
-            title="Brand Compatibility" 
-            options={brandCompOptions} 
-            selectedValues={selectedBrandComps} 
-            onChange={setSelectedBrandComps} 
-          />
-          <FilterSidebar 
-            title="Case Material" 
-            options={materialOptions} 
-            selectedValues={selectedMaterials} 
-            onChange={setSelectedMaterials} 
-          />
-          <FilterSidebar 
-            title="Compatibility By Model" 
-            options={modelOptions} 
-            selectedValues={selectedModels} 
-            onChange={setSelectedModels} 
-          />
-          <FilterSidebar 
-            title="Shipped From" 
-            options={locationOptions} 
-            selectedValues={selectedLocations} 
-            onChange={setSelectedLocations} 
-          />
+          {dynamicOptions.colors.length > 0 && (
+            <FilterSidebar 
+              title="Color Family" 
+              options={dynamicOptions.colors} 
+              selectedValues={selectedColors} 
+              onChange={setSelectedColors} 
+            />
+          )}
+          {dynamicOptions.warranties.length > 0 && (
+            <FilterSidebar 
+              title="Warranty Type" 
+              options={dynamicOptions.warranties} 
+              selectedValues={selectedWarranties} 
+              onChange={setSelectedWarranties} 
+            />
+          )}
+          {dynamicOptions.brandComps.length > 0 && (
+            <FilterSidebar 
+              title="Brand Compatibility" 
+              options={dynamicOptions.brandComps} 
+              selectedValues={selectedBrandComps} 
+              onChange={setSelectedBrandComps} 
+            />
+          )}
+          {dynamicOptions.materials.length > 0 && (
+            <FilterSidebar 
+              title="Case Material" 
+              options={dynamicOptions.materials} 
+              selectedValues={selectedMaterials} 
+              onChange={setSelectedMaterials} 
+            />
+          )}
+          {dynamicOptions.models.length > 0 && (
+            <FilterSidebar 
+              title="Compatibility By Model" 
+              options={dynamicOptions.models} 
+              selectedValues={selectedModels} 
+              onChange={setSelectedModels} 
+            />
+          )}
+          {dynamicOptions.locations.length > 0 && (
+            <FilterSidebar 
+              title="Shipped From" 
+              options={dynamicOptions.locations} 
+              selectedValues={selectedLocations} 
+              onChange={setSelectedLocations} 
+            />
+          )}
         </aside>
 
         {/* Product Grid */}
@@ -378,7 +379,7 @@ function ShopContent() {
             const activeFilters = [];
             
             selectedBrands.forEach(b => activeFilters.push({ id: `brand-${b}`, label: b, onRemove: () => setSelectedBrands(prev => prev.filter(x => x !== b)) }));
-            selectedServices.forEach(s => activeFilters.push({ id: `service-${s}`, label: serviceOptions.find(o => o.value === s)?.label || s, onRemove: () => setSelectedServices(prev => prev.filter(x => x !== s)) }));
+            selectedServices.forEach(s => activeFilters.push({ id: `service-${s}`, label: dynamicOptions.services.find(o => o.value === s)?.label || s, onRemove: () => setSelectedServices(prev => prev.filter(x => x !== s)) }));
             if (minPrice !== null || maxPrice !== null) {
                activeFilters.push({ id: 'price', label: `Price: ${minPrice || 0} - ${maxPrice || 'Any'}`, onRemove: () => { setMinPrice(null); setMaxPrice(null); } });
             }
@@ -390,7 +391,7 @@ function ShopContent() {
             selectedBrandComps.forEach(b => activeFilters.push({ id: `brandcomp-${b}`, label: b, onRemove: () => setSelectedBrandComps(prev => prev.filter(x => x !== b)) }));
             selectedMaterials.forEach(m => activeFilters.push({ id: `material-${m}`, label: m, onRemove: () => setSelectedMaterials(prev => prev.filter(x => x !== m)) }));
             selectedModels.forEach(m => activeFilters.push({ id: `model-${m}`, label: m, onRemove: () => setSelectedModels(prev => prev.filter(x => x !== m)) }));
-            selectedLocations.forEach(l => activeFilters.push({ id: `location-${l}`, label: locationOptions.find(o => o.value === l)?.label || l, onRemove: () => setSelectedLocations(prev => prev.filter(x => x !== l)) }));
+            selectedLocations.forEach(l => activeFilters.push({ id: `location-${l}`, label: dynamicOptions.locations.find(o => o.value === l)?.label || l, onRemove: () => setSelectedLocations(prev => prev.filter(x => x !== l)) }));
 
             if (activeFilters.length === 0) return null;
 
