@@ -9,6 +9,15 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
+if (typeof window !== 'undefined') {
+  let sessionId = localStorage.getItem('session_id');
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem('session_id', sessionId);
+  }
+  apiClient.defaults.headers.common['x-session-id'] = sessionId;
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Resend } from 'resend';
 import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { CartRepositoryService } from '../repositories/cart.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
@@ -11,6 +12,8 @@ import { PaymentOptionRepository } from '../repositories/payment-option.reposito
 
 @Injectable()
 export class OrdersService {
+  private resend: Resend;
+
   constructor(
     private orderRepo: OrderRepositoryService,
     private cartRepo: CartRepositoryService,
@@ -19,18 +22,28 @@ export class OrdersService {
     private prisma: PrismaService,
     private paymentOptionRepo: PaymentOptionRepository,
     private loyaltyService: LoyaltyService
-  ) { }
+  ) { 
+    if (process.env.RESEND_API_KEY) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    }
+  }
 
-  async createOrderFromCart(userId: string, data: {
+  async createOrderFromCart(userId: string | undefined, sessionId: string | undefined, data: {
     shippingAddress: string;
     contactNumber: string;
+    saveAddress?: boolean;
     paymentMethod: PaymentMethod;
     paymentTrxId?: string;
     paymentProofUrl?: string;
     paymentAccountNumber?: string;
     promoCode?: string;
+    guestEmail?: string;
+    guestName?: string;
   }) {
-    const cart = await this.cartRepo.getCartByUserId(userId);
+    if (!userId && !sessionId) throw new BadRequestException('Session missing');
+    if (!userId && !data.guestEmail) throw new BadRequestException('Guest email is required');
+
+    const cart = await this.cartRepo.getCart(userId, sessionId);
     if (!cart || cart.items.length === 0) {
       throw new BadRequestException('Cart is empty');
     }
@@ -56,35 +69,40 @@ export class OrdersService {
     // Determine delivery charge based on simple logic for now
     const deliveryCharge = 100; // Fixed delivery charge logic
     
-    let discountAmount = 0;
+    let grandTotal = totalAmount + deliveryCharge;
+    let finalDiscountAmount = 0;
     let appliedCouponId: string | undefined;
     let appliedUserRewardId: string | undefined;
 
-    if (data.promoCode) {
-      const validation = await this.validatePromo(userId, data.promoCode, totalAmount);
-      if (validation.valid) {
-        discountAmount = validation.discountAmount;
-        if (validation.type === 'COUPON') appliedCouponId = validation.couponId;
-        if (validation.type === 'REWARD') appliedUserRewardId = validation.userRewardId;
-      }
-    }
-
-    const grandTotal = totalAmount - discountAmount + deliveryCharge;
-
     const order = await this.prisma.$transaction(async (tx) => {
+      let discountAmount = 0;
+      if (data.promoCode) {
+        if (!userId) throw new BadRequestException('Promo codes are only available for registered users');
+        const validation = await this.validatePromo(userId, data.promoCode, totalAmount, tx);
+        if (validation.valid) {
+          discountAmount = validation.discountAmount;
+          if (validation.type === 'COUPON') appliedCouponId = validation.couponId;
+          if (validation.type === 'REWARD') appliedUserRewardId = validation.userRewardId;
+        }
+      }
+
+      finalDiscountAmount = discountAmount;
+      grandTotal = totalAmount - discountAmount + deliveryCharge;
       const createdOrder = await tx.order.create({
         data: {
-          user: { connect: { id: userId } },
+          userId: userId || null,
+          guestEmail: !userId ? (data.guestEmail || null) : null,
+          guestName: !userId ? (data.guestName || null) : null,
           totalAmount: grandTotal,
           deliveryCharge,
           discountAmount,
-          couponId: appliedCouponId,
-          userRewardId: appliedUserRewardId,
+          couponId: appliedCouponId || null,
+          userRewardId: appliedUserRewardId || null,
           shippingAddress: data.shippingAddress,
           contactNumber: data.contactNumber,
           paymentMethod: data.paymentMethod,
-          paymentTrxId: data.paymentTrxId,
-          paymentProofUrl: data.paymentProofUrl,
+          paymentTrxId: data.paymentTrxId || null,
+          paymentProofUrl: data.paymentProofUrl || null,
           items: {
             create: orderItems
           }
@@ -125,7 +143,7 @@ export class OrdersService {
     if (data.paymentMethod === 'STRIPE') {
       const paymentIntent = await this.stripeService.createPaymentIntent(grandTotal, 'bdt', order.id);
       clientSecret = paymentIntent.client_secret;
-    } else if (data.paymentAccountNumber) {
+    } else if (data.paymentAccountNumber && userId) {
       // Auto-save the payment option for non-STRIPE payments if an account number is provided
       const existing = await this.paymentOptionRepo.findByUserIdAndProviderAndAccountNumber(
         userId,
@@ -141,16 +159,63 @@ export class OrdersService {
       }
     }
 
+    if (this.resend) {
+      let emailToSendTo = data.guestEmail;
+      let userName = data.guestName || 'Guest';
+      
+      if (userId) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (user && user.email) {
+          emailToSendTo = user.email;
+          userName = user.name || 'User';
+        }
+      }
+
+      if (emailToSendTo) {
+        await this.resend.emails.send({
+          from: 'Smart24 Orders <onboarding@resend.dev>',
+          to: emailToSendTo,
+          subject: `Order Confirmation - ${order.id}`,
+          html: `<p>Thank you for your order, ${userName}! Your total is ৳${grandTotal}. We are processing it now.</p>`
+        }).catch(err => console.error('Email error:', err));
+      }
+
+      // Auto-save address for registered users only, if requested
+      if (userId && data.saveAddress === true) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const existingAddress = await this.prisma.address.findFirst({
+          where: { userId, address: data.shippingAddress }
+        });
+        if (!existingAddress) {
+          await this.prisma.address.create({
+            data: {
+              userId,
+              fullName: userName,
+              address: data.shippingAddress,
+              postcode: '0000',
+              phone: data.contactNumber || '',
+              label: 'HOME'
+            }
+          });
+        }
+      }
+    }
+
     return { order, clientSecret };
   }
 
-  async validatePromo(userId: string, promoCode: string, cartTotal: number) {
+  async validatePromo(userId: string | undefined, promoCode: string, cartTotal: number, txClient?: any) {
+    if (!userId) throw new BadRequestException('Promo codes are only available for registered users');
     if (!promoCode) {
       throw new BadRequestException('Promo code is required');
     }
 
+    const prismaClient = txClient || this.prisma;
+
     // 1. Check Coupon
-    const coupon = await this.prisma.coupon.findUnique({ where: { code: promoCode } });
+    const coupon = await prismaClient.coupon.findFirst({ 
+      where: { code: { equals: promoCode, mode: 'insensitive' } } 
+    });
     if (coupon) {
       if (coupon.status !== 'ACTIVE') throw new BadRequestException('Coupon is inactive');
       if (coupon.usageLimit && coupon.currentUses >= coupon.usageLimit) throw new BadRequestException('Coupon usage limit reached');
@@ -172,8 +237,8 @@ export class OrdersService {
     }
 
     // 2. Check UserReward
-    const userReward = await this.prisma.userReward.findFirst({
-      where: { userId, code: promoCode, status: 'AVAILABLE' },
+    const userReward = await prismaClient.userReward.findFirst({
+      where: { userId, code: { equals: promoCode, mode: 'insensitive' }, status: 'AVAILABLE' },
       include: { reward: true }
     });
 
@@ -184,7 +249,7 @@ export class OrdersService {
 
       let discountAmount = 0;
       if (userReward.reward.type === 'COUPON' && userReward.reward.couponId) {
-        const linkedCoupon = await this.prisma.coupon.findUnique({
+        const linkedCoupon = await prismaClient.coupon.findUnique({
           where: { id: userReward.reward.couponId }
         });
 
@@ -251,8 +316,22 @@ export class OrdersService {
   async updateOrderStatus(orderId: string, status: OrderStatus) {
     const order = await this.orderRepo.updateOrderStatus(orderId, status);
     
-    // Loyalty Ecosystem Hook
+    // Send delivery email
     if (status === 'DELIVERED') {
+      if (this.resend) {
+        const orderData = await this.orderRepo.findOrderById(orderId);
+        const email = orderData?.guestEmail || orderData?.user?.email;
+        if (orderData && email) {
+          await this.resend.emails.send({
+             from: 'Smart24 Orders <onboarding@resend.dev>',
+             to: email,
+             subject: `Order Delivered - ${orderId}`,
+             html: `<p>Your order ${orderId} has been delivered. Enjoy your products!</p>`
+          }).catch(err => console.error('Email error:', err));
+        }
+      }
+
+      // Loyalty Ecosystem Hook
       await this.loyaltyService.processOrderCompletion(orderId).catch(err => {
         console.error(`Failed to process loyalty for order ${orderId}:`, err);
       });

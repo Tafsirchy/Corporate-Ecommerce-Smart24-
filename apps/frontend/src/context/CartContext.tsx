@@ -31,44 +31,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const loadCart = async () => {
-      if (user) {
-        try {
-          const localItems = JSON.parse(localStorage.getItem('cart') || '[]');
-          if (localItems.length > 0) {
+      try {
+        // If there are local items left from old code, merge them
+        const localItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (localItems.length > 0) {
+          if (user) {
             await apiClient.post('/cart/merge', { 
               items: localItems.map((i: any) => ({ productId: i.productId, quantity: i.quantity }))
             });
             localStorage.removeItem('cart');
           }
-          const res = await apiClient.get('/cart');
-          if (res.data?.items) {
-            const serverItems = res.data.items.map((i: any) => ({
-              productId: i.productId,
-              quantity: i.quantity,
-              product: i.product
-            }));
-            setItems(serverItems);
-          }
-        } catch (e: any) {
-          if (e?.response?.status !== 401) {
-            console.error("Failed to load server cart", e);
-          }
         }
-      } else {
-        const localItems = JSON.parse(localStorage.getItem('cart') || '[]');
-        setItems(localItems);
+        
+        const res = await apiClient.get('/cart');
+        if (res.data?.items) {
+          const serverItems = res.data.items.map((i: any) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+            product: i.product
+          }));
+          setItems(serverItems);
+        }
+      } catch (e: any) {
+        if (e?.response?.status !== 401) {
+          console.error("Failed to load server cart", e);
+        }
       }
       setIsInitialized(true);
     };
 
     loadCart();
   }, [user]);
-
-  useEffect(() => {
-    if (isInitialized && !user) {
-      localStorage.setItem('cart', JSON.stringify(items));
-    }
-  }, [items, user, isInitialized]);
 
   const addToCart = async (product: any, quantity = 1) => {
     if (pendingItems[product.id]) return;
@@ -89,16 +82,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return newItems;
     });
 
-    if (user) {
-      try {
-        await apiClient.post('/cart/items', { productId: product.id, quantity: newQty });
-        toast.success(`${product.name} added to cart`);
-      } catch (e: any) {
-        setItems(previousItems);
-        toast.error(e?.response?.data?.message || 'Failed to add to cart');
-      }
-    } else {
+    try {
+      await apiClient.post('/cart/items', { productId: product.id, quantity: newQty });
       toast.success(`${product.name} added to cart`);
+    } catch (e: any) {
+      setItems(previousItems);
+      toast.error(e?.response?.data?.message || 'Failed to add to cart');
     }
 
     setPendingItems(prev => ({ ...prev, [product.id]: false }));
@@ -112,13 +101,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const previousItems = [...items];
     setItems(prev => prev.map(item => item.productId === productId ? { ...item, quantity } : item));
 
-    if (user) {
-      try {
-        await apiClient.post('/cart/items', { productId, quantity });
-      } catch (e: any) {
-        setItems(previousItems);
-        toast.error(e?.response?.data?.message || 'Failed to update quantity');
-      }
+    try {
+      await apiClient.post('/cart/items', { productId, quantity });
+    } catch (e: any) {
+      setItems(previousItems);
+      toast.error(e?.response?.data?.message || 'Failed to update quantity');
     }
   };
 
@@ -126,19 +113,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const previousItems = [...items];
     setItems(prev => prev.filter(item => item.productId !== productId));
 
-    if (user) {
-      try {
-        await apiClient.delete(`/cart/items/${productId}`);
-      } catch (e: any) {
-        setItems(previousItems);
-        toast.error(e?.response?.data?.message || 'Failed to remove item');
-      }
+    try {
+      await apiClient.delete(`/cart/items/${productId}`);
+    } catch (e: any) {
+      setItems(previousItems);
+      toast.error(e?.response?.data?.message || 'Failed to remove item');
     }
   };
 
   const clearCart = () => {
     setItems([]);
-    if (!user) localStorage.removeItem('cart');
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);

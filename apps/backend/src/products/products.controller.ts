@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -71,6 +71,12 @@ export class ProductsController {
   @ApiOperation({ summary: 'Get a product by ID' })
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
+  }
+
+  @Post(':id/alert')
+  @ApiOperation({ summary: 'Subscribe to back-in-stock alerts' })
+  subscribeToAlert(@Param('id') id: string, @Body('email') email: string, @Req() req: any) {
+    return this.productsService.subscribeToAlert(id, email, req.user?.id);
   }
 
   @Patch(':id')

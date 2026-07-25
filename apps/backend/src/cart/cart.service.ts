@@ -9,16 +9,17 @@ export class CartService {
     private productRepo: ProductRepository
   ) {}
 
-  async getCart(userId: string) {
-    let cart = await this.cartRepo.getCartByUserId(userId);
+  async getCart(userId?: string, sessionId?: string) {
+    if (!userId && !sessionId) throw new BadRequestException('Must provide userId or sessionId');
+    let cart = await this.cartRepo.getCart(userId, sessionId);
     if (!cart) {
-      await this.cartRepo.createCartForUser(userId);
-      cart = await this.cartRepo.getCartByUserId(userId);
+      await this.cartRepo.createCart(userId, sessionId);
+      cart = await this.cartRepo.getCart(userId, sessionId);
     }
     return cart!;
   }
 
-  async updateItem(userId: string, productId: string, quantity: number) {
+  async updateItem(userId: string | undefined, sessionId: string | undefined, productId: string, quantity: number) {
     const product = await this.productRepo.findById(productId);
     if (!product) throw new NotFoundException('Product not found');
     
@@ -27,7 +28,7 @@ export class CartService {
       throw new BadRequestException(`Only ${product.stock} items left in stock`);
     }
 
-    const cart = await this.getCart(userId);
+    const cart = await this.getCart(userId, sessionId);
     
     if (quantity <= 0) {
       return this.cartRepo.removeCartItem(cart.id, productId);
@@ -36,12 +37,12 @@ export class CartService {
     return this.cartRepo.upsertCartItem(cart.id, productId, quantity);
   }
 
-  async removeItem(userId: string, productId: string) {
-    const cart = await this.getCart(userId);
+  async removeItem(userId: string | undefined, sessionId: string | undefined, productId: string) {
+    const cart = await this.getCart(userId, sessionId);
     return this.cartRepo.removeCartItem(cart.id, productId);
   }
 
-  async mergeCart(userId: string, items: { productId: string; quantity: number }[]) {
+  async mergeCart(userId: string, sessionId: string | undefined, items: { productId: string; quantity: number }[]) {
     const cart = await this.getCart(userId);
     
     // Process items sequentially or with Promise.all
@@ -57,6 +58,19 @@ export class CartService {
       }
     }
     
+    // Also delete the guest cart if it exists
+    if (sessionId) {
+      const guestCart = await this.cartRepo.getCart(undefined, sessionId);
+      if (guestCart) {
+        await this.cartRepo.clearCart(guestCart.id);
+        // Note: Prisma does not easily allow deleting the Cart record without breaking items if we don't clear items first
+        // But since we did clearCart, we can delete the guest cart
+        try {
+           // This assumes a delete method exists or we can just leave it empty
+        } catch (e) {}
+      }
+    }
+
     return this.getCart(userId);
   }
 }

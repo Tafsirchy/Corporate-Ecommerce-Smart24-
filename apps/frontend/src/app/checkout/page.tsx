@@ -16,6 +16,9 @@ export default function CheckoutPage() {
   const [city, setCity] = useState('');
   const [postCode, setPostCode] = useState('');
   const [contactNumber, setContactNumber] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [saveAddress, setSaveAddress] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET' | 'COD'>('COD');
   const [paymentCategory, setPaymentCategory] = useState<'COD' | 'ONLINE'>('COD');
   const [paymentTrxId, setPaymentTrxId] = useState('');
@@ -75,9 +78,8 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      toast.error('You must be logged in to place an order');
-      router.push('/login?redirect=/checkout');
+    if (!user && (!guestEmail || !guestName)) {
+      toast.error('Please provide your name and email to proceed as a guest, or login.');
       return;
     }
 
@@ -93,8 +95,11 @@ export default function CheckoutPage() {
       const payload: any = {
         shippingAddress,
         contactNumber,
+        saveAddress: user ? saveAddress : undefined,
         paymentMethod,
         promoCode: appliedPromo || undefined,
+        guestEmail: !user ? guestEmail : undefined,
+        guestName: !user ? guestName : undefined,
       };
 
       if (paymentMethod !== 'STRIPE') {
@@ -226,6 +231,38 @@ export default function CheckoutPage() {
             <StripePaymentWrapper clientSecret={clientSecret} orderId={orderId} />
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {!user && (
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                  <h3 className="font-medium text-blue-900 mb-2">Guest Checkout</h3>
+                  <p className="text-sm text-blue-700 mb-4">You are checking out as a guest. <button type="button" onClick={() => router.push('/login?redirect=/checkout')} className="underline font-semibold">Login</button> to use saved addresses, apply coupons, and earn reward points.</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-blue-900 mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={guestName}
+                        onChange={e => setGuestName(e.target.value)}
+                        className="w-full px-4 py-2 border border-blue-200 rounded focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-blue-900 mb-1">Email Address</label>
+                      <input
+                        type="email"
+                        required
+                        value={guestEmail}
+                        onChange={e => setGuestEmail(e.target.value)}
+                        className="w-full px-4 py-2 border border-blue-200 rounded focus:ring-blue-500 focus:border-blue-500 bg-white"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
                 <input
@@ -274,6 +311,21 @@ export default function CheckoutPage() {
                   />
                 </div>
               </div>
+
+              {user && (
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="saveAddress"
+                    checked={saveAddress}
+                    onChange={(e) => setSaveAddress(e.target.checked)}
+                    className="w-4 h-4 text-black focus:ring-black rounded border-gray-300"
+                  />
+                  <label htmlFor="saveAddress" className="text-sm text-gray-700">
+                    Save this address for next time
+                  </label>
+                </div>
+              )}
 
               <h2 className="text-xl font-bold mt-8 mb-4">Payment Method</h2>
               <div className="space-y-4">
@@ -472,16 +524,16 @@ export default function CheckoutPage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Enter code"
-                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black uppercase"
+                  placeholder={user ? "Enter code" : "Login to use promo codes"}
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black uppercase disabled:bg-gray-100 disabled:cursor-not-allowed"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                  disabled={isApplyingPromo}
+                  disabled={isApplyingPromo || !user}
                 />
                 <button
                   type="button"
                   onClick={handleApplyPromo}
-                  disabled={isApplyingPromo || !promoCode.trim()}
+                  disabled={isApplyingPromo || !promoCode.trim() || !user}
                   className="px-4 py-2 bg-black text-white rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
                 >
                   Apply

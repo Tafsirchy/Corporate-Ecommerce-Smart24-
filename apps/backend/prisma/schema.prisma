@@ -69,6 +69,7 @@ model User {
   userRewards          UserReward[]
   subscriptionClaims   SubscriptionClaim[]
   notifications        Notification[]
+  backInStockAlerts    BackInStockAlert[]
 }
 
 model Category {
@@ -203,13 +204,20 @@ model Product {
   customSubscriptionItems SubscriptionItem[]
   quotations        Quotation[]
   reviews           Review[]
+  backInStockAlerts BackInStockAlert[]
 }
 
 model Cart {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
   userId    String?    @unique @db.ObjectId
   user      User?      @relation(fields: [userId], references: [id])
+  sessionId String?    @unique // For guest carts
+  
   items     CartItem[]
+  
+  reminderCount Int      @default(0)
+  lastReminderSentAt DateTime?
+  
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -280,8 +288,11 @@ enum PaymentStatus {
 model Order {
   id              String        @id @default(auto()) @map("_id") @db.ObjectId
   
-  userId          String        @db.ObjectId
-  user            User          @relation(fields: [userId], references: [id])
+  userId          String?       @db.ObjectId
+  user            User?         @relation(fields: [userId], references: [id])
+  
+  guestEmail      String?
+  guestName       String?
   
   items           OrderItem[]
   
@@ -779,4 +790,17 @@ model Notification {
   isRead          Boolean      @default(false)
   type            String?      // e.g., 'MEMBERSHIP_UPGRADE', 'REWARD_CLAIM'
   createdAt       DateTime     @default(now())
+}
+
+model BackInStockAlert {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  email     String
+  userId    String?  @db.ObjectId
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  isNotified Boolean @default(false)
+  createdAt  DateTime @default(now())
 }

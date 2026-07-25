@@ -24,6 +24,12 @@ export default function ProductDetailPage() {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', imageFile: null as File | null });
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [submittingReview, setSubmittingReview] = useState(false);
+  
+  // Stock alert states
+  const [alertEmail, setAlertEmail] = useState('');
+  const [subscribingAlert, setSubscribingAlert] = useState(false);
+  const [isAlertSubscribed, setIsAlertSubscribed] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
@@ -52,6 +58,27 @@ export default function ProductDetailPage() {
   useEffect(() => {
     fetchProductAndReviews();
   }, [slug, apiUrl]);
+
+  useEffect(() => {
+    if (user && user.email) {
+      setAlertEmail(user.email);
+    }
+  }, [user]);
+
+  const handleSubscribeAlert = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!alertEmail) return;
+    setSubscribingAlert(true);
+    try {
+      await apiClient.post(`/products/${product?.id}/alert`, { email: alertEmail });
+      toast.success("You will be notified when this product is back in stock!");
+      setIsAlertSubscribed(true);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to subscribe to alerts");
+    } finally {
+      setSubscribingAlert(false);
+    }
+  };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -287,19 +314,50 @@ export default function ProductDetailPage() {
                       <Plus size={16} />
                     </button>
                   </div>
-                  <span className="text-sm text-gray-500">Only {(product as any).stock || 50} items left</span>
+                  <span className="text-sm text-gray-500">Only {(product as any).stock ?? 50} items left</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4">
-              <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98]">
-                Buy Now
-              </button>
-              <button className="flex-1 bg-orange-50 text-primary-600 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
-                Add to Cart
-              </button>
-            </div>
+            {((product as any).stock ?? 50) > 0 ? (
+              <div className="flex gap-3 pt-4">
+                <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98]">
+                  Buy Now
+                </button>
+                <button className="flex-1 bg-orange-50 text-primary-600 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
+                  Add to Cart
+                </button>
+              </div>
+            ) : (
+              <div className="pt-4 space-y-3">
+                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm font-medium border border-red-100">
+                  Currently Out of Stock
+                </div>
+                {isAlertSubscribed ? (
+                  <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-sm font-medium border border-green-100">
+                    We'll email you when it's back in stock!
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubscribeAlert} className="flex gap-2">
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="Enter email for restock alert"
+                      value={alertEmail}
+                      onChange={e => setAlertEmail(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                    />
+                    <button 
+                      type="submit" 
+                      disabled={subscribingAlert}
+                      className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-70"
+                    >
+                      {subscribingAlert ? 'Subscribing...' : 'Notify Me'}
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Column 3: Delivery & Service (25%) */}

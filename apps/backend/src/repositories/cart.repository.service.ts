@@ -5,9 +5,10 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CartRepositoryService {
   constructor(private prisma: PrismaService) {}
 
-  async getCartByUserId(userId: string) {
-    return this.prisma.cart.findUnique({
-      where: { userId },
+  async getCart(userId?: string, sessionId?: string) {
+    if (!userId && !sessionId) return null;
+    return this.prisma.cart.findFirst({
+      where: userId ? { userId } : { sessionId },
       include: {
         items: {
           include: {
@@ -23,9 +24,13 @@ export class CartRepositoryService {
     });
   }
 
-  async createCartForUser(userId: string) {
+  async createCart(userId?: string, sessionId?: string) {
+    if (!userId && !sessionId) throw new Error('Must provide userId or sessionId');
     return this.prisma.cart.create({
-      data: { userId },
+      data: { 
+        userId: userId || null, 
+        sessionId: sessionId || null 
+      },
       include: { items: true }
     });
   }

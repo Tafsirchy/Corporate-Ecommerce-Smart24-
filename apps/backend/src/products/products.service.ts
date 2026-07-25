@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Resend } from 'resend';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from '../repositories/product.repository.service';
@@ -7,10 +8,16 @@ import slugify from 'slugify';
 
 @Injectable()
 export class ProductsService {
+  private resend: Resend;
+
   constructor(
     private productRepository: ProductRepository,
     private prisma: PrismaService
-  ) {}
+  ) {
+    if (process.env.RESEND_API_KEY) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    }
+  }
 
   async create(createProductDto: CreateProductDto) {
     const slug = slugify(createProductDto.name, { lower: true, strict: true });
@@ -287,6 +294,38 @@ export class ProductsService {
     return product;
   }
 
+  async subscribeToAlert(productId: string, email: string, userId?: string) {
+    const product = await this.productRepository.findById(productId);
+    if (!product) throw new NotFoundException('Product not found');
+
+    if (product.stock > 0) {
+      throw new BadRequestException('Product is already in stock');
+    }
+
+    const existingAlert = await this.prisma.backInStockAlert.findFirst({
+      where: { productId, email }
+    });
+
+    if (existingAlert) {
+      if (!existingAlert.isNotified) {
+         throw new ConflictException('You are already subscribed to this alert');
+      } else {
+         return this.prisma.backInStockAlert.update({
+            where: { id: existingAlert.id },
+            data: { isNotified: false }
+         });
+      }
+    }
+
+    return this.prisma.backInStockAlert.create({
+      data: {
+        productId,
+        email,
+        userId
+      }
+    });
+  }
+
   async update(id: string, updateProductDto: UpdateProductDto) {
     let slug;
     if (updateProductDto.name) {
@@ -301,12 +340,35 @@ export class ProductsService {
     delete dataToUpdate.categoryId;
     delete dataToUpdate.brandId;
 
-    return this.productRepository.update(id, {
+    const updatedProduct = await this.productRepository.update(id, {
       ...dataToUpdate,
       ...(slug && { slug }),
       ...(updateProductDto.categoryId && { category: { connect: { id: updateProductDto.categoryId } } }),
       ...(updateProductDto.brandId && { brand: { connect: { id: updateProductDto.brandId } } })
     });
+
+    // Check if stock was updated and is > 0
+    if (updateProductDto.stock !== undefined && updateProductDto.stock > 0) {
+      const pendingAlerts = await this.prisma.backInStockAlert.findMany({
+        where: { productId: id, isNotified: false }
+      });
+      if (pendingAlerts.length > 0 && this.resend) {
+        for (const alert of pendingAlerts) {
+          await this.resend.emails.send({
+            from: 'Smart24 Alerts <onboarding@resend.dev>',
+            to: alert.email,
+            subject: `${updatedProduct.name} is back in stock!`,
+            html: `<p>Great news! The product you were waiting for, <strong>${updatedProduct.name}</strong>, is back in stock. Grab it before it runs out again!</p>`
+          }).catch(err => console.error('Alert email error:', err));
+        }
+        await this.prisma.backInStockAlert.updateMany({
+          where: { id: { in: pendingAlerts.map(a => a.id) } },
+          data: { isNotified: true }
+        });
+      }
+    }
+
+    return updatedProduct;
   }
 
   async remove(id: string) {
