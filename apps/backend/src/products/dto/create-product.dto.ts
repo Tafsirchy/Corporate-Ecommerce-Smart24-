@@ -28,4 +28,8 @@ export class CreateProductDto {
   @IsOptional()
   @IsMongoId()
   brandId?: string;
+
+  @IsOptional()
+  @IsArray()
+  attributes?: any[];
 }

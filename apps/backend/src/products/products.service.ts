@@ -20,6 +20,13 @@ export class ProductsService {
       throw new ConflictException('Product with this name already exists');
     }
 
+    const detectedAttributes = await this.autoDetectAttributes(
+      createProductDto.name, 
+      createProductDto.description, 
+      createProductDto.categoryId, 
+      createProductDto.attributes
+    );
+
     return this.productRepository.create({
       name: createProductDto.name,
       slug,
@@ -27,12 +34,80 @@ export class ProductsService {
       price: createProductDto.price,
       stock: createProductDto.stock,
       images: createProductDto.images,
+      attributes: detectedAttributes,
       category: { connect: { id: createProductDto.categoryId } },
       ...(createProductDto.brandId && { brand: { connect: { id: createProductDto.brandId } } })
     });
   }
 
-  async findAll(pageStr?: string, limitStr?: string, sort?: string, isFlashSale?: string) {
+  private buildDynamicFilterWhere(dynamicFiltersStr?: string) {
+    if (!dynamicFiltersStr) return [];
+    try {
+      const filters = JSON.parse(dynamicFiltersStr);
+      const andConditions: any[] = [];
+      for (const [key, values] of Object.entries(filters)) {
+        if (Array.isArray(values) && values.length > 0) {
+          andConditions.push({
+            attributes: {
+              some: {
+                filterKey: key,
+                value: { in: values }
+              }
+            }
+          });
+        }
+      }
+      return andConditions;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  private buildStandardFiltersWhere(minPrice?: string, maxPrice?: string, rating?: string, brands?: string) {
+    const where: any = {};
+    
+    // Price
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      where.price = {};
+      if (minPrice !== undefined) where.price.gte = parseFloat(minPrice);
+      if (maxPrice !== undefined) where.price.lte = parseFloat(maxPrice);
+    }
+    
+    // Rating
+    if (rating !== undefined) {
+      where.rating = { gte: parseFloat(rating) };
+    }
+    
+    // Brands
+    if (brands) {
+      try {
+        const brandSlugs = JSON.parse(brands);
+        if (Array.isArray(brandSlugs) && brandSlugs.length > 0) {
+          where.brand = { slug: { in: brandSlugs } };
+        }
+      } catch (e) {
+        // Fallback for single string or invalid json
+        if (typeof brands === 'string' && brands.trim() !== '') {
+          where.brand = { slug: brands };
+        }
+      }
+    }
+    
+    return where;
+  }
+
+  async findAll(
+    pageStr?: string, 
+    limitStr?: string, 
+    sort?: string, 
+    isFlashSale?: string, 
+    categorySlugOrId?: string, 
+    dynamicFilters?: string,
+    minPrice?: string,
+    maxPrice?: string,
+    rating?: string,
+    brands?: string
+  ) {
     let orderBy: any = undefined;
     if (sort === 'price-asc') orderBy = { price: 'asc' };
     else if (sort === 'price-desc') orderBy = { price: 'desc' };
@@ -55,9 +130,37 @@ export class ProductsService {
     const limit = limitStr ? parseInt(limitStr, 10) : 20;
     const skip = (page - 1) * limit;
 
-    let where: any = {};
+    let where: any = {
+      ...this.buildStandardFiltersWhere(minPrice, maxPrice, rating, brands)
+    };
+    
     if (isFlashSale === 'true') {
       where.isFlashSale = true;
+    }
+    
+    // Category resolution
+    if (categorySlugOrId) {
+      // Check if it's an ID or Slug
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(categorySlugOrId);
+      const catCondition = isObjectId ? { id: categorySlugOrId } : { slug: categorySlugOrId };
+      const category = await this.prisma.category.findFirst({ where: catCondition });
+      
+      if (category) {
+        // Find descendants
+        const subCategories = await this.prisma.category.findMany({ where: { parentId: category.id }, select: { id: true } });
+        let catIds = [category.id, ...subCategories.map(c => c.id)];
+        if (subCategories.length > 0) {
+          const subSub = await this.prisma.category.findMany({ where: { parentId: { in: subCategories.map(c => c.id) } }, select: { id: true } });
+          catIds = [...catIds, ...subSub.map(c => c.id)];
+        }
+        where.categoryId = { in: catIds };
+      }
+    }
+
+    // Dynamic filters
+    const filterConditions = this.buildDynamicFilterWhere(dynamicFilters);
+    if (filterConditions.length > 0) {
+      where.AND = filterConditions;
     }
 
     const [data, total] = await Promise.all([
@@ -76,7 +179,16 @@ export class ProductsService {
     };
   }
 
-  async search(query: string, pageStr?: string, limitStr?: string) {
+  async search(
+    query: string, 
+    pageStr?: string, 
+    limitStr?: string, 
+    dynamicFilters?: string,
+    minPrice?: string,
+    maxPrice?: string,
+    rating?: string,
+    brands?: string
+  ) {
     const page = pageStr ? parseInt(pageStr, 10) : 1;
     const limit = limitStr ? parseInt(limitStr, 10) : 10;
     const skip = (page - 1) * limit;
@@ -126,17 +238,24 @@ export class ProductsService {
         OR: [
           { name: { contains: token, mode: 'insensitive' as any } },
           { description: { contains: token, mode: 'insensitive' as any } },
-          { color: { contains: token, mode: 'insensitive' as any } },
-          { warrantyType: { contains: token, mode: 'insensitive' as any } },
-          { caseMaterial: { contains: token, mode: 'insensitive' as any } },
           { brand: { name: { contains: token, mode: 'insensitive' as any } } },
           ...(catIds.length > 0 ? [{ categoryId: { in: catIds } }] : [])
         ]
       };
     });
 
+    // Dynamic filters
+    const dynamicFilterConditions = this.buildDynamicFilterWhere(dynamicFilters);
+
+    // Standard filters
+    const standardFilterConditions = this.buildStandardFiltersWhere(minPrice, maxPrice, rating, brands);
+
     const where = {
-      AND: andConditions
+      AND: [
+        ...andConditions,
+        ...dynamicFilterConditions
+      ],
+      ...standardFilterConditions
     };
 
     const [data, total] = await Promise.all([
@@ -178,8 +297,12 @@ export class ProductsService {
       }
     }
 
+    const dataToUpdate: any = { ...updateProductDto };
+    delete dataToUpdate.categoryId;
+    delete dataToUpdate.brandId;
+
     return this.productRepository.update(id, {
-      ...updateProductDto,
+      ...dataToUpdate,
       ...(slug && { slug }),
       ...(updateProductDto.categoryId && { category: { connect: { id: updateProductDto.categoryId } } }),
       ...(updateProductDto.brandId && { brand: { connect: { id: updateProductDto.brandId } } })
@@ -193,4 +316,126 @@ export class ProductsService {
     }
     return this.productRepository.delete(id);
   }
+
+  // --- Auto Detection Engine (Rule-based Regex) ---
+  private async autoDetectAttributes(name: string, description: string, categoryId: string, manualAttributes: any[] = []) {
+    // 1. Get all active filter definitions that apply to this category
+    const activeFilters = await this.prisma.filterDefinition.findMany({
+      where: { 
+        status: 'ACTIVE'
+      }
+    });
+
+    const applicableFilters = activeFilters.filter(f => 
+      !f.categoryIds || f.categoryIds.length === 0 || f.categoryIds.includes(categoryId)
+    );
+
+    const fullText = `${name} ${description}`.toLowerCase();
+    const finalAttributes = [...manualAttributes];
+
+    // 2. Scan text for each filter's predefined values
+    for (const filter of applicableFilters) {
+      if (filter.type === 'RANGE' || !filter.values || !Array.isArray(filter.values)) continue;
+      
+      // If the attribute was already provided manually, skip auto-detection for it (to respect admin choice)
+      const hasManualVal = manualAttributes.some(a => a.filterKey === filter.key);
+      if (hasManualVal && filter.type !== 'CHECKBOX') continue; // For checkboxes we might want multiple, but let's be safe and just merge them
+
+      for (const valObj of filter.values) {
+        const valStr = valObj.value.toLowerCase();
+        
+        // Escape regex special characters from the value string
+        const escapedVal = valStr.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+        // We look for whole word boundaries (or start/end of string)
+        const regex = new RegExp(`(?:^|\\W)(${escapedVal})(?:$|\\W)`, 'i');
+
+        if (regex.test(fullText)) {
+          // Check if we haven't already added this value manually or detected it
+          const alreadyExists = finalAttributes.some(
+            a => a.filterKey === filter.key && a.value === valObj.value
+          );
+
+          if (!alreadyExists) {
+            finalAttributes.push({
+              filterKey: filter.key,
+              value: valObj.value,
+              source: 'auto_regex',
+              confidence: 0.9 // High confidence for exact regex match
+            });
+          }
+        }
+      }
+    }
+
+    return finalAttributes;
+  }
+
+  // --- Faceted Counts (MongoDB Aggregation) ---
+  async getFacetedCounts(categoryIdOrSlug?: string, searchQuery?: string, dynamicFilters?: string) {
+    let matchStage: any = {};
+
+    // 1. Resolve Category
+    if (categoryIdOrSlug) {
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(categoryIdOrSlug);
+      const catCondition = isObjectId ? { id: categoryIdOrSlug } : { slug: categoryIdOrSlug };
+      const category = await this.prisma.category.findFirst({ where: catCondition });
+      if (category) {
+        const subCategories = await this.prisma.category.findMany({ where: { parentId: category.id }, select: { id: true } });
+        let catIds = [category.id, ...subCategories.map(c => c.id)];
+        if (subCategories.length > 0) {
+          const subSub = await this.prisma.category.findMany({ where: { parentId: { in: subCategories.map(c => c.id) } }, select: { id: true } });
+          catIds = [...catIds, ...subSub.map(c => c.id)];
+        }
+        matchStage.categoryId = { $in: catIds.map(id => ({ $oid: id })) };
+      }
+    }
+
+    // 2. Resolve Search Query (Simple regex for name/description)
+    if (searchQuery && searchQuery.trim().length > 0) {
+      matchStage.$or = [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } }
+      ];
+    }
+
+    // (Optional: We could include dynamic filters in match stage to narrow counts, 
+    // but usually faceted counts should show what's available *within the current category/search*, 
+    // even if some filters are currently active, though behavior varies by design. 
+    // We will omit dynamicFilters from the match stage so the user sees all options in the category).
+
+    // 3. Aggregate
+    const pipeline: any[] = [];
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+    
+    pipeline.push(
+      { $unwind: "$attributes" },
+      { 
+        $group: {
+          _id: { filterKey: "$attributes.filterKey", value: "$attributes.value" },
+          count: { $sum: 1 }
+        }
+      }
+    );
+
+    const result = await this.prisma.product.aggregateRaw({
+      pipeline
+    });
+
+    // Parse the Raw result
+    const facets: Record<string, Record<string, number>> = {};
+    if (Array.isArray(result)) {
+      result.forEach((item: any) => {
+        const key = item._id.filterKey;
+        const val = item._id.value;
+        const count = item.count;
+        if (!facets[key]) facets[key] = {};
+        facets[key][val] = count;
+      });
+    }
+
+    return facets;
+  }
 }
+

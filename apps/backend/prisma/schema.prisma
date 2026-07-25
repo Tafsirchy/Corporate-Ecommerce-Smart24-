@@ -84,6 +84,56 @@ model Category {
   updatedAt DateTime   @updatedAt
 }
 
+enum FilterType {
+  CHECKBOX
+  RANGE
+  RADIO
+  SWATCH
+  RATING
+}
+
+enum FilterStatus {
+  ACTIVE
+  SUGGESTED
+  INACTIVE
+}
+
+type FilterValue {
+  value        String
+  label        String
+  autoDetected Boolean @default(false)
+  colorHex     String?
+}
+
+type RangeConfig {
+  min  Float
+  max  Float
+  unit String?
+  step Float?
+}
+
+model FilterDefinition {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  key          String       @unique
+  label        String
+  type         FilterType
+  categoryIds  String[]     @db.ObjectId
+  values       FilterValue[] 
+  rangeConfig  RangeConfig?  
+  status       FilterStatus @default(ACTIVE)
+  displayOrder Int          @default(0)
+  createdBy    String       @default("admin")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+type ProductAttribute {
+  filterKey    String
+  value        String
+  source       String  @default("manual") // "manual" or "auto-detected"
+  confidence   Float?
+}
+
 model Brand {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String    @unique
@@ -140,6 +190,8 @@ model Product {
   
   brandId     String?  @db.ObjectId
   brand       Brand?   @relation(fields: [brandId], references: [id])
+  
+  attributes  ProductAttribute[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

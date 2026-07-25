@@ -7,6 +7,7 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
+  const [filterDefs, setFilterDefs] = useState<any[]>([]);
   
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -16,31 +17,15 @@ export default function AdminProducts() {
   const [brandId, setBrandId] = useState('');
   const [images, setImages] = useState<string[]>([]);
   
-  // New dynamic attributes
-  const [color, setColor] = useState('');
-  const [warrantyType, setWarrantyType] = useState('');
-  const [brandCompatibility, setBrandCompatibility] = useState('');
-  const [caseMaterial, setCaseMaterial] = useState('');
-  const [compatibilityByModel, setCompatibilityByModel] = useState('');
-  const [location, setLocation] = useState('');
-  const [services, setServices] = useState<string[]>([]);
-  
-  const [attributes, setAttributes] = useState<any>({
-    colors: [],
-    warranties: [],
-    brandComps: [],
-    materials: [],
-    models: [],
-    locations: [],
-    services: []
-  });
+  // Generic attributes state: { [filterKey]: value }
+  const [productAttributes, setProductAttributes] = useState<Record<string, any>>({});
   
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
-    fetchCategoriesAndBrands();
+    fetchInitialData();
   }, []);
 
   const fetchProducts = async () => {
@@ -52,18 +37,16 @@ export default function AdminProducts() {
     }
   };
 
-  const fetchCategoriesAndBrands = async () => {
+  const fetchInitialData = async () => {
     try {
-      const [catsRes, brandsRes, attrsRes] = await Promise.all([
+      const [catsRes, brandsRes, filtersRes] = await Promise.all([
         apiClient.get('/categories'),
         apiClient.get('/brands'),
-        apiClient.get('/settings/product_attributes').catch(() => null)
+        apiClient.get('/filters/admin/all')
       ]);
       setCategories(catsRes.data);
       setBrands(brandsRes.data);
-      if (attrsRes?.data?.value) {
-        setAttributes(JSON.parse(attrsRes.data.value));
-      }
+      setFilterDefs(filtersRes.data);
     } catch (error) {}
   };
 
@@ -88,9 +71,37 @@ export default function AdminProducts() {
     }
   };
 
+  const handleAttributeChange = (key: string, value: any) => {
+    setProductAttributes(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleCheckboxChange = (key: string, value: string, checked: boolean) => {
+    setProductAttributes(prev => {
+      const current = Array.isArray(prev[key]) ? prev[key] : [];
+      if (checked) {
+        return { ...prev, [key]: [...current, value] };
+      } else {
+        return { ...prev, [key]: current.filter((v: string) => v !== value) };
+      }
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    // Convert productAttributes object to array of ProductAttribute
+    const attributesPayload: any[] = [];
+    Object.entries(productAttributes).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => {
+          attributesPayload.push({ filterKey: key, value: v, source: 'manual', confidence: 1.0 });
+        });
+      } else if (value) {
+        attributesPayload.push({ filterKey: key, value, source: 'manual', confidence: 1.0 });
+      }
+    });
+
     try {
       await apiClient.post('/products', { 
         name, 
@@ -100,13 +111,7 @@ export default function AdminProducts() {
         categoryId,
         brandId: brandId || undefined,
         images,
-        color: color || undefined,
-        warrantyType: warrantyType || undefined,
-        brandCompatibility: brandCompatibility || undefined,
-        caseMaterial: caseMaterial || undefined,
-        compatibilityByModel: compatibilityByModel || undefined,
-        location: location || undefined,
-        services: services.length > 0 ? services : undefined
+        attributes: attributesPayload
       });
       toast.success('Product created');
       
@@ -118,13 +123,7 @@ export default function AdminProducts() {
       setCategoryId('');
       setBrandId('');
       setImages([]);
-      setColor('');
-      setWarrantyType('');
-      setBrandCompatibility('');
-      setCaseMaterial('');
-      setCompatibilityByModel('');
-      setLocation('');
-      setServices([]);
+      setProductAttributes({});
       
       fetchProducts();
     } catch (error: any) {
@@ -133,6 +132,12 @@ export default function AdminProducts() {
       setIsLoading(false);
     }
   };
+
+  // Filter the definitions by selected category
+  const activeFilters = filterDefs.filter(f => 
+    f.status === 'ACTIVE' && 
+    (!f.categoryIds || f.categoryIds.length === 0 || f.categoryIds.includes(categoryId))
+  );
 
   return (
     <div>
@@ -152,7 +157,10 @@ export default function AdminProducts() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select 
-              required value={categoryId} onChange={e => setCategoryId(e.target.value)}
+              required value={categoryId} onChange={e => {
+                setCategoryId(e.target.value);
+                setProductAttributes({}); // Reset attributes on category change
+              }}
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black"
             >
               <option value="">Select Category</option>
@@ -196,99 +204,71 @@ export default function AdminProducts() {
             />
           </div>
 
-          {/* New Optional Dynamic Attributes */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <h3 className="md:col-span-2 text-sm font-bold text-gray-900 uppercase tracking-wider mb-2 border-b pb-2">Dynamic Attributes (Optional)</h3>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
-              <select 
-                value={color} onChange={e => setColor(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
-              >
-                <option value="">Select Color</option>
-                {attributes.colors?.map((c: string) => <option key={c} value={c}>{c}</option>)}
-              </select>
+          {/* Dynamic Category-Scoped Attributes */}
+          {categoryId && activeFilters.length > 0 && (
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h3 className="md:col-span-2 text-sm font-bold text-gray-900 uppercase tracking-wider mb-2 border-b pb-2">Category Attributes</h3>
+              
+              {activeFilters.map(filter => {
+                if (filter.type === 'RADIO' || filter.type === 'SWATCH') {
+                  return (
+                    <div key={filter.id}>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{filter.label}</label>
+                      <select 
+                        value={productAttributes[filter.key] || ''} 
+                        onChange={e => handleAttributeChange(filter.key, e.target.value)}
+                        className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
+                      >
+                        <option value="">Select {filter.label}</option>
+                        {filter.values?.map((v: any) => <option key={v.value} value={v.value}>{v.label}</option>)}
+                      </select>
+                    </div>
+                  );
+                } else if (filter.type === 'CHECKBOX') {
+                  return (
+                    <div key={filter.id} className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{filter.label}</label>
+                      <div className="flex flex-wrap gap-3">
+                        {filter.values?.map((v: any) => (
+                          <label key={v.value} className="flex items-center gap-1.5 text-sm cursor-pointer bg-white px-3 py-1.5 border rounded shadow-sm hover:border-black">
+                            <input 
+                              type="checkbox" 
+                              checked={(productAttributes[filter.key] || []).includes(v.value)}
+                              onChange={e => handleCheckboxChange(filter.key, v.value, e.target.checked)}
+                              className="rounded text-black focus:ring-black"
+                            />
+                            {filter.type === 'SWATCH' && v.colorHex && (
+                              <span className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: v.colorHex }}></span>
+                            )}
+                            {v.label}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                } else if (filter.type === 'RANGE') {
+                  return (
+                    <div key={filter.id}>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{filter.label} ({filter.rangeConfig?.unit || ''})</label>
+                      <input 
+                        type="number"
+                        min={filter.rangeConfig?.min}
+                        max={filter.rangeConfig?.max}
+                        step={filter.rangeConfig?.step}
+                        value={productAttributes[filter.key] || ''}
+                        onChange={e => handleAttributeChange(filter.key, e.target.value)}
+                        className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
+                        placeholder="Enter value"
+                      />
+                    </div>
+                  );
+                }
+                return null;
+              })}
+              
+              {/* Add custom inline attribute functionality can be added here */}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Warranty Type</label>
-              <select 
-                value={warrantyType} onChange={e => setWarrantyType(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
-              >
-                <option value="">Select Warranty</option>
-                {attributes.warranties?.map((w: string) => <option key={w} value={w}>{w}</option>)}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Brand Compatibility</label>
-              <select 
-                value={brandCompatibility} onChange={e => setBrandCompatibility(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
-              >
-                <option value="">Select Compatibility</option>
-                {attributes.brandComps?.map((b: string) => <option key={b} value={b}>{b}</option>)}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Case Material</label>
-              <select 
-                value={caseMaterial} onChange={e => setCaseMaterial(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
-              >
-                <option value="">Select Material</option>
-                {attributes.materials?.map((m: string) => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Model Compatibility</label>
-              <select 
-                value={compatibilityByModel} onChange={e => setCompatibilityByModel(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
-              >
-                <option value="">Select Model</option>
-                {attributes.models?.map((m: string) => <option key={m} value={m}>{m}</option>)}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-              <select 
-                value={location} onChange={e => setLocation(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
-              >
-                <option value="">Select Location</option>
-                {attributes.locations?.map((l: string) => <option key={l} value={l}>{l}</option>)}
-              </select>
-            </div>
-            
-            <div className="md:col-span-2">
-               <label className="block text-sm font-medium text-gray-700 mb-2">Services / Offers</label>
-               <div className="flex flex-wrap gap-4">
-                 {attributes.services?.map((s: string) => (
-                   <label key={s} className="flex items-center gap-1.5 text-sm cursor-pointer bg-white px-3 py-1.5 border rounded shadow-sm hover:border-black">
-                     <input 
-                       type="checkbox" 
-                       checked={services.includes(s)}
-                       onChange={(e) => {
-                         if (e.target.checked) setServices([...services, s]);
-                         else setServices(services.filter(x => x !== s));
-                       }}
-                       className="rounded text-black focus:ring-black"
-                     />
-                     {s}
-                   </label>
-                 ))}
-                 {(!attributes.services || attributes.services.length === 0) && (
-                   <span className="text-sm text-gray-400 italic">No services defined in attributes yet.</span>
-                 )}
-               </div>
-            </div>
-          </div>
+          )}
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">Product Images (Upload to ImgBB)</label>

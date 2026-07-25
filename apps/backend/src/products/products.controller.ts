@@ -28,9 +28,25 @@ export class ProductsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('sort') sort?: string,
-    @Query('isFlashSale') isFlashSale?: string
+    @Query('isFlashSale') isFlashSale?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('dynamicFilters') dynamicFilters?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('rating') rating?: string,
+    @Query('brands') brands?: string
   ) {
-    return this.productsService.findAll(page, limit, sort, isFlashSale);
+    return this.productsService.findAll(page, limit, sort, isFlashSale, categoryId, dynamicFilters, minPrice, maxPrice, rating, brands);
+  }
+
+  @Get('facets')
+  @ApiOperation({ summary: 'Get faceted counts for filtering' })
+  getFacets(
+    @Query('categoryId') categoryId?: string,
+    @Query('q') q?: string,
+    @Query('dynamicFilters') dynamicFilters?: string
+  ) {
+    return this.productsService.getFacetedCounts(categoryId, q, dynamicFilters);
   }
 
   @Get('search')
@@ -38,12 +54,17 @@ export class ProductsController {
   search(
     @Query('q') query: string,
     @Query('page') page?: string,
-    @Query('limit') limit?: string
+    @Query('limit') limit?: string,
+    @Query('dynamicFilters') dynamicFilters?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('rating') rating?: string,
+    @Query('brands') brands?: string
   ) {
     if (!query || query.trim().length === 0) {
       return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 0 } };
     }
-    return this.productsService.search(query.trim(), page, limit);
+    return this.productsService.search(query.trim(), page, limit, dynamicFilters, minPrice, maxPrice, rating, brands);
   }
 
   @Get(':id')

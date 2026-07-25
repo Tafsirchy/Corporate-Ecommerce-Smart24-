@@ -29,6 +29,7 @@ import { CorporateCollectionsModule } from './corporate-collections/corporate-co
 import { LoyaltyModule } from './loyalty/loyalty.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { RewardsModule } from './rewards/rewards.module';
+import { FiltersModule } from './filters/filters.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { RewardsModule } from './rewards/rewards.module';
     LoyaltyModule,
     MembershipsModule,
     RewardsModule,
+    FiltersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
