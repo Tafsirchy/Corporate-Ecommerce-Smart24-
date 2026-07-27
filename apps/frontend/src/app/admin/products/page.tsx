@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
+import { Edit2, Trash2 } from 'lucide-react';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -22,16 +23,25 @@ export default function AdminProducts() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchProducts();
+  }, [page]);
+
+  useEffect(() => {
     fetchInitialData();
   }, []);
 
   const fetchProducts = async () => {
     try {
-      const res = await apiClient.get('/products');
+      const res = await apiClient.get(`/products?page=${page}&limit=10`);
       setProducts(res.data.data || res.data);
+      if (res.data.meta) {
+        setTotalPages(res.data.meta.totalPages);
+      }
     } catch (error) {
       toast.error('Failed to fetch products');
     }
@@ -47,7 +57,9 @@ export default function AdminProducts() {
       setCategories(catsRes.data);
       setBrands(brandsRes.data);
       setFilterDefs(filtersRes.data);
-    } catch (error) {}
+    } catch (error) {
+      toast.error('Failed to load initial data. Form might not work correctly.');
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +115,7 @@ export default function AdminProducts() {
     });
 
     try {
-      await apiClient.post('/products', { 
+      const payload = { 
         name, 
         description, 
         price: parseFloat(price),
@@ -112,8 +124,16 @@ export default function AdminProducts() {
         brandId: brandId || undefined,
         images,
         attributes: attributesPayload
-      });
-      toast.success('Product created');
+      };
+
+      if (editingId) {
+        await apiClient.patch(`/products/${editingId}`, payload);
+        toast.success('Product updated');
+        setEditingId(null);
+      } else {
+        await apiClient.post('/products', payload);
+        toast.success('Product created');
+      }
       
       // Reset form
       setName('');
@@ -139,12 +159,64 @@ export default function AdminProducts() {
     (!f.categoryIds || f.categoryIds.length === 0 || f.categoryIds.includes(categoryId))
   );
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await apiClient.delete(`/products/${id}`);
+      toast.success('Product deleted');
+      fetchProducts();
+    } catch (error) {
+      toast.error('Failed to delete product');
+    }
+  };
+
+  const startEdit = (product: any) => {
+    setEditingId(product.id);
+    setName(product.name);
+    setDescription(product.description || '');
+    setPrice(product.price.toString());
+    setStock(product.stock.toString());
+    setCategoryId(product.categoryId);
+    setBrandId(product.brandId || '');
+    setImages(product.images || []);
+    
+    // Parse attributes
+    const attrs: Record<string, any> = {};
+    if (product.attributes) {
+      product.attributes.forEach((attr: any) => {
+        const def = filterDefs.find(f => f.key === attr.filterKey);
+        if (def && def.type === 'CHECKBOX') {
+          if (!attrs[attr.filterKey]) attrs[attr.filterKey] = [];
+          attrs[attr.filterKey].push(attr.value);
+        } else {
+          attrs[attr.filterKey] = attr.value;
+        }
+      });
+    }
+    setProductAttributes(attrs);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Manage Products</h1>
       
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-        <h2 className="text-xl font-bold mb-4">Add New Product</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">{editingId ? 'Edit Product' : 'Add New Product'}</h2>
+          {editingId && (
+            <button 
+              onClick={() => {
+                setEditingId(null);
+                setName(''); setDescription(''); setPrice(''); setStock('');
+                setCategoryId(''); setBrandId(''); setImages([]); setProductAttributes({});
+              }}
+              className="text-sm text-gray-500 hover:text-black border px-3 py-1 rounded"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -293,7 +365,7 @@ export default function AdminProducts() {
               type="submit" disabled={isLoading || isUploading}
               className="bg-black text-white px-6 py-2 rounded font-medium hover:bg-gray-800 disabled:opacity-50"
             >
-              {isLoading ? 'Saving...' : 'Add Product'}
+              {isLoading ? 'Saving...' : (editingId ? 'Update Product' : 'Add Product')}
             </button>
           </div>
         </form>
@@ -307,6 +379,7 @@ export default function AdminProducts() {
               <th className="p-4 font-medium text-gray-600">Name</th>
               <th className="p-4 font-medium text-gray-600">Price</th>
               <th className="p-4 font-medium text-gray-600">Stock</th>
+              <th className="p-4 font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -318,10 +391,39 @@ export default function AdminProducts() {
                 <td className="p-4 font-medium">{prod.name}</td>
                 <td className="p-4 text-gray-500">৳{prod.price}</td>
                 <td className="p-4 text-gray-500">{prod.stock}</td>
+                <td className="p-4 flex gap-3">
+                  <button onClick={() => startEdit(prod)} className="text-gray-400 hover:text-black" title="Edit">
+                    <Edit2 size={16} />
+                  </button>
+                  <button onClick={() => handleDelete(prod.id)} className="text-gray-400 hover:text-red-500" title="Delete">
+                    <Trash2 size={16} />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center p-4 border-t border-gray-100 gap-2">
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="px-3 py-1 text-gray-600">Page {page} of {totalPages}</span>
+            <button 
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

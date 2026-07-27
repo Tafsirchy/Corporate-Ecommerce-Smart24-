@@ -35,10 +35,9 @@ export default function ProductDetailPage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
   const fetchProductAndReviews = () => {
-    axios.get(`${apiUrl}/products`)
+    axios.get(`${apiUrl}/products/slug/${slug}`)
       .then(res => {
-        const productsArray = res.data.data || res.data;
-        const p = productsArray.find((item: any) => item.slug === slug);
+        const p = res.data;
         setProduct(p);
         if (p && p.images && p.images.length > 0 && !activeImage) {
           setActiveImage(p.images[0]);
@@ -51,7 +50,10 @@ export default function ProductDetailPage() {
             .catch(err => console.error("Failed to fetch reviews", err));
         }
       })
-      .catch(err => console.error(err))
+      .catch(err => {
+        console.error(err);
+        setProduct(null);
+      })
       .finally(() => setLoading(false));
   };
 

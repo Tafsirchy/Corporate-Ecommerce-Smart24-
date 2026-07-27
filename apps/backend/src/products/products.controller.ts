@@ -67,6 +67,12 @@ export class ProductsController {
     return this.productsService.search(query.trim(), page, limit, dynamicFilters, minPrice, maxPrice, rating, brands);
   }
 
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Get a product by slug' })
+  findBySlug(@Param('slug') slug: string) {
+    return this.productsService.findBySlug(slug);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by ID' })
   findOne(@Param('id') id: string) {

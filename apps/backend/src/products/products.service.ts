@@ -294,6 +294,14 @@ export class ProductsService {
     return product;
   }
 
+  async findBySlug(slug: string) {
+    const product = await this.productRepository.findBySlug(slug);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
+  }
+
   async subscribeToAlert(productId: string, email: string, userId?: string) {
     const product = await this.productRepository.findById(productId);
     if (!product) throw new NotFoundException('Product not found');
