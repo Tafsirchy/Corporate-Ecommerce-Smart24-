@@ -9,15 +9,17 @@ export default function AdminMembershipsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
   // Form State
   const [formData, setFormData] = useState({
     name: '',
     requiredAmount: 0,
     pointMultiplier: 1.0,
     priority: 1,
-    benefits: ['']
+    benefits: [''],
+    badgeUrl: ''
   });
+  const [isUploadMode, setIsUploadMode] = useState(true);
+  const [badgeFile, setBadgeFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchLevels();
@@ -42,8 +44,11 @@ export default function AdminMembershipsPage() {
         requiredAmount: level.requiredAmount,
         pointMultiplier: level.pointMultiplier,
         priority: level.priority,
-        benefits: level.benefits.length > 0 ? [...level.benefits] : ['']
+        benefits: level.benefits.length > 0 ? [...level.benefits] : [''],
+        badgeUrl: level.badgeUrl || ''
       });
+      setBadgeFile(null);
+      setIsUploadMode(false);
     } else {
       setEditingId(null);
       setFormData({
@@ -51,8 +56,11 @@ export default function AdminMembershipsPage() {
         requiredAmount: 0,
         pointMultiplier: 1.0,
         priority: levels.length + 1,
-        benefits: ['']
+        benefits: [''],
+        badgeUrl: ''
       });
+      setBadgeFile(null);
+      setIsUploadMode(true);
     }
     setIsModalOpen(true);
   };
@@ -80,9 +88,22 @@ export default function AdminMembershipsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let finalBadgeUrl = formData.badgeUrl;
+      
+      // Upload file first if in upload mode
+      if (isUploadMode && badgeFile) {
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', badgeFile);
+        const uploadRes = await apiClient.post('/upload/image', formDataUpload, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        finalBadgeUrl = uploadRes.data.url;
+      }
+
       // clean empty benefits
       const cleanedData = {
         ...formData,
+        badgeUrl: finalBadgeUrl || undefined,
         requiredAmount: Number(formData.requiredAmount),
         pointMultiplier: Number(formData.pointMultiplier),
         priority: Number(formData.priority),
@@ -140,7 +161,10 @@ export default function AdminMembershipsPage() {
             {levels.map((level) => (
               <tr key={level.id} className="border-b border-gray-50 hover:bg-gray-50">
                 <td className="p-4 text-sm text-gray-800">{level.priority}</td>
-                <td className="p-4 text-sm font-bold text-gray-900">{level.name}</td>
+                <td className="p-4 text-sm font-bold text-gray-900 flex items-center gap-2">
+                  {level.badgeUrl && <img src={level.badgeUrl} alt="Badge" className="w-6 h-6 object-contain" />}
+                  {level.name}
+                </td>
                 <td className="p-4 text-sm text-gray-600">৳{level.requiredAmount.toLocaleString()}</td>
                 <td className="p-4 text-sm text-gray-600">{level.pointMultiplier}x</td>
                 <td className="p-4 text-sm text-gray-600 text-right space-x-3">
@@ -208,6 +232,47 @@ export default function AdminMembershipsPage() {
                       className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-4">
+                    <label className="block text-sm font-medium text-gray-700">Badge Icon</label>
+                    <div className="flex items-center gap-2 text-sm">
+                      <button
+                        type="button"
+                        onClick={() => setIsUploadMode(true)}
+                        className={`px-3 py-1 rounded-full transition-colors ${isUploadMode ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                      >
+                        Upload File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsUploadMode(false)}
+                        className={`px-3 py-1 rounded-full transition-colors ${!isUploadMode ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                      >
+                        Image URL
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {isUploadMode ? (
+                    <input
+                      key="badge-file-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={e => setBadgeFile(e.target.files?.[0] || null)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-black hover:file:bg-gray-100"
+                    />
+                  ) : (
+                    <input 
+                      key="badge-url-input"
+                      type="url"
+                      value={formData.badgeUrl}
+                      onChange={e => setFormData({...formData, badgeUrl: e.target.value})}
+                      placeholder="https://example.com/badge.png"
+                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                    />
+                  )}
                 </div>
 
                 <div>

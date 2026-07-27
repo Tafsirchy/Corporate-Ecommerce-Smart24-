@@ -48,7 +48,7 @@ export default function AdminRewardsPage() {
         claimType: reward.claimType,
         status: reward.status,
         minMembershipPriority: reward.minMembershipPriority,
-        expiryDays: reward.expiryDays || 30
+        expiryDays: reward.expiryDays ?? 0
       });
     } else {
       setEditingId(null);

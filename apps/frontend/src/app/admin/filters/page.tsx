@@ -13,6 +13,12 @@ interface FilterDefinition {
   status: string;
   displayOrder: number;
   values: any[];
+  rangeConfig?: {
+    min: number;
+    max: number;
+    step?: number;
+    unit?: string;
+  };
 }
 
 export default function AdminFilters() {
@@ -30,8 +36,15 @@ export default function AdminFilters() {
   const [type, setType] = useState('CHECKBOX');
   const [status, setStatus] = useState('ACTIVE');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [values, setValues] = useState<{value: string, label: string}[]>([]);
+  const [values, setValues] = useState<{value: string, label: string, colorHex?: string}[]>([]);
   const [newValueVal, setNewValueVal] = useState('');
+  const [newValueColor, setNewValueColor] = useState('#000000');
+
+  // Range config state
+  const [rangeMin, setRangeMin] = useState<number | string>(0);
+  const [rangeMax, setRangeMax] = useState<number | string>(100);
+  const [rangeStep, setRangeStep] = useState<number | string>(1);
+  const [rangeUnit, setRangeUnit] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -58,8 +71,13 @@ export default function AdminFilters() {
       toast.warning('Value already exists');
       return;
     }
-    setValues([...values, { value: newValueVal.trim(), label: newValueVal.trim() }]);
+    const newVal: any = { value: newValueVal.trim(), label: newValueVal.trim() };
+    if (type === 'SWATCH') {
+      newVal.colorHex = newValueColor;
+    }
+    setValues([...values, newVal]);
     setNewValueVal('');
+    setNewValueColor('#000000');
   };
 
   const handleRemoveValue = (valToRemove: string) => {
@@ -75,6 +93,11 @@ export default function AdminFilters() {
     setStatus('ACTIVE');
     setSelectedCategories([]);
     setValues([]);
+    setRangeMin(0);
+    setRangeMax(100);
+    setRangeStep(1);
+    setRangeUnit('');
+    setNewValueColor('#000000');
   };
 
   const handleEdit = (filter: FilterDefinition) => {
@@ -86,16 +109,33 @@ export default function AdminFilters() {
     setStatus(filter.status);
     setSelectedCategories(filter.categoryIds || []);
     setValues(filter.values || []);
+    
+    if (filter.rangeConfig) {
+      setRangeMin(filter.rangeConfig.min ?? 0);
+      setRangeMax(filter.rangeConfig.max ?? 100);
+      setRangeStep(filter.rangeConfig.step ?? 1);
+      setRangeUnit(filter.rangeConfig.unit || '');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const payload = {
+      const payload: any = {
         key, label, type, status, 
         categoryIds: selectedCategories,
-        values
       };
+
+      if (type === 'RANGE') {
+        payload.rangeConfig = {
+          min: Number(rangeMin),
+          max: Number(rangeMax),
+          step: Number(rangeStep) || 1,
+          unit: rangeUnit || undefined
+        };
+      } else {
+        payload.values = values;
+      }
 
       if (isEditing && currentId) {
         await apiClient.patch(`/filters/${currentId}`, payload);
@@ -197,6 +237,10 @@ export default function AdminFilters() {
             <div className="md:col-span-2 border p-4 rounded-lg bg-gray-50">
               <label className="block text-sm font-bold text-gray-900 mb-2">Predefined Values</label>
               <div className="flex gap-2 mb-3">
+                {type === 'SWATCH' && (
+                  <input type="color" value={newValueColor} onChange={e => setNewValueColor(e.target.value)}
+                    className="h-9 w-12 border rounded cursor-pointer" title="Select Color" />
+                )}
                 <input type="text" value={newValueVal} onChange={e => setNewValueVal(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddValue())}
                   placeholder="Add value (e.g. 128GB)" className="flex-1 px-3 py-2 border rounded text-sm" />
@@ -205,11 +249,43 @@ export default function AdminFilters() {
               <div className="flex flex-wrap gap-2">
                 {values.map(v => (
                   <span key={v.value} className="bg-white border px-2 py-1 rounded text-sm flex items-center gap-1">
+                    {v.colorHex && (
+                      <span className="w-3 h-3 rounded-full border border-gray-300 inline-block mr-1" style={{ backgroundColor: v.colorHex }}></span>
+                    )}
                     {v.label}
                     <button type="button" onClick={() => handleRemoveValue(v.value)} className="text-red-500 hover:text-red-700 font-bold ml-1">&times;</button>
                   </span>
                 ))}
                 {values.length === 0 && <span className="text-sm text-gray-500 italic">No values added yet.</span>}
+              </div>
+            </div>
+          )}
+
+          {type === 'RANGE' && (
+            <div className="md:col-span-2 border p-4 rounded-lg bg-gray-50 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="col-span-2 md:col-span-4">
+                <label className="block text-sm font-bold text-gray-900 mb-1">Range Configuration</label>
+                <p className="text-xs text-gray-500 mb-2">Set the limits and unit for the range slider.</p>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Min Value</label>
+                <input type="number" required value={rangeMin} onChange={e => setRangeMin(e.target.value)}
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Max Value</label>
+                <input type="number" required value={rangeMax} onChange={e => setRangeMax(e.target.value)}
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Step</label>
+                <input type="number" required min="0.01" step="0.01" value={rangeStep} onChange={e => setRangeStep(e.target.value)}
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Unit (Optional)</label>
+                <input type="text" value={rangeUnit} onChange={e => setRangeUnit(e.target.value)} placeholder="e.g. $, GB, kg"
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
               </div>
             </div>
           )}

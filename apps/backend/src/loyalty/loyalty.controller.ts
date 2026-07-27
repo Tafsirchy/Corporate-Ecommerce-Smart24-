@@ -3,6 +3,8 @@ import { LoyaltyService } from './loyalty.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateLoyaltyRewardDto } from './dto/create-loyalty-reward.dto';
+import { UpdateLoyaltyRewardDto } from './dto/update-loyalty-reward.dto';
 
 @Controller('loyalty')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,13 +46,13 @@ export class LoyaltyController {
 
   @Post('admin/rewards')
   @Roles('ADMIN')
-  async createLoyaltyReward(@Body() data: any) {
+  async createLoyaltyReward(@Body() data: CreateLoyaltyRewardDto) {
     return this.loyaltyService.createLoyaltyReward(data);
   }
 
   @Put('admin/rewards/:id')
   @Roles('ADMIN')
-  async updateLoyaltyReward(@Param('id') id: string, @Body() data: any) {
+  async updateLoyaltyReward(@Param('id') id: string, @Body() data: UpdateLoyaltyRewardDto) {
     return this.loyaltyService.updateLoyaltyReward(id, data);
   }
 
