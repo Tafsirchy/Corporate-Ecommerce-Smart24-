@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
-import { Loader2, Mail, MessageSquare, Clock, CheckCircle2, Trash2 } from 'lucide-react';
+import { Loader2, Mail, MessageSquare, Clock, CheckCircle2, Trash2, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Ticket {
   id: string;
@@ -19,11 +19,33 @@ interface Ticket {
 export default function AdminSupportTickets() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Pagination & Filtering
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const fetchTickets = async () => {
     try {
-      const res = await apiClient.get('/support-tickets');
-      setTickets(res.data);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      if (searchTerm) params.append('search', searchTerm);
+      if (statusFilter) params.append('status', statusFilter);
+
+      const res = await apiClient.get(`/support-tickets?${params.toString()}`);
+      
+      // If the backend returned paginated data (has .data array)
+      if (res.data && Array.isArray(res.data.data)) {
+        setTickets(res.data.data);
+        setTotalPages(res.data.meta?.totalPages || 1);
+      } else {
+        // Fallback for old flat array
+        setTickets(Array.isArray(res.data) ? res.data : []);
+      }
     } catch (error) {
       console.error('Failed to fetch tickets:', error);
     } finally {
@@ -33,7 +55,7 @@ export default function AdminSupportTickets() {
 
   useEffect(() => {
     fetchTickets();
-  }, []);
+  }, [page, searchTerm, statusFilter]);
 
   const updateStatus = async (id: string, status: string) => {
     try {
@@ -74,6 +96,39 @@ export default function AdminSupportTickets() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Support Tickets</h1>
+      </div>
+
+      <div className="bg-white p-4 rounded-t-lg border-b border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search tickets by subject, name or email..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+          />
+        </div>
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <Filter className="w-4 h-4 text-gray-500" />
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Statuses</option>
+            <option value="OPEN">Open</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="RESOLVED">Resolved</option>
+            <option value="CLOSED">Closed</option>
+          </select>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
@@ -164,6 +219,31 @@ export default function AdminSupportTickets() {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
+            <span className="text-sm text-gray-600">
+              Page <span className="font-semibold">{page}</span> of <span className="font-semibold">{totalPages}</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-2 rounded-lg border border-gray-200 hover:bg-white disabled:opacity-50 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-2 rounded-lg border border-gray-200 hover:bg-white disabled:opacity-50 transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/categories')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`)
       .then(res => res.json())
       .then(data => {
         // Build tree from flat array

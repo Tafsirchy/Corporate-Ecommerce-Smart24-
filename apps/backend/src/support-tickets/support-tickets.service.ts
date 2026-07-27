@@ -58,10 +58,40 @@ export class SupportTicketsService {
     return ticket;
   }
 
-  async getAllTickets() {
-    return this.prisma.supportTicket.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async getAllTickets(page: number = 1, limit: number = 10, search?: string, status?: SupportTicketStatus) {
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { subject: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.supportTicket.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.supportTicket.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getTicketById(id: string) {

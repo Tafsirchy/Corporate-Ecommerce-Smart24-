@@ -12,10 +12,37 @@ export class FaqsService {
     });
   }
 
-  async getAllFaqsAdmin() {
-    return this.prisma.faq.findMany({
-      orderBy: { order: 'asc' },
-    });
+  async getAllFaqsAdmin(page: number = 1, limit: number = 50, search?: string) {
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { question: { contains: search, mode: 'insensitive' } },
+        { answer: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.faq.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { order: 'asc' },
+      }),
+      this.prisma.faq.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async submitFeedback(id: string, isHelpful: boolean) {

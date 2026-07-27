@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
-import { Loader2, Plus, Edit2, Trash2, Check, X } from 'lucide-react';
+import { Loader2, Plus, Edit2, Trash2, Check, X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Faq {
   id: string;
@@ -19,6 +19,12 @@ export default function AdminFaqs() {
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [loading, setLoading] = useState(true);
   
+  // Pagination & Filtering
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(50);
+  const [searchTerm, setSearchTerm] = useState('');
+  
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Faq>>({});
   
@@ -27,8 +33,20 @@ export default function AdminFaqs() {
 
   const fetchFaqs = async () => {
     try {
-      const res = await apiClient.get('/faqs/admin/all');
-      setFaqs(res.data);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      if (searchTerm) params.append('search', searchTerm);
+
+      const res = await apiClient.get(`/faqs/admin/all?${params.toString()}`);
+      
+      if (res.data && Array.isArray(res.data.data)) {
+        setFaqs(res.data.data);
+        setTotalPages(res.data.meta?.totalPages || 1);
+      } else {
+        setFaqs(Array.isArray(res.data) ? res.data : []);
+      }
     } catch (error) {
       console.error('Failed to fetch FAQs:', error);
     } finally {
@@ -38,7 +56,7 @@ export default function AdminFaqs() {
 
   useEffect(() => {
     fetchFaqs();
-  }, []);
+  }, [page, searchTerm]);
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,15 +102,31 @@ export default function AdminFaqs() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Manage FAQs</h1>
-        <button 
-          onClick={() => setIsAdding(true)}
-          className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add FAQ
-        </button>
+        
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search FAQs..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
+              className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+            />
+          </div>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className="flex flex-shrink-0 items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add FAQ
+          </button>
+        </div>
       </div>
 
       {isAdding && (
@@ -203,6 +237,31 @@ export default function AdminFaqs() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
+            <span className="text-sm text-gray-600">
+              Page <span className="font-semibold">{page}</span> of <span className="font-semibold">{totalPages}</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-2 rounded-lg border border-gray-200 hover:bg-white disabled:opacity-50 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-2 rounded-lg border border-gray-200 hover:bg-white disabled:opacity-50 transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

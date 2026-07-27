@@ -26,7 +26,8 @@ export default function AdminSettings() {
     fetchSettings();
   }, []);
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
     setSaving(true);
     try {
       await apiClient.post('/settings/SUPPORT_EMAIL', { value: supportEmail });
@@ -61,27 +62,30 @@ export default function AdminSettings() {
           <p>This is the email address that will receive notifications whenever a user submits a new Support Ticket via the Contact Us form.</p>
         </div>
 
-        <div className="max-w-md">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Notification Email Address</label>
-          <input
-            type="email"
-            value={supportEmail}
-            onChange={(e) => setSupportEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
-            placeholder="e.g. support@smart24.com"
-          />
-        </div>
+        <form onSubmit={handleSave}>
+          <div className="max-w-md">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Notification Email Address</label>
+            <input
+              type="email"
+              required
+              value={supportEmail}
+              onChange={(e) => setSupportEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              placeholder="e.g. support@smart24.com"
+            />
+          </div>
 
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <button 
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition font-medium disabled:opacity-70"
-          >
-            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-            Save Settings
-          </button>
-        </div>
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <button 
+              type="submit"
+              disabled={saving}
+              className="flex items-center px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition font-medium disabled:opacity-70"
+            >
+              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              Save Settings
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

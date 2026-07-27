@@ -4,7 +4,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role, SupportTicketStatus } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { CreateSupportTicketDto } from './dto/create-support-ticket.dto';
 
 @ApiTags('Support Tickets')
 @Controller({ path: 'support-tickets', version: '1' })
@@ -15,7 +16,7 @@ export class SupportTicketsController {
   @ApiOperation({ summary: 'Create a new support ticket' })
   createTicket(
     @Req() req: any,
-    @Body() body: { name: string; email: string; subject: string; message: string; orderId?: string; attachments?: string[] }
+    @Body() body: CreateSupportTicketDto
   ) {
     // req.user might be undefined if this endpoint is open to guests.
     // If you want guests to be able to contact support, we can extract userId safely.
@@ -28,8 +29,18 @@ export class SupportTicketsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get all support tickets (Admin only)' })
-  getAllTickets() {
-    return this.supportTicketsService.getAllTickets();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'status', required: false, enum: SupportTicketStatus })
+  getAllTickets(
+    @Req() req: any
+  ) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const search = req.query.search as string;
+    const status = req.query.status as SupportTicketStatus;
+    return this.supportTicketsService.getAllTickets(page, limit, search, status);
   }
 
   @Get(':id')
