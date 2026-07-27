@@ -158,4 +158,13 @@ export class SubscriptionsService {
   async updateStatus(id: string, status: string) {
     return this.subscriptionRepo.updateSubscriptionStatus(id, status);
   }
+
+  async updateUserStatus(userId: string, id: string, status: string) {
+    const sub = await this.subscriptionRepo.findSubscriptionsByUserId(userId);
+    const exists = sub.find(s => s.id === id);
+    if (!exists) {
+      throw new NotFoundException('Subscription not found or you do not have permission.');
+    }
+    return this.subscriptionRepo.updateSubscriptionStatus(id, status);
+  }
 }
