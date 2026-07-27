@@ -1,14 +1,39 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
+import { CategorySidebar, Category } from "@/components/CategorySidebar";
+import { BrandSidebar, Brand } from "@/components/BrandSidebar";
+import { PriceFilter } from "@/components/PriceFilter";
+import { Filter } from "lucide-react";
+import { Suspense } from "react";
 
-export default function CustomPackageBuilder() {
+function BuilderContent() {
   const [products, setProducts] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // Search and Filtering states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  const [categories, setCategories] = useState<Category[]>([]);
+  
+  const searchParams = useSearchParams();
+  const categorySlug = searchParams.get('category');
+  
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  
+  const [minPrice, setMinPrice] = useState<number | null>(null);
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
+
   const [selectedItems, setSelectedItems] = useState<{ productId: string; quantity: number; product: any }[]>([]);
   const [deliveryDay, setDeliveryDay] = useState<number | string>(5);
   const [deliveryAddress, setDeliveryAddress] = useState("");
@@ -18,11 +43,64 @@ export default function CustomPackageBuilder() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`)
-      .then(res => res.json())
-      .then(data => setProducts(data.data?.data || data.data || data))
-      .catch(err => console.error("Error fetching products:", err));
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    
+    // Fetch categories
+    axios.get(`${apiUrl}/categories`).then(res => {
+      const data = res.data;
+      const map = new Map<string, Category>();
+      const roots: Category[] = [];
+      data.forEach((item: any) => map.set(item.id, { ...item, children: [] }));
+      data.forEach((item: any) => {
+        if (item.parentId) {
+          const parent = map.get(item.parentId);
+          if (parent) parent.children!.push(map.get(item.id)!);
+        } else {
+          roots.push(map.get(item.id)!);
+        }
+      });
+      setCategories(roots);
+    }).catch(console.error);
+      
+    // Fetch brands
+    axios.get(`${apiUrl}/brands`).then(res => setBrands(res.data)).catch(console.error);
+  }, []);
 
+  const fetchProducts = () => {
+    setLoadingProducts(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    
+    let url = searchQuery && searchQuery.trim().length > 0 
+      ? `${apiUrl}/products/search?q=${encodeURIComponent(searchQuery)}&` 
+      : `${apiUrl}/products?`;
+
+    url += `page=${page}&limit=12&`;
+    
+    if (categorySlug) url += `categoryId=${categorySlug}&`;
+    if (minPrice !== null) url += `minPrice=${minPrice}&`;
+    if (maxPrice !== null) url += `maxPrice=${maxPrice}&`;
+    if (selectedBrands.length > 0) url += `brands=${encodeURIComponent(JSON.stringify(selectedBrands))}&`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data.data?.data || data.data || data);
+        if (data.meta?.totalPages) setTotalPages(data.meta.totalPages);
+        else if (data.data?.meta?.totalPages) setTotalPages(data.data.meta.totalPages);
+      })
+      .catch(err => console.error("Error fetching products:", err))
+      .finally(() => setLoadingProducts(false));
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [page, searchQuery, categorySlug, minPrice, maxPrice, selectedBrands]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, categorySlug, minPrice, maxPrice, selectedBrands]);
+
+  useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/active`)
       .then(res => res.json())
       .then(data => setActiveOffers(data))
@@ -107,28 +185,110 @@ export default function CustomPackageBuilder() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 relative">
       <div className="md:col-span-2 space-y-6">
-        <h1 className="text-3xl font-bold">Custom Package Builder</h1>
-        <p className="text-muted-foreground">Select at least 2 items to build your monthly corporate package.</p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {products.map((p: any) => (
-            <div key={p.id} className="border p-4 rounded-lg flex items-center justify-between hover:shadow-sm">
-              <div>
-                <h3 className="font-semibold">{p.name}</h3>
-                <p className="text-muted-foreground">৳{p.price}</p>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => addItem(p)}
-                disabled={!!selectedItems.find(i => i.productId === p.id)}
-              >
-                {selectedItems.find(i => i.productId === p.id) ? 'Added' : 'Add'}
-              </Button>
-            </div>
-          ))}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Custom Package Builder</h1>
+            <p className="text-muted-foreground mt-1">Select at least 2 items to build your monthly corporate package.</p>
+          </div>
         </div>
+
+        {/* Search & Filter Toggle Bar */}
+        <div className="flex gap-2 mb-4 relative z-10">
+          <Input 
+            placeholder="Search products..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 bg-white"
+          />
+          <Button 
+            variant={isFilterOpen ? "default" : "outline"}
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="flex items-center gap-2"
+          >
+            <Filter className="w-4 h-4" />
+            Filters
+          </Button>
+        </div>
+
+        {/* Filter Panel (Collapsible) */}
+        {isFilterOpen && (
+          <div className="bg-white p-4 rounded-lg shadow-sm border mb-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div>
+              <h3 className="font-semibold mb-3">Categories</h3>
+              <div className="max-h-60 overflow-y-auto pr-2">
+                <CategorySidebar categories={categories} basePath="/subscriptions/builder" />
+              </div>
+            </div>
+            {brands.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">Brands</h3>
+                <div className="max-h-60 overflow-y-auto pr-2">
+                  <BrandSidebar 
+                    brands={brands} 
+                    selectedBrands={selectedBrands} 
+                    onChange={setSelectedBrands} 
+                  />
+                </div>
+              </div>
+            )}
+            <div>
+              <h3 className="font-semibold mb-3">Price</h3>
+              <PriceFilter 
+                minPrice={minPrice} 
+                maxPrice={maxPrice} 
+                onApply={(min, max) => {
+                  setMinPrice(min);
+                  setMaxPrice(max);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {loadingProducts ? (
+            <p className="text-muted-foreground p-4">Loading products...</p>
+          ) : (
+            products.map((p: any) => (
+              <div key={p.id} className="border p-4 rounded-lg flex items-center justify-between hover:shadow-sm">
+                <div>
+                  <h3 className="font-semibold">{p.name}</h3>
+                  <p className="text-muted-foreground">৳{p.price}</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => addItem(p)}
+                  disabled={!!selectedItems.find(i => i.productId === p.id)}
+                >
+                  {selectedItems.find(i => i.productId === p.id) ? 'Added' : 'Add'}
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        {!loadingProducts && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <Button 
+              variant="outline" 
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm font-medium">Page {page} of {totalPages}</span>
+            <Button 
+              variant="outline" 
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg h-fit border sticky top-24">
@@ -206,5 +366,13 @@ export default function CustomPackageBuilder() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CustomPackageBuilder() {
+  return (
+    <Suspense fallback={<p className="p-10 text-center">Loading builder...</p>}>
+      <BuilderContent />
+    </Suspense>
   );
 }

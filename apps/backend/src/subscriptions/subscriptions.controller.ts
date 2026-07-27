@@ -7,6 +7,7 @@ import { Role } from '@prisma/client';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import {
   CreateSubscriptionPlanDto,
+  UpdateSubscriptionPlanDto,
   CreateCustomSubscriptionDto,
   CreateFixedSubscriptionDto,
   UpdateSubscriptionStatusDto
@@ -28,6 +29,20 @@ export class SubscriptionsController {
   @Get('plans')
   getPlans() {
     return this.subscriptionsService.getAllPlans();
+  }
+
+  @Put('plans/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  updatePlan(@Param('id') id: string, @Body() body: UpdateSubscriptionPlanDto) {
+    return this.subscriptionsService.updatePlan(id, body);
+  }
+
+  @Patch('plans/:id/toggle-active')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  togglePlanActive(@Param('id') id: string, @Body('isActive') isActive: boolean) {
+    return this.subscriptionsService.togglePlanActive(id, isActive);
   }
 
   @Post()

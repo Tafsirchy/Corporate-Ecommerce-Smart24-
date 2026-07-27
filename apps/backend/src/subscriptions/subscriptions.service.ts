@@ -26,6 +26,28 @@ export class SubscriptionsService {
     });
   }
 
+  async updatePlan(id: string, data: any) {
+    const { name, description, price, items } = data;
+    const planItems = items ? items.map((item: any) => ({
+      product: { connect: { id: item.productId } },
+      quantity: item.quantity
+    })) : [];
+
+    return this.subscriptionRepo.updatePlan(id, {
+      name,
+      description,
+      price,
+      items: {
+        deleteMany: {},
+        create: planItems
+      }
+    });
+  }
+
+  async togglePlanActive(id: string, isActive: boolean) {
+    return this.subscriptionRepo.togglePlanActive(id, isActive);
+  }
+
   async getAllPlans() {
     return this.subscriptionRepo.findAllPlans();
   }

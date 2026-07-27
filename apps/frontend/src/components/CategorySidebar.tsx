@@ -9,7 +9,7 @@ export interface Category {
   children?: Category[];
 }
 
-export function CategorySidebar({ categories }: { categories: Category[] }) {
+export function CategorySidebar({ categories, basePath = '/shop' }: { categories: Category[], basePath?: string }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [showAll, setShowAll] = useState(false);
 
@@ -31,7 +31,7 @@ export function CategorySidebar({ categories }: { categories: Category[] }) {
             <li key={cat.id}>
               <div className="flex items-center justify-between group">
                 <Link 
-                  href={`/shop?category=${cat.slug}`}
+                  href={`${basePath}?category=${cat.slug}`}
                   onClick={() => setExpanded(prev => ({ ...prev, [cat.id]: !prev[cat.id] }))}
                   className={`block py-1 flex-1 transition-colors text-[13px] hover:text-primary-600 ${level === 1 ? 'text-gray-700' : 'text-gray-500'}`}
                 >

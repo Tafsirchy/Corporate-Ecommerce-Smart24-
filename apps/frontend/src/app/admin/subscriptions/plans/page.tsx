@@ -13,6 +13,7 @@ export default function AdminSubscriptionPlans() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const { token } = useAuth();
 
   // Form State
@@ -48,8 +49,8 @@ export default function AdminSubscriptionPlans() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?limit=100`);
       if (res.ok) {
-        const data = await res.json();
-        setProducts(data.products || data);
+        const json = await res.json();
+        setProducts(json.data || json.products || (Array.isArray(json) ? json : []));
       }
     } catch (err) {
       console.error(err);
@@ -76,7 +77,7 @@ export default function AdminSubscriptionPlans() {
     setSelectedItems(selectedItems.filter(i => i.product.id !== productId));
   };
 
-  const handleCreatePlan = async (e: React.FormEvent) => {
+  const handleSavePlan = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const payload = {
@@ -89,8 +90,14 @@ export default function AdminSubscriptionPlans() {
         }))
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans`, {
-        method: "POST",
+      const url = editingId 
+        ? `${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans/${editingId}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans`;
+        
+      const method = editingId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
@@ -99,20 +106,66 @@ export default function AdminSubscriptionPlans() {
       });
 
       if (res.ok) {
-        toast.success("Plan created successfully");
+        toast.success(editingId ? "Plan updated successfully" : "Plan created successfully");
         setIsModalOpen(false);
         fetchPlans();
-        setName("");
-        setDescription("");
-        setPrice("");
-        setSelectedItems([]);
+        resetForm();
       } else {
         const err = await res.json();
-        toast.error(err.message || "Failed to create plan");
+        toast.error(err.message || "Failed to save plan");
       }
     } catch (err) {
       toast.error("Something went wrong");
     }
+  };
+
+  const handleEdit = (plan: any) => {
+    setEditingId(plan.id);
+    setName(plan.name);
+    setDescription(plan.description || "");
+    setPrice(plan.price.toString());
+    setSelectedItems(
+      (plan.items || []).map((item: any) => ({
+        product: item.product,
+        quantity: item.quantity
+      }))
+    );
+    setIsModalOpen(true);
+  };
+
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans/${id}/toggle-active`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ isActive: !currentStatus })
+      });
+      
+      if (res.ok) {
+        toast.success("Plan status updated");
+        fetchPlans();
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setName("");
+    setDescription("");
+    setPrice("");
+    setSelectedItems([]);
+  };
+
+  const openCreateModal = () => {
+    resetForm();
+    setIsModalOpen(true);
   };
 
   const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -128,7 +181,7 @@ export default function AdminSubscriptionPlans() {
           <Link href="/admin/subscriptions">
             <Button variant="outline">Back to Subscriptions</Button>
           </Link>
-          <Button onClick={() => setIsModalOpen(true)}>Create New Plan</Button>
+          <Button onClick={openCreateModal}>Create New Plan</Button>
         </div>
       </div>
 
@@ -164,6 +217,18 @@ export default function AdminSubscriptionPlans() {
               <div className="text-xl font-bold border-t pt-4">
                 ৳{plan.price} <span className="text-sm font-normal text-gray-500">/ month</span>
               </div>
+              <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+                <Button variant="outline" size="sm" onClick={() => handleEdit(plan)}>
+                  Edit
+                </Button>
+                <Button 
+                  variant={plan.isActive ? "destructive" : "default"} 
+                  size="sm" 
+                  onClick={() => handleToggleActive(plan.id, plan.isActive)}
+                >
+                  {plan.isActive ? "Deactivate" : "Activate"}
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -175,9 +240,9 @@ export default function AdminSubscriptionPlans() {
             <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
               <X className="w-5 h-5" />
             </button>
-            <h2 className="text-2xl font-bold mb-6">Create New Fixed Plan</h2>
+            <h2 className="text-2xl font-bold mb-6">{editingId ? "Edit Plan" : "Create New Fixed Plan"}</h2>
 
-            <form onSubmit={handleCreatePlan} className="space-y-4">
+            <form onSubmit={handleSavePlan} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Plan Name</label>

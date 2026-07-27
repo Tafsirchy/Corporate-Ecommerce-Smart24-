@@ -4,14 +4,23 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
 
 export default function AdminSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const { token } = useAuth();
 
   useEffect(() => {
+    fetchSubscriptions();
+  }, [token]);
+
+  const fetchSubscriptions = () => {
     if (!token) return;
+    setLoading(true);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/admin/all`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -19,7 +28,40 @@ export default function AdminSubscriptions() {
       .then(data => setSubscriptions(data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
-  }, [token]);
+  };
+
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/admin/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        toast.success("Status updated successfully");
+        fetchSubscriptions();
+      } else {
+        const err = await res.json();
+        toast.error(err.message || "Failed to update status");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const filteredSubscriptions = subscriptions.filter(sub => {
+    const matchesSearch = 
+      sub.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      sub.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sub.id.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "ALL" || sub.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) return <div className="p-6">Loading subscriptions...</div>;
 
@@ -30,6 +72,26 @@ export default function AdminSubscriptions() {
         <Link href="/admin/subscriptions/plans">
           <Button variant="outline">Manage Fixed Plans</Button>
         </Link>
+      </div>
+
+      <div className="flex gap-4 mb-6">
+        <Input 
+          placeholder="Search by ID, Name or Email..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md"
+        />
+        <select 
+          className="border rounded-md px-3 py-2 bg-white text-sm"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="ALL">All Statuses</option>
+          <option value="ACTIVE">Active</option>
+          <option value="PAUSED">Paused</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="PAYMENT_FAILED">Payment Failed</option>
+        </select>
       </div>
       
       <div className="bg-white rounded-lg shadow overflow-x-auto">
@@ -45,7 +107,7 @@ export default function AdminSubscriptions() {
             </tr>
           </thead>
           <tbody>
-            {subscriptions.map((sub: any) => (
+            {filteredSubscriptions.map((sub: any) => (
               <tr key={sub.id} className="border-b hover:bg-gray-50">
                 <td className="p-4 text-sm font-mono text-gray-500">{sub.id.slice(-6)}</td>
                 <td className="p-4 text-sm">
@@ -62,20 +124,27 @@ export default function AdminSubscriptions() {
                   {new Date(sub.nextDeliveryDate).toLocaleDateString()}
                 </td>
                 <td className="p-4 text-sm">
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${
-                    sub.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                    sub.status === 'PAUSED' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
-                    {sub.status}
-                  </span>
+                  <select
+                    value={sub.status}
+                    onChange={(e) => handleStatusChange(sub.id, e.target.value)}
+                    className={`border rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer ${
+                      sub.status === 'ACTIVE' ? 'bg-green-100 text-green-700 border-green-200' :
+                      sub.status === 'PAUSED' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                      'bg-red-100 text-red-700 border-red-200'
+                    }`}
+                  >
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="PAUSED">PAUSED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="PAYMENT_FAILED">PAYMENT_FAILED</option>
+                  </select>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {subscriptions.length === 0 && (
-          <div className="p-8 text-center text-muted-foreground">No subscriptions found.</div>
+        {filteredSubscriptions.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground">No subscriptions found matching your filters.</div>
         )}
       </div>
     </div>

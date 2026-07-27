@@ -13,6 +13,11 @@ export default function AdminOffersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [offerType, setOfferType] = useState<"AMOUNT_BASED" | "FIXED_PACKAGE">("AMOUNT_BASED");
   const { token, user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editOfferId, setEditOfferId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -25,20 +30,53 @@ export default function AdminOffersPage() {
     isActive: true,
   });
 
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      discountType: "PERCENTAGE",
+      discountValue: "",
+      minAmount: "",
+      priority: "0",
+      planId: "",
+      isFreeDelivery: false,
+      isActive: true,
+    });
+    setOfferType("AMOUNT_BASED");
+    setEditOfferId(null);
+  };
+
   useEffect(() => {
     if (token) {
       fetchOffers();
       fetchPlans();
     }
-  }, [token]);
+  }, [token, page]);
 
   const fetchOffers = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers?page=${page}&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok) setOffers(await res.json());
-    } catch (e) {}
+      if (res.ok) {
+        const result = await res.json();
+        // Since we changed backend to return { data, meta }
+        if (result.data && result.meta) {
+          setOffers(result.data);
+          setTotalPages(result.meta.totalPages);
+        } else {
+          // Fallback if backend returned direct array
+          setOffers(result);
+          setTotalPages(1);
+        }
+      } else {
+        toast.error("Failed to fetch offers");
+      }
+    } catch (e) {
+      toast.error("Error fetching offers");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchPlans = async () => {
@@ -67,8 +105,12 @@ export default function AdminOffersPage() {
         payload.planId = formData.planId;
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers`, {
-        method: "POST",
+      const url = editOfferId 
+        ? `${process.env.NEXT_PUBLIC_API_URL}/offers/${editOfferId}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/offers`;
+        
+      const res = await fetch(url, {
+        method: editOfferId ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
@@ -77,16 +119,33 @@ export default function AdminOffersPage() {
       });
 
       if (res.ok) {
-        toast.success("Offer created successfully");
+        toast.success(editOfferId ? "Offer updated successfully" : "Offer created successfully");
         setIsModalOpen(false);
+        resetForm();
         fetchOffers();
       } else {
         const err = await res.json();
-        toast.error(err.message || "Failed to create offer");
+        toast.error(err.message || (editOfferId ? "Failed to update offer" : "Failed to create offer"));
       }
     } catch (e) {
-      toast.error("Error creating offer");
+      toast.error(editOfferId ? "Error updating offer" : "Error creating offer");
     }
+  };
+
+  const handleEdit = (offer: any) => {
+    setEditOfferId(offer.id);
+    setOfferType(offer.type);
+    setFormData({
+      name: offer.name,
+      discountType: offer.discountType,
+      discountValue: offer.discountValue.toString(),
+      minAmount: offer.minAmount ? offer.minAmount.toString() : "",
+      priority: offer.priority ? offer.priority.toString() : "0",
+      planId: offer.planId || "",
+      isFreeDelivery: offer.isFreeDelivery,
+      isActive: offer.isActive,
+    });
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -103,13 +162,29 @@ export default function AdminOffersPage() {
     } catch (e) {}
   };
 
-  if (!user || user.role !== "ADMIN") return <p className="p-8">Access Denied</p>;
+  const filteredOffers = offers.filter(offer => 
+    offer.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading && offers.length === 0) return <p className="p-8">Loading offers...</p>;
 
   return (
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Offer Management</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Create New Offer</Button>
+        <Button onClick={() => {
+          resetForm();
+          setIsModalOpen(true);
+        }}>Create New Offer</Button>
+      </div>
+
+      <div className="mb-6">
+        <Input 
+          placeholder="Search offers by name..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md"
+        />
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -125,7 +200,7 @@ export default function AdminOffersPage() {
             </tr>
           </thead>
           <tbody>
-            {offers.map(offer => (
+            {filteredOffers.map(offer => (
               <tr key={offer.id} className="border-b">
                 <td className="p-4">{offer.name}</td>
                 <td className="p-4">{offer.type === 'AMOUNT_BASED' ? 'Custom Package' : 'Fixed Package'}</td>
@@ -144,25 +219,47 @@ export default function AdminOffersPage() {
                     {offer.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td className="p-4">
+                <td className="p-4 flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(offer)}>Edit</Button>
                   <Button variant="destructive" size="sm" onClick={() => handleDelete(offer.id)}>Delete</Button>
                 </td>
               </tr>
             ))}
-            {offers.length === 0 && (
+            {filteredOffers.length === 0 && (
               <tr>
                 <td colSpan={6} className="p-4 text-center text-gray-500">No offers found.</td>
               </tr>
             )}
           </tbody>
         </table>
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center p-4 border-t bg-gray-50">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page === 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+            >
+              Previous
+            </Button>
+            <span className="text-sm font-medium">Page {page} of {totalPages}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page === totalPages}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4"><X className="w-5 h-5 text-gray-400" /></button>
-            <h2 className="text-2xl font-bold mb-4">Create Offer</h2>
+            <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="absolute top-4 right-4"><X className="w-5 h-5 text-gray-400" /></button>
+            <h2 className="text-2xl font-bold mb-4">{editOfferId ? "Edit Offer" : "Create Offer"}</h2>
             
             <div className="flex gap-4 mb-6">
               <Button 
@@ -244,7 +341,7 @@ export default function AdminOffersPage() {
                 <span>Active</span>
               </label>
 
-              <Button type="submit" className="w-full">Create</Button>
+              <Button type="submit" className="w-full">{editOfferId ? "Save Changes" : "Create Offer"}</Button>
             </form>
           </div>
         </div>

@@ -630,6 +630,7 @@ model Offer {
   
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
 }
 model CorporateCollection {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId

@@ -10,6 +10,20 @@ export class SubscriptionRepository {
     return this.prisma.subscriptionPlan.create({ data });
   }
 
+  async updatePlan(id: string, data: any): Promise<SubscriptionPlan> {
+    return this.prisma.subscriptionPlan.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async togglePlanActive(id: string, isActive: boolean): Promise<SubscriptionPlan> {
+    return this.prisma.subscriptionPlan.update({
+      where: { id },
+      data: { isActive },
+    });
+  }
+
   async findAllPlans(): Promise<SubscriptionPlan[]> {
     return this.prisma.subscriptionPlan.findMany({
       include: { items: { include: { product: true } }, offer: true }

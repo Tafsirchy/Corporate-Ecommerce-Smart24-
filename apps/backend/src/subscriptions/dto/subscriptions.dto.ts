@@ -29,6 +29,10 @@ export class CreateSubscriptionPlanDto {
   items: SubscriptionItemDto[];
 }
 
+import { PartialType } from '@nestjs/swagger';
+
+export class UpdateSubscriptionPlanDto extends PartialType(CreateSubscriptionPlanDto) {}
+
 export class CreateCustomSubscriptionDto {
   @IsArray()
   @ValidateNested({ each: true })

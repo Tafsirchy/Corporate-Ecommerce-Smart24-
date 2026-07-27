@@ -10,10 +10,29 @@ export class OfferRepository {
     return this.prisma.offer.create({ data });
   }
 
-  async findAllOffers(): Promise<Offer[]> {
-    return this.prisma.offer.findMany({
-      include: { plan: true }
-    });
+  async findAllOffers(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    
+    const [data, total] = await Promise.all([
+      this.prisma.offer.findMany({
+        where: { deletedAt: null },
+        include: { plan: true },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' }
+      }),
+      this.prisma.offer.count({ where: { deletedAt: null } })
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 
   async findActiveAmountBasedOffers(): Promise<Offer[]> {
@@ -22,6 +41,7 @@ export class OfferRepository {
       where: {
         type: 'AMOUNT_BASED',
         isActive: true,
+        deletedAt: null,
         OR: [
           { startDate: null, endDate: null },
           { startDate: { lte: now }, endDate: { gte: now } },
@@ -44,6 +64,9 @@ export class OfferRepository {
   }
 
   async deleteOffer(id: string): Promise<Offer> {
-    return this.prisma.offer.delete({ where: { id } });
+    return this.prisma.offer.update({ 
+      where: { id },
+      data: { deletedAt: new Date(), isActive: false }
+    });
   }
 }
