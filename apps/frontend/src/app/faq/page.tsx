@@ -73,19 +73,19 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-16">
+    <div className="bg-muted min-h-screen py-16">
       <div className="container mx-auto px-4">
         <div className="mb-16">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Frequently Asked Questions</h2>
-          <p className="mt-4 text-lg text-gray-500">
-            Can't find the answer you're looking for? Reach out to our <a href="/contact" className="text-primary-600 font-medium hover:underline">customer support</a> team.
+          <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">Frequently Asked Questions</h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Can't find the answer you're looking for? Reach out to our <a href="/contact" className="text-primary/90 font-medium hover:underline">customer support</a> team.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {faqs.map((category, catIndex) => (
             <div key={catIndex}>
-              <h3 className="text-xl font-bold text-gray-900 mb-6">{category.category}</h3>
+              <h3 className="text-xl font-bold text-foreground mb-6">{category.category}</h3>
               <div className="space-y-4">
                 {category.items.map((faq, itemIndex) => {
                   const id = `${catIndex}-${itemIndex}`;
@@ -93,22 +93,22 @@ export default function FAQPage() {
                   return (
                     <div 
                       key={itemIndex} 
-                      className={`bg-white rounded-2xl shadow-sm border transition-colors ${isOpen ? 'border-primary-200 ring-1 ring-primary-200' : 'border-gray-100'}`}
+                      className={`bg-white rounded-2xl shadow-sm border transition-colors ${isOpen ? 'border-primary-200 ring-1 ring-primary-200' : 'border-border'}`}
                     >
                       <button
                         className="w-full px-6 py-5 flex justify-between items-center focus:outline-none"
                         onClick={() => toggleFaq(catIndex, itemIndex)}
                       >
-                        <span className={`font-semibold text-left pr-4 ${isOpen ? 'text-primary-900' : 'text-gray-900'}`}>
+                        <span className={`font-semibold text-left pr-4 ${isOpen ? 'text-primary-900' : 'text-foreground'}`}>
                           {faq.question}
                         </span>
-                        <span className="flex-shrink-0 text-gray-400">
+                        <span className="flex-shrink-0 text-muted-foreground">
                           {isOpen ? <ChevronUp className="h-5 w-5 text-primary-500" /> : <ChevronDown className="h-5 w-5" />}
                         </span>
                       </button>
                       {isOpen && (
                         <div className="px-6 pb-5">
-                          <p className="text-gray-600 leading-relaxed text-sm">{faq.answer}</p>
+                          <p className="text-muted-foreground leading-relaxed text-sm">{faq.answer}</p>
                         </div>
                       )}
                     </div>

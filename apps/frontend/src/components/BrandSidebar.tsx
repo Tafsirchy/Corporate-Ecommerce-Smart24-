@@ -26,8 +26,8 @@ export function BrandSidebar({ brands, selectedBrands, onChange }: BrandSidebarP
   };
 
   return (
-    <div className="w-full bg-white p-5 rounded-xl border border-gray-100 shadow-sm mt-6">
-      <h2 className="text-[15px] font-bold text-gray-900 mb-3 font-serif">Brands</h2>
+    <div className="w-full bg-white p-5 rounded-xl border border-border shadow-sm mt-6">
+      <h2 className="text-[15px] font-bold text-foreground mb-3 font-serif">Brands</h2>
       <div className="space-y-2">
         {visibleBrands.map(brand => (
           <label key={brand.id} className="flex items-center gap-3 cursor-pointer group">
@@ -36,13 +36,13 @@ export function BrandSidebar({ brands, selectedBrands, onChange }: BrandSidebarP
                 type="checkbox" 
                 checked={selectedBrands.includes(brand.slug)}
                 onChange={() => toggleBrand(brand.slug)}
-                className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 transition cursor-pointer appearance-none checked:bg-primary-600 checked:border-primary-600 border"
+                className="w-4 h-4 rounded border-border text-primary/90 focus:ring-primary-500 transition cursor-pointer appearance-none checked:bg-primary-600 checked:border-primary-600 border"
               />
               {selectedBrands.includes(brand.slug) && (
                 <svg className="absolute w-3 h-3 text-white pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
               )}
             </div>
-            <span className="text-[13px] text-gray-600 group-hover:text-primary-600 transition-colors">
+            <span className="text-[13px] text-muted-foreground group-hover:text-primary/90 transition-colors">
               {brand.name}
             </span>
           </label>
@@ -51,7 +51,7 @@ export function BrandSidebar({ brands, selectedBrands, onChange }: BrandSidebarP
       {!showAll && brands.length > 10 && (
         <button 
           onClick={() => setShowAll(true)}
-          className="mt-4 text-[13px] text-primary-600 hover:text-primary-700 font-medium w-full text-left"
+          className="mt-4 text-[13px] text-primary/90 hover:text-primary-700 font-medium w-full text-left"
         >
           See more brands...
         </button>
@@ -59,7 +59,7 @@ export function BrandSidebar({ brands, selectedBrands, onChange }: BrandSidebarP
       {showAll && brands.length > 10 && (
         <button 
           onClick={() => setShowAll(false)}
-          className="mt-4 text-[13px] text-primary-600 hover:text-primary-700 font-medium w-full text-left"
+          className="mt-4 text-[13px] text-primary/90 hover:text-primary-700 font-medium w-full text-left"
         >
           See less brands...
         </button>

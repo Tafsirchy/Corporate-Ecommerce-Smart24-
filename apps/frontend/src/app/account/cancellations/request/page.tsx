@@ -71,21 +71,21 @@ export default function CancellationRequestPage() {
   if (!user) return null;
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12">
+    <div className="bg-muted min-h-screen pb-12">
       <div className="container mx-auto px-4 pt-4 pb-8">
-        <div className="flex items-center text-sm text-gray-500 mb-6 gap-2">
-          <Link href="/account" className="hover:text-primary-600">Account</Link>
+        <div className="flex items-center text-sm text-muted-foreground mb-6 gap-2">
+          <Link href="/account" className="hover:text-primary/90">Account</Link>
           <ChevronRight size={14} />
-          <Link href="/account/orders" className="hover:text-primary-600">Orders</Link>
+          <Link href="/account/orders" className="hover:text-primary/90">Orders</Link>
           <ChevronRight size={14} />
-          <span className="text-gray-800">Cancel Order</span>
+          <span className="text-foreground">Cancel Order</span>
         </div>
 
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+          <div className="p-6 border-b border-border bg-muted flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Cancel Order</h1>
-              {order && <p className="text-sm text-gray-500 mt-1">Order ID: {order.id.substring(0, 10).toUpperCase()}</p>}
+              <h1 className="text-2xl font-bold text-foreground">Cancel Order</h1>
+              {order && <p className="text-sm text-muted-foreground mt-1">Order ID: {order.id.substring(0, 10).toUpperCase()}</p>}
             </div>
             {order && (
               <span className="bg-yellow-100 text-yellow-800 text-[12px] px-3 py-1 rounded-full font-medium uppercase tracking-wide">
@@ -96,13 +96,13 @@ export default function CancellationRequestPage() {
 
           <div className="p-6">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg text-sm">
+              <div className="mb-6 p-4 bg-danger-bg text-destructive rounded-lg text-sm">
                 {error}
               </div>
             )}
 
             {!order && !error && (
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-muted-foreground py-8">
                 Loading order details...
               </div>
             )}
@@ -110,9 +110,9 @@ export default function CancellationRequestPage() {
             {order && order.status === 'PENDING' && !error && (
               <form onSubmit={handleSubmit}>
                 <div className="mb-8">
-                  <h3 className="text-base font-medium text-gray-900 mb-4">1. Order Items</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-600 mb-4">The following items will be cancelled:</p>
+                  <h3 className="text-base font-medium text-foreground mb-4">1. Order Items</h3>
+                  <div className="bg-muted p-4 rounded-lg border border-border">
+                    <p className="text-sm text-muted-foreground mb-4">The following items will be cancelled:</p>
                     <div className="space-y-4">
                       {order.items.map((item: any) => (
                         <div key={item.id} className="flex gap-4">
@@ -122,8 +122,8 @@ export default function CancellationRequestPage() {
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900 text-sm line-clamp-1">{item.product.name}</p>
-                            <p className="text-sm text-gray-500">Qty: {item.quantity} • ৳{item.priceAtPurchase}</p>
+                            <p className="font-medium text-foreground text-sm line-clamp-1">{item.product.name}</p>
+                            <p className="text-sm text-muted-foreground">Qty: {item.quantity} • ৳{item.priceAtPurchase}</p>
                           </div>
                         </div>
                       ))}
@@ -132,11 +132,11 @@ export default function CancellationRequestPage() {
                 </div>
 
                 <div className="mb-8">
-                  <h3 className="text-base font-medium text-gray-900 mb-4">2. Reason for Cancellation</h3>
+                  <h3 className="text-base font-medium text-foreground mb-4">2. Reason for Cancellation</h3>
                   <select 
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     required
                   >
                     <option value="" disabled>Select a reason</option>
@@ -149,18 +149,18 @@ export default function CancellationRequestPage() {
                 </div>
 
                 <div className="mb-8">
-                  <h3 className="text-base font-medium text-gray-900 mb-4">3. Additional Comments (Optional)</h3>
+                  <h3 className="text-base font-medium text-foreground mb-4">3. Additional Comments (Optional)</h3>
                   <textarea 
                     value={comments}
                     onChange={(e) => setComments(e.target.value)}
                     rows={3}
                     placeholder="Please provide more details to help us improve."
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   ></textarea>
                 </div>
 
-                <div className="flex justify-end gap-4 border-t border-gray-100 pt-6">
-                  <Link href="/account/orders" className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                <div className="flex justify-end gap-4 border-t border-border pt-6">
+                  <Link href="/account/orders" className="px-6 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition">
                     Keep Order
                   </Link>
                   <button 

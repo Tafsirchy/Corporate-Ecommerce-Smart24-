@@ -50,7 +50,7 @@ export const JustForYou = () => {
   if (isInitialLoad) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Just For You</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-6">Just For You</h2>
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
         </div>
@@ -61,9 +61,9 @@ export const JustForYou = () => {
   if (products.length === 0) return null;
 
   return (
-    <section id="just-for-you" className="bg-gray-50 py-8">
+    <section id="just-for-you" className="bg-muted py-8">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Just For You</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-6">Just For You</h2>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           {products.map((product, index) => (
@@ -79,7 +79,7 @@ export const JustForYou = () => {
             <button
               onClick={handleLoadMore}
               disabled={isLoading}
-              className="px-16 py-3 border border-primary-600 text-primary-600 font-semibold rounded hover:bg-primary-50 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto min-w-[300px]"
+              className="px-16 py-3 border border-primary-600 text-primary/90 font-semibold rounded hover:bg-primary/10 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto min-w-[300px]"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">

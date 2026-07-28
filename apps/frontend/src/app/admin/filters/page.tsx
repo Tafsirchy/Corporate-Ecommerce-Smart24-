@@ -184,21 +184,21 @@ export default function AdminFilters() {
         <h1 className="text-3xl font-bold">Filter Definitions</h1>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-border mb-8">
         <h2 className="text-xl font-bold mb-4">{isEditing ? 'Edit Filter' : 'Add New Filter'}</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Key (slug)</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Key (slug)</label>
             <input type="text" required value={key} onChange={e => setKey(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black" placeholder="e.g. storage_capacity" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Label (Display Name)</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Label (Display Name)</label>
             <input type="text" required value={label} onChange={e => setLabel(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black" placeholder="e.g. Storage Capacity" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Type</label>
             <select required value={type} onChange={e => setType(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black">
               <option value="CHECKBOX">Checkbox (Multi-select)</option>
@@ -208,7 +208,7 @@ export default function AdminFilters() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Status</label>
             <select required value={status} onChange={e => setStatus(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black">
               <option value="ACTIVE">Active</option>
@@ -218,7 +218,7 @@ export default function AdminFilters() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Scoped Categories (Leave empty for All)</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Scoped Categories (Leave empty for All)</label>
             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto border p-2 rounded">
               {categories.map(c => (
                 <label key={c.id} className="flex items-center gap-1.5 text-sm cursor-pointer p-1">
@@ -234,8 +234,8 @@ export default function AdminFilters() {
           </div>
 
           {type !== 'RANGE' && (
-            <div className="md:col-span-2 border p-4 rounded-lg bg-gray-50">
-              <label className="block text-sm font-bold text-gray-900 mb-2">Predefined Values</label>
+            <div className="md:col-span-2 border p-4 rounded-lg bg-muted">
+              <label className="block text-sm font-bold text-foreground mb-2">Predefined Values</label>
               <div className="flex gap-2 mb-3">
                 {type === 'SWATCH' && (
                   <input type="color" value={newValueColor} onChange={e => setNewValueColor(e.target.value)}
@@ -250,40 +250,40 @@ export default function AdminFilters() {
                 {values.map(v => (
                   <span key={v.value} className="bg-white border px-2 py-1 rounded text-sm flex items-center gap-1">
                     {v.colorHex && (
-                      <span className="w-3 h-3 rounded-full border border-gray-300 inline-block mr-1" style={{ backgroundColor: v.colorHex }}></span>
+                      <span className="w-3 h-3 rounded-full border border-border inline-block mr-1" style={{ backgroundColor: v.colorHex }}></span>
                     )}
                     {v.label}
-                    <button type="button" onClick={() => handleRemoveValue(v.value)} className="text-red-500 hover:text-red-700 font-bold ml-1">&times;</button>
+                    <button type="button" onClick={() => handleRemoveValue(v.value)} className="text-destructive hover:text-destructive font-bold ml-1">&times;</button>
                   </span>
                 ))}
-                {values.length === 0 && <span className="text-sm text-gray-500 italic">No values added yet.</span>}
+                {values.length === 0 && <span className="text-sm text-muted-foreground italic">No values added yet.</span>}
               </div>
             </div>
           )}
 
           {type === 'RANGE' && (
-            <div className="md:col-span-2 border p-4 rounded-lg bg-gray-50 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2 border p-4 rounded-lg bg-muted grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="col-span-2 md:col-span-4">
-                <label className="block text-sm font-bold text-gray-900 mb-1">Range Configuration</label>
-                <p className="text-xs text-gray-500 mb-2">Set the limits and unit for the range slider.</p>
+                <label className="block text-sm font-bold text-foreground mb-1">Range Configuration</label>
+                <p className="text-xs text-muted-foreground mb-2">Set the limits and unit for the range slider.</p>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Min Value</label>
+                <label className="block text-xs font-medium text-foreground mb-1">Min Value</label>
                 <input type="number" required value={rangeMin} onChange={e => setRangeMin(e.target.value)}
                   className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Max Value</label>
+                <label className="block text-xs font-medium text-foreground mb-1">Max Value</label>
                 <input type="number" required value={rangeMax} onChange={e => setRangeMax(e.target.value)}
                   className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Step</label>
+                <label className="block text-xs font-medium text-foreground mb-1">Step</label>
                 <input type="number" required min="0.01" step="0.01" value={rangeStep} onChange={e => setRangeStep(e.target.value)}
                   className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Unit (Optional)</label>
+                <label className="block text-xs font-medium text-foreground mb-1">Unit (Optional)</label>
                 <input type="text" value={rangeUnit} onChange={e => setRangeUnit(e.target.value)} placeholder="e.g. $, GB, kg"
                   className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black" />
               </div>
@@ -291,11 +291,11 @@ export default function AdminFilters() {
           )}
 
           <div className="md:col-span-2 flex gap-3 pt-4">
-            <button type="submit" className="bg-black text-white px-6 py-2 rounded font-medium hover:bg-gray-800">
+            <button type="submit" className="bg-black text-white px-6 py-2 rounded font-medium hover:bg-secondary">
               {isEditing ? 'Update Filter' : 'Create Filter'}
             </button>
             {isEditing && (
-              <button type="button" onClick={resetForm} className="bg-gray-200 text-gray-800 px-6 py-2 rounded font-medium hover:bg-gray-300">
+              <button type="button" onClick={resetForm} className="bg-muted/80 text-foreground px-6 py-2 rounded font-medium hover:bg-muted-foreground/20">
                 Cancel
               </button>
             )}
@@ -306,13 +306,13 @@ export default function AdminFilters() {
       <div className="mb-4 flex gap-4 border-b">
         <button 
           onClick={() => setActiveTab('ALL')} 
-          className={`pb-2 font-medium ${activeTab === 'ALL' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black'}`}
+          className={`pb-2 font-medium ${activeTab === 'ALL' ? 'border-b-2 border-black text-black' : 'text-muted-foreground hover:text-black'}`}
         >
           All Filters
         </button>
         <button 
           onClick={() => setActiveTab('SUGGESTED')} 
-          className={`pb-2 font-medium flex items-center gap-2 ${activeTab === 'SUGGESTED' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black'}`}
+          className={`pb-2 font-medium flex items-center gap-2 ${activeTab === 'SUGGESTED' ? 'border-b-2 border-black text-black' : 'text-muted-foreground hover:text-black'}`}
         >
           Suggested Queue
           {filters.filter(f => f.status === 'SUGGESTED').length > 0 && (
@@ -323,48 +323,48 @@ export default function AdminFilters() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         <table className="w-full text-left text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="p-4 font-medium text-gray-600">Key</th>
-              <th className="p-4 font-medium text-gray-600">Label</th>
-              <th className="p-4 font-medium text-gray-600">Type</th>
-              <th className="p-4 font-medium text-gray-600">Status</th>
-              <th className="p-4 font-medium text-gray-600 text-right">Actions</th>
+              <th className="p-4 font-medium text-muted-foreground">Key</th>
+              <th className="p-4 font-medium text-muted-foreground">Label</th>
+              <th className="p-4 font-medium text-muted-foreground">Type</th>
+              <th className="p-4 font-medium text-muted-foreground">Status</th>
+              <th className="p-4 font-medium text-muted-foreground text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filteredFilters.map(filter => (
-              <tr key={filter.id} className="hover:bg-gray-50">
-                <td className="p-4 font-medium text-gray-900">{filter.key}</td>
+              <tr key={filter.id} className="hover:bg-muted">
+                <td className="p-4 font-medium text-foreground">{filter.key}</td>
                 <td className="p-4">{filter.label}</td>
-                <td className="p-4"><span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-bold">{filter.type}</span></td>
+                <td className="p-4"><span className="bg-muted text-foreground px-2 py-1 rounded text-xs font-bold">{filter.type}</span></td>
                 <td className="p-4">
                   <span className={`px-2 py-1 rounded text-xs font-bold ${
-                    filter.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                    filter.status === 'SUGGESTED' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+                    filter.status === 'ACTIVE' ? 'bg-success-bg text-success-text' :
+                    filter.status === 'SUGGESTED' ? 'bg-yellow-100 text-yellow-700' : 'bg-danger-bg text-destructive'
                   }`}>
                     {filter.status}
                   </span>
                 </td>
                 <td className="p-4 flex justify-end gap-2">
                   {filter.status === 'SUGGESTED' && (
-                    <button onClick={() => handleApprove(filter.id)} className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded" title="Approve">
+                    <button onClick={() => handleApprove(filter.id)} className="p-2 text-success-text hover:text-green-800 hover:bg-success-bg rounded" title="Approve">
                       <Check size={16} />
                     </button>
                   )}
-                  <button onClick={() => handleEdit(filter)} className="p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded" title="Edit">
+                  <button onClick={() => handleEdit(filter)} className="p-2 text-muted-foreground hover:text-black hover:bg-muted rounded" title="Edit">
                     <Edit2 size={16} />
                   </button>
-                  <button onClick={() => handleDelete(filter.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded" title={filter.status === 'SUGGESTED' ? 'Reject' : 'Delete'}>
+                  <button onClick={() => handleDelete(filter.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-muted rounded" title={filter.status === 'SUGGESTED' ? 'Reject' : 'Delete'}>
                     <Trash2 size={16} />
                   </button>
                 </td>
               </tr>
             ))}
             {filteredFilters.length === 0 && (
-              <tr><td colSpan={5} className="p-8 text-center text-gray-500">No filters found</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No filters found</td></tr>
             )}
           </tbody>
         </table>

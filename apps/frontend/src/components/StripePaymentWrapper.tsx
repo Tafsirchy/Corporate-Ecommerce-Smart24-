@@ -40,7 +40,7 @@ function CheckoutForm({ orderId, clientSecret }: { orderId: string, clientSecret
       <PaymentElement />
       <button 
         disabled={isProcessing || !stripe || !elements} 
-        className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 mt-4"
+        className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-secondary disabled:opacity-50 mt-4"
       >
         {isProcessing ? 'Processing...' : 'Pay Now'}
       </button>

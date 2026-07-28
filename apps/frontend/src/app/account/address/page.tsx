@@ -115,7 +115,7 @@ export default function AddressBookPage() {
   return (
     <div className="container mx-auto px-4 py-8 flex-1">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
+        <h1 className="text-3xl font-bold text-foreground">My Account</h1>
         <button
           onClick={logout}
           className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-semibold transition"
@@ -129,8 +129,8 @@ export default function AddressBookPage() {
         <div className="lg:col-span-1">
           {/* ... Keep the existing sidebar ... */}
           <div className="mb-6">
-            <p className="text-gray-600 text-sm mb-1">Hello, {user.name || user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
-            <div className="inline-flex items-center gap-1 bg-[#4CAF50] text-white text-xs font-semibold px-2 py-1 rounded-sm">
+            <p className="text-muted-foreground text-sm mb-1">Hello, {user.name || user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
+            <div className="inline-flex items-center gap-1 bg-success-fill text-white text-xs font-semibold px-2 py-1 rounded-sm">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
@@ -141,23 +141,23 @@ export default function AddressBookPage() {
           <div className="space-y-5">
             <div>
               <Link href="/account">
-                <h3 className="text-[15px] font-semibold text-primary-600 mb-2 hover:text-primary-700 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-primary/90 mb-2 hover:text-primary-700 cursor-pointer">
                   Manage My Account
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/profile" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/profile" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/address" className="text-primary-600 font-semibold text-[14px]">
+                  <Link href="/account/address" className="text-primary/90 font-semibold text-[14px]">
                     Address Book
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/payment" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/payment" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Payment Options
                   </Link>
                 </li>
@@ -166,18 +166,18 @@ export default function AddressBookPage() {
 
             <div>
               <Link href="/account/orders">
-                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-foreground mb-2 hover:text-primary/90 cursor-pointer">
                   My Orders
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/returns" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Returns
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/cancellations" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/cancellations" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Cancellations
                   </Link>
                 </li>
@@ -185,13 +185,13 @@ export default function AddressBookPage() {
             </div>
 
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+              <h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer">
                 <Link href="/account/reviews">My Reviews</Link>
               </h3>
             </div>
 
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+              <h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer">
                 <Link href="/account/wishlist">My Wishlist & Followed Stores</Link>
               </h3>
             </div>
@@ -201,8 +201,8 @@ export default function AddressBookPage() {
         {/* Main Content Area */}
         <div className="lg:col-span-3">
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-[22px] text-gray-800 font-normal">Address Book</h2>
-            <div className="text-[13px] text-[#1a9cb7]">
+            <h2 className="text-[22px] text-foreground font-normal">Address Book</h2>
+            <div className="text-[13px] text-primary">
               {/* Optional: Add global actions if needed, but per-row makes more sense */}
             </div>
           </div>
@@ -211,63 +211,63 @@ export default function AddressBookPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-100">
-                    <th className="py-3 px-4 text-[13px] font-normal text-gray-500 w-[15%]">Full Name</th>
-                    <th className="py-3 px-4 text-[13px] font-normal text-gray-500 w-[35%]">Address</th>
-                    <th className="py-3 px-4 text-[13px] font-normal text-gray-500 w-[20%]">Postcode</th>
-                    <th className="py-3 px-4 text-[13px] font-normal text-gray-500 w-[15%]">Phone Number</th>
-                    <th className="py-3 px-4 text-[13px] font-normal text-gray-500 w-[15%] text-right"></th>
+                  <tr className="bg-muted border-b border-border">
+                    <th className="py-3 px-4 text-[13px] font-normal text-muted-foreground w-[15%]">Full Name</th>
+                    <th className="py-3 px-4 text-[13px] font-normal text-muted-foreground w-[35%]">Address</th>
+                    <th className="py-3 px-4 text-[13px] font-normal text-muted-foreground w-[20%]">Postcode</th>
+                    <th className="py-3 px-4 text-[13px] font-normal text-muted-foreground w-[15%]">Phone Number</th>
+                    <th className="py-3 px-4 text-[13px] font-normal text-muted-foreground w-[15%] text-right"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {addresses.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-gray-500 text-[14px]">
+                      <td colSpan={5} className="py-8 text-center text-muted-foreground text-[14px]">
                         No addresses found. Please add a new address.
                       </td>
                     </tr>
                   ) : (
                     addresses.map(address => (
-                      <tr key={address.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                      <tr key={address.id} className="border-b border-border last:border-0 hover:bg-muted transition-colors">
                         <td className="py-4 px-4 align-top">
-                          <span className="text-[13px] text-gray-800">{address.fullName}</span>
+                          <span className="text-[13px] text-foreground">{address.fullName}</span>
                         </td>
                         <td className="py-4 px-4 align-top">
                           <div className="flex items-start gap-2">
-                            <span className="bg-[#f57224] text-white text-[10px] px-2 py-0.5 rounded-full mt-0.5 whitespace-nowrap uppercase">
+                            <span className="bg-accent text-white text-[10px] px-2 py-0.5 rounded-full mt-0.5 whitespace-nowrap uppercase">
                               {address.label}
                             </span>
-                            <span className="text-[13px] text-gray-800 leading-snug">
+                            <span className="text-[13px] text-foreground leading-snug">
                               {address.address}
                             </span>
                           </div>
                         </td>
                         <td className="py-4 px-4 align-top">
-                          <span className="text-[13px] text-gray-800 leading-snug block">
+                          <span className="text-[13px] text-foreground leading-snug block">
                             {address.postcode}
                           </span>
                         </td>
                         <td className="py-4 px-4 align-top">
-                          <span className="text-[13px] text-gray-800">{address.phone}</span>
+                          <span className="text-[13px] text-foreground">{address.phone}</span>
                         </td>
                         <td className="py-4 px-4 align-top">
                           <div className="flex justify-between items-center h-full">
                             <div className="flex flex-col gap-1">
                               {address.isDefaultShipping ? (
-                                <span className="text-[11px] text-gray-800 font-semibold whitespace-nowrap">Default Shipping Address</span>
+                                <span className="text-[11px] text-foreground font-semibold whitespace-nowrap">Default Shipping Address</span>
                               ) : (
-                                <button onClick={() => handleMakeDefaultShipping(address.id)} className="text-[11px] text-[#1a9cb7] whitespace-nowrap text-left hover:underline">Make default shipping</button>
+                                <button onClick={() => handleMakeDefaultShipping(address.id)} className="text-[11px] text-primary whitespace-nowrap text-left hover:underline">Make default shipping</button>
                               )}
                               
                               {address.isDefaultBilling ? (
-                                <span className="text-[11px] text-gray-800 font-semibold whitespace-nowrap">Default Billing Address</span>
+                                <span className="text-[11px] text-foreground font-semibold whitespace-nowrap">Default Billing Address</span>
                               ) : (
-                                <button onClick={() => handleMakeDefaultBilling(address.id)} className="text-[11px] text-[#1a9cb7] whitespace-nowrap text-left hover:underline">Make default billing</button>
+                                <button onClick={() => handleMakeDefaultBilling(address.id)} className="text-[11px] text-primary whitespace-nowrap text-left hover:underline">Make default billing</button>
                               )}
                             </div>
                             <button 
                               onClick={() => handleOpenModal(address)} 
-                              className="text-[13px] text-[#1a9cb7] font-normal hover:underline pl-4 uppercase"
+                              className="text-[13px] text-primary font-normal hover:underline pl-4 uppercase"
                             >
                               Edit
                             </button>
@@ -283,7 +283,7 @@ export default function AddressBookPage() {
             <div className="p-6 flex justify-end mt-4">
               <button 
                 onClick={() => handleOpenModal()}
-                className="bg-[#1a9cb7] text-white px-6 py-2.5 text-[14px] font-medium hover:bg-[#158299] transition uppercase flex items-center gap-2"
+                className="bg-primary text-white px-6 py-2.5 text-[14px] font-medium hover:bg-primary/90 transition uppercase flex items-center gap-2"
               >
                 <span className="text-lg leading-none">+</span> ADD NEW ADDRESS
               </button>
@@ -298,30 +298,30 @@ export default function AddressBookPage() {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b flex justify-between items-center">
               <h2 className="text-xl font-semibold">{editingId ? 'Edit Address' : 'Add New Address'}</h2>
-              <button onClick={handleCloseModal} className="text-gray-500 hover:text-black">
+              <button onClick={handleCloseModal} className="text-muted-foreground hover:text-black">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
             </div>
             <form onSubmit={handleSaveAddress} className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Full Name</label>
                   <input required type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full border p-2 rounded focus:ring-primary-500 focus:border-primary-500" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address Details</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Address Details</label>
                   <input required type="text" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full border p-2 rounded focus:ring-primary-500 focus:border-primary-500" placeholder="House/Apartment, Road, Area" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Postcode / ZIP</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Postcode / ZIP</label>
                   <input required type="text" value={formData.postcode} onChange={(e) => setFormData({...formData, postcode: e.target.value})} className="w-full border p-2 rounded focus:ring-primary-500 focus:border-primary-500" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
                   <input required type="text" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border p-2 rounded focus:ring-primary-500 focus:border-primary-500" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Label</label>
                   <select value={formData.label} onChange={(e) => setFormData({...formData, label: e.target.value})} className="w-full border p-2 rounded focus:ring-primary-500 focus:border-primary-500">
                     <option value="HOME">HOME</option>
                     <option value="OFFICE">OFFICE</option>
@@ -331,19 +331,19 @@ export default function AddressBookPage() {
                 
                 <div className="md:col-span-2 mt-2 space-y-2">
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={formData.isDefaultShipping} onChange={(e) => setFormData({...formData, isDefaultShipping: e.target.checked})} className="rounded text-primary-600 focus:ring-primary-500" />
-                    <span className="text-sm text-gray-700">Make this my default shipping address</span>
+                    <input type="checkbox" checked={formData.isDefaultShipping} onChange={(e) => setFormData({...formData, isDefaultShipping: e.target.checked})} className="rounded text-primary/90 focus:ring-primary-500" />
+                    <span className="text-sm text-foreground">Make this my default shipping address</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={formData.isDefaultBilling} onChange={(e) => setFormData({...formData, isDefaultBilling: e.target.checked})} className="rounded text-primary-600 focus:ring-primary-500" />
-                    <span className="text-sm text-gray-700">Make this my default billing address</span>
+                    <input type="checkbox" checked={formData.isDefaultBilling} onChange={(e) => setFormData({...formData, isDefaultBilling: e.target.checked})} className="rounded text-primary/90 focus:ring-primary-500" />
+                    <span className="text-sm text-foreground">Make this my default billing address</span>
                   </label>
                 </div>
               </div>
               
               <div className="mt-8 flex justify-end gap-4">
-                <button type="button" onClick={handleCloseModal} className="px-6 py-2 border rounded hover:bg-gray-50 font-medium">CANCEL</button>
-                <button type="submit" className="bg-[#1a9cb7] text-white px-8 py-2 rounded font-medium hover:bg-[#158299] transition">SAVE</button>
+                <button type="button" onClick={handleCloseModal} className="px-6 py-2 border rounded hover:bg-muted font-medium">CANCEL</button>
+                <button type="submit" className="bg-primary text-white px-8 py-2 rounded font-medium hover:bg-primary/90 transition">SAVE</button>
               </div>
             </form>
           </div>

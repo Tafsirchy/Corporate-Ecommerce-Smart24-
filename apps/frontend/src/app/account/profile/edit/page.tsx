@@ -50,7 +50,7 @@ export default function EditProfilePage() {
   return (
     <div className="container mx-auto px-4 py-8 flex-1">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
+        <h1 className="text-3xl font-bold text-foreground">My Account</h1>
         <button
           onClick={logout}
           className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-semibold transition"
@@ -63,8 +63,8 @@ export default function EditProfilePage() {
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
           <div className="mb-6">
-            <p className="text-gray-600 text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
-            <div className="inline-flex items-center gap-1 bg-[#4CAF50] text-white text-xs font-semibold px-2 py-1 rounded-sm">
+            <p className="text-muted-foreground text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
+            <div className="inline-flex items-center gap-1 bg-success-fill text-white text-xs font-semibold px-2 py-1 rounded-sm">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
@@ -75,23 +75,23 @@ export default function EditProfilePage() {
           <div className="space-y-5">
             <div>
               <Link href="/account">
-                <h3 className="text-[15px] font-semibold text-primary-600 mb-2 hover:text-primary-700 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-primary/90 mb-2 hover:text-primary-700 cursor-pointer">
                   Manage My Account
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/profile" className="text-primary-600 font-semibold text-[14px]">
+                  <Link href="/account/profile" className="text-primary/90 font-semibold text-[14px]">
                     My Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/address" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/address" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     Address Book
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/payment" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/payment" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Payment Options
                   </Link>
                 </li>
@@ -100,18 +100,18 @@ export default function EditProfilePage() {
 
             <div>
               <Link href="/account/orders">
-                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-foreground mb-2 hover:text-primary/90 cursor-pointer">
                   My Orders
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/returns" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Returns
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/cancellations" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/cancellations" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Cancellations
                   </Link>
                 </li>
@@ -119,13 +119,13 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+              <h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer">
                 <Link href="/account/reviews">My Reviews</Link>
               </h3>
             </div>
 
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+              <h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer">
                 <Link href="/account/wishlist">My Wishlist & Followed Stores</Link>
               </h3>
             </div>
@@ -134,62 +134,62 @@ export default function EditProfilePage() {
         
         {/* Main Content Area */}
         <div className="lg:col-span-3 space-y-6">
-          <h2 className="text-[22px] text-gray-800 font-normal">Edit Profile</h2>
+          <h2 className="text-[22px] text-foreground font-normal">Edit Profile</h2>
           
           <div className="bg-white p-6 md:p-8">
             <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[13px] text-gray-500 mb-2">Full Name</label>
+                  <label className="block text-[13px] text-muted-foreground mb-2">Full Name</label>
                   <input 
                     type="text" 
                     name="name" 
                     value={formData.name} 
                     onChange={handleChange} 
-                    className="w-full border border-gray-300 p-2.5 text-[14px] focus:outline-none focus:border-[#1a9cb7]"
+                    className="w-full border border-border p-2.5 text-[14px] focus:outline-none focus:border-primary"
                     placeholder="Enter your first and last name"
                   />
                 </div>
                 <div>
-                  <label className="block text-[13px] text-gray-500 mb-2">Email Address</label>
+                  <label className="block text-[13px] text-muted-foreground mb-2">Email Address</label>
                   <input 
                     type="email" 
                     value={user.email} 
                     disabled
-                    className="w-full border border-gray-200 bg-gray-50 p-2.5 text-[14px] text-gray-500 cursor-not-allowed"
+                    className="w-full border border-border bg-muted p-2.5 text-[14px] text-muted-foreground cursor-not-allowed"
                   />
-                  <p className="text-xs text-gray-400 mt-1">Email cannot be changed here.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Email cannot be changed here.</p>
                 </div>
                 
                 <div>
-                  <label className="block text-[13px] text-gray-500 mb-2">Mobile</label>
+                  <label className="block text-[13px] text-muted-foreground mb-2">Mobile</label>
                   <input 
                     type="text" 
                     name="phone" 
                     value={formData.phone} 
                     onChange={handleChange} 
-                    className="w-full border border-gray-300 p-2.5 text-[14px] focus:outline-none focus:border-[#1a9cb7]"
+                    className="w-full border border-border p-2.5 text-[14px] focus:outline-none focus:border-primary"
                     placeholder="Please enter your phone number"
                   />
                 </div>
                 <div>
-                  <label className="block text-[13px] text-gray-500 mb-2">Birthday</label>
+                  <label className="block text-[13px] text-muted-foreground mb-2">Birthday</label>
                   <input 
                     type="date" 
                     name="birthday" 
                     value={formData.birthday} 
                     onChange={handleChange} 
-                    className="w-full border border-gray-300 p-2.5 text-[14px] focus:outline-none focus:border-[#1a9cb7]"
+                    className="w-full border border-border p-2.5 text-[14px] focus:outline-none focus:border-primary"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-[13px] text-gray-500 mb-2">Gender</label>
+                  <label className="block text-[13px] text-muted-foreground mb-2">Gender</label>
                   <select 
                     name="gender" 
                     value={formData.gender} 
                     onChange={handleChange} 
-                    className="w-full border border-gray-300 p-2.5 text-[14px] focus:outline-none focus:border-[#1a9cb7] bg-white"
+                    className="w-full border border-border p-2.5 text-[14px] focus:outline-none focus:border-primary bg-white"
                   >
                     <option value="">Please choose your gender</option>
                     <option value="Male">Male</option>
@@ -203,7 +203,7 @@ export default function EditProfilePage() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="bg-[#1a9cb7] text-white px-8 py-3 text-[14px] font-medium hover:bg-[#158299] transition uppercase disabled:opacity-50"
+                  className="bg-primary text-white px-8 py-3 text-[14px] font-medium hover:bg-primary/90 transition uppercase disabled:opacity-50"
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </button>

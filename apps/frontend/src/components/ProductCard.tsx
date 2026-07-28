@@ -96,10 +96,10 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
   const inWishlist = isInWishlist(product.id);
 
   return (
-    <div className={`group relative flex bg-white rounded-xl border border-gray-100 hover:border-primary-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.06)] transition-all duration-300 overflow-hidden cursor-pointer h-full ${viewMode === 'list' ? 'flex-row items-stretch' : 'flex-col'}`}>
+    <div className={`group relative flex bg-white rounded-xl border border-border hover:border-primary-100 hover:shadow-[0_4px_20px_rgb(0,0,0,0.06)] transition-all duration-300 overflow-hidden cursor-pointer h-full ${viewMode === 'list' ? 'flex-row items-stretch' : 'flex-col'}`}>
       
       {/* Product Image */}
-      <Link href={`/shop/${product.slug}`} className={`block relative overflow-hidden bg-[#f8f9fa] ${viewMode === 'list' ? 'w-48 md:w-64 shrink-0' : 'aspect-[5/4]'}`}>
+      <Link href={`/shop/${product.slug}`} className={`block relative overflow-hidden bg-muted ${viewMode === 'list' ? 'w-48 md:w-64 shrink-0' : 'aspect-[5/4]'}`}>
         <img
           src={product.images?.[0] || 'https://placehold.co/400x320?text=No+Image'}
           alt={product.name}
@@ -121,12 +121,12 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
           }}
           disabled={isTogglingWishlist}
           aria-label="Add to wishlist"
-          className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/80 hover:bg-white text-gray-400 hover:text-rose-500 shadow-sm backdrop-blur-sm transition-all z-10"
+          className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-white/80 hover:bg-white text-muted-foreground hover:text-destructive shadow-sm backdrop-blur-sm transition-all z-10"
         >
           {isTogglingWishlist ? (
             <Loader2 size={14} className="animate-spin" />
           ) : (
-            <Heart size={14} className={inWishlist ? "fill-rose-500 text-rose-500" : ""} />
+            <Heart size={14} className={inWishlist ? "fill-destructive text-destructive" : ""} />
           )}
         </button>
       </Link>
@@ -135,7 +135,7 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
       <div className={`p-2.5 flex flex-col flex-1 ${viewMode === 'list' ? 'p-4 sm:p-6' : ''}`}>
         
         <Link href={`/shop/${product.slug}`} className="mb-1.5 block">
-          <h3 className={`${viewMode === 'list' ? 'text-base sm:text-lg mb-2' : 'text-[12px] line-clamp-2'} font-medium text-gray-800 leading-[1.3] group-hover:text-primary-600 transition-colors`}>
+          <h3 className={`${viewMode === 'list' ? 'text-base sm:text-lg mb-2' : 'text-[12px] line-clamp-2'} font-medium text-foreground leading-[1.3] group-hover:text-primary/90 transition-colors`}>
             {mock.isChoice && !product.name.startsWith('Choice') && (
               <span className="inline-block bg-primary-600 text-white text-[8px] font-bold px-1 py-0.5 rounded-[3px] mr-1 align-middle uppercase tracking-wider">
                 Smart
@@ -145,7 +145,7 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
           </h3>
         </Link>
           {viewMode === 'list' && (
-            <p className="text-sm text-gray-500 mb-4 line-clamp-2 hidden sm:block">
+            <p className="text-sm text-muted-foreground mb-4 line-clamp-2 hidden sm:block">
               {product.description || 'No description available.'}
             </p>
           )}
@@ -159,20 +159,20 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
             <div className="flex flex-col gap-1">
               {/* Price & Discount */}
               <div className="flex items-baseline gap-1.5">
-                <span className="text-base font-extrabold text-primary-600">৳{currentPrice.toLocaleString()}</span>
+                <span className="text-base font-extrabold text-primary/90">৳{currentPrice.toLocaleString()}</span>
                 {isDiscounted && (
-                  <span className="text-[9px] text-gray-400 line-through">৳{displayOriginalPrice.toLocaleString()}</span>
+                  <span className="text-[9px] text-muted-foreground line-through">৳{displayOriginalPrice.toLocaleString()}</span>
                 )}
               </div>
               
               {/* Tags */}
               {isDiscounted && (
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded-[4px]">
+                  <span className="text-[10px] font-bold text-destructive bg-danger-bg px-1.5 py-0.5 rounded-[4px]">
                     {displayDiscountPercent}% Off
                   </span>
                   {product.isFlashSale && (
-                    <span className="text-[10px] font-medium text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded-[4px]">
+                    <span className="text-[10px] font-medium text-accent bg-accent/10 px-1.5 py-0.5 rounded-[4px]">
                       Flash Sale
                     </span>
                   )}
@@ -187,7 +187,7 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
                 if (!isAddingToCart) addToCart(product);
               }}
               disabled={isAddingToCart}
-              className={`w-8 h-8 rounded-full ${isAddingToCart ? 'bg-primary-200 cursor-not-allowed text-primary-400 hover:text-primary-400' : 'bg-primary-50 hover:bg-primary-600 hover:text-white'} text-primary-600 flex items-center justify-center transition-all duration-300 shadow-sm shrink-0`}
+              className={`w-8 h-8 rounded-full ${isAddingToCart ? 'bg-primary-200 cursor-not-allowed text-primary-400 hover:text-primary-400' : 'bg-primary-50 hover:bg-primary-600 hover:text-white'} text-primary/90 flex items-center justify-center transition-all duration-300 shadow-sm shrink-0`}
               aria-label="Add to cart"
             >
               {isAddingToCart ? <Loader2 size={14} className="animate-spin" strokeWidth={2.5} /> : <ShoppingCart size={14} strokeWidth={2.5} />}
@@ -195,17 +195,17 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
           </div>
 
           {/* Stats Row (Sales, Rating, Location) */}
-          <div className="flex items-center justify-between text-[11px] text-gray-500 border-t border-gray-50 pt-2">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground border-t border-gray-50 pt-2">
             <div className="flex items-center gap-1.5">
-              <span className="font-medium text-gray-700">{mock.soldCount} sold</span>
-              <span className="text-gray-300">|</span>
+              <span className="font-medium text-foreground">{mock.soldCount} sold</span>
+              <span className="text-muted-foreground">|</span>
               <div className="flex items-center">
-                <Star size={10} className="fill-amber-400 text-amber-400 mr-0.5" />
+                <Star size={10} className="fill-accent text-accent mr-0.5" />
                 <span>{product.rating ?? mock.rating}</span>
               </div>
             </div>
             
-            <div className="flex items-center gap-1 text-gray-400">
+            <div className="flex items-center gap-1 text-muted-foreground">
               <MapPin size={10} />
               <span className="truncate max-w-[65px]">{product.location || mock.location}</span>
             </div>

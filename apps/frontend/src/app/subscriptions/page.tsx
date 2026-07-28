@@ -137,7 +137,7 @@ export default function SubscriptionsPage() {
               {plan.offer && plan.offer.isActive ? (
                 <>
                   <div className="mb-2">
-                    <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
+                    <span className="bg-danger-bg text-destructive text-xs font-bold px-2 py-1 rounded">
                       {plan.offer.discountType === 'PERCENTAGE' 
                         ? `${plan.offer.discountValue}% OFF` 
                         : `৳${plan.offer.discountValue} OFF`}
@@ -168,14 +168,14 @@ export default function SubscriptionsPage() {
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 relative">
             <button 
               onClick={() => setSelectedPlan(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-muted-foreground"
             >
               <X className="w-5 h-5" />
             </button>
             
             <h3 className="text-2xl font-bold mb-2">Subscribe to {selectedPlan.name}</h3>
             {selectedPlan.offer && selectedPlan.offer.isActive ? (
-              <p className="text-gray-500 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Total: ৳{
                   selectedPlan.offer.discountType === 'PERCENTAGE'
                     ? selectedPlan.price - (selectedPlan.price * selectedPlan.offer.discountValue / 100)
@@ -183,14 +183,14 @@ export default function SubscriptionsPage() {
                 } / month (Discount Applied)
               </p>
             ) : (
-              <p className="text-gray-500 mb-6">Total: ৳{selectedPlan.price} / month</p>
+              <p className="text-muted-foreground mb-6">Total: ৳{selectedPlan.price} / month</p>
             )}
 
             <form onSubmit={handleConfirmSubscription} className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Delivery Day (Every Month)</label>
                 <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
-                <p className="text-xs text-gray-500 mt-1">Select a date between 1 and 28.</p>
+                <p className="text-xs text-muted-foreground mt-1">Select a date between 1 and 28.</p>
               </div>
               <div>
                 <label className="text-sm font-medium">Delivery Address</label>

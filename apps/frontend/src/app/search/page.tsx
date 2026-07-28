@@ -45,18 +45,18 @@ function SearchResults() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
             <div key={n} className="bg-white p-4 rounded-lg shadow animate-pulse flex flex-col h-[300px]">
-              <div className="w-full h-40 bg-gray-200 rounded"></div>
+              <div className="w-full h-40 bg-muted/80 rounded"></div>
               <div className="flex-1 space-y-3 pt-4">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-muted/80 rounded w-3/4"></div>
+                <div className="h-3 bg-muted/80 rounded w-1/2"></div>
               </div>
             </div>
           ))}
         </div>
       ) : hasSearched && products.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
-          <p className="text-xl text-gray-500 mb-2">No results found {query ? `for "${query}"` : ''}</p>
-          <p className="text-gray-400">Try checking your spelling or using more general terms.</p>
+        <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-border">
+          <p className="text-xl text-muted-foreground mb-2">No results found {query ? `for "${query}"` : ''}</p>
+          <p className="text-muted-foreground">Try checking your spelling or using more general terms.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">

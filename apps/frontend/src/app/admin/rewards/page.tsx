@@ -103,51 +103,51 @@ export default function AdminRewardsPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading...</div>;
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Loyalty Rewards</h1>
-        <button onClick={() => handleOpenModal()} className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+        <h1 className="text-2xl font-bold text-foreground">Loyalty Rewards</h1>
+        <button onClick={() => handleOpenModal()} className="bg-black text-white px-4 py-2 rounded-lg hover:bg-secondary transition">
           + Add Reward
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Title</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Type</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Points Cost</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Min. Priority</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Status</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500 text-right">Actions</th>
+            <tr className="bg-muted border-b border-border">
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Title</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Type</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Points Cost</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Min. Priority</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Status</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {rewards.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-8 text-center text-gray-500">No rewards found.</td>
+                <td colSpan={6} className="p-8 text-center text-muted-foreground">No rewards found.</td>
               </tr>
             )}
             {rewards.map((reward) => (
-              <tr key={reward.id} className="border-b border-gray-50 hover:bg-gray-50">
-                <td className="p-4 text-sm font-bold text-gray-900">{reward.title}</td>
-                <td className="p-4 text-sm text-gray-600">
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">{reward.type}</span>
+              <tr key={reward.id} className="border-b border-gray-50 hover:bg-muted">
+                <td className="p-4 text-sm font-bold text-foreground">{reward.title}</td>
+                <td className="p-4 text-sm text-muted-foreground">
+                  <span className="bg-info-bg text-blue-800 px-2 py-1 rounded text-xs font-bold">{reward.type}</span>
                 </td>
                 <td className="p-4 text-sm font-semibold text-[#FBBF24]">{reward.pointCost} pts</td>
-                <td className="p-4 text-sm text-gray-600">{reward.minMembershipPriority}</td>
-                <td className="p-4 text-sm text-gray-600">
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${reward.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <td className="p-4 text-sm text-muted-foreground">{reward.minMembershipPriority}</td>
+                <td className="p-4 text-sm text-muted-foreground">
+                  <span className={`px-2 py-1 rounded text-xs font-bold ${reward.status === 'ACTIVE' ? 'bg-success-bg text-green-800' : 'bg-danger-bg text-red-800'}`}>
                     {reward.status}
                   </span>
                 </td>
-                <td className="p-4 text-sm text-gray-600 text-right space-x-3">
-                  <button onClick={() => handleOpenModal(reward)} className="text-blue-600 hover:text-blue-800 font-semibold">Edit</button>
-                  <button onClick={() => handleDelete(reward.id)} className="text-red-600 hover:text-red-800 font-semibold">Delete</button>
+                <td className="p-4 text-sm text-muted-foreground text-right space-x-3">
+                  <button onClick={() => handleOpenModal(reward)} className="text-info-text hover:text-blue-800 font-semibold">Edit</button>
+                  <button onClick={() => handleDelete(reward.id)} className="text-destructive hover:text-red-800 font-semibold">Delete</button>
                 </td>
               </tr>
             ))}
@@ -159,60 +159,60 @@ export default function AdminRewardsPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">
+            <div className="p-6 border-b border-border flex justify-between items-center">
+              <h2 className="text-xl font-bold text-foreground">
                 {editingId ? 'Edit Reward' : 'Create Reward'}
               </h2>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+              <button onClick={handleCloseModal} className="text-muted-foreground hover:text-muted-foreground text-2xl leading-none">&times;</button>
             </div>
             
             <div className="p-6 overflow-y-auto flex-1">
               <form id="reward-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Title</label>
                   <input 
                     type="text" required
                     value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     placeholder="e.g. 50% Off Corporate Gadgets"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                   <textarea 
                     required rows={3}
                     value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     placeholder="Provide details about the reward..."
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Point Cost</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Point Cost</label>
                     <input 
                       type="number" required min="0"
                       value={formData.pointCost} onChange={e => setFormData({...formData, pointCost: parseInt(e.target.value)})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Membership Priority</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Min Membership Priority</label>
                     <input 
                       type="number" required min="1"
                       value={formData.minMembershipPriority} onChange={e => setFormData({...formData, minMembershipPriority: parseInt(e.target.value)})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Reward Type</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Reward Type</label>
                     <select 
                       value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     >
                       <option value="COUPON">COUPON</option>
                       <option value="TICKET">TICKET</option>
@@ -221,10 +221,10 @@ export default function AdminRewardsPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Status</label>
                     <select 
                       value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     >
                       <option value="ACTIVE">ACTIVE</option>
                       <option value="INACTIVE">INACTIVE</option>
@@ -234,29 +234,29 @@ export default function AdminRewardsPage() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Claim Type</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Claim Type</label>
                     <select 
                       value={formData.claimType} onChange={e => setFormData({...formData, claimType: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     >
                       <option value="POINT_REDEEM">Point Redeem</option>
                       <option value="FREE_CLAIM">Free Claim</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Days (After Claim)</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Expiry Days (After Claim)</label>
                     <input 
                       type="number" required min="1"
                       value={formData.expiryDays} onChange={e => setFormData({...formData, expiryDays: parseInt(e.target.value)})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                 </div>
               </form>
             </div>
 
-            <div className="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
-              <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-lg text-gray-700 hover:bg-gray-200 font-medium transition">
+            <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted rounded-b-2xl">
+              <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-lg text-foreground hover:bg-muted/80 font-medium transition">
                 Cancel
               </button>
               <button type="submit" form="reward-form" className="px-5 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition shadow-sm">

@@ -97,7 +97,7 @@ export default function AdminSubscriptions() {
       <div className="bg-white rounded-lg shadow overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-100 border-b">
+            <tr className="bg-muted border-b">
               <th className="p-4 font-semibold text-sm">ID</th>
               <th className="p-4 font-semibold text-sm">Customer</th>
               <th className="p-4 font-semibold text-sm">Items</th>
@@ -108,8 +108,8 @@ export default function AdminSubscriptions() {
           </thead>
           <tbody>
             {filteredSubscriptions.map((sub: any) => (
-              <tr key={sub.id} className="border-b hover:bg-gray-50">
-                <td className="p-4 text-sm font-mono text-gray-500">{sub.id.slice(-6)}</td>
+              <tr key={sub.id} className="border-b hover:bg-muted">
+                <td className="p-4 text-sm font-mono text-muted-foreground">{sub.id.slice(-6)}</td>
                 <td className="p-4 text-sm">
                   <p className="font-medium">{sub.user?.name}</p>
                   <p className="text-xs text-muted-foreground">{sub.user?.email}</p>
@@ -128,9 +128,9 @@ export default function AdminSubscriptions() {
                     value={sub.status}
                     onChange={(e) => handleStatusChange(sub.id, e.target.value)}
                     className={`border rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer ${
-                      sub.status === 'ACTIVE' ? 'bg-green-100 text-green-700 border-green-200' :
+                      sub.status === 'ACTIVE' ? 'bg-success-bg text-success-text border-green-200' :
                       sub.status === 'PAUSED' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
-                      'bg-red-100 text-red-700 border-red-200'
+                      'bg-danger-bg text-destructive border-red-200'
                     }`}
                   >
                     <option value="ACTIVE">ACTIVE</option>

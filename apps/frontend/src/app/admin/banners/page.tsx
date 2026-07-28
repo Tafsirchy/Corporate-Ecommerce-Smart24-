@@ -112,11 +112,11 @@ export default function AdminBanners() {
     <div>
       <h1 className="text-3xl font-bold mb-6">Manage Offers & Banners</h1>
       
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-border mb-8">
         <h2 className="text-xl font-bold mb-4">Add New Banner</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Banner Title</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Banner Title</label>
             <input 
               type="text" required value={title} onChange={e => setTitle(e.target.value)}
               placeholder="e.g. Monsoon Magic Deal"
@@ -125,7 +125,7 @@ export default function AdminBanners() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Target Link (Optional)</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Target Link (Optional)</label>
             <input 
               type="text" value={targetUrl} onChange={e => setTargetUrl(e.target.value)}
               placeholder="e.g. /shop?category=monsoon"
@@ -134,7 +134,7 @@ export default function AdminBanners() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Banner Type</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Banner Type</label>
             <select 
               value={type} onChange={e => setType(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring-primary-600 focus:border-primary-600"
@@ -145,17 +145,17 @@ export default function AdminBanners() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Upload Banner Image (Landscape Recommended)</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Upload Banner Image (Landscape Recommended)</label>
             <div className="flex items-center gap-4">
               <input 
                 type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
               />
-              {isUploading && <span className="text-sm text-gray-500 font-medium">Uploading to ImgBB...</span>}
+              {isUploading && <span className="text-sm text-muted-foreground font-medium">Uploading to ImgBB...</span>}
             </div>
             {imageUrl && (
               <div className="mt-4">
-                <img src={imageUrl} alt="Preview" className="h-32 object-contain rounded border bg-gray-50 p-2" />
+                <img src={imageUrl} alt="Preview" className="h-32 object-contain rounded border bg-muted p-2" />
               </div>
             )}
           </div>
@@ -171,47 +171,47 @@ export default function AdminBanners() {
         </form>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b border-gray-100">
+          <thead className="bg-muted border-b border-border">
             <tr>
-              <th className="p-4 font-medium text-gray-600">Image</th>
-              <th className="p-4 font-medium text-gray-600">Title</th>
-              <th className="p-4 font-medium text-gray-600">Type</th>
-              <th className="p-4 font-medium text-gray-600">Status</th>
-              <th className="p-4 font-medium text-gray-600 text-right">Actions</th>
+              <th className="p-4 font-medium text-muted-foreground">Image</th>
+              <th className="p-4 font-medium text-muted-foreground">Title</th>
+              <th className="p-4 font-medium text-muted-foreground">Type</th>
+              <th className="p-4 font-medium text-muted-foreground">Status</th>
+              <th className="p-4 font-medium text-muted-foreground text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {isLoadingTable ? (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-gray-500">
+                <td colSpan={5} className="p-8 text-center text-muted-foreground">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
                 </td>
               </tr>
             ) : banners.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-gray-500">No banners found</td>
+                <td colSpan={5} className="p-8 text-center text-muted-foreground">No banners found</td>
               </tr>
             ) : (
               banners.map(banner => (
-                <tr key={banner.id} className="hover:bg-gray-50">
+                <tr key={banner.id} className="hover:bg-muted">
                   <td className="p-4">
                     <img src={banner.imageUrl} alt={banner.title} className="h-16 w-auto object-cover rounded border" />
                   </td>
                   <td className="p-4">
-                    <div className="font-medium text-gray-900">{banner.title}</div>
-                    {banner.targetUrl && <div className="text-sm text-gray-500">{banner.targetUrl}</div>}
+                    <div className="font-medium text-foreground">{banner.title}</div>
+                    {banner.targetUrl && <div className="text-sm text-muted-foreground">{banner.targetUrl}</div>}
                   </td>
                   <td className="p-4">
-                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded">
+                    <span className="px-2 py-1 text-xs font-medium bg-muted text-muted-foreground rounded">
                       {banner.type === 'SPECIAL_OFFER' ? 'Special Offer' : 'Main Carousel'}
                     </span>
                   </td>
                   <td className="p-4">
                     <button 
                       onClick={() => toggleStatus(banner.id, banner.isActive)}
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${banner.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${banner.isActive ? 'bg-success-bg text-success-text' : 'bg-danger-bg text-destructive'}`}
                     >
                       {banner.isActive ? 'Active' : 'Inactive'}
                     </button>
@@ -219,7 +219,7 @@ export default function AdminBanners() {
                   <td className="p-4 text-right">
                     <button 
                       onClick={() => handleDelete(banner.id)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
+                      className="p-2 text-destructive hover:bg-danger-bg rounded transition-colors"
                     >
                       <Trash2 size={18} />
                     </button>

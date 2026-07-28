@@ -62,7 +62,7 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
     }, 150); // slight delay to prevent flickering
   };
 
-  const textColor = isTransparent ? 'text-white hover:text-white/80' : 'text-gray-800 hover:text-primary-600';
+  const textColor = isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90';
 
   return (
     <div 
@@ -84,32 +84,32 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
           <div className="absolute -top-4 left-0 w-full h-4 bg-transparent" />
           
           {/* Level 1 Column */}
-          <div className="w-64 border border-gray-100 rounded-l-md py-2 min-h-[300px]">
+          <div className="w-64 border border-border rounded-l-md py-2 min-h-[300px]">
             {categories.map((l1) => (
               <Link 
                 key={l1.id}
                 href={`/shop?category=${l1.slug}`}
                 onMouseEnter={() => { setActiveLevel1(l1.id); setActiveLevel2(null); }}
-                className={`flex items-center justify-between px-4 py-1.5 text-sm transition-colors ${activeLevel1 === l1.id ? 'bg-orange-50 text-orange-500 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                className={`flex items-center justify-between px-4 py-1.5 text-sm transition-colors ${activeLevel1 === l1.id ? 'bg-accent/10 text-accent font-medium' : 'text-muted-foreground hover:bg-muted'}`}
               >
                 {l1.name}
-                {l1.children && l1.children.length > 0 && <ChevronRight size={16} className={activeLevel1 === l1.id ? 'text-orange-500' : 'text-gray-400'} />}
+                {l1.children && l1.children.length > 0 && <ChevronRight size={16} className={activeLevel1 === l1.id ? 'text-accent' : 'text-muted-foreground'} />}
               </Link>
             ))}
           </div>
 
           {/* Level 2 Column */}
           {activeLevel1 && (categories.find(c => c.id === activeLevel1)?.children?.length ?? 0) > 0 && (
-            <div className="w-64 border-y border-r border-gray-100 py-2 min-h-full">
+            <div className="w-64 border-y border-r border-border py-2 min-h-full">
               {categories.find(c => c.id === activeLevel1)?.children?.map((l2) => (
                 <Link 
                   key={l2.id}
                   href={`/shop?category=${l2.slug}`}
                   onMouseEnter={() => setActiveLevel2(l2.id)}
-                  className={`flex items-center justify-between px-4 py-1.5 text-[13.5px] transition-colors ${activeLevel2 === l2.id ? 'bg-orange-50 text-orange-500 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`flex items-center justify-between px-4 py-1.5 text-[13.5px] transition-colors ${activeLevel2 === l2.id ? 'bg-accent/10 text-accent font-medium' : 'text-muted-foreground hover:bg-muted'}`}
                 >
                   {l2.name}
-                  {l2.children && l2.children.length > 0 && <ChevronRight size={14} className={activeLevel2 === l2.id ? 'text-orange-500' : 'text-gray-400'} />}
+                  {l2.children && l2.children.length > 0 && <ChevronRight size={14} className={activeLevel2 === l2.id ? 'text-accent' : 'text-muted-foreground'} />}
                 </Link>
               ))}
             </div>
@@ -117,12 +117,12 @@ export function CategoryDropdown({ isTransparent }: { isTransparent?: boolean })
 
           {/* Level 3 Column */}
           {activeLevel2 && (categories.find(c => c.id === activeLevel1)?.children?.find(c => c.id === activeLevel2)?.children?.length ?? 0) > 0 && (
-            <div className="w-64 border-y border-r border-gray-100 rounded-r-md py-2 min-h-full">
+            <div className="w-64 border-y border-r border-border rounded-r-md py-2 min-h-full">
               {categories.find(c => c.id === activeLevel1)?.children?.find(c => c.id === activeLevel2)?.children?.map((l3) => (
                 <Link 
                   key={l3.id}
                   href={`/shop?category=${l3.slug}`}
-                  className="block px-4 py-1.5 text-[13px] text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:font-medium transition-colors"
+                  className="block px-4 py-1.5 text-[13px] text-muted-foreground hover:bg-accent/10 hover:text-accent hover:font-medium transition-colors"
                 >
                   {l3.name}
                 </Link>

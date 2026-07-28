@@ -59,9 +59,9 @@ export default function MyQuotationsPage() {
                 <h3 className="font-semibold text-lg mb-2">Quote #{quote.id.slice(-6)}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Status: <span className={`font-bold uppercase ${
-                    quote.status === 'QUOTED' ? 'text-primary-600' : 
-                    quote.status === 'ACCEPTED' ? 'text-green-600' :
-                    quote.status === 'REJECTED' ? 'text-red-600' : 'text-yellow-600'
+                    quote.status === 'QUOTED' ? 'text-primary/90' : 
+                    quote.status === 'ACCEPTED' ? 'text-success-text' :
+                    quote.status === 'REJECTED' ? 'text-destructive' : 'text-yellow-600'
                   }`}>{quote.status}</span>
                 </p>
                 <div className="space-y-1 mb-4 text-sm">
@@ -71,16 +71,16 @@ export default function MyQuotationsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col justify-center bg-gray-50 p-4 rounded-md min-w-[250px]">
+              <div className="flex flex-col justify-center bg-muted p-4 rounded-md min-w-[250px]">
                 {quote.status === 'PENDING' && (
                   <p className="text-sm text-center text-muted-foreground">Admin is reviewing your request.</p>
                 )}
                 {quote.status === 'QUOTED' && (
                   <>
                     <p className="text-center text-sm font-bold mb-1">Admin Offer</p>
-                    <p className="text-center text-2xl text-primary-600 font-bold mb-2">৳{quote.offeredPrice}</p>
+                    <p className="text-center text-2xl text-primary/90 font-bold mb-2">৳{quote.offeredPrice}</p>
                     {quote.adminNotes && (
-                      <p className="text-xs text-center text-gray-500 mb-4 italic">"{quote.adminNotes}"</p>
+                      <p className="text-xs text-center text-muted-foreground mb-4 italic">"{quote.adminNotes}"</p>
                     )}
                     <div className="flex gap-2">
                       <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => handleAction(quote.id, 'accept')}>Accept</Button>
@@ -90,12 +90,12 @@ export default function MyQuotationsPage() {
                 )}
                 {quote.status === 'ACCEPTED' && (
                   <div className="text-center">
-                    <p className="text-green-600 font-bold mb-2">Offer Accepted (৳{quote.offeredPrice})</p>
+                    <p className="text-success-text font-bold mb-2">Offer Accepted (৳{quote.offeredPrice})</p>
                     <p className="text-xs text-muted-foreground">We will contact you to finalize the order.</p>
                   </div>
                 )}
                 {quote.status === 'REJECTED' && (
-                  <p className="text-red-600 font-bold text-center">Offer Rejected</p>
+                  <p className="text-destructive font-bold text-center">Offer Rejected</p>
                 )}
               </div>
             </div>

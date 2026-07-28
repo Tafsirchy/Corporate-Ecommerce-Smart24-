@@ -132,50 +132,50 @@ export default function AdminMembershipsPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading...</div>;
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Membership Tiers</h1>
+        <h1 className="text-2xl font-bold text-foreground">Membership Tiers</h1>
         <button 
           onClick={() => handleOpenModal()}
-          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center gap-2"
+          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-secondary transition flex items-center gap-2"
         >
           <span>+ Add Tier</span>
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Priority</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Name</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Req. Spend</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500">Multiplier</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-gray-500 text-right">Actions</th>
+            <tr className="bg-muted border-b border-border">
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Priority</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Name</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Req. Spend</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Multiplier</th>
+              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {levels.map((level) => (
-              <tr key={level.id} className="border-b border-gray-50 hover:bg-gray-50">
-                <td className="p-4 text-sm text-gray-800">{level.priority}</td>
-                <td className="p-4 text-sm font-bold text-gray-900 flex items-center gap-2">
+              <tr key={level.id} className="border-b border-gray-50 hover:bg-muted">
+                <td className="p-4 text-sm text-foreground">{level.priority}</td>
+                <td className="p-4 text-sm font-bold text-foreground flex items-center gap-2">
                   {level.badgeUrl && <img src={level.badgeUrl} alt="Badge" className="w-6 h-6 object-contain" />}
                   {level.name}
                 </td>
-                <td className="p-4 text-sm text-gray-600">৳{level.requiredAmount.toLocaleString()}</td>
-                <td className="p-4 text-sm text-gray-600">{level.pointMultiplier}x</td>
-                <td className="p-4 text-sm text-gray-600 text-right space-x-3">
-                  <button onClick={() => handleOpenModal(level)} className="text-blue-600 hover:text-blue-800 font-semibold">Edit</button>
-                  <button onClick={() => handleDelete(level.id)} className="text-red-600 hover:text-red-800 font-semibold">Delete</button>
+                <td className="p-4 text-sm text-muted-foreground">৳{level.requiredAmount.toLocaleString()}</td>
+                <td className="p-4 text-sm text-muted-foreground">{level.pointMultiplier}x</td>
+                <td className="p-4 text-sm text-muted-foreground text-right space-x-3">
+                  <button onClick={() => handleOpenModal(level)} className="text-info-text hover:text-blue-800 font-semibold">Edit</button>
+                  <button onClick={() => handleDelete(level.id)} className="text-destructive hover:text-red-800 font-semibold">Delete</button>
                 </td>
               </tr>
             ))}
             {levels.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-gray-500">No membership tiers found.</td>
+                <td colSpan={5} className="p-8 text-center text-muted-foreground">No membership tiers found.</td>
               </tr>
             )}
           </tbody>
@@ -186,69 +186,69 @@ export default function AdminMembershipsPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">
+            <div className="p-6 border-b border-border flex justify-between items-center">
+              <h2 className="text-xl font-bold text-foreground">
                 {editingId ? 'Edit Membership Tier' : 'Create Membership Tier'}
               </h2>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+              <button onClick={handleCloseModal} className="text-muted-foreground hover:text-muted-foreground text-2xl leading-none">&times;</button>
             </div>
             
             <div className="p-6 overflow-y-auto flex-1">
               <form id="membership-form" onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tier Name</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Tier Name</label>
                     <input 
                       type="text" required
                       value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                       placeholder="e.g. Gold"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Priority (Higher = Better)</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Priority (Higher = Better)</label>
                     <input 
                       type="number" required min="1"
                       value={formData.priority} onChange={e => setFormData({...formData, priority: parseInt(e.target.value)})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Required Spend (৳)</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Required Spend (৳)</label>
                     <input 
                       type="number" required min="0"
                       value={formData.requiredAmount} onChange={e => setFormData({...formData, requiredAmount: parseInt(e.target.value)})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Point Multiplier</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Point Multiplier</label>
                     <input 
                       type="number" required step="0.1" min="1"
                       value={formData.pointMultiplier} onChange={e => setFormData({...formData, pointMultiplier: parseFloat(e.target.value)})}
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-4">
-                    <label className="block text-sm font-medium text-gray-700">Badge Icon</label>
+                    <label className="block text-sm font-medium text-foreground">Badge Icon</label>
                     <div className="flex items-center gap-2 text-sm">
                       <button
                         type="button"
                         onClick={() => setIsUploadMode(true)}
-                        className={`px-3 py-1 rounded-full transition-colors ${isUploadMode ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`px-3 py-1 rounded-full transition-colors ${isUploadMode ? 'bg-black text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                       >
                         Upload File
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsUploadMode(false)}
-                        className={`px-3 py-1 rounded-full transition-colors ${!isUploadMode ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`px-3 py-1 rounded-full transition-colors ${!isUploadMode ? 'bg-black text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                       >
                         Image URL
                       </button>
@@ -261,7 +261,7 @@ export default function AdminMembershipsPage() {
                       type="file"
                       accept="image/*"
                       onChange={e => setBadgeFile(e.target.files?.[0] || null)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-black hover:file:bg-gray-100"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-muted file:text-black hover:file:bg-muted"
                     />
                   ) : (
                     <input 
@@ -270,15 +270,15 @@ export default function AdminMembershipsPage() {
                       value={formData.badgeUrl}
                       onChange={e => setFormData({...formData, badgeUrl: e.target.value})}
                       placeholder="https://example.com/badge.png"
-                      className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   )}
                 </div>
 
                 <div>
                   <div className="flex justify-between items-center mb-2 mt-4">
-                    <label className="block text-sm font-medium text-gray-700">Benefits</label>
-                    <button type="button" onClick={handleAddBenefit} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded">
+                    <label className="block text-sm font-medium text-foreground">Benefits</label>
+                    <button type="button" onClick={handleAddBenefit} className="text-xs bg-muted hover:bg-muted/80 text-foreground px-2 py-1 rounded">
                       + Add Benefit
                     </button>
                   </div>
@@ -289,13 +289,13 @@ export default function AdminMembershipsPage() {
                           type="text" 
                           value={benefit} 
                           onChange={e => handleBenefitChange(index, e.target.value)}
-                          className="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+                          className="flex-1 border border-border rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
                           placeholder="e.g. Free Shipping"
                         />
                         <button 
                           type="button" 
                           onClick={() => handleRemoveBenefit(index)}
-                          className="px-3 text-gray-400 hover:text-red-500 bg-gray-50 border border-gray-200 rounded-lg"
+                          className="px-3 text-muted-foreground hover:text-destructive bg-muted border border-border rounded-lg"
                         >
                           &times;
                         </button>
@@ -306,8 +306,8 @@ export default function AdminMembershipsPage() {
               </form>
             </div>
 
-            <div className="p-6 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
-              <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-lg text-gray-700 hover:bg-gray-200 font-medium transition">
+            <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted rounded-b-2xl">
+              <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-lg text-foreground hover:bg-muted/80 font-medium transition">
                 Cancel
               </button>
               <button type="submit" form="membership-form" className="px-5 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition shadow-sm">

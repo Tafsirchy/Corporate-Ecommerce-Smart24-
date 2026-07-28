@@ -53,7 +53,7 @@ export default function MyCancellationsPage() {
   return (
     <div className="container mx-auto px-4 py-8 flex-1">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
+        <h1 className="text-3xl font-bold text-foreground">My Account</h1>
         <button
           onClick={logout}
           className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-semibold transition"
@@ -66,8 +66,8 @@ export default function MyCancellationsPage() {
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
           <div className="mb-6">
-            <p className="text-gray-600 text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
-            <div className="inline-flex items-center gap-1 bg-[#4CAF50] text-white text-xs font-semibold px-2 py-1 rounded-sm">
+            <p className="text-muted-foreground text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
+            <div className="inline-flex items-center gap-1 bg-success-fill text-white text-xs font-semibold px-2 py-1 rounded-sm">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
@@ -78,44 +78,44 @@ export default function MyCancellationsPage() {
           <div className="space-y-5">
             <div>
               <Link href="/account">
-                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-foreground mb-2 hover:text-primary/90 cursor-pointer">
                   Manage My Account
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
-                <li><Link href="/account/profile" className="text-gray-500 hover:text-primary-600 text-[14px]">My Profile</Link></li>
-                <li><Link href="/account/address" className="text-gray-500 hover:text-primary-600 text-[14px]">Address Book</Link></li>
-                <li><Link href="/account/payment" className="text-gray-500 hover:text-primary-600 text-[14px]">My Payment Options</Link></li>
+                <li><Link href="/account/profile" className="text-muted-foreground hover:text-primary/90 text-[14px]">My Profile</Link></li>
+                <li><Link href="/account/address" className="text-muted-foreground hover:text-primary/90 text-[14px]">Address Book</Link></li>
+                <li><Link href="/account/payment" className="text-muted-foreground hover:text-primary/90 text-[14px]">My Payment Options</Link></li>
               </ul>
             </div>
 
             <div>
               <Link href="/account/orders">
-                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-foreground mb-2 hover:text-primary/90 cursor-pointer">
                   My Orders
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
-                <li><Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">My Returns</Link></li>
-                <li><Link href="/account/cancellations" className="text-primary-600 font-medium text-[14px]">My Cancellations</Link></li>
+                <li><Link href="/account/returns" className="text-muted-foreground hover:text-primary/90 text-[14px]">My Returns</Link></li>
+                <li><Link href="/account/cancellations" className="text-primary/90 font-medium text-[14px]">My Cancellations</Link></li>
               </ul>
             </div>
 
-            <div><h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer"><Link href="/account/reviews">My Reviews</Link></h3></div>
-            <div><h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer"><Link href="/account/wishlist">My Wishlist & Followed Stores</Link></h3></div>
+            <div><h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer"><Link href="/account/reviews">My Reviews</Link></h3></div>
+            <div><h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer"><Link href="/account/wishlist">My Wishlist & Followed Stores</Link></h3></div>
           </div>
         </div>
 
         {/* Main Content Area */}
         <div className="lg:col-span-3">
-          <h2 className="text-[22px] text-gray-800 font-normal mb-6">My Cancellations</h2>
+          <h2 className="text-[22px] text-foreground font-normal mb-6">My Cancellations</h2>
           
-          <div className="bg-white rounded-md shadow-sm border border-gray-200">
+          <div className="bg-white rounded-md shadow-sm border border-border">
             {/* Search Bar */}
-            <div className="p-4 bg-gray-50 border-b border-gray-200">
+            <div className="p-4 bg-muted border-b border-border">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -124,7 +124,7 @@ export default function MyCancellationsPage() {
                   placeholder="Search by Order ID or product name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-gray-400 sm:text-[14px]"
+                  className="block w-full pl-10 pr-3 py-2 border border-border rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-border sm:text-[14px]"
                 />
               </div>
             </div>
@@ -132,25 +132,25 @@ export default function MyCancellationsPage() {
             {/* Orders List */}
             <div className="p-4 space-y-4">
               {loadingOrders ? (
-                <div className="py-12 text-center text-gray-500">Loading cancellations...</div>
+                <div className="py-12 text-center text-muted-foreground">Loading cancellations...</div>
               ) : filteredOrders.length === 0 ? (
-                <div className="py-12 text-center text-gray-500">No cancelled orders found.</div>
+                <div className="py-12 text-center text-muted-foreground">No cancelled orders found.</div>
               ) : (
                 filteredOrders.map(order => (
-                  <div key={order.id} className="border border-gray-200 rounded-sm bg-white overflow-hidden">
+                  <div key={order.id} className="border border-border rounded-sm bg-white overflow-hidden">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div className="px-4 py-3 border-b border-border flex justify-between items-center bg-muted">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-[14px] text-gray-800">Order ID: {order.id.substring(0, 10).toUpperCase()}</span>
+                        <span className="font-semibold text-[14px] text-foreground">Order ID: {order.id.substring(0, 10).toUpperCase()}</span>
                       </div>
-                      <span className="bg-red-100 text-red-800 text-[12px] px-3 py-1 rounded-full font-medium uppercase tracking-wide">
+                      <span className="bg-danger-bg text-red-800 text-[12px] px-3 py-1 rounded-full font-medium uppercase tracking-wide">
                         {order.status}
                       </span>
                     </div>
 
                     {/* Reason */}
                     {order.cancellationReason && (
-                      <div className="px-4 py-3 bg-red-50 text-red-800 text-sm border-b border-red-100 flex gap-2 items-start">
+                      <div className="px-4 py-3 bg-danger-bg text-red-800 text-sm border-b border-red-100 flex gap-2 items-start">
                         <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span><span className="font-semibold">Reason:</span> {order.cancellationReason}</span>
                       </div>
@@ -160,11 +160,11 @@ export default function MyCancellationsPage() {
                     <div className="p-4">
                       {order.items.map((item: any, index: number) => (
                         <div key={index} className="flex gap-4 py-3 border-b border-gray-50 last:border-0 last:pb-0">
-                          <div className="w-[80px] h-[80px] flex-shrink-0 bg-gray-50 rounded overflow-hidden border border-gray-200 p-1">
+                          <div className="w-[80px] h-[80px] flex-shrink-0 bg-muted rounded overflow-hidden border border-border p-1">
                             {item.product.images && item.product.images.length > 0 ? (
                               <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-contain" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -174,24 +174,24 @@ export default function MyCancellationsPage() {
                           
                           <div className="flex-1 min-w-0 flex flex-col justify-start">
                             <div>
-                              <Link href={`/product/${item.product.slug}`} className="text-[14px] font-medium text-gray-800 hover:text-[#1a9cb7] line-clamp-2">
+                              <Link href={`/product/${item.product.slug}`} className="text-[14px] font-medium text-foreground hover:text-primary line-clamp-2">
                                 {item.product.name}
                               </Link>
                             </div>
                           </div>
                           
                           <div className="text-right flex flex-col justify-start gap-1 w-24">
-                            <span className="text-[14px] text-gray-800 font-medium whitespace-nowrap">৳ {item.priceAtPurchase}</span>
-                            <span className="text-[13px] text-gray-500 whitespace-nowrap">Qty: {item.quantity}</span>
+                            <span className="text-[14px] text-foreground font-medium whitespace-nowrap">৳ {item.priceAtPurchase}</span>
+                            <span className="text-[13px] text-muted-foreground whitespace-nowrap">Qty: {item.quantity}</span>
                           </div>
                         </div>
                       ))}
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 items-center">
-                      <span className="mr-auto text-[14px] font-bold text-gray-900">Total: ৳{order.totalAmount.toLocaleString()}</span>
-                      <Link href={`/track-order?id=${order.id}`} className="px-5 py-1.5 text-[13px] text-gray-700 border border-gray-300 bg-white rounded-sm hover:bg-gray-50 transition font-medium">
+                    <div className="px-4 py-3 bg-muted border-t border-border flex justify-end gap-3 items-center">
+                      <span className="mr-auto text-[14px] font-bold text-foreground">Total: ৳{order.totalAmount.toLocaleString()}</span>
+                      <Link href={`/track-order?id=${order.id}`} className="px-5 py-1.5 text-[13px] text-foreground border border-border bg-white rounded-sm hover:bg-muted transition font-medium">
                         View Order
                       </Link>
                     </div>

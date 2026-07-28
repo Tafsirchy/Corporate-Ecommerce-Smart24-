@@ -14,7 +14,7 @@ const features = [
 
 export const WhyChooseUsMarquee = () => {
   return (
-    <section className="py-6 bg-white border-b border-gray-100 overflow-hidden">
+    <section className="py-6 bg-white border-b border-border overflow-hidden">
       <style>{`
         @keyframes scrollLeft {
           0% { transform: translateX(0); }
@@ -45,14 +45,14 @@ export const WhyChooseUsMarquee = () => {
           <div className="flex-1 overflow-hidden relative w-full marquee-mask">
             <div className="flex gap-10 pr-8 animate-scroll-left">
               {features.map((feature) => (
-                <div key={feature.id} className="flex items-center gap-2.5 whitespace-nowrap text-[15px] font-medium text-gray-500 cursor-default hover:text-primary-600 transition-colors">
+                <div key={feature.id} className="flex items-center gap-2.5 whitespace-nowrap text-[15px] font-medium text-muted-foreground cursor-default hover:text-primary/90 transition-colors">
                   <span className="text-[18px]">{feature.icon}</span>
                   <span>{feature.text}</span>
                 </div>
               ))}
               {/* Duplicate for infinite scroll */}
               {features.map((feature) => (
-                <div key={`${feature.id}-dup`} className="flex items-center gap-2.5 whitespace-nowrap text-[15px] font-medium text-gray-500 cursor-default hover:text-primary-600 transition-colors">
+                <div key={`${feature.id}-dup`} className="flex items-center gap-2.5 whitespace-nowrap text-[15px] font-medium text-muted-foreground cursor-default hover:text-primary/90 transition-colors">
                   <span className="text-[18px]">{feature.icon}</span>
                   <span>{feature.text}</span>
                 </div>

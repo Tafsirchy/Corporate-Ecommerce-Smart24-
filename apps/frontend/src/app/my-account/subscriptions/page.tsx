@@ -54,7 +54,7 @@ export default function MySubscriptions() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Subscription #{sub.id.slice(-6)}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Status: <span className={`font-bold ${sub.status === 'ACTIVE' ? 'text-green-600' : 'text-yellow-600'}`}>{sub.status}</span>
+                  Status: <span className={`font-bold ${sub.status === 'ACTIVE' ? 'text-success-text' : 'text-yellow-600'}`}>{sub.status}</span>
                 </p>
                 <div className="space-y-1 mb-4">
                   {sub.items.map((item: any) => (
@@ -64,14 +64,14 @@ export default function MySubscriptions() {
                 <p className="font-bold">Total: ৳{sub.totalAmount} / month</p>
               </div>
               <div className="flex flex-col space-y-2 justify-center">
-                <div className="text-sm bg-gray-50 p-3 rounded mb-4">
+                <div className="text-sm bg-muted p-3 rounded mb-4">
                   <p><strong>Next Delivery:</strong> {new Date(sub.nextDeliveryDate).toLocaleDateString()}</p>
                   <p><strong>Billing Day:</strong> {sub.billingDay}th of the month</p>
                 </div>
                 {sub.status === 'ACTIVE' ? (
                   <Button variant="outline" className="text-yellow-600 border-yellow-600" onClick={() => updateStatus(sub.id, 'PAUSED')}>Pause Subscription</Button>
                 ) : (
-                  <Button variant="outline" className="text-green-600 border-green-600" onClick={() => updateStatus(sub.id, 'ACTIVE')}>Resume Subscription</Button>
+                  <Button variant="outline" className="text-success-text border-green-600" onClick={() => updateStatus(sub.id, 'ACTIVE')}>Resume Subscription</Button>
                 )}
                 <Button variant="destructive" onClick={() => updateStatus(sub.id, 'CANCELLED')}>Cancel Subscription</Button>
               </div>

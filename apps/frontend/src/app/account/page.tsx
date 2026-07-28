@@ -33,11 +33,11 @@ export default function AccountPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-      case 'CONFIRMED': return 'bg-blue-100 text-blue-800';
+      case 'CONFIRMED': return 'bg-info-bg text-blue-800';
       case 'SHIPPED': return 'bg-purple-100 text-purple-800';
-      case 'DELIVERED': return 'bg-green-100 text-green-800';
-      case 'CANCELLED': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'DELIVERED': return 'bg-success-bg text-green-800';
+      case 'CANCELLED': return 'bg-danger-bg text-red-800';
+      default: return 'bg-muted text-foreground';
     }
   };
 
@@ -47,7 +47,7 @@ export default function AccountPage() {
   return (
     <div className="container mx-auto px-4 py-8 flex-1">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
+        <h1 className="text-3xl font-bold text-foreground">My Account</h1>
         <button
           onClick={logout}
           className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-semibold transition"
@@ -60,8 +60,8 @@ export default function AccountPage() {
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
           <div className="mb-6">
-            <p className="text-gray-600 text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
-            <div className="inline-flex items-center gap-1 bg-[#4CAF50] text-white text-xs font-semibold px-2 py-1 rounded-sm">
+            <p className="text-muted-foreground text-sm mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
+            <div className="inline-flex items-center gap-1 bg-success-fill text-white text-xs font-semibold px-2 py-1 rounded-sm">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
@@ -72,23 +72,23 @@ export default function AccountPage() {
           <div className="space-y-5">
             <div>
               <Link href="/account">
-                <h3 className="text-[15px] font-semibold text-primary-600 mb-2 hover:text-primary-700 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-primary/90 mb-2 hover:text-primary-700 cursor-pointer">
                   Manage My Account
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/profile" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/profile" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/address" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/address" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     Address Book
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/payment" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/payment" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Payment Options
                   </Link>
                 </li>
@@ -97,22 +97,22 @@ export default function AccountPage() {
 
             {/* Smart24 Rewards Ecosystem */}
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 mb-2">
+              <h3 className="text-[15px] font-semibold text-foreground mb-2">
                 Loyalty and Reward
               </h3>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/membership" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/membership" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Membership
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/rewards" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/rewards" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     Reward Marketplace
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/points-history" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/points-history" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     Points History
                   </Link>
                 </li>
@@ -121,18 +121,18 @@ export default function AccountPage() {
 
             <div>
               <Link href="/account/orders">
-                <h3 className="text-[15px] font-semibold text-gray-800 mb-2 hover:text-primary-600 cursor-pointer">
+                <h3 className="text-[15px] font-semibold text-foreground mb-2 hover:text-primary/90 cursor-pointer">
                   My Orders
                 </h3>
               </Link>
               <ul className="space-y-2 pl-4">
                 <li>
-                  <Link href="/account/returns" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/returns" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Returns
                   </Link>
                 </li>
                 <li>
-                  <Link href="/account/cancellations" className="text-gray-500 hover:text-primary-600 text-[14px]">
+                  <Link href="/account/cancellations" className="text-muted-foreground hover:text-primary/90 text-[14px]">
                     My Cancellations
                   </Link>
                 </li>
@@ -140,13 +140,13 @@ export default function AccountPage() {
             </div>
 
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+              <h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer">
                 <Link href="/account/reviews">My Reviews</Link>
               </h3>
             </div>
 
             <div>
-              <h3 className="text-[15px] font-semibold text-gray-800 hover:text-primary-600 cursor-pointer">
+              <h3 className="text-[15px] font-semibold text-foreground hover:text-primary/90 cursor-pointer">
                 <Link href="/account/wishlist">My Wishlist & Followed Stores</Link>
               </h3>
             </div>
@@ -155,20 +155,20 @@ export default function AccountPage() {
 
         {/* Main Content Area */}
         <div className="lg:col-span-3 space-y-6">
-          <h2 className="text-[22px] text-gray-800 font-normal">Manage My Account</h2>
+          <h2 className="text-[22px] text-foreground font-normal">Manage My Account</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Personal Profile */}
             <div className="bg-white p-6 flex flex-col">
               <div className="flex items-center gap-2 mb-6">
-                <h3 className="text-[15px] text-gray-800 font-medium">Personal Profile</h3>
-                <span className="text-gray-300">|</span>
-                <Link href="/account/profile/edit" className="text-[#1a9cb7] text-[13px] hover:underline uppercase">Edit</Link>
+                <h3 className="text-[15px] text-foreground font-medium">Personal Profile</h3>
+                <span className="text-muted-foreground">|</span>
+                <Link href="/account/profile/edit" className="text-primary text-[13px] hover:underline uppercase">Edit</Link>
               </div>
               <div className="flex-1">
-                <p className="text-[14px] text-gray-800 mb-4">{user.email || 'tafsirchy@gmail.com'}</p>
-                <label className="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-sm" />
+                <p className="text-[14px] text-foreground mb-4">{user.email || 'tafsirchy@gmail.com'}</p>
+                <label className="flex items-center gap-2 text-[13px] text-foreground cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-4 h-4 text-info-text focus:ring-blue-500 border-border rounded-sm" />
                   Receive marketing SMS
                 </label>
               </div>
@@ -177,45 +177,45 @@ export default function AccountPage() {
             {/* Address Book */}
             <div className="bg-white p-6 col-span-1 md:col-span-2 relative">
               <div className="flex items-center gap-2 mb-6">
-                <h3 className="text-[15px] text-gray-800 font-medium">Address Book</h3>
-                <span className="text-gray-300">|</span>
-                <Link href="/account/address/edit" className="text-[#1a9cb7] text-[13px] hover:underline uppercase">Edit</Link>
+                <h3 className="text-[15px] text-foreground font-medium">Address Book</h3>
+                <span className="text-muted-foreground">|</span>
+                <Link href="/account/address/edit" className="text-primary text-[13px] hover:underline uppercase">Edit</Link>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
                 <div className="flex-1">
-                  <p className="text-[12px] text-gray-500 mb-4 uppercase">Default Shipping Address</p>
-                  <p className="text-[14px] font-semibold text-gray-800 mb-1">{user.name || 'User Name'}</p>
-                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">House 21, Road 6/A, Sector 12, Uttara, Dhaka...</p>
-                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">Dhaka - Dhaka - North - Uttara Sector 12</p>
-                  <p className="text-[13px] text-gray-600">(+880) {user.phone || '1633996633'}</p>
+                  <p className="text-[12px] text-muted-foreground mb-4 uppercase">Default Shipping Address</p>
+                  <p className="text-[14px] font-semibold text-foreground mb-1">{user.name || 'User Name'}</p>
+                  <p className="text-[13px] text-muted-foreground mb-1 leading-relaxed">House 21, Road 6/A, Sector 12, Uttara, Dhaka...</p>
+                  <p className="text-[13px] text-muted-foreground mb-1 leading-relaxed">Dhaka - Dhaka - North - Uttara Sector 12</p>
+                  <p className="text-[13px] text-muted-foreground">(+880) {user.phone || '1633996633'}</p>
                 </div>
 
-                <div className="hidden md:block absolute top-0 bottom-0 left-1/2 w-px bg-gray-100 -ml-[1px]"></div>
+                <div className="hidden md:block absolute top-0 bottom-0 left-1/2 w-px bg-muted -ml-[1px]"></div>
 
                 <div className="flex-1">
-                  <p className="text-[12px] text-gray-500 mb-4 uppercase">Default Billing Address</p>
-                  <p className="text-[14px] font-semibold text-gray-800 mb-1">{user.name || 'User Name'}</p>
-                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">House 21, Road 6/A, Sector 12, Uttara, Dhaka...</p>
-                  <p className="text-[13px] text-gray-600 mb-1 leading-relaxed">Dhaka - Dhaka - North - Uttara Sector 12</p>
-                  <p className="text-[13px] text-gray-600">(+880) {user.phone || '1633996633'}</p>
+                  <p className="text-[12px] text-muted-foreground mb-4 uppercase">Default Billing Address</p>
+                  <p className="text-[14px] font-semibold text-foreground mb-1">{user.name || 'User Name'}</p>
+                  <p className="text-[13px] text-muted-foreground mb-1 leading-relaxed">House 21, Road 6/A, Sector 12, Uttara, Dhaka...</p>
+                  <p className="text-[13px] text-muted-foreground mb-1 leading-relaxed">Dhaka - Dhaka - North - Uttara Sector 12</p>
+                  <p className="text-[13px] text-muted-foreground">(+880) {user.phone || '1633996633'}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="bg-white p-6">
-            <h3 className="text-[15px] text-gray-800 font-medium mb-4">Recent Orders</h3>
+            <h3 className="text-[15px] text-foreground font-medium mb-4">Recent Orders</h3>
             
             {loadingOrders ? (
-              <p className="text-[13px] text-gray-500 py-4">Loading orders...</p>
+              <p className="text-[13px] text-muted-foreground py-4">Loading orders...</p>
             ) : orders.length === 0 ? (
-              <p className="text-[13px] text-gray-500 py-4">You haven't placed any orders yet.</p>
+              <p className="text-[13px] text-muted-foreground py-4">You haven't placed any orders yet.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[600px]">
                   <thead>
-                    <tr className="bg-[#f5f5f5] text-gray-500 text-[13px]">
+                    <tr className="bg-muted text-muted-foreground text-[13px]">
                       <th className="py-3 px-4 font-normal w-1/4">Order #</th>
                       <th className="py-3 px-4 font-normal w-1/4">Placed On</th>
                       <th className="py-3 px-4 font-normal w-1/4">Items</th>
@@ -225,18 +225,18 @@ export default function AccountPage() {
                   </thead>
                   <tbody>
                     {orders.slice(0, 5).map((order) => (
-                      <tr key={order.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
-                        <td className="py-4 px-4 text-[13px] text-gray-800">{order.id.substring(0, 15)}</td>
-                        <td className="py-4 px-4 text-[13px] text-gray-800">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
+                      <tr key={order.id} className="border-b border-border last:border-0 hover:bg-muted transition">
+                        <td className="py-4 px-4 text-[13px] text-foreground">{order.id.substring(0, 15)}</td>
+                        <td className="py-4 px-4 text-[13px] text-foreground">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
                         <td className="py-4 px-4">
                           {/* Display thumbnail based on order items if available, else placeholder */}
-                          <div className="w-10 h-10 bg-gray-200 rounded">
+                          <div className="w-10 h-10 bg-muted/80 rounded">
                             <img src="https://via.placeholder.com/40" alt="Item" className="w-full h-full object-cover rounded" />
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-[13px] text-gray-800 text-right">৳ {order.totalAmount}</td>
+                        <td className="py-4 px-4 text-[13px] text-foreground text-right">৳ {order.totalAmount}</td>
                         <td className="py-4 px-4 text-[13px] text-right">
-                          <Link href={`/track-order?id=${order.id}`} className="text-green-600 font-medium hover:underline uppercase">Track</Link>
+                          <Link href={`/track-order?id=${order.id}`} className="text-success-text font-medium hover:underline uppercase">Track</Link>
                         </td>
                       </tr>
                     ))}

@@ -44,7 +44,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gray-50 border-b border-gray-100">
+      <div className="bg-muted border-b border-border">
         <HeroBentoAccordion ads={DUMMY_ADS} />
       </div>
 

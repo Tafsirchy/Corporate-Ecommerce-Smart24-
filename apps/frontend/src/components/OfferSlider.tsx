@@ -50,11 +50,11 @@ export const OfferSlider = () => {
 
   if (isLoading) {
     return (
-      <section className="py-6 bg-gray-50 overflow-hidden">
+      <section className="py-6 bg-muted overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px] items-stretch animate-pulse">
-            <div className="w-full lg:w-[78%] h-[300px] lg:h-full bg-gray-200"></div>
-            <div className="w-full lg:w-[22%] bg-gray-200 h-full"></div>
+            <div className="w-full lg:w-[78%] h-[300px] lg:h-full bg-muted/80"></div>
+            <div className="w-full lg:w-[22%] bg-muted/80 h-full"></div>
           </div>
         </div>
       </section>
@@ -64,7 +64,7 @@ export const OfferSlider = () => {
   if (banners.length === 0) return null;
 
   return (
-    <section className="py-6 bg-gray-50 overflow-hidden">
+    <section className="py-6 bg-muted overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Set a fixed height for the wrapper to ensure both sides are exactly identical in height */}
         <div className="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px] items-stretch">
@@ -134,11 +134,11 @@ export const OfferSlider = () => {
           <div className="w-full lg:w-[22%] bg-white flex flex-col h-full shadow-sm rounded-none border-l-4 border-primary-600 lg:border-l-0 overflow-hidden">
             
             {/* Top Header */}
-            <div className="flex items-center gap-3 p-3 border-b border-gray-100 bg-primary-50 shrink-0">
+            <div className="flex items-center gap-3 p-3 border-b border-border bg-primary-50 shrink-0">
               <div className="bg-primary-600 text-white p-1 rounded-md">
                 <ShieldCheck size={18} />
               </div>
-              <span className="font-bold text-gray-800 text-[14px]">Smart24 Corporate</span>
+              <span className="font-bold text-foreground text-[14px]">Smart24 Corporate</span>
             </div>
 
             {/* Gradient Middle Section */}
@@ -154,14 +154,14 @@ export const OfferSlider = () => {
 
               <div className="space-y-2 mb-2 relative z-10">
                 <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg p-2">
-                  <div className="bg-white rounded-full p-1.5 text-primary-600">
+                  <div className="bg-white rounded-full p-1.5 text-primary/90">
                     <Truck size={14} />
                   </div>
                   <span className="font-semibold text-xs leading-tight">Free Bulk<br/>Delivery</span>
                 </div>
                 
                 <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg p-2">
-                  <div className="bg-white rounded-full p-1.5 text-blue-600">
+                  <div className="bg-white rounded-full p-1.5 text-info-text">
                     <CreditCard size={14} />
                   </div>
                   <span className="font-semibold text-xs leading-tight">Flexible<br/>Payments</span>
@@ -173,10 +173,10 @@ export const OfferSlider = () => {
             </div>
 
             {/* Bottom Section: Contact / Quote */}
-            <div className="p-3 bg-gray-50 shrink-0">
+            <div className="p-3 bg-muted shrink-0">
               <div className="flex gap-2 items-center">
                 {/* Contact Icon / Graphic */}
-                <div className="w-16 h-16 bg-white p-2 border border-gray-200 shrink-0 rounded-lg flex items-center justify-center text-primary-600 shadow-sm">
+                <div className="w-16 h-16 bg-white p-2 border border-border shrink-0 rounded-lg flex items-center justify-center text-primary/90 shadow-sm">
                    <Package size={32} strokeWidth={1.5} />
                 </div>
                 
@@ -184,12 +184,12 @@ export const OfferSlider = () => {
                   <Link href="/contact" className="flex items-center justify-center gap-1.5 bg-primary-600 text-white py-1.5 px-2 rounded hover:bg-primary-700 transition-colors text-[11px] font-semibold shadow-sm">
                     Request Quote
                   </Link>
-                  <Link href="/shop" className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 text-gray-700 py-1.5 px-2 rounded hover:bg-gray-50 transition-colors text-[11px] font-semibold">
+                  <Link href="/shop" className="flex items-center justify-center gap-1.5 bg-white border border-border text-foreground py-1.5 px-2 rounded hover:bg-muted transition-colors text-[11px] font-semibold">
                     Browse Catalog
                   </Link>
                 </div>
               </div>
-              <div className="text-[10px] text-gray-500 mt-2 font-medium text-center">
+              <div className="text-[10px] text-muted-foreground mt-2 font-medium text-center">
                 Need customized supplies?
               </div>
             </div>

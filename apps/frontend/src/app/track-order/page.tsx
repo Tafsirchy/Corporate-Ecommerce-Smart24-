@@ -35,18 +35,18 @@ function TrackOrderContent() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-      case 'PROCESSING': return 'bg-blue-100 text-blue-800';
+      case 'PROCESSING': return 'bg-info-bg text-blue-800';
       case 'SHIPPED': return 'bg-purple-100 text-purple-800';
-      case 'DELIVERED': return 'bg-green-100 text-green-800';
-      case 'CANCELLED': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'DELIVERED': return 'bg-success-bg text-green-800';
+      case 'CANCELLED': return 'bg-danger-bg text-red-800';
+      default: return 'bg-muted text-foreground';
     }
   };
 
   const renderProgressBar = (status: string) => {
     if (status === 'CANCELLED') {
       return (
-        <div className="flex items-center justify-center text-red-600 my-8 p-6 bg-red-50 rounded-lg border border-red-100">
+        <div className="flex items-center justify-center text-destructive my-8 p-6 bg-danger-bg rounded-lg border border-red-100">
           <XCircle size={32} className="mr-3" />
           <div>
             <h3 className="font-bold text-lg">Order Cancelled</h3>
@@ -71,7 +71,7 @@ function TrackOrderContent() {
       <div className="my-10 px-4">
         <div className="relative">
           {/* Progress bar background line */}
-          <div className="absolute left-6 right-6 top-5 transform -translate-y-1/2 h-1 bg-gray-200 z-0" />
+          <div className="absolute left-6 right-6 top-5 transform -translate-y-1/2 h-1 bg-muted/80 z-0" />
           {/* Progress bar active line */}
           <div 
             className="absolute left-6 top-5 transform -translate-y-1/2 h-1 bg-black transition-all duration-700 ease-in-out z-0" 
@@ -84,10 +84,10 @@ function TrackOrderContent() {
               const isCompleted = idx <= activeIndex;
               return (
                 <div key={step.id} className="flex flex-col items-center group">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 bg-white ${isCompleted ? 'border-black text-black shadow-md shadow-black/10 scale-110' : 'border-gray-300 text-gray-300'}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 bg-white ${isCompleted ? 'border-black text-black shadow-md shadow-black/10 scale-110' : 'border-border text-muted-foreground'}`}>
                     <Icon size={18} strokeWidth={isCompleted ? 2.5 : 2} />
                   </div>
-                  <span className={`mt-3 text-xs sm:text-sm font-bold transition-colors duration-300 ${isCompleted ? 'text-black' : 'text-gray-400'}`}>{step.label}</span>
+                  <span className={`mt-3 text-xs sm:text-sm font-bold transition-colors duration-300 ${isCompleted ? 'text-black' : 'text-muted-foreground'}`}>{step.label}</span>
                 </div>
               );
             })}
@@ -102,44 +102,44 @@ function TrackOrderContent() {
       <h1 className="text-3xl font-bold mb-8">Track Order</h1>
       
       {!id ? (
-        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 max-w-md mx-auto">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-border max-w-md mx-auto">
           <div className="text-center mb-6">
             <Package size={48} className="mx-auto text-black mb-4" />
             <h2 className="text-xl font-bold">Track Your Delivery</h2>
-            <p className="text-gray-500 text-sm mt-2">Enter your Order ID below to check the current status of your shipment.</p>
+            <p className="text-muted-foreground text-sm mt-2">Enter your Order ID below to check the current status of your shipment.</p>
           </div>
           <form onSubmit={(e) => { e.preventDefault(); const val = (e.target as any).orderId.value; if(val) window.location.href = `/track-order?id=${val}` }}>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Order ID</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Order ID</label>
             <input 
               name="orderId"
               type="text" 
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black mb-6 transition-all"
+              className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-black focus:border-black mb-6 transition-all"
               placeholder="e.g. 64b7d8..."
             />
-            <button type="submit" className="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+            <button type="submit" className="w-full bg-black text-white py-3 rounded-lg font-bold hover:bg-secondary transition-colors flex items-center justify-center gap-2">
               Track Order
             </button>
           </form>
         </div>
       ) : loading ? (
         <div className="text-center py-16 flex flex-col items-center">
-           <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-black mb-4"></div>
-           <p className="text-gray-500 font-medium">Loading tracking information...</p>
+           <div className="animate-spin rounded-full h-12 w-12 border-4 border-border border-t-black mb-4"></div>
+           <p className="text-muted-foreground font-medium">Loading tracking information...</p>
         </div>
       ) : order ? (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="bg-gray-50 px-6 py-5 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="bg-white rounded-xl shadow-lg border border-border overflow-hidden">
+          <div className="bg-muted px-6 py-5 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="font-bold text-xl">Order #{order.id.substring(0, 8).toUpperCase()}</h2>
-              <p className="text-sm text-gray-500 mt-1">Placed on {new Date(order.createdAt).toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground mt-1">Placed on {new Date(order.createdAt).toLocaleString()}</p>
             </div>
             <div className="flex flex-col items-end">
               <span className={`px-4 py-1.5 rounded-full text-sm font-bold shadow-sm ${getStatusColor(order.status)}`}>
                 {order.status}
               </span>
               {order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && (
-                <p className="text-xs font-semibold text-primary-600 mt-2">
+                <p className="text-xs font-semibold text-primary/90 mt-2">
                   Est. Delivery: {new Date(new Date(order.createdAt).getTime() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                 </p>
               )}
@@ -150,24 +150,24 @@ function TrackOrderContent() {
             {renderProgressBar(order.status)}
           </div>
           
-          <div className="p-6 border-t border-gray-100">
+          <div className="p-6 border-t border-border">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Package size={20} /> Items Ordered</h3>
-            <div className="space-y-4 mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <div className="space-y-4 mb-8 bg-muted p-4 rounded-xl border border-border">
               {order.items?.map((item: any) => (
-                <div key={item.id} className="flex justify-between items-center border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                <div key={item.id} className="flex justify-between items-center border-b border-border pb-4 last:border-0 last:pb-0">
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0">
+                    <div className="w-16 h-16 bg-white rounded-lg border border-border overflow-hidden flex-shrink-0">
                       {item.product?.images?.[0] ? (
                         <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
                           <Package size={24} />
                         </div>
                       )}
                     </div>
                     <div>
-                      <div className="font-bold text-gray-800">{item.product?.name || 'Product ' + item.productId}</div>
-                      <div className="text-sm text-gray-500 mt-1">Qty: {item.quantity} x ৳{item.priceAtPurchase}</div>
+                      <div className="font-bold text-foreground">{item.product?.name || 'Product ' + item.productId}</div>
+                      <div className="text-sm text-muted-foreground mt-1">Qty: {item.quantity} x ৳{item.priceAtPurchase}</div>
                     </div>
                   </div>
                   <div className="font-bold text-lg">৳{item.quantity * item.priceAtPurchase}</div>
@@ -176,31 +176,31 @@ function TrackOrderContent() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
-              <div className="bg-gray-50 p-5 rounded-xl border border-gray-100">
+              <div className="bg-muted p-5 rounded-xl border border-border">
                 <h3 className="font-bold mb-3 flex items-center gap-2">Shipping Details</h3>
-                <p className="text-gray-700 text-sm whitespace-pre-line leading-relaxed">{order.shippingAddress}</p>
-                <p className="text-gray-700 text-sm mt-3 pt-3 border-t border-gray-200"><span className="font-semibold">Contact:</span> {order.contactNumber}</p>
+                <p className="text-foreground text-sm whitespace-pre-line leading-relaxed">{order.shippingAddress}</p>
+                <p className="text-foreground text-sm mt-3 pt-3 border-t border-border"><span className="font-semibold">Contact:</span> {order.contactNumber}</p>
               </div>
               
-              <div className="bg-gray-50 p-5 rounded-xl border border-gray-100">
+              <div className="bg-muted p-5 rounded-xl border border-border">
                 <h3 className="font-bold mb-3 flex items-center gap-2">Payment Summary</h3>
                 <div className="flex justify-between text-sm mb-3">
-                  <span className="text-gray-600">Payment Method</span>
+                  <span className="text-muted-foreground">Payment Method</span>
                   <span className="font-semibold">{order.paymentMethod}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-3">
-                  <span className="text-gray-600">Payment Status</span>
-                  <span className={`font-semibold ${order.paymentStatus === 'VERIFIED' ? 'text-green-600' : 'text-yellow-600'}`}>{order.paymentStatus}</span>
+                  <span className="text-muted-foreground">Payment Status</span>
+                  <span className={`font-semibold ${order.paymentStatus === 'VERIFIED' ? 'text-success-text' : 'text-yellow-600'}`}>{order.paymentStatus}</span>
                 </div>
-                <div className="flex justify-between text-sm mb-3 pt-3 border-t border-gray-200">
-                  <span className="text-gray-600">Subtotal</span>
+                <div className="flex justify-between text-sm mb-3 pt-3 border-t border-border">
+                  <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-medium">৳{order.totalAmount - order.deliveryCharge}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-3">
-                  <span className="text-gray-600">Delivery</span>
+                  <span className="text-muted-foreground">Delivery</span>
                   <span className="font-medium">৳{order.deliveryCharge}</span>
                 </div>
-                <div className="flex justify-between font-bold text-xl pt-3 border-t border-gray-200 mt-3 text-black">
+                <div className="flex justify-between font-bold text-xl pt-3 border-t border-border mt-3 text-black">
                   <span>Total</span>
                   <span>৳{order.totalAmount}</span>
                 </div>
@@ -209,15 +209,15 @@ function TrackOrderContent() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-16 text-red-500 bg-red-50 rounded-xl border border-red-100 max-w-lg mx-auto">
+        <div className="text-center py-16 text-destructive bg-danger-bg rounded-xl border border-red-100 max-w-lg mx-auto">
           <XCircle size={48} className="mx-auto mb-4" />
           <h2 className="text-xl font-bold mb-2">Order Not Found</h2>
-          <p className="text-gray-700">We couldn't find an order with this ID or you do not have permission to view it.</p>
+          <p className="text-foreground">We couldn't find an order with this ID or you do not have permission to view it.</p>
         </div>
       )}
       
       <div className="mt-10 text-center">
-        <Link href="/shop" className="inline-flex items-center gap-2 text-black hover:text-gray-600 font-bold transition-colors">
+        <Link href="/shop" className="inline-flex items-center gap-2 text-black hover:text-muted-foreground font-bold transition-colors">
           &larr; Back to Shop
         </Link>
       </div>
@@ -227,7 +227,7 @@ function TrackOrderContent() {
 
 export default function TrackOrderPage() {
   return (
-    <Suspense fallback={<div className="container py-20 text-center flex flex-col items-center justify-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-black mb-4"></div>Loading...</div>}>
+    <Suspense fallback={<div className="container py-20 text-center flex flex-col items-center justify-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-4 border-border border-t-black mb-4"></div>Loading...</div>}>
       <TrackOrderContent />
     </Suspense>
   );

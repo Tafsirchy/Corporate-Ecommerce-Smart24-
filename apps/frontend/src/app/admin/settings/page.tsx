@@ -41,45 +41,45 @@ export default function AdminSettings() {
   };
 
   if (loading) {
-    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary-600" /></div>;
+    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary/90" /></div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Global Settings</h1>
-        <p className="text-gray-500 mt-1">Manage global configuration for your store.</p>
+        <h1 className="text-2xl font-bold text-foreground">Global Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage global configuration for your store.</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
-        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
-          <Mail className="w-5 h-5 text-gray-400" />
+      <div className="bg-white rounded-lg shadow-sm border border-border p-6 mb-6">
+        <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-4">
+          <Mail className="w-5 h-5 text-muted-foreground" />
           Support Email Configuration
         </h2>
         
-        <div className="bg-blue-50 text-blue-800 p-4 rounded-lg flex items-start gap-3 mb-6 text-sm">
+        <div className="bg-info-bg text-blue-800 p-4 rounded-lg flex items-start gap-3 mb-6 text-sm">
           <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <p>This is the email address that will receive notifications whenever a user submits a new Support Ticket via the Contact Us form.</p>
         </div>
 
         <form onSubmit={handleSave}>
           <div className="max-w-md">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Notification Email Address</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Notification Email Address</label>
             <input
               type="email"
               required
               value={supportEmail}
               onChange={(e) => setSupportEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="e.g. support@smart24.com"
             />
           </div>
 
-          <div className="mt-6 pt-6 border-t border-gray-100">
+          <div className="mt-6 pt-6 border-t border-border">
             <button 
               type="submit"
               disabled={saving}
-              className="flex items-center px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition font-medium disabled:opacity-70"
+              className="flex items-center px-6 py-2.5 bg-black text-white rounded-lg hover:bg-secondary transition font-medium disabled:opacity-70"
             >
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
               Save Settings

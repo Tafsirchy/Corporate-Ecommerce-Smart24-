@@ -25,8 +25,8 @@ export function PriceFilter({ onApply, minPrice, maxPrice }: PriceFilterProps) {
   };
 
   return (
-    <div className="w-full bg-white p-5 rounded-xl border border-gray-100 shadow-sm mt-6">
-      <h2 className="text-[15px] font-bold text-gray-900 mb-3 font-serif">Price</h2>
+    <div className="w-full bg-white p-5 rounded-xl border border-border shadow-sm mt-6">
+      <h2 className="text-[15px] font-bold text-foreground mb-3 font-serif">Price</h2>
       <div className="flex items-center gap-2">
         <input 
           type="number"
@@ -34,22 +34,22 @@ export function PriceFilter({ onApply, minPrice, maxPrice }: PriceFilterProps) {
           value={minStr}
           onChange={e => setMinStr(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-[70px] flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:border-primary-500"
+          className="w-[70px] flex-1 px-3 py-1.5 text-sm border border-border rounded focus:outline-none focus:border-primary-500"
           min="0"
         />
-        <span className="text-gray-400">-</span>
+        <span className="text-muted-foreground">-</span>
         <input 
           type="number"
           placeholder="Max"
           value={maxStr}
           onChange={e => setMaxStr(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-[70px] flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:border-primary-500"
+          className="w-[70px] flex-1 px-3 py-1.5 text-sm border border-border rounded focus:outline-none focus:border-primary-500"
           min="0"
         />
         <button 
           onClick={handleApply}
-          className="bg-[#f57224] text-white p-2 rounded hover:bg-orange-600 transition-colors shrink-0 flex items-center justify-center"
+          className="bg-accent text-white p-2 rounded hover:bg-accent/90 transition-colors shrink-0 flex items-center justify-center"
           aria-label="Apply price filter"
         >
           <Play size={14} className="fill-current ml-0.5" />

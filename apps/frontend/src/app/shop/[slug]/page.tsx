@@ -172,13 +172,13 @@ export default function ProductDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8 animate-pulse">
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="w-full lg:w-[40%] bg-gray-200 h-[500px] rounded-xl"></div>
+          <div className="w-full lg:w-[40%] bg-muted/80 h-[500px] rounded-xl"></div>
           <div className="w-full lg:w-[35%] space-y-4">
-            <div className="h-10 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-10 bg-muted/80 rounded w-3/4"></div>
+            <div className="h-6 bg-muted/80 rounded w-1/4"></div>
+            <div className="h-32 bg-muted/80 rounded"></div>
           </div>
-          <div className="w-full lg:w-[25%] bg-gray-200 h-[400px] rounded-xl"></div>
+          <div className="w-full lg:w-[25%] bg-muted/80 h-[400px] rounded-xl"></div>
         </div>
       </div>
     );
@@ -187,8 +187,8 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Product Not Found</h1>
-        <p className="mt-4 text-gray-500">The product you are looking for does not exist or has been removed.</p>
+        <h1 className="text-3xl font-bold text-foreground">Product Not Found</h1>
+        <p className="mt-4 text-muted-foreground">The product you are looking for does not exist or has been removed.</p>
         <Link href="/shop" className="mt-6 inline-block px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
           Back to Shop
         </Link>
@@ -222,22 +222,22 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12">
+    <div className="bg-muted min-h-screen pb-12">
       <div className="container mx-auto px-4 pt-4 pb-8">
         {/* Breadcrumbs */}
-        <div className="flex items-center text-sm text-gray-500 mb-4 gap-2">
-          <Link href="/" className="hover:text-primary-600">Home</Link>
+        <div className="flex items-center text-sm text-muted-foreground mb-4 gap-2">
+          <Link href="/" className="hover:text-primary/90">Home</Link>
           <ChevronRight size={14} />
-          <Link href="/shop" className="hover:text-primary-600">Shop</Link>
+          <Link href="/shop" className="hover:text-primary/90">Shop</Link>
           <ChevronRight size={14} />
-          <span className="text-gray-800 truncate max-w-[200px] sm:max-w-xs">{product.name}</span>
+          <span className="text-foreground truncate max-w-[200px] sm:max-w-xs">{product.name}</span>
         </div>
 
         {/* Top Section */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Column 1: Image Gallery (40%) */}
-          <div className="w-full lg:w-[40%] bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col">
-            <div className="aspect-square rounded-lg overflow-hidden border border-gray-100 mb-4 bg-gray-50 relative group cursor-crosshair">
+          <div className="w-full lg:w-[40%] bg-white p-4 rounded-xl shadow-sm border border-border flex flex-col">
+            <div className="aspect-square rounded-lg overflow-hidden border border-border mb-4 bg-muted relative group cursor-crosshair">
               <img 
                 src={activeImage || 'https://placehold.co/800x800?text=No+Image'} 
                 alt={product.name}
@@ -251,7 +251,7 @@ export default function ProductDetailPage() {
                   <button 
                     key={i} 
                     onClick={() => setActiveImage(img)}
-                    className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${activeImage === img ? 'border-primary-500' : 'border-transparent hover:border-gray-300'}`}
+                    className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${activeImage === img ? 'border-primary-500' : 'border-transparent hover:border-border'}`}
                   >
                     <img src={img} alt={`${product.name} ${i+1}`} className="w-full h-full object-cover" />
                   </button>
@@ -261,36 +261,36 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Column 2: Core Info (35%) */}
-          <div className="w-full lg:w-[35%] bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col">
-            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 leading-snug">{product.name}</h1>
+          <div className="w-full lg:w-[35%] bg-white p-6 rounded-xl shadow-sm border border-border flex flex-col">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground leading-snug">{product.name}</h1>
             
-            <div className="flex items-center gap-4 mt-3 pb-4 border-b border-gray-100">
+            <div className="flex items-center gap-4 mt-3 pb-4 border-b border-border">
               <div className="flex items-center gap-1 text-yellow-400">
                 <Star size={16} fill="currentColor" />
-                <span className="text-sm font-medium text-gray-700 ml-1">{avgRating.toFixed(1)}</span>
+                <span className="text-sm font-medium text-foreground ml-1">{avgRating.toFixed(1)}</span>
               </div>
               <span 
-                className="text-sm text-primary-600 hover:underline cursor-pointer"
+                className="text-sm text-primary/90 hover:underline cursor-pointer"
                 onClick={() => { setActiveTab('reviews'); document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }); }}
               >
                 {totalReviews} Ratings
               </span>
             </div>
 
-            <div className="py-4 border-b border-gray-100">
+            <div className="py-4 border-b border-border">
               <div className="flex items-end gap-3">
-                <span className="text-3xl font-bold text-primary-600">৳{product.price.toLocaleString()}</span>
+                <span className="text-3xl font-bold text-primary/90">৳{product.price.toLocaleString()}</span>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-gray-400 line-through">৳{originalPrice.toLocaleString()}</span>
-                <span className="text-xs font-semibold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">-{discountPercent}%</span>
+                <span className="text-sm text-muted-foreground line-through">৳{originalPrice.toLocaleString()}</span>
+                <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded">-{discountPercent}%</span>
               </div>
             </div>
 
             <div className="py-4 space-y-4 flex-1">
               {color && (
                 <div>
-                  <h3 className="text-sm text-gray-500 mb-2">Color Family: <span className="text-gray-900 font-medium">{color}</span></h3>
+                  <h3 className="text-sm text-muted-foreground mb-2">Color Family: <span className="text-foreground font-medium">{color}</span></h3>
                   <div className="flex gap-2">
                     <button className="w-10 h-10 rounded border-2 border-primary-500 p-0.5">
                       <div className="w-full h-full rounded-sm" style={{ backgroundColor: color.toLowerCase() === 'white' ? '#f3f4f6' : (color.toLowerCase() === 'black' ? '#111827' : color.toLowerCase()) }}></div>
@@ -300,23 +300,23 @@ export default function ProductDetailPage() {
               )}
 
               <div>
-                <h3 className="text-sm text-gray-500 mb-2">Quantity</h3>
+                <h3 className="text-sm text-muted-foreground mb-2">Quantity</h3>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center border border-gray-200 rounded-md">
-                    <button onClick={() => handleQtyChange('dec')} className="p-2 hover:bg-gray-50 text-gray-600 transition-colors">
+                  <div className="flex items-center border border-border rounded-md">
+                    <button onClick={() => handleQtyChange('dec')} className="p-2 hover:bg-muted text-muted-foreground transition-colors">
                       <Minus size={16} />
                     </button>
                     <input 
                       type="text" 
                       value={quantity} 
                       readOnly 
-                      className="w-12 text-center text-sm font-medium border-x border-gray-200 py-2 focus:outline-none"
+                      className="w-12 text-center text-sm font-medium border-x border-border py-2 focus:outline-none"
                     />
-                    <button onClick={() => handleQtyChange('inc')} className="p-2 hover:bg-gray-50 text-gray-600 transition-colors">
+                    <button onClick={() => handleQtyChange('inc')} className="p-2 hover:bg-muted text-muted-foreground transition-colors">
                       <Plus size={16} />
                     </button>
                   </div>
-                  <span className="text-sm text-gray-500">Only {(product as any).stock ?? 50} items left</span>
+                  <span className="text-sm text-muted-foreground">Only {(product as any).stock ?? 50} items left</span>
                 </div>
               </div>
             </div>
@@ -326,17 +326,17 @@ export default function ProductDetailPage() {
                 <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98]">
                   Buy Now
                 </button>
-                <button className="flex-1 bg-orange-50 text-primary-600 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
+                <button className="flex-1 bg-accent/10 text-primary/90 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
                   Add to Cart
                 </button>
               </div>
             ) : (
               <div className="pt-4 space-y-3">
-                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm font-medium border border-red-100">
+                <div className="bg-danger-bg text-destructive px-4 py-3 rounded-lg text-sm font-medium border border-red-100">
                   Currently Out of Stock
                 </div>
                 {isAlertSubscribed ? (
-                  <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-sm font-medium border border-green-100">
+                  <div className="bg-success-bg text-success-text px-4 py-3 rounded-lg text-sm font-medium border border-green-100">
                     We'll email you when it's back in stock!
                   </div>
                 ) : (
@@ -347,12 +347,12 @@ export default function ProductDetailPage() {
                       placeholder="Enter email for restock alert"
                       value={alertEmail}
                       onChange={e => setAlertEmail(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
                     />
                     <button 
                       type="submit" 
                       disabled={subscribingAlert}
-                      className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-70"
+                      className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-secondary transition-colors disabled:opacity-70"
                     >
                       {subscribingAlert ? 'Subscribing...' : 'Notify Me'}
                     </button>
@@ -364,77 +364,77 @@ export default function ProductDetailPage() {
 
           {/* Column 3: Delivery & Service (25%) */}
           <div className="w-full lg:w-[25%] space-y-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Delivery Options</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-border p-4">
+              <h3 className="text-sm font-medium text-foreground mb-4">Delivery Options</h3>
               <div className="flex gap-3 mb-4">
-                <MapPin size={20} className="text-gray-400 shrink-0 mt-0.5" />
+                <MapPin size={20} className="text-muted-foreground shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-800 line-clamp-2">Dhaka, Dhaka North, Banani Road No. 12 - 19</p>
-                  <button className="text-xs text-primary-600 font-medium mt-1">Change</button>
+                  <p className="text-sm text-foreground line-clamp-2">Dhaka, Dhaka North, Banani Road No. 12 - 19</p>
+                  <button className="text-xs text-primary/90 font-medium mt-1">Change</button>
                 </div>
               </div>
               <div className="flex gap-3 mb-4">
-                <Truck size={20} className="text-gray-400 shrink-0 mt-0.5" />
+                <Truck size={20} className="text-muted-foreground shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Standard Delivery</p>
-                      <p className="text-xs text-gray-500 mt-0.5">3 - 5 days</p>
+                      <p className="text-sm font-medium text-foreground">Standard Delivery</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">3 - 5 days</p>
                     </div>
-                    <span className="text-sm font-medium text-gray-900">{hasFreeShipping ? 'Free' : '৳55'}</span>
+                    <span className="text-sm font-medium text-foreground">{hasFreeShipping ? 'Free' : '৳55'}</span>
                   </div>
                 </div>
               </div>
               <div className="flex gap-3 pt-3 border-t border-gray-50">
-                <div className="w-5 h-5 rounded-full border border-gray-400 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-gray-500">৳</span>
+                <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
+                  <span className="text-[10px] font-bold text-muted-foreground">৳</span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-gray-800">{hasCOD ? 'Cash on Delivery Available' : 'Cash on Delivery Not Available'}</p>
+                  <p className="text-sm text-foreground">{hasCOD ? 'Cash on Delivery Available' : 'Cash on Delivery Not Available'}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Return & Warranty</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-border p-4">
+              <h3 className="text-sm font-medium text-foreground mb-4">Return & Warranty</h3>
               <div className="flex gap-3 mb-4">
-                <ShieldCheck size={20} className="text-gray-400 shrink-0 mt-0.5" />
+                <ShieldCheck size={20} className="text-muted-foreground shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-800">{returnPolicy}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Change of mind is not applicable</p>
+                  <p className="text-sm text-foreground">{returnPolicy}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Change of mind is not applicable</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <Info size={20} className="text-gray-400 shrink-0 mt-0.5" />
+                <Info size={20} className="text-muted-foreground shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-800">{warrantyType}</p>
+                  <p className="text-sm text-foreground">{warrantyType}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="bg-white rounded-xl shadow-sm border border-border p-4">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Sold by</p>
-                  <h3 className="text-base font-medium text-gray-900">{sellerName}</h3>
+                  <p className="text-xs text-muted-foreground mb-1">Sold by</p>
+                  <h3 className="text-base font-medium text-foreground">{sellerName}</h3>
                 </div>
-                <button className="flex items-center gap-1 text-xs text-primary-600 bg-orange-50 px-2 py-1 rounded">
+                <button className="flex items-center gap-1 text-xs text-primary/90 bg-accent/10 px-2 py-1 rounded">
                   <MessageSquare size={12} />
                   Chat
                 </button>
               </div>
               <div className="grid grid-cols-3 gap-2 text-center pt-4 border-t border-gray-50">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Positive Seller Ratings</p>
-                  <p className="text-lg font-medium text-gray-900">92%</p>
+                  <p className="text-xs text-muted-foreground mb-1">Positive Seller Ratings</p>
+                  <p className="text-lg font-medium text-foreground">92%</p>
                 </div>
-                <div className="border-x border-gray-100">
-                  <p className="text-xs text-gray-500 mb-1">Ship on Time</p>
-                  <p className="text-lg font-medium text-gray-900">98%</p>
+                <div className="border-x border-border">
+                  <p className="text-xs text-muted-foreground mb-1">Ship on Time</p>
+                  <p className="text-lg font-medium text-foreground">98%</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Chat Response</p>
-                  <p className="text-lg font-medium text-gray-900">100%</p>
+                  <p className="text-xs text-muted-foreground mb-1">Chat Response</p>
+                  <p className="text-lg font-medium text-foreground">100%</p>
                 </div>
               </div>
             </div>
@@ -442,18 +442,18 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Bottom Section: Details & Reviews */}
-        <div id="reviews-section" className="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="border-b border-gray-200">
+        <div id="reviews-section" className="mt-6 bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+          <div className="border-b border-border">
             <nav className="flex px-4" aria-label="Tabs">
               <button 
                 onClick={() => setActiveTab('details')}
-                className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'details' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'details' ? 'text-primary/90 border-b-2 border-primary-600' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 Product Details
               </button>
               <button 
                 onClick={() => setActiveTab('reviews')}
-                className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'reviews' ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-4 px-6 text-sm font-medium transition-colors ${activeTab === 'reviews' ? 'text-primary/90 border-b-2 border-primary-600' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 Ratings & Reviews ({totalReviews})
               </button>
@@ -463,77 +463,77 @@ export default function ProductDetailPage() {
           <div className="p-6">
             {activeTab === 'details' ? (
               <>
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Specifications</h2>
+                <h2 className="text-lg font-medium text-foreground mb-4">Specifications</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-8">
                   <div className="flex gap-4">
-                    <span className="w-1/3 text-sm text-gray-500">Brand</span>
-                    <span className="w-2/3 text-sm text-gray-900 font-medium">{(product as any).brand?.name || brandCompatibility}</span>
+                    <span className="w-1/3 text-sm text-muted-foreground">Brand</span>
+                    <span className="w-2/3 text-sm text-foreground font-medium">{(product as any).brand?.name || brandCompatibility}</span>
                   </div>
                   <div className="flex gap-4">
-                    <span className="w-1/3 text-sm text-gray-500">Case Material</span>
-                    <span className="w-2/3 text-sm text-gray-900 font-medium">{caseMaterial}</span>
+                    <span className="w-1/3 text-sm text-muted-foreground">Case Material</span>
+                    <span className="w-2/3 text-sm text-foreground font-medium">{caseMaterial}</span>
                   </div>
                   <div className="flex gap-4">
-                    <span className="w-1/3 text-sm text-gray-500">Compatibility by Model</span>
-                    <span className="w-2/3 text-sm text-gray-900 font-medium">{compatibilityByModel}</span>
+                    <span className="w-1/3 text-sm text-muted-foreground">Compatibility by Model</span>
+                    <span className="w-2/3 text-sm text-foreground font-medium">{compatibilityByModel}</span>
                   </div>
                   <div className="flex gap-4">
-                    <span className="w-1/3 text-sm text-gray-500">Shipped From</span>
-                    <span className="w-2/3 text-sm text-gray-900 font-medium">{location}</span>
+                    <span className="w-1/3 text-sm text-muted-foreground">Shipped From</span>
+                    <span className="w-2/3 text-sm text-foreground font-medium">{location}</span>
                   </div>
                 </div>
 
-                <h2 className="text-lg font-medium text-gray-900 mb-4 pt-6 border-t border-gray-100">Description</h2>
-                <div className="prose prose-sm sm:prose-base prose-primary max-w-none text-gray-700">
+                <h2 className="text-lg font-medium text-foreground mb-4 pt-6 border-t border-border">Description</h2>
+                <div className="prose prose-sm sm:prose-base prose-primary max-w-none text-foreground">
                   <p>{product.description}</p>
                   <p>This premium product offers outstanding features, crafted with high-quality materials to ensure durability and performance. It seamlessly integrates into your daily life, providing a superior user experience.</p>
                 </div>
               </>
             ) : (
               <div>
-                <h2 className="text-lg font-medium text-gray-900 mb-6">Customer Reviews</h2>
+                <h2 className="text-lg font-medium text-foreground mb-6">Customer Reviews</h2>
                 
                 {/* Aggregate Rating */}
-                <div className="flex items-center gap-8 mb-8 pb-8 border-b border-gray-100">
+                <div className="flex items-center gap-8 mb-8 pb-8 border-b border-border">
                   <div className="text-center">
-                    <p className="text-5xl font-bold text-gray-900">{avgRating.toFixed(1)}</p>
+                    <p className="text-5xl font-bold text-foreground">{avgRating.toFixed(1)}</p>
                     <div className="flex text-yellow-400 justify-center my-2">
                       {[1,2,3,4,5].map(i => (
                         <Star key={i} size={20} fill={i <= Math.round(avgRating) ? "currentColor" : "none"} stroke={i <= Math.round(avgRating) ? "none" : "currentColor"} />
                       ))}
                     </div>
-                    <p className="text-sm text-gray-500">{totalReviews} Ratings</p>
+                    <p className="text-sm text-muted-foreground">{totalReviews} Ratings</p>
                   </div>
                 </div>
 
                 {/* Write a Review Form */}
-                <div id="review-form" className="mb-10 bg-gray-50 p-6 rounded-xl border border-gray-100">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                <div id="review-form" className="mb-10 bg-muted p-6 rounded-xl border border-border">
+                  <h3 className="text-lg font-medium text-foreground mb-4">
                     {editingReviewId ? 'Edit Your Review' : 'Write a Review'}
                   </h3>
                   
                   {!user ? (
-                    <div className="text-center py-6 bg-white rounded-lg border border-gray-200">
-                      <p className="text-gray-600 mb-4">You must be logged in to leave a review.</p>
+                    <div className="text-center py-6 bg-white rounded-lg border border-border">
+                      <p className="text-muted-foreground mb-4">You must be logged in to leave a review.</p>
                       <Link href={`/login?redirect=/shop/${slug}`} className="px-6 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700">
                         Login Now
                       </Link>
                     </div>
                   ) : reviews.some(r => r.userId === user?.id) && !editingReviewId ? (
-                    <div className="text-center py-6 bg-white rounded-lg border border-gray-200">
-                      <p className="text-gray-600">You have already reviewed this product.</p>
+                    <div className="text-center py-6 bg-white rounded-lg border border-border">
+                      <p className="text-muted-foreground">You have already reviewed this product.</p>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmitReview} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Rating</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Your Rating</label>
                         <div className="flex gap-2">
                           {[1,2,3,4,5].map(star => (
                             <button 
                               type="button" 
                               key={star} 
                               onClick={() => setReviewForm({ ...reviewForm, rating: star })}
-                              className={`p-1 transition-colors ${star <= reviewForm.rating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'}`}
+                              className={`p-1 transition-colors ${star <= reviewForm.rating ? 'text-yellow-400' : 'text-muted-foreground hover:text-yellow-300'}`}
                             >
                               <Star size={28} fill="currentColor" stroke="none" />
                             </button>
@@ -542,21 +542,21 @@ export default function ProductDetailPage() {
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Review</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Your Review</label>
                         <textarea 
                           required
                           rows={4}
                           value={reviewForm.comment}
                           onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                          className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
                           placeholder="Tell others what you think about this product..."
                         ></textarea>
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Add Photo (Optional)</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Add Photo (Optional)</label>
                         <div className="flex items-center gap-4">
-                          <label className="cursor-pointer flex items-center justify-center w-16 h-16 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors text-gray-500">
+                          <label className="cursor-pointer flex items-center justify-center w-16 h-16 bg-white border-2 border-dashed border-border rounded-lg hover:border-primary-500 transition-colors text-muted-foreground">
                             <ImageIcon size={24} />
                             <input 
                               type="file" 
@@ -567,7 +567,7 @@ export default function ProductDetailPage() {
                             />
                           </label>
                           {reviewForm.imageFile && (
-                            <span className="text-sm text-gray-600 font-medium">{reviewForm.imageFile.name}</span>
+                            <span className="text-sm text-muted-foreground font-medium">{reviewForm.imageFile.name}</span>
                           )}
                         </div>
                       </div>
@@ -577,7 +577,7 @@ export default function ProductDetailPage() {
                           <button 
                             type="button"
                             onClick={() => { setEditingReviewId(null); setReviewForm({ rating: 5, comment: '', imageFile: null }); }}
-                            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                            className="px-6 py-2 border border-border text-foreground rounded-lg hover:bg-muted font-medium"
                           >
                             Cancel
                           </button>
@@ -597,7 +597,7 @@ export default function ProductDetailPage() {
                 {/* Reviews List */}
                 <div className="space-y-6">
                   {reviews.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No reviews yet. Be the first to review this product!</p>
+                    <p className="text-center text-muted-foreground py-8">No reviews yet. Be the first to review this product!</p>
                   ) : (
                     reviews.map((review) => (
                       <div key={review.id} className="border-b border-gray-50 pb-6">
@@ -607,36 +607,36 @@ export default function ProductDetailPage() {
                               <Star key={i} size={14} fill={i <= review.rating ? "currentColor" : "none"} stroke={i <= review.rating ? "none" : "currentColor"} />
                             ))}
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-muted-foreground">
                             {new Date(review.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                         
                         <div className="flex justify-between items-start">
-                          <p className="text-sm text-gray-600 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             by {review.user?.name || 'User'} 
-                            {review.verifiedPurchase && <span className="text-green-600 text-xs font-medium ml-2">✓ Verified Purchase</span>}
+                            {review.verifiedPurchase && <span className="text-success-text text-xs font-medium ml-2">✓ Verified Purchase</span>}
                           </p>
                           
                           {/* Edit / Delete Options (Only for the author) */}
                           {user && user.id === review.userId && (
                             <div className="flex gap-3">
-                              <button onClick={() => startEdit(review)} className="text-gray-400 hover:text-primary-600 transition-colors" title="Edit">
+                              <button onClick={() => startEdit(review)} className="text-muted-foreground hover:text-primary/90 transition-colors" title="Edit">
                                 <Edit2 size={14} />
                               </button>
-                              <button onClick={() => handleDeleteReview(review.id)} className="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                              <button onClick={() => handleDeleteReview(review.id)} className="text-muted-foreground hover:text-destructive transition-colors" title="Delete">
                                 <Trash2 size={14} />
                               </button>
                             </div>
                           )}
                         </div>
 
-                        <p className="text-gray-800 text-sm whitespace-pre-wrap">{review.comment}</p>
+                        <p className="text-foreground text-sm whitespace-pre-wrap">{review.comment}</p>
                         
                         {review.images && review.images.length > 0 && (
                           <div className="flex gap-2 mt-3">
                             {review.images.map((img: string, idx: number) => (
-                              <img key={idx} src={img} alt="Review attachment" className="w-20 h-20 object-cover rounded-md border border-gray-200" />
+                              <img key={idx} src={img} alt="Review attachment" className="w-20 h-20 object-cover rounded-md border border-border" />
                             ))}
                           </div>
                         )}

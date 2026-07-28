@@ -189,7 +189,7 @@ export default function AdminOffersPage() {
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="w-full text-left text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-muted border-b">
             <tr>
               <th className="p-4 font-semibold">Name</th>
               <th className="p-4 font-semibold">Type</th>
@@ -208,14 +208,14 @@ export default function AdminOffersPage() {
                   {offer.discountValue}{offer.discountType === 'PERCENTAGE' ? '%' : ' ৳'}
                   {offer.isFreeDelivery && ' + Free Delivery'}
                 </td>
-                <td className="p-4 text-gray-500">
+                <td className="p-4 text-muted-foreground">
                   {offer.type === 'AMOUNT_BASED' 
                     ? `Min: ৳${offer.minAmount || 0} (Pri: ${offer.priority})`
                     : `Plan: ${offer.plan?.name || 'N/A'}`
                   }
                 </td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${offer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  <span className={`px-2 py-1 text-xs rounded-full ${offer.isActive ? 'bg-success-bg text-green-800' : 'bg-danger-bg text-red-800'}`}>
                     {offer.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>
@@ -227,13 +227,13 @@ export default function AdminOffersPage() {
             ))}
             {filteredOffers.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-4 text-center text-gray-500">No offers found.</td>
+                <td colSpan={6} className="p-4 text-center text-muted-foreground">No offers found.</td>
               </tr>
             )}
           </tbody>
         </table>
         {totalPages > 1 && (
-          <div className="flex justify-between items-center p-4 border-t bg-gray-50">
+          <div className="flex justify-between items-center p-4 border-t bg-muted">
             <Button
               variant="outline"
               size="sm"
@@ -258,7 +258,7 @@ export default function AdminOffersPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg relative">
-            <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="absolute top-4 right-4"><X className="w-5 h-5 text-gray-400" /></button>
+            <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="absolute top-4 right-4"><X className="w-5 h-5 text-muted-foreground" /></button>
             <h2 className="text-2xl font-bold mb-4">{editOfferId ? "Edit Offer" : "Create Offer"}</h2>
             
             <div className="flex gap-4 mb-6">

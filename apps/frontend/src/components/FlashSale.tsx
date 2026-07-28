@@ -52,10 +52,10 @@ export const FlashSale = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse flex space-x-4">
           <div className="flex-1 space-y-4 py-1">
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-muted/80 rounded w-3/4"></div>
             <div className="space-y-2">
-              <div className="h-4 bg-gray-200 rounded"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-4 bg-muted/80 rounded"></div>
+              <div className="h-4 bg-muted/80 rounded w-5/6"></div>
             </div>
           </div>
         </div>
@@ -72,16 +72,16 @@ export const FlashSale = () => {
       <div className="container mx-auto px-4">
         
         {/* Header Section */}
-        <div className="mb-6 pb-2 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+        <div className="mb-6 pb-2 border-b border-border">
+          <h2 className="text-2xl font-bold text-foreground mb-3">
             Flash Sale
           </h2>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-6">
-              <div className="text-rose-500 font-medium">
+              <div className="text-destructive font-medium">
                 On Sale Now
               </div>
-              <div className="flex items-center gap-2 text-gray-700 text-sm">
+              <div className="flex items-center gap-2 text-foreground text-sm">
                 <span>Ending in:</span>
                 <span className="flex items-center gap-1 font-semibold">
                   <span className="bg-rose-500 text-white px-2 py-0.5 rounded text-sm">{pad(timeLeft.hours)}</span>:
@@ -93,7 +93,7 @@ export const FlashSale = () => {
             
             <Link 
               href="/flash-sale" 
-              className="text-primary-600 font-medium hover:text-primary-700 border border-primary-600 px-4 py-1.5 rounded-sm hover:bg-primary-50 transition-colors uppercase text-sm"
+              className="text-primary/90 font-medium hover:text-primary-700 border border-primary-600 px-4 py-1.5 rounded-sm hover:bg-primary/10 transition-colors uppercase text-sm"
             >
               Shop all product
             </Link>

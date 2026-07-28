@@ -171,7 +171,7 @@ function ShopContent() {
               placeholder="Search products..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
           
@@ -230,21 +230,21 @@ function ShopContent() {
         <main className="flex-1">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 capitalize">
+              <h1 className="text-2xl font-bold text-foreground capitalize">
                 {categorySlug ? categorySlug.replace(/-/g, ' ') : 'All Products'}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {totalProducts} {totalProducts === 1 ? 'product' : 'products'} found
               </p>
             </div>
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600 hidden sm:inline">Show:</span>
+                <span className="text-muted-foreground hidden sm:inline">Show:</span>
                 <select 
                   value={limit}
                   onChange={(e) => setLimit(Number(e.target.value))}
-                  className="border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                  className="border border-border rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                 >
                   <option value={16}>16 per page</option>
                   <option value={36}>36 per page</option>
@@ -256,11 +256,11 @@ function ShopContent() {
               </div>
 
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-gray-600 hidden sm:inline">Sort By:</span>
+                <span className="text-muted-foreground hidden sm:inline">Sort By:</span>
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                  className="border border-border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                 >
                   <option value="best-match">Best Match</option>
                   <option value="price-asc">Price: Low to High</option>
@@ -268,17 +268,17 @@ function ShopContent() {
                   <option value="newest">Newest Arrivals</option>
                 </select>
               </div>
-              <div className="hidden sm:flex items-center gap-1 border border-gray-200 rounded-md p-0.5">
+              <div className="hidden sm:flex items-center gap-1 border border-border rounded-md p-0.5">
                 <button 
                   onClick={() => setViewMode('grid')}
-                  className={`p-1 rounded ${viewMode === 'grid' ? 'bg-gray-100 text-gray-800' : 'hover:bg-gray-50 text-gray-400'}`}
+                  className={`p-1 rounded ${viewMode === 'grid' ? 'bg-muted text-foreground' : 'hover:bg-muted text-muted-foreground'}`}
                   title="Grid View"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 </button>
                 <button 
                   onClick={() => setViewMode('list')}
-                  className={`p-1 rounded ${viewMode === 'list' ? 'bg-gray-100 text-gray-800' : 'hover:bg-gray-50 text-gray-400'}`}
+                  className={`p-1 rounded ${viewMode === 'list' ? 'bg-muted text-foreground' : 'hover:bg-muted text-muted-foreground'}`}
                   title="List View"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -320,16 +320,16 @@ function ShopContent() {
 
             return (
               <div className="flex flex-wrap items-center gap-2 mb-6 text-[13px]">
-                <span className="text-gray-600 font-medium mr-1">Filtered By:</span>
+                <span className="text-muted-foreground font-medium mr-1">Filtered By:</span>
                 {activeTags.map(tag => (
-                  <span key={tag.id} className="inline-flex items-center gap-1.5 bg-white border border-gray-200 px-2.5 py-1.5 rounded-full text-gray-700 shadow-sm transition-all hover:border-gray-300">
+                  <span key={tag.id} className="inline-flex items-center gap-1.5 bg-white border border-border px-2.5 py-1.5 rounded-full text-foreground shadow-sm transition-all hover:border-border">
                     {tag.label}
-                    <button onClick={tag.onRemove} className="text-gray-400 hover:text-red-500 focus:outline-none flex items-center justify-center">
+                    <button onClick={tag.onRemove} className="text-muted-foreground hover:text-destructive focus:outline-none flex items-center justify-center">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     </button>
                   </span>
                 ))}
-                <button onClick={clearAllFilters} className="text-primary-600 hover:text-primary-700 font-medium ml-2 uppercase text-xs tracking-wide">
+                <button onClick={clearAllFilters} className="text-primary/90 hover:text-primary-700 font-medium ml-2 uppercase text-xs tracking-wide">
                   Clear All
                 </button>
               </div>
@@ -339,7 +339,7 @@ function ShopContent() {
           {loading ? (
             <div className={viewMode === 'grid' ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-6"}>
               {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                <div key={i} className={`animate-pulse bg-gray-200 rounded-xl ${viewMode === 'grid' ? 'h-80' : 'h-48'}`}></div>
+                <div key={i} className={`animate-pulse bg-muted/80 rounded-xl ${viewMode === 'grid' ? 'h-80' : 'h-48'}`}></div>
               ))}
             </div>
           ) : products.length > 0 ? (
@@ -349,9 +349,9 @@ function ShopContent() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-gray-50 rounded-xl border border-gray-100">
-              <h3 className="text-xl font-medium text-gray-900">No products found</h3>
-              <p className="mt-2 text-gray-500">Try adjusting your filters or search query.</p>
+            <div className="text-center py-20 bg-muted rounded-xl border border-border">
+              <h3 className="text-xl font-medium text-foreground">No products found</h3>
+              <p className="mt-2 text-muted-foreground">Try adjusting your filters or search query.</p>
             </div>
           )}
 

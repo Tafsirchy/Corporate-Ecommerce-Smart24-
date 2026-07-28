@@ -41,18 +41,18 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
       )}
 
       {/* Content */}
-      <div className={`relative z-20 flex flex-col h-full ${isLarge ? 'text-white' : 'text-gray-900'} w-full`}>
+      <div className={`relative z-20 flex flex-col h-full ${isLarge ? 'text-white' : 'text-foreground'} w-full`}>
         <h3 className={`font-bold tracking-tight leading-none mb-1 ${isLarge ? 'text-3xl md:text-4xl lg:text-5xl max-w-[80%]' : 'text-xl lg:text-2xl uppercase max-w-[70%]'}`}>
           {title}
         </h3>
-        <p className={`font-medium mb-auto mt-1 ${isLarge ? 'text-xs md:text-sm text-gray-200 tracking-wider uppercase mb-3 order-first' : 'text-xs text-gray-600'}`}>
+        <p className={`font-medium mb-auto mt-1 ${isLarge ? 'text-xs md:text-sm text-gray-200 tracking-wider uppercase mb-3 order-first' : 'text-xs text-muted-foreground'}`}>
           {subtitle}
         </p>
 
         <div className={`mt-auto pt-6`}>
           <span className={`inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold transition-colors ${isLarge
-            ? 'bg-white text-black hover:bg-gray-100'
-            : 'bg-transparent border border-gray-900 text-gray-900 group-hover:bg-gray-900 group-hover:text-white'
+            ? 'bg-white text-black hover:bg-muted'
+            : 'bg-transparent border border-gray-900 text-foreground group-hover:bg-primary group-hover:text-white'
             }`}>
             {buttonText}
           </span>
@@ -120,18 +120,18 @@ export const PremiumBentoCategories = () => {
   });
 
   return (
-    <section id="categories" className="py-8 md:py-12 bg-gray-50">
+    <section id="categories" className="py-8 md:py-12 bg-muted">
       <div className="container mx-auto px-4">
 
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-6">
           <div>
-            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight uppercase">
+            <h2 className="text-3xl font-extrabold text-foreground tracking-tight uppercase">
               Corporate Collections
             </h2>
-            <p className="text-gray-500 mt-1 font-medium text-sm">Curated office goods & supplies for the modern workplace</p>
+            <p className="text-muted-foreground mt-1 font-medium text-sm">Curated office goods & supplies for the modern workplace</p>
           </div>
-          <Link href="/shop" className="hidden md:inline-flex items-center justify-center px-5 py-2 border-2 border-gray-900 rounded-full text-sm font-bold text-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
+          <Link href="/shop" className="hidden md:inline-flex items-center justify-center px-5 py-2 border-2 border-gray-900 rounded-full text-sm font-bold text-foreground hover:bg-primary hover:text-white transition-colors">
             View All
           </Link>
         </div>
@@ -142,7 +142,7 @@ export const PremiumBentoCategories = () => {
             layoutConfig.map(config => (
               <div 
                 key={config.position} 
-                className={`bg-gray-200 animate-pulse rounded-[24px] min-h-[180px] ${config.className}`}
+                className={`bg-muted/80 animate-pulse rounded-[24px] min-h-[180px] ${config.className}`}
               ></div>
             ))
           ) : (

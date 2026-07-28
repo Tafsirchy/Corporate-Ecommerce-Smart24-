@@ -291,7 +291,7 @@ function BuilderContent() {
         )}
       </div>
 
-      <div className="bg-gray-50 p-6 rounded-lg h-fit border sticky top-24">
+      <div className="bg-muted p-6 rounded-lg h-fit border sticky top-24">
         <h2 className="text-xl font-bold mb-4">Your Package</h2>
         {selectedItems.length === 0 ? (
           <p className="text-muted-foreground text-sm mb-4">No items added yet.</p>
@@ -311,7 +311,7 @@ function BuilderContent() {
                     onChange={(e) => updateQuantity(item.productId, parseInt(e.target.value))}
                     min={1}
                   />
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500" onClick={() => removeItem(item.productId)}>✕</Button>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => removeItem(item.productId)}>✕</Button>
                 </div>
               </div>
             ))}
@@ -321,7 +321,7 @@ function BuilderContent() {
                 <span>৳{subtotalPrice}</span>
               </div>
               {eligibleOffer && (
-                <div className="flex justify-between text-green-600 mb-2">
+                <div className="flex justify-between text-success-text mb-2">
                   <span>
                     Discount ({eligibleOffer.discountType === 'PERCENTAGE' ? `${eligibleOffer.discountValue}%` : `৳${eligibleOffer.discountValue}`}):
                   </span>
@@ -329,12 +329,12 @@ function BuilderContent() {
                 </div>
               )}
               {eligibleOffer?.isFreeDelivery && (
-                <div className="flex justify-between text-green-600 text-sm mb-2 font-normal">
+                <div className="flex justify-between text-success-text text-sm mb-2 font-normal">
                   <span>+ Free Delivery</span>
                 </div>
               )}
               {nextOffer && (
-                <div className="text-sm text-blue-600 font-normal mb-2 bg-blue-50 p-2 rounded">
+                <div className="text-sm text-info-text font-normal mb-2 bg-info-bg p-2 rounded">
                   Add ৳{nextOffer.minAmount - subtotalPrice} more to get {nextOffer.discountType === 'PERCENTAGE' ? `${nextOffer.discountValue}%` : `৳${nextOffer.discountValue}`} OFF{nextOffer.isFreeDelivery && ' + Free Delivery'}!
                 </div>
               )}

@@ -176,7 +176,7 @@ export default function Header() {
         <div className={`w-full py-1.5 relative z-20 transition-all duration-300 ${
           isTransparent 
             ? 'bg-transparent border-transparent' 
-            : 'bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm'
+            : 'bg-white/90 backdrop-blur-md border-b border-border shadow-sm'
         }`}>
           <div className="container mx-auto px-4 flex items-center justify-center gap-4">
             <div className="flex items-center w-full max-w-2xl gap-3">
@@ -184,7 +184,7 @@ export default function Header() {
               {/* Search Container */}
               <div ref={searchContainerRef} className="relative flex-1">
                 <form onSubmit={handleSearchSubmit} className="relative flex items-center shadow-sm">
-                  <Search className="absolute left-3.5 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3.5 w-4 h-4 text-muted-foreground" />
                   <input 
                     id="search-input"
                     type="text" 
@@ -193,11 +193,11 @@ export default function Header() {
                     onFocus={() => setIsSearchFocused(true)}
                     onKeyDown={handleKeyDown}
                     placeholder="Search for any product and similar products..." 
-                    className="w-full pl-10 pr-24 py-2 text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-white rounded"
+                    className="w-full pl-10 pr-24 py-2 text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-white rounded"
                     autoComplete="off"
                   />
                   {searchQuery && (
-                    <button type="button" onClick={clearSearch} className="absolute right-24 p-1 text-gray-400 hover:text-gray-600 transition">
+                    <button type="button" onClick={clearSearch} className="absolute right-24 p-1 text-muted-foreground hover:text-muted-foreground transition">
                       <X className="w-4 h-4" />
                     </button>
                   )}
@@ -208,9 +208,9 @@ export default function Header() {
 
                 {/* Live Suggestions Dropdown */}
                 {isSearchFocused && searchQuery.trim().length >= 2 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-50">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-border overflow-hidden z-50">
                     {isSearching ? (
-                      <div className="flex items-center justify-center py-8 text-gray-500">
+                      <div className="flex items-center justify-center py-8 text-muted-foreground">
                         <Loader2 className="w-5 h-5 animate-spin mr-2" />
                         <span>Searching...</span>
                       </div>
@@ -222,21 +222,21 @@ export default function Header() {
                               href={`/shop/${product.slug}`}
                               onClick={() => setIsSearchFocused(false)}
                               className={`flex items-center gap-3 p-3 transition border-b border-gray-50 last:border-0 ${
-                                index === selectedIndex ? 'bg-primary-50' : 'hover:bg-gray-50'
+                                index === selectedIndex ? 'bg-primary-50' : 'hover:bg-muted'
                               }`}
                             >
-                              <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                              <div className="w-10 h-10 bg-muted rounded overflow-hidden flex-shrink-0">
                                 {product.images?.[0] ? (
                                   <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
                                 ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-400">No img</div>
+                                  <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground">No img</div>
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                                <p className="text-xs text-gray-500 truncate">{product.category?.name || 'Uncategorized'}</p>
+                                <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
+                                <p className="text-xs text-muted-foreground truncate">{product.category?.name || 'Uncategorized'}</p>
                               </div>
-                              <div className="text-primary-600 font-semibold text-sm">
+                              <div className="text-primary/90 font-semibold text-sm">
                                 ৳{product.price.toLocaleString()}
                               </div>
                             </Link>
@@ -246,14 +246,14 @@ export default function Header() {
                           <Link 
                             href={`/search?q=${encodeURIComponent(searchQuery.trim())}`}
                             onClick={() => setIsSearchFocused(false)}
-                            className="block text-center py-2 text-sm text-primary-600 font-medium hover:bg-primary-50 transition bg-gray-50"
+                            className="block text-center py-2 text-sm text-primary/90 font-medium hover:bg-primary/10 transition bg-muted"
                           >
                             View all results for "{searchQuery}"
                           </Link>
                         </li>
                       </ul>
                     ) : (
-                      <div className="py-8 text-center text-gray-500">
+                      <div className="py-8 text-center text-muted-foreground">
                         <p>No products found for "{searchQuery}"</p>
                       </div>
                     )}
@@ -262,7 +262,7 @@ export default function Header() {
               </div>
 
               <div className="flex items-center gap-4 ml-2">
-                <Link href="/wishlist" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-gray-700 hover:text-primary-600'} transition-colors flex-shrink-0 relative`}>
+                <Link href="/wishlist" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative`}>
                   <Heart className="w-5 h-5" />
                   {wishlistItems.length > 0 && (
                     <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
@@ -270,7 +270,7 @@ export default function Header() {
                     </span>
                   )}
                 </Link>
-                <Link href="/cart" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-gray-700 hover:text-primary-600'} transition-colors flex-shrink-0 relative`}>
+                <Link href="/cart" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative`}>
                   <ShoppingCart className="w-5 h-5" />
                   {totalItems > 0 && (
                     <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
@@ -296,7 +296,7 @@ export default function Header() {
         >
           <div className="container mx-auto px-4 py-2 flex justify-between items-center">
             <div className="flex items-center gap-8">
-              <a href="/" className={`text-xl font-bold tracking-tight ${isTransparent ? 'text-white' : 'text-gray-900'}`}>Smart24</a>
+              <a href="/" className={`text-xl font-bold tracking-tight ${isTransparent ? 'text-white' : 'text-foreground'}`}>Smart24</a>
               {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>
             <HeaderNav isTransparent={isTransparent} />

@@ -97,17 +97,17 @@ export default function AdminFaqs() {
   };
 
   if (loading) {
-    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary-600" /></div>;
+    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary/90" /></div>;
   }
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Manage FAQs</h1>
+        <h1 className="text-2xl font-bold text-foreground">Manage FAQs</h1>
         
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search FAQs..."
@@ -116,12 +116,12 @@ export default function AdminFaqs() {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+              className="w-full pl-9 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
             />
           </div>
           <button 
             onClick={() => setIsAdding(true)}
-            className="flex flex-shrink-0 items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium"
+            className="flex flex-shrink-0 items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-secondary transition text-sm font-medium"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add FAQ
@@ -130,7 +130,7 @@ export default function AdminFaqs() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-border mb-6">
           <h2 className="text-lg font-bold mb-4">Add New FAQ</h2>
           <form onSubmit={handleAddSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -156,30 +156,30 @@ export default function AdminFaqs() {
               <label htmlFor="isActive" className="text-sm font-medium">Active</label>
             </div>
             <div className="flex gap-2 justify-end">
-              <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded">Cancel</button>
+              <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-sm bg-muted hover:bg-muted/80 rounded">Cancel</button>
               <button type="submit" className="px-4 py-2 text-sm bg-primary-600 text-white hover:bg-primary-700 rounded">Save</button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+      <div className="bg-white rounded-lg shadow-sm border border-border">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="p-4 text-sm font-semibold text-gray-600 w-24">Order</th>
-                <th className="p-4 text-sm font-semibold text-gray-600 w-32">Category</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Q & A</th>
-                <th className="p-4 text-sm font-semibold text-gray-600 w-24">Status</th>
-                <th className="p-4 text-sm font-semibold text-gray-600 text-right w-32">Actions</th>
+              <tr className="bg-muted border-b border-border">
+                <th className="p-4 text-sm font-semibold text-muted-foreground w-24">Order</th>
+                <th className="p-4 text-sm font-semibold text-muted-foreground w-32">Category</th>
+                <th className="p-4 text-sm font-semibold text-muted-foreground">Q & A</th>
+                <th className="p-4 text-sm font-semibold text-muted-foreground w-24">Status</th>
+                <th className="p-4 text-sm font-semibold text-muted-foreground text-right w-32">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {faqs.map(faq => {
                 const editing = isEditing === faq.id;
                 return (
-                  <tr key={faq.id} className="hover:bg-gray-50">
+                  <tr key={faq.id} className="hover:bg-muted">
                     <td className="p-4">
                       {editing ? (
                         <input type="number" value={editForm.order} onChange={e => setEditForm({...editForm, order: Number(e.target.value)})} className="w-16 border rounded p-1 text-sm" />
@@ -191,7 +191,7 @@ export default function AdminFaqs() {
                       {editing ? (
                         <input type="text" value={editForm.category} onChange={e => setEditForm({...editForm, category: e.target.value})} className="w-full border rounded p-1 text-sm" />
                       ) : (
-                        <span className="inline-block px-2 py-1 bg-gray-100 text-xs rounded-full font-medium">{faq.category}</span>
+                        <span className="inline-block px-2 py-1 bg-muted text-xs rounded-full font-medium">{faq.category}</span>
                       )}
                     </td>
                     <td className="p-4">
@@ -202,11 +202,11 @@ export default function AdminFaqs() {
                         </div>
                       ) : (
                         <div>
-                          <p className="font-semibold text-sm text-gray-900">{faq.question}</p>
-                          <p className="text-sm text-gray-500 line-clamp-2 mt-1">{faq.answer}</p>
+                          <p className="font-semibold text-sm text-foreground">{faq.question}</p>
+                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{faq.answer}</p>
                           <div className="flex gap-4 mt-2 text-xs font-medium">
-                            <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded">👍 {faq.helpfulCount || 0} Helpful</span>
-                            <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded">👎 {faq.notHelpfulCount || 0} Not Helpful</span>
+                            <span className="text-success-text bg-success-bg px-2 py-0.5 rounded">👍 {faq.helpfulCount || 0} Helpful</span>
+                            <span className="text-destructive bg-danger-bg px-2 py-0.5 rounded">👎 {faq.notHelpfulCount || 0} Not Helpful</span>
                           </div>
                         </div>
                       )}
@@ -215,19 +215,19 @@ export default function AdminFaqs() {
                       {editing ? (
                         <input type="checkbox" checked={editForm.isActive} onChange={e => setEditForm({...editForm, isActive: e.target.checked})} />
                       ) : (
-                        faq.isActive ? <span className="text-green-600 text-xs font-bold">ACTIVE</span> : <span className="text-red-600 text-xs font-bold">INACTIVE</span>
+                        faq.isActive ? <span className="text-success-text text-xs font-bold">ACTIVE</span> : <span className="text-destructive text-xs font-bold">INACTIVE</span>
                       )}
                     </td>
                     <td className="p-4 text-right">
                       {editing ? (
                         <div className="flex justify-end gap-2">
-                          <button onClick={() => handleEditSubmit(faq.id)} className="p-1.5 text-green-600 hover:bg-green-50 rounded"><Check className="w-4 h-4" /></button>
-                          <button onClick={() => setIsEditing(null)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded"><X className="w-4 h-4" /></button>
+                          <button onClick={() => handleEditSubmit(faq.id)} className="p-1.5 text-success-text hover:bg-success-bg rounded"><Check className="w-4 h-4" /></button>
+                          <button onClick={() => setIsEditing(null)} className="p-1.5 text-muted-foreground hover:bg-muted rounded"><X className="w-4 h-4" /></button>
                         </div>
                       ) : (
                         <div className="flex justify-end gap-2">
-                          <button onClick={() => { setIsEditing(faq.id); setEditForm(faq); }} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"><Edit2 className="w-4 h-4" /></button>
-                          <button onClick={() => handleDelete(faq.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => { setIsEditing(faq.id); setEditForm(faq); }} className="p-1.5 text-info-text hover:bg-info-bg rounded"><Edit2 className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(faq.id)} className="p-1.5 text-destructive hover:bg-danger-bg rounded"><Trash2 className="w-4 h-4" /></button>
                         </div>
                       )}
                     </td>
@@ -240,22 +240,22 @@ export default function AdminFaqs() {
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-gray-100 flex items-center justify-between bg-gray-50">
-            <span className="text-sm text-gray-600">
+          <div className="p-4 border-t border-border flex items-center justify-between bg-muted">
+            <span className="text-sm text-muted-foreground">
               Page <span className="font-semibold">{page}</span> of <span className="font-semibold">{totalPages}</span>
             </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg border border-gray-200 hover:bg-white disabled:opacity-50 transition-colors"
+                className="p-2 rounded-lg border border-border hover:bg-white disabled:opacity-50 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg border border-gray-200 hover:bg-white disabled:opacity-50 transition-colors"
+                className="p-2 rounded-lg border border-border hover:bg-white disabled:opacity-50 transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

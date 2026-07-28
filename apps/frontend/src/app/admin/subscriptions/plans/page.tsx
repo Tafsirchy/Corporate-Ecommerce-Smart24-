@@ -195,13 +195,13 @@ export default function AdminSubscriptionPlans() {
             <div key={plan.id} className="bg-white p-6 rounded-lg shadow-sm border flex flex-col">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-bold text-lg">{plan.name}</h3>
-                <span className={`text-xs px-2 py-1 rounded ${plan.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <span className={`text-xs px-2 py-1 rounded ${plan.isActive ? 'bg-success-bg text-success-text' : 'bg-danger-bg text-destructive'}`}>
                   {plan.isActive ? 'Active' : 'Inactive'}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 mb-4 flex-grow">{plan.description}</p>
+              <p className="text-sm text-muted-foreground mb-4 flex-grow">{plan.description}</p>
               
-              <div className="mb-4 bg-gray-50 p-3 rounded">
+              <div className="mb-4 bg-muted p-3 rounded">
                 <p className="text-xs font-semibold mb-2">Included Items:</p>
                 {plan.items && plan.items.length > 0 ? (
                   <ul className="text-xs space-y-1">
@@ -210,12 +210,12 @@ export default function AdminSubscriptionPlans() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs text-gray-400">No items specified</p>
+                  <p className="text-xs text-muted-foreground">No items specified</p>
                 )}
               </div>
 
               <div className="text-xl font-bold border-t pt-4">
-                ৳{plan.price} <span className="text-sm font-normal text-gray-500">/ month</span>
+                ৳{plan.price} <span className="text-sm font-normal text-muted-foreground">/ month</span>
               </div>
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
                 <Button variant="outline" size="sm" onClick={() => handleEdit(plan)}>
@@ -237,7 +237,7 @@ export default function AdminSubscriptionPlans() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-muted-foreground">
               <X className="w-5 h-5" />
             </button>
             <h2 className="text-2xl font-bold mb-6">{editingId ? "Edit Plan" : "Create New Fixed Plan"}</h2>
@@ -262,7 +262,7 @@ export default function AdminSubscriptionPlans() {
                 <label className="text-sm font-medium mb-2 block">Included Products</label>
                 
                 {selectedItems.length > 0 && (
-                  <div className="space-y-2 mb-4 bg-gray-50 p-4 rounded border">
+                  <div className="space-y-2 mb-4 bg-muted p-4 rounded border">
                     {selectedItems.map((item) => (
                       <div key={item.product.id} className="flex items-center justify-between bg-white p-2 rounded shadow-sm">
                         <span className="text-sm truncate w-1/2">{item.product.name}</span>
@@ -289,15 +289,15 @@ export default function AdminSubscriptionPlans() {
                     {filteredProducts.slice(0, 10).map((product: any) => (
                       <div 
                         key={product.id} 
-                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm flex justify-between items-center"
+                        className="p-2 hover:bg-muted cursor-pointer text-sm flex justify-between items-center"
                         onClick={() => handleAddItem(product)}
                       >
                         <span>{product.name}</span>
-                        <span className="text-xs text-gray-500">৳{product.price}</span>
+                        <span className="text-xs text-muted-foreground">৳{product.price}</span>
                       </div>
                     ))}
                     {filteredProducts.length === 0 && (
-                      <div className="p-2 text-sm text-gray-500">No products found</div>
+                      <div className="p-2 text-sm text-muted-foreground">No products found</div>
                     )}
                   </div>
                 )}

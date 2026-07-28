@@ -135,7 +135,7 @@ export default function AdminCorporateCollections() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-2">Corporate Collections</h1>
-      <p className="text-gray-500 mb-8">Manage the 8 dynamic slots in the home page bento grid.</p>
+      <p className="text-muted-foreground mb-8">Manage the 8 dynamic slots in the home page bento grid.</p>
       
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {isLoadingPage ? (
@@ -148,20 +148,20 @@ export default function AdminCorporateCollections() {
           const isLarge = pos === 1; // Position 1 is the large 2x2 card in our layout
           
           return (
-            <div key={pos} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div key={pos} className="bg-white p-6 rounded-xl shadow-sm border border-border">
               <div className="flex justify-between items-center mb-4 pb-3 border-b">
                 <h2 className="text-lg font-bold flex items-center gap-2">
                   <span className="bg-primary-100 text-primary-800 w-8 h-8 flex items-center justify-center rounded-full text-sm">
                     {pos}
                   </span>
-                  Slot {pos} {isLarge && <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">Large Card (2x2)</span>}
+                  Slot {pos} {isLarge && <span className="text-xs bg-muted px-2 py-1 rounded text-muted-foreground">Large Card (2x2)</span>}
                 </h2>
                 <div className="flex items-center gap-3">
                   {data.id && (
                     <button 
                       type="button"
                       onClick={() => toggleStatus(pos)}
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${data.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${data.isActive ? 'bg-success-bg text-success-text' : 'bg-danger-bg text-destructive'}`}
                     >
                       {data.isActive ? 'Active' : 'Inactive'}
                     </button>
@@ -171,7 +171,7 @@ export default function AdminCorporateCollections() {
               
               <form onSubmit={(e) => handleSubmit(e, pos)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Title</label>
                   <input 
                     type="text" required value={data.title || ''} 
                     onChange={e => updateLocalField(pos, 'title', e.target.value)}
@@ -181,7 +181,7 @@ export default function AdminCorporateCollections() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Subtitle</label>
                   <input 
                     type="text" required value={data.subtitle || ''} 
                     onChange={e => updateLocalField(pos, 'subtitle', e.target.value)}
@@ -191,7 +191,7 @@ export default function AdminCorporateCollections() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Button Text</label>
                   <input 
                     type="text" required value={data.buttonText || ''} 
                     onChange={e => updateLocalField(pos, 'buttonText', e.target.value)}
@@ -201,7 +201,7 @@ export default function AdminCorporateCollections() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Target URL</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Target URL</label>
                   <input 
                     type="text" required value={data.targetUrl || ''} 
                     onChange={e => updateLocalField(pos, 'targetUrl', e.target.value)}
@@ -211,12 +211,12 @@ export default function AdminCorporateCollections() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Image</label>
                   <div className="flex items-center gap-4">
                     <input 
                       type="file" accept="image/*" 
                       onChange={(e) => handleImageUpload(e, pos)} disabled={isUploading}
-                      className="block w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                      className="block w-full text-xs text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                     />
                     {data.imageUrl && (
                       <img src={data.imageUrl} alt="Preview" className="h-12 w-12 object-cover rounded border" />

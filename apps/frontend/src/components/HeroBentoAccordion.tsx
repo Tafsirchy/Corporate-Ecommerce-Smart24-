@@ -100,7 +100,7 @@ export function HeroBentoAccordion({ ads }: HeroBentoAccordionProps) {
                         </p>
                         <Link
                           href={ad.categoryUrl}
-                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-gray-900 bg-white/90 backdrop-blur-sm hover:bg-white transition-all shadow-lg"
+                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-foreground bg-white/90 backdrop-blur-sm hover:bg-white transition-all shadow-lg"
                         >
                           Shop Now
                           <ArrowRight className="ml-2 h-5 w-5" />

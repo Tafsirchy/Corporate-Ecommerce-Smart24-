@@ -74,17 +74,17 @@ export default function FlashSalePage() {
   const pad = (num: number) => num.toString().padStart(2, '0');
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8">
+    <div className="bg-muted min-h-screen py-8">
       <div className="container mx-auto px-4">
         
         {/* Page Header */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8 flex flex-col md:flex-row items-center justify-between border-l-4 border-rose-500">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Flash Sale</h1>
-            <p className="text-gray-500">Grab these exclusive deals before time runs out!</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Flash Sale</h1>
+            <p className="text-muted-foreground">Grab these exclusive deals before time runs out!</p>
           </div>
           
-          <div className="mt-4 md:mt-0 flex items-center gap-2 text-rose-500 font-bold bg-rose-50 px-4 py-2 rounded-lg text-lg">
+          <div className="mt-4 md:mt-0 flex items-center gap-2 text-destructive font-bold bg-danger-bg px-4 py-2 rounded-lg text-lg">
             <Timer size={24} />
             <span>Ending in:</span>
             <span className="flex items-center gap-1 text-xl">
@@ -102,8 +102,8 @@ export default function FlashSalePage() {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-700">No Flash Sale deals available right now.</h2>
-            <p className="text-gray-500 mt-2">Check back later for exciting offers!</p>
+            <h2 className="text-xl font-semibold text-foreground">No Flash Sale deals available right now.</h2>
+            <p className="text-muted-foreground mt-2">Check back later for exciting offers!</p>
           </div>
         ) : (
           <>
@@ -122,7 +122,7 @@ export default function FlashSalePage() {
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoading}
-                  className="px-16 py-3 border border-primary-600 text-primary-600 font-semibold rounded hover:bg-primary-50 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto min-w-[300px]"
+                  className="px-16 py-3 border border-primary-600 text-primary/90 font-semibold rounded hover:bg-primary/10 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto min-w-[300px]"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">

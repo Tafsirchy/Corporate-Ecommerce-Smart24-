@@ -17,7 +17,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-gray-500 font-semibold animate-pulse">Loading Account...</div>
+        <div className="text-muted-foreground font-semibold animate-pulse">Loading Account...</div>
       </div>
     );
   }

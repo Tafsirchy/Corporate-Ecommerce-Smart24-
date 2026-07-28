@@ -64,16 +64,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-muted">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white shadow-sm border-r border-gray-100 flex-shrink-0 h-screen sticky top-0 overflow-y-auto">
+      <aside className="w-full md:w-64 bg-white shadow-sm border-r border-border flex-shrink-0 h-screen sticky top-0 overflow-y-auto">
         <div className="p-6">
-          <h2 className="text-xl font-bold text-gray-900">Admin Panel</h2>
+          <h2 className="text-xl font-bold text-foreground">Admin Panel</h2>
         </div>
         <nav className="px-4 pb-6 space-y-6">
           {navGroups.map((group) => (
             <div key={group.title}>
-              <h3 className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+              <h3 className="px-4 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                 {group.title}
               </h3>
               <div className="space-y-1">
@@ -86,7 +86,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition ${
                         isActive 
                           ? 'bg-black text-white shadow-sm' 
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
                       {item.name}

@@ -133,16 +133,16 @@ export default function CheckoutPage() {
 
     return (
       <div className="mb-4 animate-in fade-in slide-in-from-top-2">
-        <div className="p-4 bg-white border rounded-md shadow-sm border-gray-200">
+        <div className="p-4 bg-white border rounded-md shadow-sm border-border">
           <p className="text-sm font-medium mb-4">{instructions}</p>
 
           <div className="space-y-4">
             {availableOptions.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select your account</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Select your account</label>
                 <div className="space-y-2">
                   {availableOptions.map(opt => (
-                    <label key={opt.id} className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === opt.id ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
+                    <label key={opt.id} className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === opt.id ? 'border-primary-500 bg-primary-50' : 'hover:bg-muted'}`}>
                       <input
                         type="radio"
                         name={`savedPayment_${providerEnum}`}
@@ -151,12 +151,12 @@ export default function CheckoutPage() {
                           setSelectedSavedPayment(opt.id);
                           setPaymentAccountNumber(opt.accountNumber);
                         }}
-                        className="text-primary-600 focus:ring-primary-500"
+                        className="text-primary/90 focus:ring-primary-500"
                       />
-                      <span className="font-medium text-gray-800">{opt.accountNumber}</span>
+                      <span className="font-medium text-foreground">{opt.accountNumber}</span>
                     </label>
                   ))}
-                  <label className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === 'NEW' ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
+                  <label className={`flex items-center gap-2 p-2 border rounded cursor-pointer ${selectedSavedPayment === 'NEW' ? 'border-primary-500 bg-primary-50' : 'hover:bg-muted'}`}>
                     <input
                       type="radio"
                       name={`savedPayment_${providerEnum}`}
@@ -165,9 +165,9 @@ export default function CheckoutPage() {
                         setSelectedSavedPayment('NEW');
                         setPaymentAccountNumber('');
                       }}
-                      className="text-primary-600 focus:ring-primary-500"
+                      className="text-primary/90 focus:ring-primary-500"
                     />
-                    <span className="font-medium text-gray-800">Use a different {providerName} number</span>
+                    <span className="font-medium text-foreground">Use a different {providerName} number</span>
                   </label>
                 </div>
               </div>
@@ -175,26 +175,26 @@ export default function CheckoutPage() {
 
             {(selectedSavedPayment === 'NEW' || availableOptions.length === 0) && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Your {providerName} Account Number</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Your {providerName} Account Number</label>
                 <input
                   type="text"
                   required
                   placeholder={`Enter your ${providerName} number`}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-2 border border-border rounded focus:ring-primary-500 focus:border-primary-500"
                   value={paymentAccountNumber}
                   onChange={(e) => setPaymentAccountNumber(e.target.value)}
                 />
-                <p className="text-xs text-gray-500 mt-1">This will be automatically saved for future checkouts.</p>
+                <p className="text-xs text-muted-foreground mt-1">This will be automatically saved for future checkouts.</p>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Transaction ID (TrxID)</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Transaction ID (TrxID)</label>
               <input
                 type="text"
                 required
                 placeholder={`Enter ${providerName} TrxID`}
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-4 py-2 border border-border rounded focus:ring-primary-500 focus:border-primary-500"
                 value={paymentTrxId}
                 onChange={(e) => setPaymentTrxId(e.target.value)}
               />
@@ -209,8 +209,8 @@ export default function CheckoutPage() {
     return (
       <div className="container mx-auto px-4 py-8 text-center flex-1">
         <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-        <p className="text-gray-500">Your cart is empty.</p>
-        <button onClick={() => router.push('/shop')} className="mt-4 text-primary-600 hover:underline">
+        <p className="text-muted-foreground">Your cart is empty.</p>
+        <button onClick={() => router.push('/shop')} className="mt-4 text-primary/90 hover:underline">
           Go to Shop
         </button>
       </div>
@@ -232,7 +232,7 @@ export default function CheckoutPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {!user && (
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                <div className="bg-info-bg p-4 rounded-lg border border-blue-100 mb-6">
                   <h3 className="font-medium text-blue-900 mb-2">Guest Checkout</h3>
                   <p className="text-sm text-blue-700 mb-4">You are checking out as a guest. <button type="button" onClick={() => router.push('/login?redirect=/checkout')} className="underline font-semibold">Login</button> to use saved addresses, apply coupons, and earn reward points.</p>
                   
@@ -264,7 +264,7 @@ export default function CheckoutPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Contact Number</label>
                 <input
                   type="text"
                   required
@@ -276,7 +276,7 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Street Address</label>
                 <textarea
                   required
                   rows={2}
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">City</label>
                   <input
                     type="text"
                     required
@@ -300,7 +300,7 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Post Code</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Post Code</label>
                   <input
                     type="text"
                     required
@@ -319,9 +319,9 @@ export default function CheckoutPage() {
                     id="saveAddress"
                     checked={saveAddress}
                     onChange={(e) => setSaveAddress(e.target.checked)}
-                    className="w-4 h-4 text-black focus:ring-black rounded border-gray-300"
+                    className="w-4 h-4 text-black focus:ring-black rounded border-border"
                   />
-                  <label htmlFor="saveAddress" className="text-sm text-gray-700">
+                  <label htmlFor="saveAddress" className="text-sm text-foreground">
                     Save this address for next time
                   </label>
                 </div>
@@ -330,7 +330,7 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-bold mt-8 mb-4">Payment Method</h2>
               <div className="space-y-4">
                 {/* Cash on Delivery */}
-                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentCategory === 'COD' ? 'border-green-500 bg-green-50' : 'hover:bg-gray-50'}`}>
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentCategory === 'COD' ? 'border-green-500 bg-success-bg' : 'hover:bg-muted'}`}>
                   <input
                     type="radio"
                     name="paymentCategory"
@@ -340,16 +340,16 @@ export default function CheckoutPage() {
                       setPaymentCategory('COD');
                       setPaymentMethod('COD');
                     }}
-                    className="w-4 h-4 text-green-600 focus:ring-green-500"
+                    className="w-4 h-4 text-success-text focus:ring-green-500"
                   />
                   <div>
-                    <div className="font-bold text-gray-900">Cash on Delivery</div>
-                    <div className="text-sm text-gray-500">Pay with cash upon delivery</div>
+                    <div className="font-bold text-foreground">Cash on Delivery</div>
+                    <div className="text-sm text-muted-foreground">Pay with cash upon delivery</div>
                   </div>
                 </label>
 
                 {/* Pay Online */}
-                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentCategory === 'ONLINE' ? 'border-primary-500 bg-primary-50' : 'hover:bg-gray-50'}`}>
+                <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentCategory === 'ONLINE' ? 'border-primary-500 bg-primary-50' : 'hover:bg-muted'}`}>
                   <input
                     type="radio"
                     name="paymentCategory"
@@ -359,22 +359,22 @@ export default function CheckoutPage() {
                       setPaymentCategory('ONLINE');
                       if (paymentMethod === 'COD') setPaymentMethod('STRIPE');
                     }}
-                    className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+                    className="w-4 h-4 text-primary/90 focus:ring-primary-500"
                   />
                   <div>
-                    <div className="font-bold text-gray-900">Pay Online</div>
-                    <div className="text-sm text-gray-500">Credit/Debit Card, bKash, Nagad, Rocket</div>
+                    <div className="font-bold text-foreground">Pay Online</div>
+                    <div className="text-sm text-muted-foreground">Credit/Debit Card, bKash, Nagad, Rocket</div>
                   </div>
                 </label>
 
                 {/* Online Payment Options (Nested) */}
                 {paymentCategory === 'ONLINE' && (
-                  <div className="pl-4 sm:pl-8 mt-4 border-l-2 border-gray-200">
-                    <p className="text-sm text-gray-500 mb-3">Select your preferred online method:</p>
+                  <div className="pl-4 sm:pl-8 mt-4 border-l-2 border-border">
+                    <p className="text-sm text-muted-foreground mb-3">Select your preferred online method:</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       
                       {/* Card (Stripe) */}
-                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'STRIPE' ? 'border-black bg-gray-50 ring-1 ring-black' : 'border-gray-200 hover:border-black hover:bg-gray-50'}`}>
+                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'STRIPE' ? 'border-black bg-muted ring-1 ring-black' : 'border-border hover:border-black hover:bg-muted'}`}>
                         <input
                           type="radio"
                           name="paymentMethod"
@@ -387,13 +387,13 @@ export default function CheckoutPage() {
                           }}
                           className="sr-only"
                         />
-                        <CreditCard size={28} className={`mb-2 ${paymentMethod === 'STRIPE' ? 'text-black' : 'text-gray-400'}`} />
-                        <span className={`text-xs font-bold ${paymentMethod === 'STRIPE' ? 'text-black' : 'text-gray-500'}`}>Card</span>
+                        <CreditCard size={28} className={`mb-2 ${paymentMethod === 'STRIPE' ? 'text-black' : 'text-muted-foreground'}`} />
+                        <span className={`text-xs font-bold ${paymentMethod === 'STRIPE' ? 'text-black' : 'text-muted-foreground'}`}>Card</span>
                         {paymentMethod === 'STRIPE' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-black" />}
                       </label>
 
                       {/* bKash */}
-                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all relative ${paymentMethod === 'BKASH' ? 'border-pink-500 bg-pink-50 ring-1 ring-pink-500' : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50'}`}>
+                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all relative ${paymentMethod === 'BKASH' ? 'border-pink-500 bg-pink-50 ring-1 ring-pink-500' : 'border-border hover:border-pink-500 hover:bg-pink-50'}`}>
                         <input
                           type="radio"
                           name="paymentMethod"
@@ -408,12 +408,12 @@ export default function CheckoutPage() {
                           className="sr-only"
                         />
                         <img src="/asset/bkash.png" alt="bKash" className="h-8 object-contain mb-1" />
-                        <span className={`text-xs font-bold ${paymentMethod === 'BKASH' ? 'text-pink-600' : 'text-gray-500'}`}>bKash</span>
+                        <span className={`text-xs font-bold ${paymentMethod === 'BKASH' ? 'text-pink-600' : 'text-muted-foreground'}`}>bKash</span>
                         {paymentMethod === 'BKASH' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-pink-600" />}
                       </label>
 
                       {/* Nagad */}
-                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all relative ${paymentMethod === 'NAGAD' ? 'border-orange-500 bg-orange-50 ring-1 ring-orange-500' : 'border-gray-200 hover:border-orange-500 hover:bg-orange-50'}`}>
+                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all relative ${paymentMethod === 'NAGAD' ? 'border-orange-500 bg-accent/10 ring-1 ring-orange-500' : 'border-border hover:border-orange-500 hover:bg-accent/10'}`}>
                         <input
                           type="radio"
                           name="paymentMethod"
@@ -428,12 +428,12 @@ export default function CheckoutPage() {
                           className="sr-only"
                         />
                         <img src="/asset/nagad.png" alt="Nagad" className="h-8 object-contain mb-1" />
-                        <span className={`text-xs font-bold ${paymentMethod === 'NAGAD' ? 'text-orange-600' : 'text-gray-500'}`}>Nagad</span>
+                        <span className={`text-xs font-bold ${paymentMethod === 'NAGAD' ? 'text-orange-600' : 'text-muted-foreground'}`}>Nagad</span>
                         {paymentMethod === 'NAGAD' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-orange-600" />}
                       </label>
 
                       {/* Rocket */}
-                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all relative ${paymentMethod === 'ROCKET' ? 'border-purple-500 bg-purple-50 ring-1 ring-purple-500' : 'border-gray-200 hover:border-purple-500 hover:bg-purple-50'}`}>
+                      <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all relative ${paymentMethod === 'ROCKET' ? 'border-purple-500 bg-purple-50 ring-1 ring-purple-500' : 'border-border hover:border-purple-500 hover:bg-purple-50'}`}>
                         <input
                           type="radio"
                           name="paymentMethod"
@@ -448,7 +448,7 @@ export default function CheckoutPage() {
                           className="sr-only"
                         />
                         <img src="/asset/rocket.png" alt="Rocket" className="h-8 object-contain mb-1" />
-                        <span className={`text-xs font-bold ${paymentMethod === 'ROCKET' ? 'text-purple-600' : 'text-gray-500'}`}>Rocket</span>
+                        <span className={`text-xs font-bold ${paymentMethod === 'ROCKET' ? 'text-purple-600' : 'text-muted-foreground'}`}>Rocket</span>
                         {paymentMethod === 'ROCKET' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-purple-600" />}
                       </label>
                       
@@ -456,20 +456,20 @@ export default function CheckoutPage() {
 
                     <div className="mt-4">
                       {paymentMethod === 'STRIPE' && (
-                        <div className="p-4 border rounded-xl bg-gray-50 border-gray-200 mb-4 animate-in fade-in slide-in-from-top-2">
-                          <p className="text-sm font-medium text-gray-700 mb-3">Supported Cards</p>
+                        <div className="p-4 border rounded-xl bg-muted border-border mb-4 animate-in fade-in slide-in-from-top-2">
+                          <p className="text-sm font-medium text-foreground mb-3">Supported Cards</p>
                           <div className="flex flex-wrap gap-3">
-                            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-100">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-border">
                               <span className="text-blue-800 font-extrabold italic text-sm w-10 text-center">VISA</span>
-                              <span className="text-xs font-bold text-gray-700">Visa</span>
+                              <span className="text-xs font-bold text-foreground">Visa</span>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-100">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-border">
                               <img src="/asset/mastercard.svg" alt="MasterCard" className="h-5 w-10 object-contain" />
-                              <span className="text-xs font-bold text-gray-700">MasterCard</span>
+                              <span className="text-xs font-bold text-foreground">MasterCard</span>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-100">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-border">
                               <img src="/asset/amex.svg" alt="American Express" className="h-5 w-10 object-contain" />
-                              <span className="text-xs font-bold text-gray-700">Amex</span>
+                              <span className="text-xs font-bold text-foreground">Amex</span>
                             </div>
                           </div>
                         </div>
@@ -486,7 +486,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-6 bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
+                className="w-full mt-6 bg-black text-white py-3 rounded-lg font-medium hover:bg-secondary disabled:opacity-50"
               >
                 {isSubmitting ? 'Processing...' : `Place Order (৳${grandTotal})`}
               </button>
@@ -495,7 +495,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-gray-50 p-6 rounded-lg shadow border border-gray-100 h-fit">
+        <div className="bg-muted p-6 rounded-lg shadow border border-border h-fit">
           <h2 className="text-xl font-bold mb-4">Order Summary</h2>
           <div className="space-y-4 mb-6">
             {items.map(item => (
@@ -505,12 +505,12 @@ export default function CheckoutPage() {
                     {item.product?.images?.[0] ? (
                       <img src={item.product.images[0]} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-[10px] text-gray-400">Img</span>
+                      <span className="text-[10px] text-muted-foreground">Img</span>
                     )}
                   </div>
                   <div>
                     <div className="font-medium">{item.product?.name}</div>
-                    <div className="text-gray-500">Qty: {item.quantity}</div>
+                    <div className="text-muted-foreground">Qty: {item.quantity}</div>
                   </div>
                 </div>
                 <div className="font-medium">৳{(item.product?.price || 0) * item.quantity}</div>
@@ -518,14 +518,14 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          <div className="border-t border-gray-200 pt-4 pb-4">
-            <h3 className="text-sm font-bold text-gray-700 mb-2">Have a coupon or reward ticket?</h3>
+          <div className="border-t border-border pt-4 pb-4">
+            <h3 className="text-sm font-bold text-foreground mb-2">Have a coupon or reward ticket?</h3>
             {!appliedPromo ? (
               <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder={user ? "Enter code" : "Login to use promo codes"}
-                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black uppercase disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border rounded text-sm focus:ring-black focus:border-black uppercase disabled:bg-muted disabled:cursor-not-allowed"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                   disabled={isApplyingPromo || !user}
@@ -534,20 +534,20 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={handleApplyPromo}
                   disabled={isApplyingPromo || !promoCode.trim() || !user}
-                  className="px-4 py-2 bg-black text-white rounded text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+                  className="px-4 py-2 bg-black text-white rounded text-sm font-medium hover:bg-secondary disabled:opacity-50"
                 >
                   Apply
                 </button>
               </div>
             ) : (
-              <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded text-sm">
+              <div className="flex items-center justify-between p-3 bg-success-bg border border-green-200 rounded text-sm">
                 <div>
-                  <span className="font-bold text-green-700">{appliedPromo}</span> applied
+                  <span className="font-bold text-success-text">{appliedPromo}</span> applied
                 </div>
                 <button
                   type="button"
                   onClick={handleRemovePromo}
-                  className="text-red-500 hover:underline text-xs font-medium"
+                  className="text-destructive hover:underline text-xs font-medium"
                 >
                   Remove
                 </button>
@@ -555,22 +555,22 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <div className="border-t border-gray-200 pt-4 space-y-2">
-            <div className="flex justify-between text-gray-600">
+          <div className="border-t border-border pt-4 space-y-2">
+            <div className="flex justify-between text-muted-foreground">
               <span>Subtotal</span>
               <span>৳{cartTotal}</span>
             </div>
             {discountAmount > 0 && (
-              <div className="flex justify-between text-green-600 font-medium">
+              <div className="flex justify-between text-success-text font-medium">
                 <span>Discount</span>
                 <span>-৳{discountAmount}</span>
               </div>
             )}
-            <div className="flex justify-between text-gray-600">
+            <div className="flex justify-between text-muted-foreground">
               <span>Delivery Charge</span>
               <span>৳{deliveryCharge}</span>
             </div>
-            <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200 mt-2">
+            <div className="flex justify-between font-bold text-lg pt-2 border-t border-border mt-2">
               <span>Total</span>
               <span>৳{grandTotal}</span>
             </div>

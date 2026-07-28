@@ -42,11 +42,11 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-16">
+    <div className="bg-muted min-h-screen py-16">
       <div className="container mx-auto px-4">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Contact Us</h2>
-          <p className="mt-4 text-lg text-gray-500">
+          <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">Contact Us</h2>
+          <p className="mt-4 text-lg text-muted-foreground">
             Have a question about our corporate packages? Need a custom quotation? We'd love to hear from you.
           </p>
         </div>
@@ -54,33 +54,33 @@ export default function ContactPage() {
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Contact Info */}
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-8">Get in Touch</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-8">Get in Touch</h3>
             <div className="space-y-8">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
-                  <MapPin className="h-6 w-6 text-primary-600" />
+                  <MapPin className="h-6 w-6 text-primary/90" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-lg font-medium text-gray-900">Our Office</h4>
-                  <p className="mt-1 text-gray-500">Level 4, Corporate Heights<br />Banani, Dhaka 1213<br />Bangladesh</p>
+                  <h4 className="text-lg font-medium text-foreground">Our Office</h4>
+                  <p className="mt-1 text-muted-foreground">Level 4, Corporate Heights<br />Banani, Dhaka 1213<br />Bangladesh</p>
                 </div>
               </div>
               <div className="flex items-start">
                 <div className="flex-shrink-0">
-                  <Phone className="h-6 w-6 text-primary-600" />
+                  <Phone className="h-6 w-6 text-primary/90" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-lg font-medium text-gray-900">Phone</h4>
-                  <p className="mt-1 text-gray-500">+880 1XXX-XXXXXX<br />+880 2-XXXXXXX</p>
+                  <h4 className="text-lg font-medium text-foreground">Phone</h4>
+                  <p className="mt-1 text-muted-foreground">+880 1XXX-XXXXXX<br />+880 2-XXXXXXX</p>
                 </div>
               </div>
               <div className="flex items-start">
                 <div className="flex-shrink-0">
-                  <Mail className="h-6 w-6 text-primary-600" />
+                  <Mail className="h-6 w-6 text-primary/90" />
                 </div>
                 <div className="ml-4">
-                  <h4 className="text-lg font-medium text-gray-900">Email</h4>
-                  <p className="mt-1 text-gray-500">corporate@smart24.com.bd<br />support@smart24.com.bd</p>
+                  <h4 className="text-lg font-medium text-foreground">Email</h4>
+                  <p className="mt-1 text-muted-foreground">corporate@smart24.com.bd<br />support@smart24.com.bd</p>
                 </div>
               </div>
             </div>
@@ -93,37 +93,37 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-border p-8 sm:p-10">
+            <h3 className="text-2xl font-bold text-foreground mb-6">Send us a message</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
+                <label htmlFor="name" className="block text-sm font-medium text-foreground">Full Name</label>
                 <div className="mt-1">
-                  <input type="text" name="name" id="name" required className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
+                  <input type="text" name="name" id="name" required className="block w-full rounded-md border-border shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
                 </div>
               </div>
               <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700">Company Name</label>
+                <label htmlFor="company" className="block text-sm font-medium text-foreground">Company Name</label>
                 <div className="mt-1">
-                  <input type="text" name="company" id="company" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
+                  <input type="text" name="company" id="company" className="block w-full rounded-md border-border shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
                 </div>
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+                <label htmlFor="email" className="block text-sm font-medium text-foreground">Email Address</label>
                 <div className="mt-1">
-                  <input type="email" name="email" id="email" required className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
+                  <input type="email" name="email" id="email" required className="block w-full rounded-md border-border shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
                 </div>
               </div>
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <label htmlFor="phone" className="block text-sm font-medium text-foreground">Phone Number</label>
                 <div className="mt-1">
-                  <input type="tel" name="phone" id="phone" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
+                  <input type="tel" name="phone" id="phone" className="block w-full rounded-md border-border shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border" />
                 </div>
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
+                <label htmlFor="message" className="block text-sm font-medium text-foreground">Message</label>
                 <div className="mt-1">
-                  <textarea id="message" name="message" rows={4} required className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"></textarea>
+                  <textarea id="message" name="message" rows={4} required className="block w-full rounded-md border-border shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"></textarea>
                 </div>
               </div>
               <div>

@@ -24,7 +24,7 @@ export const SpecialOfferBanner = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4">
-        <div className="w-full h-24 md:h-32 lg:h-40 bg-gray-200 animate-pulse rounded-xl mt-8 mb-4 border border-gray-100"></div>
+        <div className="w-full h-24 md:h-32 lg:h-40 bg-muted/80 animate-pulse rounded-xl mt-8 mb-4 border border-border"></div>
       </div>
     );
   }
@@ -35,7 +35,7 @@ export const SpecialOfferBanner = () => {
   const banner = banners[0];
 
   const content = (
-    <div className="w-full overflow-hidden rounded-xl shadow-sm border border-gray-200 mt-8 mb-4">
+    <div className="w-full overflow-hidden rounded-xl shadow-sm border border-border mt-8 mb-4">
       <img 
         src={banner.imageUrl} 
         alt={banner.title || "Special Offer"} 

@@ -69,31 +69,31 @@ export default function AdminQuotations() {
                 <h3 className="font-bold text-lg">{quote.companyName}</h3>
                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
                   quote.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                  quote.status === 'QUOTED' ? 'bg-blue-100 text-primary-700' :
-                  quote.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  quote.status === 'QUOTED' ? 'bg-info-bg text-primary-700' :
+                  quote.status === 'ACCEPTED' ? 'bg-success-bg text-success-text' : 'bg-danger-bg text-destructive'
                 }`}>
                   {quote.status}
                 </span>
               </div>
-              <p className="text-sm text-gray-600">Contact: {quote.contactNumber} | {quote.contactEmail}</p>
+              <p className="text-sm text-muted-foreground">Contact: {quote.contactNumber} | {quote.contactEmail}</p>
               
-              <div className="bg-gray-50 p-4 rounded-md mt-4">
+              <div className="bg-muted p-4 rounded-md mt-4">
                 <p><strong>Requested Product:</strong> {quote.product ? quote.product.name : 'General Pricing Request'}</p>
                 <p><strong>Quantity:</strong> {quote.quantity}</p>
                 <p><strong>Delivery Location:</strong> {quote.deliveryLocation}</p>
                 <p><strong>Deadline:</strong> {quote.deadline ? new Date(quote.deadline).toLocaleDateString() : 'N/A'}</p>
                 {quote.instructions && (
-                  <p className="mt-2 text-sm italic text-gray-600">"{quote.instructions}"</p>
+                  <p className="mt-2 text-sm italic text-muted-foreground">"{quote.instructions}"</p>
                 )}
               </div>
             </div>
 
-            <div className="md:w-1/3 bg-gray-50 p-4 rounded-md border flex flex-col justify-center">
+            <div className="md:w-1/3 bg-muted p-4 rounded-md border flex flex-col justify-center">
               {quote.status === 'PENDING' ? (
                 <div className="space-y-3">
                   <h4 className="font-semibold text-sm">Send Quote Offer</h4>
                   <div>
-                    <label className="text-xs text-gray-500">Offered Total Price (৳)</label>
+                    <label className="text-xs text-muted-foreground">Offered Total Price (৳)</label>
                     <Input 
                       type="number" 
                       placeholder="e.g. 50000" 
@@ -101,7 +101,7 @@ export default function AdminQuotations() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500">Notes / Conditions</label>
+                    <label className="text-xs text-muted-foreground">Notes / Conditions</label>
                     <textarea 
                       className="w-full text-sm border p-2 rounded" 
                       placeholder="e.g. Delivery in 3 installments"
@@ -112,11 +112,11 @@ export default function AdminQuotations() {
                 </div>
               ) : (
                 <div className="text-center space-y-2">
-                  <p className="text-sm text-gray-500">You offered:</p>
-                  <p className="text-3xl font-bold text-primary-600">৳{quote.offeredPrice}</p>
-                  {quote.adminNotes && <p className="text-xs text-gray-500 italic">"{quote.adminNotes}"</p>}
-                  {quote.status === 'ACCEPTED' && <p className="text-green-600 font-bold mt-4">Client Accepted</p>}
-                  {quote.status === 'REJECTED' && <p className="text-red-600 font-bold mt-4">Client Rejected</p>}
+                  <p className="text-sm text-muted-foreground">You offered:</p>
+                  <p className="text-3xl font-bold text-primary/90">৳{quote.offeredPrice}</p>
+                  {quote.adminNotes && <p className="text-xs text-muted-foreground italic">"{quote.adminNotes}"</p>}
+                  {quote.status === 'ACCEPTED' && <p className="text-success-text font-bold mt-4">Client Accepted</p>}
+                  {quote.status === 'REJECTED' && <p className="text-destructive font-bold mt-4">Client Rejected</p>}
                 </div>
               )}
             </div>

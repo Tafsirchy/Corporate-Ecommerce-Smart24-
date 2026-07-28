@@ -65,23 +65,23 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 md:py-20 px-4">
+    <div className="min-h-screen bg-muted py-12 md:py-20 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
-          <p className="text-xl text-gray-600">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Frequently Asked Questions</h1>
+          <p className="text-xl text-muted-foreground">
             Find quick answers to common questions about our services.
           </p>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-primary-600" />
+            <Loader2 className="w-10 h-10 animate-spin text-primary/90" />
           </div>
         ) : faqs.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <p className="text-gray-500 mb-4">No FAQs available at the moment.</p>
-            <Link href="/support/contact" className="text-primary-600 font-medium hover:underline">
+          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-border">
+            <p className="text-muted-foreground mb-4">No FAQs available at the moment.</p>
+            <Link href="/support/contact" className="text-primary/90 font-medium hover:underline">
               Contact Support
             </Link>
           </div>
@@ -96,7 +96,7 @@ export default function FAQPage() {
                   className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                     activeCategory === cat
                       ? 'bg-primary-900 text-white'
-                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'
+                      : 'bg-white text-foreground border border-border hover:bg-muted'
                   }`}
                 >
                   {cat}
@@ -111,7 +111,7 @@ export default function FAQPage() {
                   key={faq.id} 
                   id={`faq-${faq.id}`}
                   className={`bg-white border rounded-2xl transition-all duration-200 ${
-                    openId === faq.id ? 'border-primary-200 shadow-md ring-1 ring-primary-100' : 'border-gray-100 shadow-sm'
+                    openId === faq.id ? 'border-primary-200 shadow-md ring-1 ring-primary-100' : 'border-border shadow-sm'
                   }`}
                 >
                   <button
@@ -125,26 +125,26 @@ export default function FAQPage() {
                     }}
                     className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 focus:outline-none"
                   >
-                    <span className="font-semibold text-gray-900 pr-4">{faq.question}</span>
-                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${openId === faq.id ? 'rotate-180 text-primary-600' : ''}`} />
+                    <span className="font-semibold text-foreground pr-4">{faq.question}</span>
+                    <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${openId === faq.id ? 'rotate-180 text-primary/90' : ''}`} />
                   </button>
                   <div 
                     className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
                       openId === faq.id ? 'max-h-96 pb-6 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
-                    <p className="text-gray-600 leading-relaxed pt-2 border-t border-gray-50 whitespace-pre-wrap">
+                    <p className="text-muted-foreground leading-relaxed pt-2 border-t border-gray-50 whitespace-pre-wrap">
                       {faq.answer}
                     </p>
                     
                     <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-4 text-sm">
-                      <span className="text-gray-500">Was this helpful?</span>
+                      <span className="text-muted-foreground">Was this helpful?</span>
                       {feedbackGiven.has(faq.id) ? (
-                        <span className="text-green-600 font-medium text-xs bg-green-50 px-2 py-1 rounded">Thank you for your feedback!</span>
+                        <span className="text-success-text font-medium text-xs bg-success-bg px-2 py-1 rounded">Thank you for your feedback!</span>
                       ) : (
                         <div className="flex gap-2">
-                          <button onClick={() => handleFeedback(faq.id, true)} className="px-3 py-1 bg-gray-100 hover:bg-green-100 hover:text-green-700 rounded transition-colors text-gray-700">Yes</button>
-                          <button onClick={() => handleFeedback(faq.id, false)} className="px-3 py-1 bg-gray-100 hover:bg-red-100 hover:text-red-700 rounded transition-colors text-gray-700">No</button>
+                          <button onClick={() => handleFeedback(faq.id, true)} className="px-3 py-1 bg-muted hover:bg-success-bg hover:text-success-text rounded transition-colors text-foreground">Yes</button>
+                          <button onClick={() => handleFeedback(faq.id, false)} className="px-3 py-1 bg-muted hover:bg-danger-bg hover:text-destructive rounded transition-colors text-foreground">No</button>
                         </div>
                       )}
                     </div>
@@ -157,8 +157,8 @@ export default function FAQPage() {
         
         {/* Still need help */}
         <div className="mt-16 text-center">
-          <p className="text-gray-600 mb-4">Can't find what you're looking for?</p>
-          <Link href="/support/contact" className="inline-block px-6 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 font-medium hover:bg-gray-50 transition-colors shadow-sm">
+          <p className="text-muted-foreground mb-4">Can't find what you're looking for?</p>
+          <Link href="/support/contact" className="inline-block px-6 py-3 bg-white border border-border rounded-lg text-foreground font-medium hover:bg-muted transition-colors shadow-sm">
             Contact Us
           </Link>
         </div>

@@ -22,7 +22,7 @@ export function CategorySidebar({ categories, basePath = '/shop' }: { categories
 
   const renderTree = (cats: Category[], level: number = 1) => {
     return (
-      <ul className={`space-y-0.5 ${level > 1 ? 'ml-3 mt-1 border-l border-gray-100 pl-3' : ''}`}>
+      <ul className={`space-y-0.5 ${level > 1 ? 'ml-3 mt-1 border-l border-border pl-3' : ''}`}>
         {cats.map((cat) => {
           const hasChildren = cat.children && cat.children.length > 0;
           const isExpanded = !!expanded[cat.id];
@@ -33,14 +33,14 @@ export function CategorySidebar({ categories, basePath = '/shop' }: { categories
                 <Link 
                   href={`${basePath}?category=${cat.slug}`}
                   onClick={() => setExpanded(prev => ({ ...prev, [cat.id]: !prev[cat.id] }))}
-                  className={`block py-1 flex-1 transition-colors text-[13px] hover:text-primary-600 ${level === 1 ? 'text-gray-700' : 'text-gray-500'}`}
+                  className={`block py-1 flex-1 transition-colors text-[13px] hover:text-primary/90 ${level === 1 ? 'text-foreground' : 'text-muted-foreground'}`}
                 >
                   {cat.name}
                 </Link>
                 {hasChildren && (
                   <button 
                     onClick={(e) => toggleExpand(cat.id, e)}
-                    className="p-1 text-gray-400 hover:text-gray-700 focus:outline-none"
+                    className="p-1 text-muted-foreground hover:text-foreground focus:outline-none"
                   >
                     <svg 
                       className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
@@ -60,14 +60,14 @@ export function CategorySidebar({ categories, basePath = '/shop' }: { categories
   };
 
   return (
-    <div className="w-full bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-      <h2 className="text-[15px] font-bold text-gray-900 mb-3 font-serif">Categories</h2>
+    <div className="w-full bg-white p-5 rounded-xl border border-border shadow-sm">
+      <h2 className="text-[15px] font-bold text-foreground mb-3 font-serif">Categories</h2>
       {renderTree(visibleCategories)}
       
       {!showAll && categories.length > 10 && (
         <button 
           onClick={() => setShowAll(true)}
-          className="mt-3 text-[13px] text-primary-600 hover:text-primary-700 font-medium w-full text-left"
+          className="mt-3 text-[13px] text-primary/90 hover:text-primary-700 font-medium w-full text-left"
         >
           See more...
         </button>

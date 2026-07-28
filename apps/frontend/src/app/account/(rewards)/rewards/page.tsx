@@ -46,19 +46,19 @@ export default function RewardsPage() {
     <>
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div>
-          <p className="text-gray-600">Your Balance: <span className="font-bold text-[#FBBF24] text-xl">{points} pts</span></p>
+          <p className="text-muted-foreground">Your Balance: <span className="font-bold text-[#FBBF24] text-xl">{points} pts</span></p>
         </div>
       </div>
       
-      <div className="flex space-x-4 border-b border-gray-200 mb-6">
+      <div className="flex space-x-4 border-b border-border mb-6">
         <button
-          className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MARKETPLACE' ? 'border-b-2 border-primary-600 text-primary-600' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MARKETPLACE' ? 'border-b-2 border-primary-600 text-primary/90' : 'text-muted-foreground hover:text-foreground'}`}
           onClick={() => setActiveTab('MARKETPLACE')}
         >
           Reward Marketplace
         </button>
         <button
-          className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MY_REWARDS' ? 'border-b-2 border-primary-600 text-primary-600' : 'text-gray-500 hover:text-gray-700'}`}
+          className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MY_REWARDS' ? 'border-b-2 border-primary-600 text-primary/90' : 'text-muted-foreground hover:text-foreground'}`}
           onClick={() => setActiveTab('MY_REWARDS')}
         >
           My Claimed Rewards
@@ -67,7 +67,7 @@ export default function RewardsPage() {
 
       {activeTab === 'MARKETPLACE' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {availableRewards.length === 0 && <p className="text-gray-500 col-span-full">No rewards available for your tier yet.</p>}
+          {availableRewards.length === 0 && <p className="text-muted-foreground col-span-full">No rewards available for your tier yet.</p>}
           {availableRewards.map(reward => (
             <div key={reward.id} className="bg-white border rounded-xl overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
               <div className="bg-gradient-to-r from-primary-500 to-indigo-600 p-4 text-white text-center">
@@ -77,17 +77,17 @@ export default function RewardsPage() {
                 <h3 className="text-xl font-bold">{reward.title}</h3>
               </div>
               <div className="p-6 flex-1 flex flex-col">
-                <p className="text-gray-600 text-sm mb-4 flex-1">{reward.description}</p>
+                <p className="text-muted-foreground text-sm mb-4 flex-1">{reward.description}</p>
                 
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                  <span className="font-bold text-lg text-gray-800">{reward.pointCost} pts</span>
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
+                  <span className="font-bold text-lg text-foreground">{reward.pointCost} pts</span>
                   <button 
                     onClick={() => handleClaim(reward.id)}
                     disabled={points < reward.pointCost}
                     className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                       points >= reward.pointCost 
                         ? 'bg-primary-600 text-white hover:bg-primary-700' 
-                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                        : 'bg-muted/80 text-muted-foreground cursor-not-allowed'
                     }`}
                   >
                     {points >= reward.pointCost ? 'Redeem' : 'Need more pts'}
@@ -101,30 +101,30 @@ export default function RewardsPage() {
 
       {activeTab === 'MY_REWARDS' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {myRewards.length === 0 && <p className="text-gray-500 col-span-full">You haven't claimed any rewards yet.</p>}
+          {myRewards.length === 0 && <p className="text-muted-foreground col-span-full">You haven't claimed any rewards yet.</p>}
           {myRewards.map(ur => (
-            <div key={ur.id} className="bg-white border border-gray-200 rounded-xl p-6 relative overflow-hidden">
+            <div key={ur.id} className="bg-white border border-border rounded-xl p-6 relative overflow-hidden">
               {ur.status === 'USED' && (
-                <div className="absolute top-4 right-4 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded">USED</div>
+                <div className="absolute top-4 right-4 bg-muted/80 text-muted-foreground text-xs font-bold px-2 py-1 rounded">USED</div>
               )}
               {ur.status === 'EXPIRED' && (
-                <div className="absolute top-4 right-4 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">EXPIRED</div>
+                <div className="absolute top-4 right-4 bg-danger-bg text-destructive text-xs font-bold px-2 py-1 rounded">EXPIRED</div>
               )}
               {ur.status === 'AVAILABLE' && (
-                <div className="absolute top-4 right-4 bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">ACTIVE</div>
+                <div className="absolute top-4 right-4 bg-success-bg text-success-text text-xs font-bold px-2 py-1 rounded">ACTIVE</div>
               )}
               
-              <h3 className="font-bold text-lg text-gray-900 mb-1">{ur.reward.title}</h3>
-              <p className="text-sm text-gray-500 mb-4">{ur.reward.description}</p>
+              <h3 className="font-bold text-lg text-foreground mb-1">{ur.reward.title}</h3>
+              <p className="text-sm text-muted-foreground mb-4">{ur.reward.description}</p>
               
               {ur.code && (
-                <div className="bg-gray-50 p-3 rounded-lg border border-dashed border-gray-300 text-center mb-4">
-                  <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Code</p>
+                <div className="bg-muted p-3 rounded-lg border border-dashed border-border text-center mb-4">
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Code</p>
                   <p className="font-mono font-bold text-lg tracking-widest text-primary-700">{ur.code}</p>
                 </div>
               )}
               
-              <div className="text-xs text-gray-400 mt-auto">
+              <div className="text-xs text-muted-foreground mt-auto">
                 Claimed on: {new Date(ur.claimedAt).toLocaleDateString()}
                 {ur.expiresAt && <><br/>Expires on: {new Date(ur.expiresAt).toLocaleDateString()}</>}
               </div>
