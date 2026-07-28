@@ -139,7 +139,12 @@ export const PremiumBentoCategories = () => {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 auto-rows-[180px]">
           {isLoading ? (
-            <div className="md:col-span-3 h-full flex items-center justify-center py-20 text-gray-400">Loading collections...</div>
+            layoutConfig.map(config => (
+              <div 
+                key={config.position} 
+                className={`bg-gray-200 animate-pulse rounded-[24px] min-h-[180px] ${config.className}`}
+              ></div>
+            ))
           ) : (
             cards.map(card => (
               <BentoCard

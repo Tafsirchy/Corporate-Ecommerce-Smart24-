@@ -8,6 +8,7 @@ export default function AdminCorporateCollections() {
   const [collections, setCollections] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
 
   // We have exactly 8 grid positions to manage
   const gridPositions = Array.from({ length: 8 }, (_, i) => i + 1);
@@ -18,10 +19,13 @@ export default function AdminCorporateCollections() {
 
   const fetchCollections = async () => {
     try {
+      setIsLoadingPage(true);
       const res = await apiClient.get('/corporate-collections/admin/all');
       setCollections(res.data);
     } catch (error) {
       toast.error('Failed to fetch corporate collections');
+    } finally {
+      setIsLoadingPage(false);
     }
   };
 
@@ -108,14 +112,22 @@ export default function AdminCorporateCollections() {
     const data = getCollectionForPosition(position);
     if (!data.id) return toast.error('Save the slot before toggling status');
     
+    // Optimistic Update
+    setCollections(prev => prev.map(c => 
+      c.position === position ? { ...c, isActive: !data.isActive } : c
+    ));
+    
     try {
       await apiClient.put(`/corporate-collections/${position}`, {
         ...data,
         isActive: !data.isActive
       });
       toast.success('Status updated');
-      fetchCollections();
     } catch (error) {
+      // Revert on failure
+      setCollections(prev => prev.map(c => 
+        c.position === position ? { ...c, isActive: data.isActive } : c
+      ));
       toast.error('Failed to update status');
     }
   };
@@ -126,8 +138,13 @@ export default function AdminCorporateCollections() {
       <p className="text-gray-500 mb-8">Manage the 8 dynamic slots in the home page bento grid.</p>
       
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {gridPositions.map(pos => {
-          const data = getCollectionForPosition(pos);
+        {isLoadingPage ? (
+          <div className="col-span-full py-12 flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          </div>
+        ) : (
+          gridPositions.map(pos => {
+            const data = getCollectionForPosition(pos);
           const isLarge = pos === 1; // Position 1 is the large 2x2 card in our layout
           
           return (
@@ -218,7 +235,8 @@ export default function AdminCorporateCollections() {
               </form>
             </div>
           );
-        })}
+        })
+        )}
       </div>
     </div>
   );

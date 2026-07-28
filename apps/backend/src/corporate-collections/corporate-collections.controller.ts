@@ -3,6 +3,7 @@ import { CorporateCollectionsService } from './corporate-collections.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { UpsertCorporateCollectionDto } from './dto/upsert-corporate-collection.dto';
 
 @Controller('corporate-collections')
 export class CorporateCollectionsController {
@@ -30,7 +31,7 @@ export class CorporateCollectionsController {
   @Roles('ADMIN')
   async upsertCollection(
     @Param('position', ParseIntPipe) position: number,
-    @Body() data: any,
+    @Body() data: UpsertCorporateCollectionDto,
   ) {
     return this.service.upsertSlot(position, data);
   }
