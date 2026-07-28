@@ -302,7 +302,26 @@ export class OrdersService {
       throw new BadRequestException('Only pending orders can be cancelled');
     }
 
-    return this.orderRepo.cancelOrder(orderId, reason);
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      const cancelled = await tx.order.update({
+        where: { id: orderId },
+        data: { 
+          status: 'CANCELLED',
+          cancellationReason: reason
+        }
+      });
+      
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } }
+        });
+      }
+      
+      return cancelled;
+    });
+
+    return updatedOrder;
   }
   // Admin endpoints
   async getAllOrders() {
@@ -314,7 +333,34 @@ export class OrdersService {
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus) {
-    const order = await this.orderRepo.updateOrderStatus(orderId, status);
+    const order = await this.orderRepo.findOrderById(orderId);
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const isCancelling = status === 'CANCELLED' && order.status !== 'CANCELLED';
+
+    let updatedOrder;
+    if (isCancelling) {
+      updatedOrder = await this.prisma.$transaction(async (tx) => {
+        const result = await tx.order.update({
+          where: { id: orderId },
+          data: { status }
+        });
+        
+        for (const item of order.items) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: item.quantity } }
+          });
+        }
+        
+        return result;
+      });
+    } else {
+      updatedOrder = await this.orderRepo.updateOrderStatus(orderId, status);
+    }
+
     
     // Send delivery email
     if (status === 'DELIVERED') {

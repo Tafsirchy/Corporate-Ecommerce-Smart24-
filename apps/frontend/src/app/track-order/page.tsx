@@ -153,7 +153,7 @@ function TrackOrderContent() {
           <div className="p-6 border-t border-gray-100">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Package size={20} /> Items Ordered</h3>
             <div className="space-y-4 mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
-              {order.items.map((item: any) => (
+              {order.items?.map((item: any) => (
                 <div key={item.id} className="flex justify-between items-center border-b border-gray-200 pb-4 last:border-0 last:pb-0">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0">
