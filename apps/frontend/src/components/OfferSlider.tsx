@@ -10,6 +10,7 @@ import Image from 'next/image';
 
 export const OfferSlider = () => {
   const [banners, setBanners] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' }, [
     Autoplay({ delay: 5000, stopOnInteraction: false }),
   ]);
@@ -19,10 +20,13 @@ export const OfferSlider = () => {
   useEffect(() => {
     const fetchBanners = async () => {
       try {
+        setIsLoading(true);
         const res = await apiClient.get('/banners?activeOnly=true&type=MAIN_CAROUSEL');
         setBanners(res.data);
       } catch (error) {
         console.error('Failed to fetch banners:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchBanners();
@@ -43,6 +47,19 @@ export const OfferSlider = () => {
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
   const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
+  if (isLoading) {
+    return (
+      <section className="py-6 bg-gray-50 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px] items-stretch animate-pulse">
+            <div className="w-full lg:w-[78%] h-[300px] lg:h-full bg-gray-200"></div>
+            <div className="w-full lg:w-[22%] bg-gray-200 h-full"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (banners.length === 0) return null;
 

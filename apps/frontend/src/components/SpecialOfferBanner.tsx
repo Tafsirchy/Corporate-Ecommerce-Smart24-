@@ -21,7 +21,15 @@ export const SpecialOfferBanner = () => {
     fetchBanners();
   }, []);
 
-  if (isLoading || banners.length === 0) return null;
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4">
+        <div className="w-full h-24 md:h-32 lg:h-40 bg-gray-200 animate-pulse rounded-xl mt-8 mb-4 border border-gray-100"></div>
+      </div>
+    );
+  }
+
+  if (banners.length === 0) return null;
 
   // Render the first active special offer banner
   const banner = banners[0];

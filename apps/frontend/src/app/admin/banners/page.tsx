@@ -13,6 +13,7 @@ export default function AdminBanners() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingTable, setIsLoadingTable] = useState(true);
 
   useEffect(() => {
     fetchBanners();
@@ -20,10 +21,13 @@ export default function AdminBanners() {
 
   const fetchBanners = async () => {
     try {
+      setIsLoadingTable(true);
       const res = await apiClient.get('/banners');
       setBanners(res.data);
     } catch (error) {
       toast.error('Failed to fetch banners');
+    } finally {
+      setIsLoadingTable(false);
     }
   };
 
@@ -92,11 +96,14 @@ export default function AdminBanners() {
   };
 
   const toggleStatus = async (id: string, currentStatus: boolean) => {
+    const previousBanners = [...banners];
+    setBanners(banners.map(b => b.id === id ? { ...b, isActive: !currentStatus } : b));
+    
     try {
       await apiClient.patch(`/banners/${id}`, { isActive: !currentStatus });
       toast.success('Status updated');
-      fetchBanners();
     } catch (error) {
+      setBanners(previousBanners);
       toast.error('Failed to update status');
     }
   };
@@ -176,7 +183,13 @@ export default function AdminBanners() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {banners.length === 0 ? (
+            {isLoadingTable ? (
+              <tr>
+                <td colSpan={5} className="p-8 text-center text-gray-500">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                </td>
+              </tr>
+            ) : banners.length === 0 ? (
               <tr>
                 <td colSpan={5} className="p-8 text-center text-gray-500">No banners found</td>
               </tr>
