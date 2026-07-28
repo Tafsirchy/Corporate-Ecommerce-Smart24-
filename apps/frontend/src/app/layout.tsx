@@ -47,7 +47,7 @@ export default function RootLayout({
               <footer className="bg-primary-900 text-white mt-auto py-12">
                 <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
                   <div>
-                    <h3 className="text-xl font-bold mb-4">Smart24</h3>
+                    <img src="/asset/LogoWithSlogan.png" alt="Smart24" className="h-24 w-auto object-contain" />
                     <p className="text-primary-100/70">Your trusted corporate supply chain partner in Bangladesh.</p>
                   </div>
                   <div>

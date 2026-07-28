@@ -294,9 +294,11 @@ export default function Header() {
           }`}
           style={{ top: '100%' }}
         >
-          <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+          <div className="container mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-8">
-              <a href="/" className={`text-xl font-bold tracking-tight ${isTransparent ? 'text-white' : 'text-foreground'}`}>Smart24</a>
+              <a href="/" className="flex items-center">
+                <img src="/asset/Logo.png" alt="Smart24" className={`h-20 w-auto object-contain ${isTransparent ? 'brightness-0 invert' : ''}`} />
+              </a>
               {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>
             <HeaderNav isTransparent={isTransparent} />
