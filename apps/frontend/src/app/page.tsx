@@ -8,6 +8,8 @@ import { FlashSale } from "@/components/FlashSale";
 import { PremiumBentoCategories } from "@/components/PremiumBentoCategories";
 import { JustForYou } from "@/components/JustForYou";
 import { HowItWorks } from "@/components/HowItWorks";
+import { SubscriptionAd } from "@/components/SubscriptionAd";
+import { MembershipAd } from "@/components/MembershipAd";
 
 const DUMMY_ADS: HeroAd[] = [
   {
@@ -54,11 +56,17 @@ export default function Home() {
       {/* Offer Slider */}
       <OfferSlider />
 
+      {/* Subscription Advertisement */}
+      <SubscriptionAd />
+
       {/* Special Offer Banner before Corporate Collections */}
       <SpecialOfferBanner />
 
       {/* Flash Sale */}
       <FlashSale />
+
+      {/* Membership Advertisement */}
+      <MembershipAd />
 
       {/* Premium Categories Bento Box */}
       <PremiumBentoCategories />
