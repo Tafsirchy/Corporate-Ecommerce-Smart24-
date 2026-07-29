@@ -13,7 +13,11 @@ export class CartService {
     if (!userId && !sessionId) throw new BadRequestException('Must provide userId or sessionId');
     let cart = await this.cartRepo.getCart(userId, sessionId);
     if (!cart) {
-      await this.cartRepo.createCart(userId, sessionId);
+      try {
+        await this.cartRepo.createCart(userId, sessionId);
+      } catch (error) {
+        // Ignore unique constraint violation if cart was created concurrently
+      }
       cart = await this.cartRepo.getCart(userId, sessionId);
     }
     return cart!;
