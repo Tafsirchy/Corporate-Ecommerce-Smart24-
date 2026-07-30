@@ -348,6 +348,27 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
+                {/* Net-30 Terms (B2B Only) */}
+                {user?.role === 'BUSINESS' && user.businessProfile && (
+                  <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentCategory === 'NET_30' ? 'border-blue-500 bg-blue-50' : 'hover:bg-muted'}`}>
+                    <input
+                      type="radio"
+                      name="paymentCategory"
+                      value="NET_30"
+                      checked={paymentCategory === 'NET_30'}
+                      onChange={() => {
+                        setPaymentCategory('NET_30');
+                        setPaymentMethod('NET_30');
+                      }}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div>
+                      <div className="font-bold text-foreground">Corporate Terms (Net-30)</div>
+                      <div className="text-sm text-muted-foreground">Pay invoice within 30 days of delivery</div>
+                    </div>
+                  </label>
+                )}
+
                 {/* Pay Online */}
                 <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentCategory === 'ONLINE' ? 'border-primary-500 bg-primary-50' : 'hover:bg-muted'}`}>
                   <input
@@ -357,7 +378,7 @@ export default function CheckoutPage() {
                     checked={paymentCategory === 'ONLINE'}
                     onChange={() => {
                       setPaymentCategory('ONLINE');
-                      if (paymentMethod === 'COD') setPaymentMethod('STRIPE');
+                      if (paymentMethod === 'COD' || paymentMethod === 'NET_30') setPaymentMethod('STRIPE');
                     }}
                     className="w-4 h-4 text-primary/90 focus:ring-primary-500"
                   />
