@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -354,7 +356,7 @@ export default function AdminProducts() {
             {images.length > 0 && (
               <div className="flex gap-2 mt-4">
                 {images.map((img, i) => (
-                  <img key={i} src={img} alt="Preview" className="h-20 w-20 object-cover rounded border" />
+                  <OptimizedImage key={i} src={img} alt="Preview" className="h-20 w-20 object-cover rounded border" />
                 ))}
               </div>
             )}
@@ -386,7 +388,7 @@ export default function AdminProducts() {
             {products.map(prod => (
               <tr key={prod.id} className="hover:bg-muted">
                 <td className="p-4">
-                  {prod.images?.[0] ? <img src={prod.images[0]} alt={prod.name} className="h-10 w-10 object-cover rounded" /> : '-'}
+                  {prod.images?.[0] ? <OptimizedImage src={prod.images[0]} alt={prod.name} className="h-10 w-10 object-cover rounded" /> : '-'}
                 </td>
                 <td className="p-4 font-medium">{prod.name}</td>
                 <td className="p-4 text-muted-foreground">৳{prod.price}</td>

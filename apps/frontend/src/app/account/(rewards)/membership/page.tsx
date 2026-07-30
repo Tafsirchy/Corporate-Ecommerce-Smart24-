@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/context/AuthContext';
 import Link from 'next/link';
@@ -49,7 +51,7 @@ export default function MembershipPage() {
             <h2 className="text-4xl font-extrabold mb-4 flex items-center gap-3">
               {currentLevel ? currentLevel.name : 'Basic'} Member
               {currentLevel?.badgeUrl && (
-                <img src={currentLevel.badgeUrl} alt="Badge" className="w-8 h-8 object-contain" />
+                <OptimizedImage src={currentLevel.badgeUrl} alt="Badge" className="w-8 h-8 object-contain" />
               )}
             </h2>
             <p className="text-muted-foreground text-sm mb-6">
@@ -97,7 +99,7 @@ export default function MembershipPage() {
             <div key={level.id} className={`border rounded-xl p-6 flex flex-col ${isCurrent ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500' : 'bg-white border-border'}`}>
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-bold text-lg text-foreground">{level.name}</h4>
-                {level.badgeUrl && <img src={level.badgeUrl} alt="Badge" className="w-6 h-6" />}
+                {level.badgeUrl && <OptimizedImage src={level.badgeUrl} alt="Badge" className="w-6 h-6" />}
               </div>
               
               <div className="mb-4 pb-4 border-b border-border flex-1">

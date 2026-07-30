@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useAuth, apiClient } from '../../../../context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -118,7 +120,7 @@ export default function CancellationRequestPage() {
                         <div key={item.id} className="flex gap-4">
                           <div className="w-12 h-12 bg-white rounded border flex-shrink-0">
                             {item.product.images?.[0] && (
-                              <img src={item.product.images[0]} className="w-full h-full object-contain p-1" alt={item.product.name} />
+                              <OptimizedImage src={item.product.images[0]} className="w-full h-full object-contain p-1" alt={item.product.name} />
                             )}
                           </div>
                           <div>

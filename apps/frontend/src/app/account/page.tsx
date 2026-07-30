@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useAuth, apiClient } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -231,7 +233,7 @@ export default function AccountPage() {
                         <td className="py-4 px-4">
                           {/* Display thumbnail based on order items if available, else placeholder */}
                           <div className="w-10 h-10 bg-muted/80 rounded">
-                            <img src="https://via.placeholder.com/40" alt="Item" className="w-full h-full object-cover rounded" />
+                            <OptimizedImage src="https://via.placeholder.com/40" alt="Item" className="w-full h-full object-cover rounded" />
                           </div>
                         </td>
                         <td className="py-4 px-4 text-[13px] text-foreground text-right">৳ {order.totalAmount}</td>

@@ -1,3 +1,4 @@
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import Link from "next/link";
 
 export function Footer() {
@@ -5,7 +6,7 @@ export function Footer() {
     <footer className="bg-primary-900 text-white mt-auto py-12">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
-          <img src="/asset/LogoWithSlogan.png" alt="Smart24" className="h-24 w-auto object-contain" />
+          <OptimizedImage src="/asset/LogoWithSlogan.png" alt="Smart24" className="h-24 w-auto object-contain" />
           <p className="text-primary-100/70 leading-relaxed text-sm">Your trusted business supply chain partner in Bangladesh, providing seamless B2B procurement and retail solutions.</p>
         </div>
         <div>

@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -219,7 +221,7 @@ export default function AdminBusinessCollections() {
                       className="block w-full text-xs text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                     />
                     {data.imageUrl && (
-                      <img src={data.imageUrl} alt="Preview" className="h-12 w-12 object-cover rounded border" />
+                      <OptimizedImage src={data.imageUrl} alt="Preview" className="h-12 w-12 object-cover rounded border" />
                     )}
                   </div>
                 </div>

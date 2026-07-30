@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useWishlist } from '../../../context/WishlistContext';
 import { useAuth, apiClient } from '../../../context/AuthContext';
 import { ProductCard } from '../../../components/ProductCard';
@@ -223,7 +225,7 @@ export default function WishlistPage() {
                         <div key={item.productId} className="flex flex-col sm:flex-row items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-border hover:border-primary-100 transition">
                           <div className="w-24 h-24 bg-muted border border-border rounded overflow-hidden flex-shrink-0 relative">
                             {item.product?.images?.[0] ? (
-                              <img src={item.product.images[0]} alt={item.product?.name} className="w-full h-full object-cover mix-blend-multiply" />
+                              <OptimizedImage src={item.product.images[0]} alt={item.product?.name} className="w-full h-full object-cover mix-blend-multiply" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                             )}
@@ -308,7 +310,7 @@ export default function WishlistPage() {
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 bg-muted rounded-full border border-border p-2 flex items-center justify-center flex-shrink-0">
                               {store.brand.logoUrl ? (
-                                <img src={store.brand.logoUrl} alt={store.brand.name} className="max-w-full max-h-full object-contain" />
+                                <OptimizedImage src={store.brand.logoUrl} alt={store.brand.name} className="max-w-full max-h-full object-contain" />
                               ) : (
                                 <Store className="w-8 h-8 text-muted-foreground" />
                               )}

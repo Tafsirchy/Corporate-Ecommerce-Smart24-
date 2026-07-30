@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -75,7 +77,7 @@ export default function AdminSecurityPage() {
                 Use Google Authenticator, Authy, or your preferred TOTP app.
               </p>
               <div className="mt-3">
-                <img src={qrCode} alt="2FA QR Code" className="w-48 h-48 border rounded" />
+                <OptimizedImage src={qrCode} alt="2FA QR Code" className="w-48 h-48 border rounded" />
               </div>
               <div className="mt-3 text-sm text-muted-foreground">
                 Or enter this code manually: <strong className="text-foreground">{secret}</strong>

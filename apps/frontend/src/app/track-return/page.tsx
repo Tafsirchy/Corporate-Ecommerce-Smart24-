@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { apiClient } from '../../context/AuthContext';
@@ -147,7 +149,7 @@ function TrackReturnContent() {
                   <div className="flex gap-4">
                     <div className="w-[60px] h-[60px] flex-shrink-0 bg-white rounded border p-1">
                       {returnReq.orderItem.product?.images?.[0] ? (
-                        <img src={returnReq.orderItem.product.images[0]} alt="product" className="w-full h-full object-contain" />
+                        <OptimizedImage src={returnReq.orderItem.product.images[0]} alt="product" className="w-full h-full object-contain" />
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>

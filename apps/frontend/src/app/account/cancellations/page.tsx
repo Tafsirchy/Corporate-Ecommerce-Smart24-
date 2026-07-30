@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useAuth, apiClient } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -162,7 +164,7 @@ export default function MyCancellationsPage() {
                         <div key={index} className="flex gap-4 py-3 border-b border-gray-50 last:border-0 last:pb-0">
                           <div className="w-[80px] h-[80px] flex-shrink-0 bg-muted rounded overflow-hidden border border-border p-1">
                             {item.product.images && item.product.images.length > 0 ? (
-                              <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-contain" />
+                              <OptimizedImage src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-contain" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

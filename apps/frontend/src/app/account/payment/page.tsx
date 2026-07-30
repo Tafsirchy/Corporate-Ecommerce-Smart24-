@@ -1,4 +1,5 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useAuth, apiClient } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -62,8 +63,8 @@ export default function PaymentOptionsPage() {
     if (provider === 'NAGAD') {
       return (
         <div className="w-[45px] h-[30px] relative flex items-center justify-center">
-          <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad" className="object-contain max-h-[30px]"
-               onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+          <OptimizedImage src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad" className="object-contain max-h-[30px]"
+               onError={(e: any) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
           <span className="hidden text-[#ed1c24] font-bold text-[12px] italic">Nagad</span>
         </div>
       );
@@ -71,8 +72,8 @@ export default function PaymentOptionsPage() {
     if (provider === 'BKASH') {
       return (
         <div className="w-[45px] h-[30px] relative flex items-center justify-center">
-          <img src="https://download.logo.wine/logo/BKash/BKash-Logo.wine.png" alt="bKash" className="object-contain max-h-[30px]"
-               onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+          <OptimizedImage src="https://download.logo.wine/logo/BKash/BKash-Logo.wine.png" alt="bKash" className="object-contain max-h-[30px]"
+               onError={(e: any) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
           <span className="hidden text-[#e2136e] font-bold text-[12px]">bKash</span>
         </div>
       );

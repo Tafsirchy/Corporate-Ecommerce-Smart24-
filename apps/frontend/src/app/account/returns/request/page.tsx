@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useAuth, apiClient } from '../../../../context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -129,7 +131,7 @@ export default function ReturnRequestPage() {
                         <div className="flex gap-4 w-full">
                           <div className="w-16 h-16 bg-muted rounded flex-shrink-0">
                             {item.product.images?.[0] && (
-                              <img src={item.product.images[0]} className="w-full h-full object-contain mix-blend-multiply p-1" alt={item.product.name} />
+                              <OptimizedImage src={item.product.images[0]} className="w-full h-full object-contain mix-blend-multiply p-1" alt={item.product.name} />
                             )}
                           </div>
                           <div>

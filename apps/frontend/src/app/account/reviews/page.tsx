@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useAuth, apiClient } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -155,7 +157,7 @@ export default function MyReviewsPage() {
                       <div key={`${item.orderId}-${item.product.id}-${index}`} className="flex flex-col sm:flex-row gap-4 p-4 border border-border rounded-lg hover:border-primary-100 transition">
                         <div className="w-[80px] h-[80px] flex-shrink-0 bg-muted rounded border border-border p-1">
                           {item.product.images && item.product.images.length > 0 ? (
-                            <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-contain" />
+                            <OptimizedImage src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-contain" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -194,7 +196,7 @@ export default function MyReviewsPage() {
                         <div className="flex gap-4 mb-4">
                           <div className="w-[60px] h-[60px] flex-shrink-0 bg-muted rounded border border-border p-1">
                             {review.product?.images?.[0] ? (
-                              <img src={review.product.images[0]} alt={review.product.name} className="w-full h-full object-contain" />
+                              <OptimizedImage src={review.product.images[0]} alt={review.product.name} className="w-full h-full object-contain" />
                             ) : null}
                           </div>
                           <div>
@@ -217,7 +219,7 @@ export default function MyReviewsPage() {
                           {review.images && review.images.length > 0 && (
                             <div className="flex gap-2 mt-3 overflow-x-auto">
                               {review.images.map((img: string, idx: number) => (
-                                <img key={idx} src={img} alt="Review" className="h-16 w-16 object-cover rounded border border-border" />
+                                <OptimizedImage key={idx} src={img} alt="Review" className="h-16 w-16 object-cover rounded border border-border" />
                               ))}
                             </div>
                           )}

@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -100,11 +102,9 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
       
       {/* Product Image */}
       <Link href={`/shop/${product.slug}`} className={`block relative overflow-hidden bg-muted ${viewMode === 'list' ? 'w-48 md:w-64 shrink-0' : 'aspect-[5/4]'}`}>
-        <img
-          src={product.images?.[0] || 'https://placehold.co/400x320?text=No+Image'}
+        <OptimizedImage src={product.images?.[0] || 'https://placehold.co/400x320?text=No+Image'}
           alt={product.name}
-          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105 mix-blend-multiply"
-        />
+          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105 mix-blend-multiply" />
         
         {/* Top Badges overlay on image */}
         {mock.isChoice && (

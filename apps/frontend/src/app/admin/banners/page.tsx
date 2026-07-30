@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -155,7 +157,7 @@ export default function AdminBanners() {
             </div>
             {imageUrl && (
               <div className="mt-4">
-                <img src={imageUrl} alt="Preview" className="h-32 object-contain rounded border bg-muted p-2" />
+                <OptimizedImage src={imageUrl} alt="Preview" className="h-32 object-contain rounded border bg-muted p-2" />
               </div>
             )}
           </div>
@@ -197,7 +199,7 @@ export default function AdminBanners() {
               banners.map(banner => (
                 <tr key={banner.id} className="hover:bg-muted">
                   <td className="p-4">
-                    <img src={banner.imageUrl} alt={banner.title} className="h-16 w-auto object-cover rounded border" />
+                    <OptimizedImage src={banner.imageUrl} alt={banner.title} className="h-16 w-auto object-cover rounded border" />
                   </td>
                   <td className="p-4">
                     <div className="font-medium text-foreground">{banner.title}</div>

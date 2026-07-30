@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/context/AuthContext';
@@ -32,11 +34,9 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
         </>
       ) : (
         <div className="absolute inset-0 z-0 flex items-end justify-end p-3">
-          <img
-            src={imageUrl}
+          <OptimizedImage src={imageUrl}
             alt={typeof title === 'string' ? title : subtitle}
-            className={`object-contain transition-transform duration-700 group-hover:scale-105 mix-blend-multiply ${imageClassName}`}
-          />
+            className={`object-contain transition-transform duration-700 group-hover:scale-105 mix-blend-multiply ${imageClassName}`} />
         </div>
       )}
 

@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
@@ -227,7 +229,7 @@ export default function Header() {
                             >
                               <div className="w-10 h-10 bg-muted rounded overflow-hidden flex-shrink-0">
                                 {product.images?.[0] ? (
-                                  <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
+                                  <OptimizedImage src={product.images[0]} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center text-[8px] text-muted-foreground">No img</div>
                                 )}
@@ -297,7 +299,7 @@ export default function Header() {
           <div className="container mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-8">
               <a href="/" className="flex items-center">
-                <img src="/asset/Logo.png" alt="Smart24" className={`h-16 w-auto object-contain scale-[1.35] origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
+                <OptimizedImage src="/asset/Logo.png" alt="Smart24" className={`h-16 w-auto object-contain scale-[1.35] origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
               </a>
               {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>

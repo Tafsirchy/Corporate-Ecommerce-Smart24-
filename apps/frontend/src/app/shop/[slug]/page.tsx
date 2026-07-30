@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
@@ -255,11 +257,9 @@ export default function ProductDetailPage() {
           {/* Column 1: Image Gallery (40%) */}
           <div className="w-full lg:w-[40%] bg-white p-4 rounded-xl shadow-sm border border-border flex flex-col">
             <div className="aspect-square rounded-lg overflow-hidden border border-border mb-4 bg-muted relative group cursor-crosshair">
-              <img 
-                src={activeImage || 'https://placehold.co/800x800?text=No+Image'} 
+              <OptimizedImage src={activeImage || 'https://placehold.co/800x800?text=No+Image'} 
                 alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
             </div>
             
             {product.images && product.images.length > 1 && (
@@ -270,7 +270,7 @@ export default function ProductDetailPage() {
                     onClick={() => setActiveImage(img)}
                     className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${activeImage === img ? 'border-primary-500' : 'border-transparent hover:border-border'}`}
                   >
-                    <img src={img} alt={`${product.name} ${i+1}`} className="w-full h-full object-cover" />
+                    <OptimizedImage src={img} alt={`${product.name} ${i+1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -670,7 +670,7 @@ export default function ProductDetailPage() {
                         {review.images && review.images.length > 0 && (
                           <div className="flex gap-2 mt-3">
                             {review.images.map((img: string, idx: number) => (
-                              <img key={idx} src={img} alt="Review attachment" className="w-20 h-20 object-cover rounded-md border border-border" />
+                              <OptimizedImage key={idx} src={img} alt="Review attachment" className="w-20 h-20 object-cover rounded-md border border-border" />
                             ))}
                           </div>
                         )}

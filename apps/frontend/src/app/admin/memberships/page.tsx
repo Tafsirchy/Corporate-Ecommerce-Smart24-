@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/context/AuthContext';
 
@@ -162,7 +164,7 @@ export default function AdminMembershipsPage() {
               <tr key={level.id} className="border-b border-gray-50 hover:bg-muted">
                 <td className="p-4 text-sm text-foreground">{level.priority}</td>
                 <td className="p-4 text-sm font-bold text-foreground flex items-center gap-2">
-                  {level.badgeUrl && <img src={level.badgeUrl} alt="Badge" className="w-6 h-6 object-contain" />}
+                  {level.badgeUrl && <OptimizedImage src={level.badgeUrl} alt="Badge" className="w-6 h-6 object-contain" />}
                   {level.name}
                 </td>
                 <td className="p-4 text-sm text-muted-foreground">৳{level.requiredAmount.toLocaleString()}</td>

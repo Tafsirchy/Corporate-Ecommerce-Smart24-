@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
 
@@ -36,11 +38,9 @@ export const SpecialOfferBanner = () => {
 
   const content = (
     <div className="w-full overflow-hidden rounded-xl shadow-sm border border-border mt-8 mb-4">
-      <img 
-        src={banner.imageUrl} 
+      <OptimizedImage src={banner.imageUrl} 
         alt={banner.title || "Special Offer"} 
-        className="w-full h-24 md:h-32 lg:h-40 object-cover object-center" 
-      />
+        className="w-full h-24 md:h-32 lg:h-40 object-cover object-center" />
     </div>
   );
 

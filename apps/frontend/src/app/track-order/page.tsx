@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { apiClient } from '../../context/AuthContext';
@@ -214,7 +216,7 @@ function TrackOrderContent() {
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-white rounded-lg border border-border overflow-hidden flex-shrink-0">
                       {item.product?.images?.[0] ? (
-                        <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                        <OptimizedImage src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
                           <Package size={24} />

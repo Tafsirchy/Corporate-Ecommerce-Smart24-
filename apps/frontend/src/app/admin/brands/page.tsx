@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -197,7 +199,7 @@ export default function AdminBrands() {
             {brands.map(brand => (
               <tr key={brand.id} className="hover:bg-muted">
                 <td className="p-4">
-                  {brand.logoUrl ? <img src={brand.logoUrl} alt={brand.name} className="h-8 w-8 object-contain" /> : '-'}
+                  {brand.logoUrl ? <OptimizedImage src={brand.logoUrl} alt={brand.name} className="h-8 w-8 object-contain" /> : '-'}
                 </td>
                 <td className="p-4 font-medium">{brand.name}</td>
                 <td className="p-4 text-muted-foreground">{brand.slug}</td>

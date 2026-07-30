@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 
 import { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle2 } from 'lucide-react';
@@ -232,12 +234,10 @@ export default function ContactPage() {
                     />
                     {formData.attachmentUrl && (
                       <div className="mt-4">
-                        <img 
-                          src={formData.attachmentUrl} 
+                        <OptimizedImage src={formData.attachmentUrl} 
                           alt="Preview" 
                           style={{ maxWidth: '100%', maxHeight: '300px' }} 
-                          className="rounded border"
-                        />
+                          className="rounded border" />
                       </div>
                     )}
                   </div>

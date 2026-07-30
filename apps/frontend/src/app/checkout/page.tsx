@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth, apiClient } from '../../context/AuthContext';
@@ -428,7 +430,7 @@ export default function CheckoutPage() {
                           }}
                           className="sr-only"
                         />
-                        <img src="/asset/bkash.png" alt="bKash" className="h-8 object-contain mb-1" />
+                        <OptimizedImage src="/asset/bkash.png" alt="bKash" className="h-8 object-contain mb-1" />
                         <span className={`text-xs font-bold ${paymentMethod === 'BKASH' ? 'text-pink-600' : 'text-muted-foreground'}`}>bKash</span>
                         {paymentMethod === 'BKASH' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-pink-600" />}
                       </label>
@@ -448,7 +450,7 @@ export default function CheckoutPage() {
                           }}
                           className="sr-only"
                         />
-                        <img src="/asset/nagad.png" alt="Nagad" className="h-8 object-contain mb-1" />
+                        <OptimizedImage src="/asset/nagad.png" alt="Nagad" className="h-8 object-contain mb-1" />
                         <span className={`text-xs font-bold ${paymentMethod === 'NAGAD' ? 'text-orange-600' : 'text-muted-foreground'}`}>Nagad</span>
                         {paymentMethod === 'NAGAD' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-orange-600" />}
                       </label>
@@ -468,7 +470,7 @@ export default function CheckoutPage() {
                           }}
                           className="sr-only"
                         />
-                        <img src="/asset/rocket.png" alt="Rocket" className="h-8 object-contain mb-1" />
+                        <OptimizedImage src="/asset/rocket.png" alt="Rocket" className="h-8 object-contain mb-1" />
                         <span className={`text-xs font-bold ${paymentMethod === 'ROCKET' ? 'text-purple-600' : 'text-muted-foreground'}`}>Rocket</span>
                         {paymentMethod === 'ROCKET' && <CheckCircle2 size={16} className="absolute top-2 right-2 text-purple-600" />}
                       </label>
@@ -485,11 +487,11 @@ export default function CheckoutPage() {
                               <span className="text-xs font-bold text-foreground">Visa</span>
                             </div>
                             <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-border">
-                              <img src="/asset/mastercard.svg" alt="MasterCard" className="h-5 w-10 object-contain" />
+                              <OptimizedImage src="/asset/mastercard.svg" alt="MasterCard" className="h-5 w-10 object-contain" />
                               <span className="text-xs font-bold text-foreground">MasterCard</span>
                             </div>
                             <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-border">
-                              <img src="/asset/amex.svg" alt="American Express" className="h-5 w-10 object-contain" />
+                              <OptimizedImage src="/asset/amex.svg" alt="American Express" className="h-5 w-10 object-contain" />
                               <span className="text-xs font-bold text-foreground">Amex</span>
                             </div>
                           </div>
@@ -524,7 +526,7 @@ export default function CheckoutPage() {
                 <div className="flex gap-3">
                   <div className="w-12 h-12 bg-white border rounded flex items-center justify-center overflow-hidden">
                     {item.product?.images?.[0] ? (
-                      <img src={item.product.images[0]} className="w-full h-full object-cover" />
+                      <OptimizedImage src={item.product.images[0]} className="w-full h-full object-cover" alt={item.product?.name || "Product"} />
                     ) : (
                       <span className="text-[10px] text-muted-foreground">Img</span>
                     )}

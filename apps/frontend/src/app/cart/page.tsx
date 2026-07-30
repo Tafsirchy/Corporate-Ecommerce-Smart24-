@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -90,7 +92,7 @@ export default function CartPage() {
               <div key={item.productId} className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-border">
                 <div className="w-24 h-24 bg-muted border border-border rounded overflow-hidden flex-shrink-0 relative group">
                   {item.product?.images?.[0] ? (
-                    <img src={item.product.images[0]} alt={item.product?.name} className="w-full h-full object-cover mix-blend-multiply" />
+                    <OptimizedImage src={item.product.images[0]} alt={item.product?.name} className="w-full h-full object-cover mix-blend-multiply" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                   )}

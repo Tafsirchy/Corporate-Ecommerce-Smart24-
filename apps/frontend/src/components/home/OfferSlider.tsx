@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 
 import React, { useEffect, useState, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -69,18 +71,14 @@ export const OfferSlider = () => {
                   <div key={banner.id} className="min-w-0 flex-[0_0_100%] h-full relative">
                     {banner.targetUrl ? (
                       <Link href={banner.targetUrl} className="block w-full h-full">
-                        <img 
-                          src={banner.imageUrl} 
+                        <OptimizedImage src={banner.imageUrl} 
                           alt={banner.title} 
-                          className="w-full h-full object-cover bg-white" 
-                        />
+                          className="w-full h-full object-cover bg-white" />
                       </Link>
                     ) : (
-                      <img 
-                        src={banner.imageUrl} 
+                      <OptimizedImage src={banner.imageUrl} 
                         alt={banner.title} 
-                        className="w-full h-full object-cover bg-white" 
-                      />
+                        className="w-full h-full object-cover bg-white" />
                     )}
                   </div>
                 ))}

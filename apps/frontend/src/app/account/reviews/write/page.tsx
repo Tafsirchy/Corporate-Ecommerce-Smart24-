@@ -1,4 +1,6 @@
 'use client';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
+
 import { useAuth, apiClient } from '../../../../context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -107,7 +109,7 @@ export default function WriteReviewPage() {
                 <div className="flex gap-4 mb-8 bg-muted p-4 rounded-lg border border-border">
                   <div className="w-16 h-16 bg-white rounded border flex-shrink-0 p-1">
                     {product.images?.[0] && (
-                      <img src={product.images[0]} className="w-full h-full object-contain" alt={product.name} />
+                      <OptimizedImage src={product.images[0]} className="w-full h-full object-contain" alt={product.name} />
                     )}
                   </div>
                   <div className="flex flex-col justify-center">
