@@ -163,6 +163,7 @@ async function main() {
   const productData = products.map((p, i) => ({
     name: p.name,
     slug: slugify(p.name + '-' + Math.random().toString(36).substring(7), { lower: true, strict: true }),
+    sku: 'SKU-' + i + '-' + Math.random().toString(36).substring(7).toUpperCase(),
     description: `High quality ${p.name.toLowerCase()} for your everyday needs. Discover the best in class.`,
     price: p.price,
     discountPrice: (p as any).discountPrice || null,
@@ -197,6 +198,22 @@ async function main() {
         order: 2
       },
       {
+        title: 'Stationery Packages',
+        imageUrl: 'https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?auto=format&fit=crop&q=80&w=1935&h=400',
+        targetUrl: '/shop',
+        type: 'MAIN_CAROUSEL',
+        isActive: true,
+        order: 3
+      },
+      {
+        title: 'Corporate Pantry Essentials',
+        imageUrl: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=2070&h=400',
+        targetUrl: '/shop',
+        type: 'MAIN_CAROUSEL',
+        isActive: true,
+        order: 4
+      },
+      {
         title: 'Special Offer Banner',
         imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200&h=200',
         targetUrl: '/contact',
@@ -207,6 +224,50 @@ async function main() {
     ]
   });
   console.log('Banners created.');
+
+  // 4. Hero Content
+  const heroContentsData = [
+    {
+      title: "Smart Office Refresh",
+      subtitle: "Modern desks, ergonomic seating, and premium accessories to power every workday.",
+      imageUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=2070&auto=format&fit=crop",
+      categoryUrl: "/shop/furniture",
+      order: 1
+    },
+    {
+      title: "Premium Pantry Picks",
+      subtitle: "Treat your team to curated coffee, tea, snacks, and wellness essentials.",
+      imageUrl: "https://images.unsplash.com/photo-1517705008128-361805f42e86?q=80&w=2069&auto=format&fit=crop",
+      categoryUrl: "/shop/pantry",
+      order: 2
+    },
+    {
+      title: "Next-Gen Tech Essentials",
+      subtitle: "Upgrade meeting rooms and workstations with the latest gadgets and audio gear.",
+      imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1935&auto=format&fit=crop",
+      categoryUrl: "/shop/electronics",
+      order: 3
+    },
+    {
+      title: "Corporate Stationery Kits",
+      subtitle: "Keep your team stocked with stylish planners, notebooks, and writing essentials.",
+      imageUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=2070&auto=format&fit=crop",
+      categoryUrl: "/shop/stationery",
+      order: 4
+    },
+    {
+      title: "Executive Gift Bundles",
+      subtitle: "Celebrate clients and employees with polished, premium corporate gift sets.",
+      imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=2070&auto=format&fit=crop",
+      categoryUrl: "/shop/gifts",
+      order: 5
+    }
+  ];
+  await prisma.heroContent.deleteMany();
+  await prisma.heroContent.createMany({
+    data: heroContentsData
+  });
+  console.log('Hero Contents created.');
 
   // 6. Settings
   await prisma.setting.createMany({
