@@ -109,14 +109,14 @@ export const SubscriptionAd = () => {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-400/20 text-[9px] font-bold tracking-[0.2em] text-indigo-300 uppercase mb-6">
               <Repeat className="w-3 h-3" />
-              <span>Smart24 Auto-Replenish</span>
+              <span>Smart24 Auto-Refill</span>
             </div>
             
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif italic tracking-tight mb-4 text-white drop-shadow-sm">
-              Effortless Restocking
+              Easy Restocking
             </h3>
             <p className="text-indigo-200/80 text-sm mb-10 leading-relaxed font-light max-w-sm">
-              Automate deliveries of your essential office supplies and enjoy exclusive corporate pricing. A seamless experience designed for modern enterprises.
+              Get your office supplies delivered automatically with special business prices. A simple process made for modern companies.
             </p>
             
             <Link href="/subscriptions">
