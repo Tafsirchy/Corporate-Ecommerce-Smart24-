@@ -77,4 +77,23 @@ export class CartService {
 
     return this.getCart(userId);
   }
+
+  async addBulkItems(userId: string | undefined, sessionId: string | undefined, items: { productId: string; quantity: number }[]) {
+    const cart = await this.getCart(userId, sessionId);
+    
+    // Process items sequentially
+    for (const item of items) {
+      const product = await this.productRepo.findById(item.productId);
+      if (product) {
+        // Find if it already exists to sum
+        const existingItem = cart.items?.find(i => i.productId === item.productId);
+        const newQuantity = (existingItem?.quantity || 0) + item.quantity;
+        const cappedQuantity = Math.min(newQuantity, product.stock || newQuantity);
+        
+        await this.cartRepo.upsertCartItem(cart.id, item.productId, cappedQuantity);
+      }
+    }
+    
+    return this.getCart(userId, sessionId);
+  }
 }
