@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, UseGuards, Req, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
@@ -48,11 +48,15 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user orders (Admin sees all)' })
-  getOrders(@Req() req: any) {
+  getOrders(
+    @Req() req: any,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string
+  ) {
     if (req.user.role === Role.ADMIN) {
-      return this.ordersService.getAllOrders();
+      return this.ordersService.getAllOrders(page, limit);
     }
-    return this.ordersService.getUserOrders(req.user.id);
+    return this.ordersService.getUserOrders(req.user.id, page, limit);
   }
 
   @Get(':id')

@@ -19,20 +19,31 @@ export class OrderRepositoryService {
     });
   }
 
-  async findOrdersByUser(userId: string) {
-    return this.prisma.order.findMany({
-      where: { userId },
+  async findOrdersByUser(userId: string, skip?: number, take?: number) {
+    const where = { userId };
+    const query = {
+      where,
       include: {
         items: {
           include: { product: true }
         }
       },
-      orderBy: { createdAt: 'desc' }
-    });
+      orderBy: { createdAt: 'desc' as const }
+    };
+    
+    if (skip !== undefined && take !== undefined) {
+      const [data, total] = await Promise.all([
+        this.prisma.order.findMany({ ...query, skip, take }),
+        this.prisma.order.count({ where })
+      ]);
+      return { data, total };
+    }
+    
+    return this.prisma.order.findMany(query);
   }
 
-  async findAllOrders() {
-    return this.prisma.order.findMany({
+  async findAllOrders(skip?: number, take?: number) {
+    const query = {
       include: {
         user: {
           select: { id: true, name: true, email: true }
@@ -41,8 +52,18 @@ export class OrderRepositoryService {
           include: { product: true }
         }
       },
-      orderBy: { createdAt: 'desc' }
-    });
+      orderBy: { createdAt: 'desc' as const }
+    };
+
+    if (skip !== undefined && take !== undefined) {
+      const [data, total] = await Promise.all([
+        this.prisma.order.findMany({ ...query, skip, take }),
+        this.prisma.order.count()
+      ]);
+      return { data, total };
+    }
+    
+    return this.prisma.order.findMany(query);
   }
 
   async findOrderById(id: string) {

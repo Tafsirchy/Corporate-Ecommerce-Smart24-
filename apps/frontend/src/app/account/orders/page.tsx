@@ -5,6 +5,7 @@ import { useAuth, apiClient } from '../../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Pagination } from '@/components/Pagination';
 
 export default function MyOrdersPage() {
   const { user, loading, logout } = useAuth();
@@ -13,6 +14,8 @@ export default function MyOrdersPage() {
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [meta, setMeta] = useState({ totalPages: 1, total: 0 });
 
   const tabs = ['All', 'To Pay', 'To ship', 'To Receive', 'To Review'];
 
@@ -20,15 +23,20 @@ export default function MyOrdersPage() {
     if (!loading && !user) {
       router.push('/login');
     } else if (user) {
-      fetchOrders();
+      fetchOrders(page);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, page]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (pageNum: number) => {
     try {
       setLoadingOrders(true);
-      const res = await apiClient.get('/orders');
-      setOrders(res.data);
+      const res = await apiClient.get(`/orders?page=${pageNum}&limit=10`);
+      if (res.data.data) {
+        setOrders(res.data.data);
+        setMeta(res.data.meta);
+      } else {
+        setOrders(res.data);
+      }
     } catch (e) {
       console.error('Failed to load orders', e);
     } finally {
@@ -239,6 +247,14 @@ export default function MyOrdersPage() {
                   </div>
                 ))
               )}
+            </div>
+            
+            <div className="pb-8">
+              <Pagination 
+                currentPage={page} 
+                totalPages={meta.totalPages} 
+                onPageChange={setPage} 
+              />
             </div>
           </div>
         </div>

@@ -345,8 +345,24 @@ export class OrdersService {
     throw new BadRequestException('Invalid promo code or ticket');
   }
 
-  async getUserOrders(userId: string) {
-    return this.orderRepo.findOrdersByUser(userId);
+  async getUserOrders(userId: string, pageStr?: string, limitStr?: string) {
+    if (!pageStr && !limitStr) {
+      return this.orderRepo.findOrdersByUser(userId);
+    }
+    const page = pageStr ? parseInt(pageStr, 10) : 1;
+    const limit = limitStr ? parseInt(limitStr, 10) : 20;
+    const skip = (page - 1) * limit;
+
+    const result = await this.orderRepo.findOrdersByUser(userId, skip, limit) as { data: any[], total: number };
+    return {
+      data: result.data,
+      meta: {
+        total: result.total,
+        page,
+        limit,
+        totalPages: Math.ceil(result.total / limit)
+      }
+    };
   }
 
   async getOrderDetails(userId: string, orderId: string, isAdmin: boolean) {
@@ -410,8 +426,24 @@ export class OrdersService {
     return updatedOrder;
   }
   // Admin endpoints
-  async getAllOrders() {
-    return this.orderRepo.findAllOrders();
+  async getAllOrders(pageStr?: string, limitStr?: string) {
+    if (!pageStr && !limitStr) {
+      return this.orderRepo.findAllOrders();
+    }
+    const page = pageStr ? parseInt(pageStr, 10) : 1;
+    const limit = limitStr ? parseInt(limitStr, 10) : 20;
+    const skip = (page - 1) * limit;
+
+    const result = await this.orderRepo.findAllOrders(skip, limit) as { data: any[], total: number };
+    return {
+      data: result.data,
+      meta: {
+        total: result.total,
+        page,
+        limit,
+        totalPages: Math.ceil(result.total / limit)
+      }
+    };
   }
 
   async updatePaymentStatus(orderId: string, status: any) {

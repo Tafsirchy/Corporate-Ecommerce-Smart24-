@@ -3,20 +3,29 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { Pagination } from '@/components/Pagination';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [meta, setMeta] = useState({ totalPages: 1, total: 0 });
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    fetchOrders(page);
+  }, [page]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (pageNum: number) => {
     try {
       setLoading(true);
-      const res = await apiClient.get('/orders');
-      setOrders(res.data);
+      const res = await apiClient.get(`/orders?page=${pageNum}&limit=20`);
+      if (res.data.data) {
+        setOrders(res.data.data);
+        setMeta(res.data.meta);
+      } else {
+        // Fallback for older format if necessary
+        setOrders(res.data);
+      }
     } catch (error) {
       toast.error('Failed to fetch orders');
     } finally {
@@ -142,6 +151,12 @@ export default function AdminOrders() {
           </tbody>
         </table>
       </div>
+
+      <Pagination 
+        currentPage={page} 
+        totalPages={meta.totalPages} 
+        onPageChange={setPage} 
+      />
     </div>
   );
 }
