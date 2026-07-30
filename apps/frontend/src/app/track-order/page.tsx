@@ -5,6 +5,7 @@ import { apiClient } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ClipboardList, Package, Truck, CheckCircle2, XCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function TrackOrderContent() {
   const searchParams = useSearchParams();
@@ -123,9 +124,64 @@ function TrackOrderContent() {
           </form>
         </div>
       ) : loading ? (
-        <div className="text-center py-16 flex flex-col items-center">
-           <div className="animate-spin rounded-full h-12 w-12 border-4 border-border border-t-black mb-4"></div>
-           <p className="text-muted-foreground font-medium">Loading tracking information...</p>
+        <div className="bg-white rounded-xl shadow-lg border border-border overflow-hidden">
+          <div className="bg-muted px-6 py-5 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <Skeleton className="h-7 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <Skeleton className="h-8 w-24 rounded-full" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+          <div className="px-6 py-10 my-4 max-w-3xl mx-auto relative">
+             <Skeleton className="h-1 w-full absolute top-1/2 -translate-y-1/2 z-0" />
+             <div className="flex justify-between relative z-10">
+               {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-10 w-10 rounded-full border-2 border-white" />)}
+             </div>
+          </div>
+          <div className="p-6 border-t border-border">
+            <Skeleton className="h-6 w-40 mb-4" />
+            <div className="space-y-4 mb-8 bg-muted p-4 rounded-xl border border-border">
+              {[1, 2].map((i) => (
+                <div key={i} className="flex justify-between items-center border-b border-border/50 pb-4 last:border-0 last:pb-0">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="w-16 h-16 rounded-lg shrink-0" />
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="h-5 w-48" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-24" />
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+              <div className="bg-muted p-5 rounded-xl border border-border">
+                <Skeleton className="h-6 w-40 mb-4" />
+                <Skeleton className="h-4 w-full mb-2.5" />
+                <Skeleton className="h-4 w-[85%] mb-2.5" />
+                <Skeleton className="h-4 w-[70%]" />
+                <div className="mt-4 pt-4 border-t border-border/50">
+                   <Skeleton className="h-4 w-64" />
+                </div>
+              </div>
+              <div className="bg-muted p-5 rounded-xl border border-border">
+                <Skeleton className="h-6 w-40 mb-5" />
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="flex justify-between mb-3.5">
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                ))}
+                <div className="flex justify-between pt-4 border-t border-border/50 mt-4">
+                  <Skeleton className="h-6 w-20" />
+                  <Skeleton className="h-6 w-28" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ) : order ? (
         <div className="bg-white rounded-xl shadow-lg border border-border overflow-hidden">
@@ -227,7 +283,7 @@ function TrackOrderContent() {
 
 export default function TrackOrderPage() {
   return (
-    <Suspense fallback={<div className="container py-20 text-center flex flex-col items-center justify-center min-h-[50vh]"><div className="animate-spin rounded-full h-12 w-12 border-4 border-border border-t-black mb-4"></div>Loading...</div>}>
+    <Suspense fallback={<div className="container py-20 text-center flex flex-col items-center justify-center min-h-[50vh]"><Skeleton className="h-12 w-12 rounded-full mb-4" /><Skeleton className="h-4 w-32" /></div>}>
       <TrackOrderContent />
     </Suspense>
   );
