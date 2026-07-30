@@ -32,4 +32,24 @@ export class BusinessService {
 
     return document;
   }
+
+  async getPendingVerifications() {
+    return this.prisma.businessProfile.findMany({
+      where: { verificationStatus: 'PENDING' },
+      include: {
+        documents: true,
+        user: { select: { email: true, name: true, phone: true } }
+      },
+    });
+  }
+
+  async updateVerificationStatus(id: string, status: 'APPROVED' | 'REJECTED') {
+    const profile = await this.prisma.businessProfile.findUnique({ where: { id } });
+    if (!profile) throw new NotFoundException('Business profile not found');
+
+    return this.prisma.businessProfile.update({
+      where: { id },
+      data: { verificationStatus: status },
+    });
+  }
 }
