@@ -1,12 +1,18 @@
 'use client';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { setupCache } from 'axios-cache-interceptor';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-export const apiClient = axios.create({
+export const baseApiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1',
   withCredentials: true,
+});
+
+export const apiClient = setupCache(baseApiClient, {
+  ttl: 1000 * 60 * 5, // 5 minutes cache for all GET requests
+  methods: ['get'],
 });
 
 if (typeof window !== 'undefined') {
