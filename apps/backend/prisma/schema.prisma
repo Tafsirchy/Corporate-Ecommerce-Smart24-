@@ -72,6 +72,11 @@ model BusinessProfile {
   verificationLevel  VerificationLevel  @default(BASIC)
   verificationStatus VerificationStatus @default(PENDING)
   membershipTier     MembershipTier     @default(BRONZE)
+  
+  // Credit Wallet
+  creditLimit        Float              @default(0)
+  usedCredit         Float              @default(0)
+  
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   
@@ -79,6 +84,7 @@ model BusinessProfile {
   contracts          BusinessContract[]
   rfqs               BusinessRFQ[]
   invoices           BusinessInvoice[]
+  savedLists         BusinessSavedList[]
 }
 
 enum OfferType {
@@ -229,6 +235,7 @@ model Product {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   slug        String   @unique
+  sku         String?  @unique
   description String
   price       Float
   discountPrice Float?
@@ -956,4 +963,24 @@ model BusinessInvoice {
   status          String          @default("GENERATED") // GENERATED, PAID, VOID
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+}
+
+model BusinessSavedList {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  businessId      String          @db.ObjectId
+  businessProfile BusinessProfile @relation(fields: [businessId], references: [id])
+  name            String
+  productItems    Json            // Array of { productId, qty }
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model AuditLog {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  adminId         String          @db.ObjectId
+  action          String
+  targetType      String
+  targetId        String
+  reason          String?
+  createdAt       DateTime        @default(now())
 }
