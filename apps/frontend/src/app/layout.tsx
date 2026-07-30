@@ -8,6 +8,7 @@ import { WishlistProvider } from "../context/WishlistContext";
 import { ToastContainer } from "react-toastify";
 import Link from "next/link";
 import Header from "../components/Header";
+import { Suspense } from "react";
 import StickySidebar from "../components/StickySidebar";
 
 const geistSans = Geist({
@@ -39,7 +40,9 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <Header />
+              <Suspense fallback={<div className="h-16 bg-white border-b border-border shadow-sm"></div>}>
+                <Header />
+              </Suspense>
               <StickySidebar />
               <main className="flex-1 flex flex-col">
                 {children}
