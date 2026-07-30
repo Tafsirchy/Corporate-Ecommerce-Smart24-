@@ -88,6 +88,20 @@ export class OrdersService {
 
       finalDiscountAmount = discountAmount;
       grandTotal = totalAmount - discountAmount + deliveryCharge;
+      // Ensure NET_30 is only for BUSINESS users
+      let businessProfileId: string | undefined;
+      if (data.paymentMethod === 'NET_30') {
+        if (!userId) throw new BadRequestException('NET_30 requires an active business account');
+        const user = await prismaClient.user.findUnique({
+          where: { id: userId },
+          include: { businessProfile: true }
+        });
+        if (user?.role !== 'BUSINESS' || !user.businessProfile) {
+          throw new BadRequestException('NET_30 is only available for verified business accounts');
+        }
+        businessProfileId = user.businessProfile.id;
+      }
+
       const createdOrder = await tx.order.create({
         data: {
           userId: userId || null,
@@ -108,6 +122,21 @@ export class OrdersService {
           }
         }
       });
+
+      // Create Invoice if NET_30
+      if (data.paymentMethod === 'NET_30' && businessProfileId) {
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        await tx.businessInvoice.create({
+          data: {
+            businessProfileId,
+            orderId: createdOrder.id,
+            amount: grandTotal,
+            dueDate,
+            status: 'PENDING'
+          }
+        });
+      }
 
       // Deduct stock
       for (const item of cart.items) {
