@@ -19,8 +19,8 @@ export default function CheckoutPage() {
   const [guestEmail, setGuestEmail] = useState('');
   const [guestName, setGuestName] = useState('');
   const [saveAddress, setSaveAddress] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET' | 'COD'>('COD');
-  const [paymentCategory, setPaymentCategory] = useState<'COD' | 'ONLINE'>('COD');
+  const [paymentMethod, setPaymentMethod] = useState<'STRIPE' | 'BKASH' | 'NAGAD' | 'ROCKET' | 'COD' | 'NET_30'>('COD');
+  const [paymentCategory, setPaymentCategory] = useState<'COD' | 'ONLINE' | 'NET_30'>('COD');
   const [paymentTrxId, setPaymentTrxId] = useState('');
   const [paymentAccountNumber, setPaymentAccountNumber] = useState('');
   const [selectedSavedPayment, setSelectedSavedPayment] = useState<string>('NEW'); // 'NEW' or saved payment id
