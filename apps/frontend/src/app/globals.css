@@ -204,3 +204,49 @@
     @apply font-sans;
   }
 }
+
+/* ==========================================================================
+   Universal Minimal Scrollbar (Global)
+   ========================================================================== */
+
+/* Firefox Implementation */
+html {
+  /* Sets scrollbar to a thin profile and defines thumb/track colors (Firefox only) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-400) transparent;
+}
+
+/* WebKit Implementation (Chrome, Edge, Safari, Opera) */
+::-webkit-scrollbar {
+  /* Defines the overall width of the vertical scrollbar and height of the horizontal scrollbar */
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  /* Makes the track behind the scrollbar thumb completely transparent for a minimal look */
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* Styles the draggable thumb with a neutral theme color and pill-shaped rounded corners */
+  background: var(--color-neutral-300);
+  border-radius: 9999px;
+  /* Adds a transparent border to create artificial padding so the thumb doesn't touch the edge */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  /* Darkens the thumb slightly when hovered for interactive feedback */
+  background: var(--color-neutral-400);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-button {
+  /* Completely removes the native up/down arrow buttons at the ends of the scrollbar */
+  display: none;
+  height: 0;
+  width: 0;
+}
