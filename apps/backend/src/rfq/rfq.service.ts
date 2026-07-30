@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -12,6 +12,19 @@ export class RfqService {
 
     if (!businessProfile) {
       throw new NotFoundException('Business profile not found');
+    }
+
+    if (data.productItems && Array.isArray(data.productItems)) {
+      const productIds = data.productItems.map((item: any) => item.productId).filter(Boolean);
+      if (productIds.length > 0) {
+        const foundProducts = await this.prisma.product.findMany({
+          where: { id: { in: productIds } },
+          select: { id: true }
+        });
+        if (foundProducts.length !== productIds.length) {
+          throw new BadRequestException('One or more product IDs are invalid');
+        }
+      }
     }
 
     return this.prisma.businessRFQ.create({
