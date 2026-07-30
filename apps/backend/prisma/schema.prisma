@@ -76,6 +76,7 @@ model BusinessProfile {
   updatedAt          DateTime           @updatedAt
   
   documents          BusinessDocument[]
+  contracts          BusinessContract[]
   rfqs               BusinessRFQ[]
   invoices           BusinessInvoice[]
 }
@@ -340,6 +341,7 @@ enum PaymentMethod {
   NAGAD
   ROCKET
   COD
+  NET_30
 }
 
 enum PaymentStatus {
@@ -886,6 +888,28 @@ model BusinessDocument {
   fileUrl            String             // Encrypted or secure URL
   status             VerificationStatus @default(PENDING)
   adminNotes         String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+enum ContractStatus {
+  PENDING_SIGNATURE
+  SIGNED
+  EXPIRED
+  TERMINATED
+}
+
+model BusinessContract {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  businessProfileId  String             @db.ObjectId
+  businessProfile    BusinessProfile    @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  type               String             // e.g., "NDA", "TERMS_OF_SERVICE", "SALES_AGREEMENT"
+  contentUrl         String?            // PDF URL if any
+  content            String?            // Or plain text content
+  status             ContractStatus     @default(PENDING_SIGNATURE)
+  signedAt           DateTime?
+  signedByIp         String?
+  validUntil         DateTime?
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 }
