@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -42,6 +44,10 @@ import { HeroContentModule } from './hero-content/hero-content.module';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000, // 1 minute global cache
+    }),
     PrismaModule,
     RepositoriesModule,
     AuthModule,
@@ -82,6 +88,12 @@ import { HeroContentModule } from './hero-content/hero-content.module';
     HeroContentModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule { }
