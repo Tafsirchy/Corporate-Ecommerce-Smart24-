@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { ArrowRight, Package, Truck, ShieldCheck, CreditCard } from "lucide-react";
-import { HeroBentoAccordion, HeroAd } from "@/components/HeroBentoAccordion";
-import { WhyChooseUsMarquee } from "@/components/WhyChooseUsMarquee";
-import { OfferSlider } from "@/components/OfferSlider";
-import { SpecialOfferBanner } from "@/components/SpecialOfferBanner";
-import { FlashSale } from "@/components/FlashSale";
-import { PremiumBentoCategories } from "@/components/PremiumBentoCategories";
-import { JustForYou } from "@/components/JustForYou";
-import { HowItWorks } from "@/components/HowItWorks";
-import { SubscriptionAd } from "@/components/SubscriptionAd";
-import { MembershipAd } from "@/components/MembershipAd";
+import { HeroBentoAccordion, HeroAd } from "@/components/home/HeroBentoAccordion";
+import { WhyChooseUsMarquee } from "@/components/home/WhyChooseUsMarquee";
+import { OfferSlider } from "@/components/home/OfferSlider";
+import { SpecialOfferBanner } from "@/components/home/SpecialOfferBanner";
+import { FlashSale } from "@/components/home/FlashSale";
+import { PremiumBentoCategories } from "@/components/home/PremiumBentoCategories";
+import { JustForYou } from "@/components/home/JustForYou";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { SubscriptionAd } from "@/components/home/SubscriptionAd";
+import { MembershipAd } from "@/components/home/MembershipAd";
 
 const DUMMY_ADS: HeroAd[] = [
   {
