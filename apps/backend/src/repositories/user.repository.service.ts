@@ -15,7 +15,10 @@ export class UserRepository {
   }
   
   async findById(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ 
+      where: { id },
+      include: { businessProfile: true }
+    });
   }
 
   async findByResetToken(token: string): Promise<User | null> {
