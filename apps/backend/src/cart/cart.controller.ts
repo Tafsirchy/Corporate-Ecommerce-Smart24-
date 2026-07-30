@@ -50,4 +50,16 @@ export class CartController {
     const sessionId = req.headers['x-session-id'] as string;
     return this.cartService.mergeCart(req.user.id, sessionId, body.items);
   }
+
+  @Post('bulk')
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Add multiple items to cart (e.g. from CSV bulk order)' })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  addBulkItems(
+    @Req() req: any,
+    @Body() body: MergeCartDto // Using MergeCartDto because it's just { items: { productId, quantity }[] }
+  ) {
+    const sessionId = req.headers['x-session-id'] as string;
+    return this.cartService.addBulkItems(req.user?.id, sessionId, body.items);
+  }
 }
