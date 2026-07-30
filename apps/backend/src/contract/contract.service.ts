@@ -5,13 +5,14 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ContractService {
   constructor(private prisma: PrismaService) {}
 
-  async create(businessProfileId: string, documentUrl: string, validUntil?: Date) {
+  async create(businessProfileId: string, contentUrl: string, validUntil?: Date) {
     return this.prisma.businessContract.create({
       data: {
         businessProfileId,
-        documentUrl,
+        contentUrl,
+        type: 'GENERAL_AGREEMENT',
         validUntil,
-        status: 'PENDING',
+        status: 'PENDING_SIGNATURE',
       },
     });
   }
