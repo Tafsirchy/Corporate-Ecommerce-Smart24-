@@ -74,6 +74,10 @@ model BusinessProfile {
   membershipTier     MembershipTier     @default(BRONZE)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
+  
+  documents          BusinessDocument[]
+  rfqs               BusinessRFQ[]
+  invoices           BusinessInvoice[]
 }
 
 enum OfferType {
@@ -385,6 +389,7 @@ model Order {
 
   returnRequests  ReturnRequest[]
   supportTickets  SupportTicket[]
+  businessInvoice BusinessInvoice?
 }
 
 model OrderItem {
@@ -863,4 +868,68 @@ model BackInStockAlert {
   
   isNotified Boolean @default(false)
   createdAt  DateTime @default(now())
+}
+
+enum RFQStatus {
+  SUBMITTED
+  REVIEWING
+  OFFERED
+  ACCEPTED
+  REJECTED
+}
+
+model BusinessDocument {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  businessProfileId  String             @db.ObjectId
+  businessProfile    BusinessProfile    @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  documentType       String             // e.g., "TRADE_LICENSE", "NID"
+  fileUrl            String             // Encrypted or secure URL
+  status             VerificationStatus @default(PENDING)
+  adminNotes         String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model BusinessRFQ {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  businessId      String          @db.ObjectId
+  businessProfile BusinessProfile @relation(fields: [businessId], references: [id])
+  productItems    Json            // Array of { productId, qty, specs }
+  expectedBudget  Float?
+  expectedDate    DateTime?
+  specFileUrl     String?
+  status          RFQStatus       @default(SUBMITTED)
+  slaDeadline     DateTime?
+  adminNotes      String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model PricingRule {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  businessType      BusinessType?
+  verificationLevel VerificationLevel?
+  categoryId        String?           @db.ObjectId
+  discountPercent   Float
+  effectiveFrom     DateTime
+  effectiveTo       DateTime?
+  updatedBy         String?           // adminId
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+model BusinessInvoice {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  orderId         String          @unique @db.ObjectId
+  order           Order           @relation(fields: [orderId], references: [id])
+  businessId      String          @db.ObjectId
+  businessProfile BusinessProfile @relation(fields: [businessId], references: [id])
+  bin             String?
+  tin             String?
+  hsCode          String?
+  vatAmount       Float           @default(0)
+  totalAmount     Float
+  status          String          @default("GENERATED") // GENERATED, PAID, VOID
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }

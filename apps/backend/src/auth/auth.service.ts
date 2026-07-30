@@ -37,8 +37,27 @@ export class AuthService {
     };
   }
 
-  async signup(data: Prisma.UserCreateInput) {
-    const user = await this.usersService.create(data);
+  async signup(data: any) {
+    const createData: Prisma.UserCreateInput = {
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      phone: data.phone,
+      role: data.role || 'BUYER',
+    };
+
+    if (data.role === 'BUSINESS' && data.businessProfile) {
+      createData.businessProfile = {
+        create: {
+          businessType: data.businessProfile.businessType,
+          businessName: data.businessProfile.businessName,
+          ownerName: data.businessProfile.ownerName,
+          address: data.businessProfile.address,
+        },
+      };
+    }
+
+    const user = await this.usersService.create(createData);
     const tokens = await this.login(user);
     return { ...tokens, user };
   }

@@ -30,6 +30,7 @@ import { LoyaltyModule } from './loyalty/loyalty.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { RewardsModule } from './rewards/rewards.module';
 import { FiltersModule } from './filters/filters.module';
+import { BusinessModule } from './business/business.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { FiltersModule } from './filters/filters.module';
     MembershipsModule,
     RewardsModule,
     FiltersModule,
+    BusinessModule,
   ],
   controllers: [AppController],
   providers: [AppService],

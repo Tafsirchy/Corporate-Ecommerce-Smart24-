@@ -1,4 +1,23 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, ValidateNested, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { Role, BusinessType } from '@prisma/client';
+
+export class BusinessProfileDto {
+  @IsEnum(BusinessType)
+  businessType: BusinessType;
+
+  @IsString()
+  @IsNotEmpty()
+  businessName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ownerName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+}
 
 export class SignupDto {
   @IsEmail({}, { message: 'Please provide a valid email address' })
@@ -17,6 +36,15 @@ export class SignupDto {
   @IsString()
   @IsNotEmpty({ message: 'Phone number is required' })
   phone: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BusinessProfileDto)
+  businessProfile?: BusinessProfileDto;
 }
 
 export class LoginDto {
