@@ -41,7 +41,7 @@ function ShopContent() {
   const [selectedDynamicFilters, setSelectedDynamicFilters] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
     
     // Fetch categories
     axios.get(`${apiUrl}/categories`).then(res => {
@@ -69,7 +69,7 @@ function ShopContent() {
 
   // Fetch Facets whenever category or search changes (facets represent available options)
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
     let url = `${apiUrl}/products/facets?`;
     if (categorySlug) url += `categoryId=${categorySlug}&`;
     if (searchQuery) url += `q=${searchQuery}&`;
@@ -81,7 +81,7 @@ function ShopContent() {
 
   // Fetch Products (Server-side filtering)
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
     setLoading(true);
     
     // Base URL depends on whether there is a search query
