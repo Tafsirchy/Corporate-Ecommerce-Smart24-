@@ -33,6 +33,8 @@ import { FiltersModule } from './filters/filters.module';
 import { BusinessModule } from './business/business.module';
 import { RfqModule } from './rfq/rfq.module';
 import { BulkOrderModule } from './bulk-order/bulk-order.module';
+import { InvoiceModule } from './invoice/invoice.module';
+import { ContractModule } from './contract/contract.module';
 
 @Module({
   imports: [
@@ -68,6 +70,8 @@ import { BulkOrderModule } from './bulk-order/bulk-order.module';
     BusinessModule,
     RfqModule,
     BulkOrderModule,
+    InvoiceModule,
+    ContractModule,
   ],
   controllers: [AppController],
   providers: [AppService],
