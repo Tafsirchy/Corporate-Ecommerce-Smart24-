@@ -51,13 +51,53 @@ export class OrdersService {
     let totalAmount = 0;
     const orderItems: any[] = [];
 
+    // Fetch tier discount if business
+    let userTierDiscount = 0;
+    let pricingRules: any[] = [];
+    if (userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: { businessProfile: true }
+      });
+      if (user?.role === 'BUSINESS' && user.businessProfile) {
+        const tier = user.businessProfile.membershipTier;
+        if (tier === 'SILVER') userTierDiscount = 5;
+        if (tier === 'GOLD') userTierDiscount = 10;
+        if (tier === 'PLATINUM') userTierDiscount = 15;
+        if (tier === 'DIAMOND') userTierDiscount = 20;
+        
+        // Fetch Dynamic Pricing Rules
+        const now = new Date();
+        pricingRules = await this.prisma.pricingRule.findMany({
+          where: {
+            effectiveFrom: { lte: now },
+            OR: [{ effectiveTo: null }, { effectiveTo: { gte: now } }],
+            AND: [
+              { OR: [{ businessType: user.businessProfile.businessType }, { businessType: null }] },
+              { OR: [{ verificationLevel: user.businessProfile.verificationLevel }, { verificationLevel: null }] }
+            ]
+          }
+        });
+      }
+    }
+
     for (const item of cart.items) {
       // Validate stock
       if (item.product.stock < item.quantity) {
         throw new BadRequestException(`Insufficient stock for product ${item.product.name}`);
       }
 
-      totalAmount += item.product.price * item.quantity;
+      let applicableDiscount = userTierDiscount;
+      for (const rule of pricingRules) {
+        if (!rule.categoryId || rule.categoryId === (item.product as any).categoryId) {
+          if (rule.discountPercent > applicableDiscount) {
+            applicableDiscount = rule.discountPercent;
+          }
+        }
+      }
+
+      const discountedPrice = item.product.price * (1 - applicableDiscount / 100);
+      totalAmount += discountedPrice * item.quantity;
 
       orderItems.push({
         productId: item.productId,
@@ -88,18 +128,30 @@ export class OrdersService {
 
       finalDiscountAmount = discountAmount;
       grandTotal = totalAmount - discountAmount + deliveryCharge;
-      // Ensure NET_30 is only for BUSINESS users
+      // Ensure NET_30 is only for BUSINESS users and check Credit Limit
       let businessProfileId: string | undefined;
       if (data.paymentMethod === 'NET_30') {
         if (!userId) throw new BadRequestException('NET_30 requires an active business account');
-        const user = await prismaClient.user.findUnique({
+        const user = await tx.user.findUnique({
           where: { id: userId },
           include: { businessProfile: true }
         });
         if (user?.role !== 'BUSINESS' || !user.businessProfile) {
           throw new BadRequestException('NET_30 is only available for verified business accounts');
         }
+        
+        const availableCredit = user.businessProfile.creditLimit - user.businessProfile.usedCredit;
+        if (grandTotal > availableCredit) {
+          throw new BadRequestException(`Insufficient credit limit. Available: ৳${availableCredit}`);
+        }
+        
         businessProfileId = user.businessProfile.id;
+        
+        // Increment used credit
+        await tx.businessProfile.update({
+          where: { id: businessProfileId },
+          data: { usedCredit: { increment: grandTotal } }
+        });
       }
 
       const createdOrder = await tx.order.create({
@@ -123,26 +175,13 @@ export class OrdersService {
         }
       });
 
-      // Create Invoice if NET_30
-      if (data.paymentMethod === 'NET_30' && businessProfileId) {
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 30);
-        await tx.businessInvoice.create({
-          data: {
-            businessProfileId,
-            orderId: createdOrder.id,
-            amount: grandTotal,
-            dueDate,
-            status: 'PENDING'
-          }
-        });
-      }
+
 
       // Deduct stock
       for (const item of cart.items) {
         await tx.product.update({
           where: { id: item.productId },
-          data: { stock: item.product.stock - item.quantity }
+          data: { stock: { decrement: item.quantity } }
         });
       }
 
@@ -347,6 +386,24 @@ export class OrdersService {
         });
       }
       
+      // Refund NET_30 credit
+      if (order.paymentMethod === 'NET_30' && order.userId) {
+        const user = await tx.user.findUnique({
+          where: { id: order.userId },
+          include: { businessProfile: true }
+        });
+        if (user && user.businessProfile) {
+          await tx.businessProfile.update({
+            where: { id: user.businessProfile.id },
+            data: { usedCredit: { decrement: order.totalAmount } }
+          });
+        }
+        await tx.businessInvoice.updateMany({
+          where: { orderId: order.id },
+          data: { status: 'VOID' }
+        });
+      }
+      
       return cancelled;
     });
 
@@ -384,12 +441,52 @@ export class OrdersService {
           });
         }
         
+        // Refund NET_30 credit
+        if (order.paymentMethod === 'NET_30' && order.userId) {
+          const user = await tx.user.findUnique({
+            where: { id: order.userId },
+            include: { businessProfile: true }
+          });
+          if (user && user.businessProfile) {
+            await tx.businessProfile.update({
+              where: { id: user.businessProfile.id },
+              data: { usedCredit: { decrement: order.totalAmount } }
+            });
+          }
+          await tx.businessInvoice.updateMany({
+            where: { orderId: order.id },
+            data: { status: 'VOID' }
+          });
+        }
+        
         return result;
       });
     } else {
       updatedOrder = await this.orderRepo.updateOrderStatus(orderId, status);
     }
 
+    // Generate Invoice for NET_30 upon fulfillment processing
+    if (status === 'PROCESSING' && order.paymentMethod === 'NET_30' && order.userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: order.userId },
+        include: { businessProfile: true }
+      });
+      if (user && user.businessProfile) {
+        const existingInvoice = await this.prisma.businessInvoice.findUnique({
+          where: { orderId: order.id }
+        });
+        if (!existingInvoice) {
+          await this.prisma.businessInvoice.create({
+            data: {
+              businessId: user.businessProfile.id,
+              orderId: order.id,
+              totalAmount: order.totalAmount,
+              status: 'GENERATED'
+            }
+          });
+        }
+      }
+    }
     
     // Send delivery email
     if (status === 'DELIVERED') {
