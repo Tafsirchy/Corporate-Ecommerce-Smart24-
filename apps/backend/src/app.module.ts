@@ -38,6 +38,7 @@ import { ContractModule } from './contract/contract.module';
 import { PricingRuleModule } from './pricing-rule/pricing-rule.module';
 import { SavedListModule } from './saved-list/saved-list.module';
 import { AuditLogModule } from './audit-log/audit-log.module';
+import { HeroContentModule } from './hero-content/hero-content.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { AuditLogModule } from './audit-log/audit-log.module';
     PricingRuleModule,
     SavedListModule,
     AuditLogModule,
+    HeroContentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
