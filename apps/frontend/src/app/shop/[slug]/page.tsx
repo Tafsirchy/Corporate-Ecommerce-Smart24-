@@ -32,7 +32,7 @@ export default function ProductDetailPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 
   const fetchProductAndReviews = () => {
     axios.get(`${apiUrl}/products/slug/${slug}`)
