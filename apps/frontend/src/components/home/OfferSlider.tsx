@@ -7,6 +7,7 @@ import { apiClient } from '@/context/AuthContext';
 import { ChevronLeft, ChevronRight, Star, Truck, ShieldCheck, Package, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { OfferSliderSkeleton } from './Skeletons';
 
 export const OfferSlider = () => {
   const [banners, setBanners] = useState<any[]>([]);
@@ -49,16 +50,7 @@ export const OfferSlider = () => {
   const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
 
   if (isLoading) {
-    return (
-      <section className="py-6 bg-muted overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-4 h-auto lg:h-[350px] items-stretch animate-pulse">
-            <div className="w-full lg:w-[78%] h-[300px] lg:h-full bg-muted/80"></div>
-            <div className="w-full lg:w-[22%] bg-muted/80 h-full"></div>
-          </div>
-        </div>
-      </section>
-    );
+    return <OfferSliderSkeleton />;
   }
 
   if (banners.length === 0) return null;
