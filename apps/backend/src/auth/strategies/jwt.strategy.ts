@@ -18,6 +18,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+    
+    // Validate token version to support session invalidation (e.g. after password reset)
+    if (payload.version !== undefined && user.tokenVersion !== payload.version) {
+      throw new UnauthorizedException('Session expired or revoked');
+    }
+    
     return user;
   }
 }

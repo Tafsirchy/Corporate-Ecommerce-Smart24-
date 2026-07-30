@@ -31,6 +31,10 @@ export class UsersService {
     return this.userRepository.findByResetToken(token);
   }
 
+  async findByVerificationToken(token: string) {
+    return this.userRepository.findByVerificationToken(token);
+  }
+
   async update(id: string, data: Prisma.UserUpdateInput) {
     return this.userRepository.update(id, data);
   }

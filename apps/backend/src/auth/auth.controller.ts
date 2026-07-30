@@ -10,17 +10,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() body: SignupDto, @Res({ passthrough: true }) res: Response) {
-    const { access_token, refresh_token, user } = await this.authService.signup(body);
-    
-    res.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/api/v1/auth/refresh' // Assuming global prefix is /api/v1
-    });
-
-    return { access_token, user };
+  async signup(@Body() body: SignupDto) {
+    return this.authService.signup(body);
   }
 
   @Post('login')
@@ -84,6 +75,16 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() body: any) {
     return this.authService.resetPassword(body.token, body.password);
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Post('resend-verification')
+  async resendVerification(@Body('email') email: string) {
+    return this.authService.resendVerification(email);
   }
 
   @UseGuards(JwtAuthGuard)

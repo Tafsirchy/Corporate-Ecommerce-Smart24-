@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Resend } from 'resend';
+import { EmailService } from '../common/email/email.service';
 import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { CartRepositoryService } from '../repositories/cart.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
@@ -12,8 +12,6 @@ import { PaymentOptionRepository } from '../repositories/payment-option.reposito
 
 @Injectable()
 export class OrdersService {
-  private resend: Resend;
-
   constructor(
     private orderRepo: OrderRepositoryService,
     private cartRepo: CartRepositoryService,
@@ -21,12 +19,9 @@ export class OrdersService {
     private stripeService: StripeService,
     private prisma: PrismaService,
     private paymentOptionRepo: PaymentOptionRepository,
-    private loyaltyService: LoyaltyService
-  ) { 
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
-    }
-  }
+    private loyaltyService: LoyaltyService,
+    private emailService: EmailService
+  ) { }
 
   async createOrderFromCart(userId: string | undefined, sessionId: string | undefined, data: {
     shippingAddress: string;
@@ -227,45 +222,41 @@ export class OrdersService {
       }
     }
 
-    if (this.resend) {
-      let emailToSendTo = data.guestEmail;
-      let userName = data.guestName || 'Guest';
-      
-      if (userId) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        if (user && user.email) {
-          emailToSendTo = user.email;
-          userName = user.name || 'User';
-        }
+    // Send Confirmation Email
+    let emailToSendTo = data.guestEmail;
+    let userName = data.guestName || 'Guest';
+    
+    if (userId) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      if (user) {
+        emailToSendTo = user.email;
+        userName = user.name || 'User';
       }
+    }
 
-      if (emailToSendTo) {
-        await this.resend.emails.send({
-          from: 'Smart24 Orders <onboarding@resend.dev>',
-          to: emailToSendTo,
-          subject: `Order Confirmation - ${order.id}`,
-          html: `<p>Thank you for your order, ${userName}! Your total is ৳${grandTotal}. We are processing it now.</p>`
-        }).catch(err => console.error('Email error:', err));
-      }
+    if (emailToSendTo) {
+      this.emailService.sendOrderConfirmationEmail(emailToSendTo, order.id, grandTotal, userName).catch(err => {
+        console.error('Failed to send order confirmation email:', err);
+      });
+    }
 
-      // Auto-save address for registered users only, if requested
-      if (userId && data.saveAddress === true) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        const existingAddress = await this.prisma.address.findFirst({
-          where: { userId, address: data.shippingAddress }
+    // Auto-save address for registered users only, if requested
+    if (userId && data.saveAddress === true) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      const existingAddress = await this.prisma.address.findFirst({
+        where: { userId, address: data.shippingAddress }
+      });
+      if (!existingAddress) {
+        await this.prisma.address.create({
+          data: {
+            userId,
+            fullName: userName,
+            address: data.shippingAddress,
+            postcode: '0000',
+            phone: data.contactNumber || '',
+            label: 'HOME'
+          }
         });
-        if (!existingAddress) {
-          await this.prisma.address.create({
-            data: {
-              userId,
-              fullName: userName,
-              address: data.shippingAddress,
-              postcode: '0000',
-              phone: data.contactNumber || '',
-              label: 'HOME'
-            }
-          });
-        }
       }
     }
 
@@ -522,17 +513,12 @@ export class OrdersService {
     
     // Send delivery email
     if (status === 'DELIVERED') {
-      if (this.resend) {
-        const orderData = await this.orderRepo.findOrderById(orderId);
-        const email = orderData?.guestEmail || orderData?.user?.email;
-        if (orderData && email) {
-          await this.resend.emails.send({
-             from: 'Smart24 Orders <onboarding@resend.dev>',
-             to: email,
-             subject: `Order Delivered - ${orderId}`,
-             html: `<p>Your order ${orderId} has been delivered. Enjoy your products!</p>`
-          }).catch(err => console.error('Email error:', err));
-        }
+      const orderData = await this.orderRepo.findOrderById(orderId);
+      const email = orderData?.guestEmail || orderData?.user?.email;
+      if (orderData && email) {
+        this.emailService.sendOrderDeliveredEmail(email, orderId).catch(err => {
+          console.error('Failed to send delivery email:', err);
+        });
       }
 
       // Loyalty Ecosystem Hook

@@ -1,23 +1,18 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
-import { Resend } from 'resend';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from '../repositories/product.repository.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../common/email/email.service';
 import slugify from 'slugify';
 
 @Injectable()
 export class ProductsService {
-  private resend: Resend;
-
   constructor(
     private productRepository: ProductRepository,
-    private prisma: PrismaService
-  ) {
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
-    }
-  }
+    private prisma: PrismaService,
+    private emailService: EmailService
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const slug = slugify(createProductDto.name, { lower: true, strict: true });
@@ -360,14 +355,11 @@ export class ProductsService {
       const pendingAlerts = await this.prisma.backInStockAlert.findMany({
         where: { productId: id, isNotified: false }
       });
-      if (pendingAlerts.length > 0 && this.resend) {
+      if (pendingAlerts.length > 0) {
         for (const alert of pendingAlerts) {
-          await this.resend.emails.send({
-            from: 'Smart24 Alerts <onboarding@resend.dev>',
-            to: alert.email,
-            subject: `${updatedProduct.name} is back in stock!`,
-            html: `<p>Great news! The product you were waiting for, <strong>${updatedProduct.name}</strong>, is back in stock. Grab it before it runs out again!</p>`
-          }).catch(err => console.error('Alert email error:', err));
+          this.emailService.sendBackInStockEmail(alert.email, updatedProduct.name).catch(err => {
+            console.error('Alert email error:', err);
+          });
         }
         await this.prisma.backInStockAlert.updateMany({
           where: { id: { in: pendingAlerts.map(a => a.id) } },

@@ -113,6 +113,14 @@ model User {
   twoFactorSecret      String?
   isTwoFactorEnabled   Boolean  @default(false)
   
+  // For Email Verification
+  isEmailVerified          Boolean   @default(false)
+  verificationToken        String?
+  verificationTokenExpires DateTime?
+
+  // For Session Invalidation via Password Reset
+  tokenVersion             Int       @default(0)
+
   // For Forgot Password
   resetPasswordToken   String?
   resetPasswordExpires DateTime?

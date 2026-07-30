@@ -3,22 +3,18 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { SubscriptionRepository } from '../repositories/subscription.repository.service';
 import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Resend } from 'resend';
+import { EmailService } from '../common/email/email.service';
 
 @Injectable()
 export class BillingJob {
   private readonly logger = new Logger(BillingJob.name);
-  private resend: Resend;
 
   constructor(
     private readonly subscriptionRepo: SubscriptionRepository,
     private readonly orderRepo: OrderRepositoryService,
     private readonly prisma: PrismaService,
-  ) {
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
-    }
-  }
+    private readonly emailService: EmailService,
+  ) {}
 
   // Runs every day at midnight
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -75,21 +71,13 @@ export class BillingJob {
 
           this.logger.log(`Successfully generated Order ${order.id} for Subscription ${sub.id}`);
 
-          // Send Invoice Email via Resend
-          if (this.resend && sub.user.email) {
-            await this.resend.emails.send({
-              from: 'Smart24 Billing <onboarding@resend.dev>', // Replace with verified domain
-              to: sub.user.email,
-              subject: `Invoice for your Subscription (Order #${order.id})`,
-              html: `
-                <h2>Hello ${sub.user.name},</h2>
-                <p>Your monthly subscription order has been generated.</p>
-                <p><strong>Total Amount:</strong> ৳${sub.totalAmount}</p>
-                <p>Please log in to your account to process the payment so we can prepare your delivery.</p>
-                <p>Thank you for choosing Smart24!</p>
-              `
+          // Send Invoice Email
+          if (sub.user.email) {
+            this.emailService.sendSubscriptionInvoiceEmail(sub.user.email, sub.user.name || 'User', order.id, sub.totalAmount).then(() => {
+              this.logger.log(`Sent invoice email to ${sub.user.email}`);
+            }).catch(err => {
+              this.logger.error(`Failed to send invoice email to ${sub.user.email}: ${err.message}`);
             });
-            this.logger.log(`Sent invoice email to ${sub.user.email}`);
           }
         } catch (error) {
           this.logger.error(`Failed to process subscription ${sub.id}: ${error.message}`);

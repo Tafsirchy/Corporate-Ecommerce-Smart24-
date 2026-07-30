@@ -1,18 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
-import { Resend } from 'resend';
+import { EmailService } from '../common/email/email.service';
 
 @Injectable()
 export class CartJobService {
   private readonly logger = new Logger(CartJobService.name);
-  private resend: Resend;
 
-  constructor(private prisma: PrismaService) {
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
-    }
-  }
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService
+  ) {}
 
   // Run every hour to check for abandoned carts
   @Cron(CronExpression.EVERY_HOUR)
@@ -36,14 +34,9 @@ export class CartJobService {
     });
 
     for (const cart of abandonedCarts) {
-      if (this.resend && cart.user?.email) {
+      if (cart.user?.email) {
         try {
-          await this.resend.emails.send({
-            from: 'Smart24 Reminder <onboarding@resend.dev>',
-            to: cart.user.email,
-            subject: 'Did you forget something?',
-            html: `<p>Hi ${cart.user.name}, you left items in your cart. Come back and complete your purchase before they sell out!</p>`
-          });
+          await this.emailService.sendAbandonedCartEmail(cart.user.email, cart.user.name || 'User');
 
           await this.prisma.cart.update({
             where: { id: cart.id },

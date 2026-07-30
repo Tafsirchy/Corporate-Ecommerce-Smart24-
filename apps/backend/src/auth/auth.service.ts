@@ -1,24 +1,19 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import { authenticator } from 'otplib';
 import * as crypto from 'crypto';
-import { Resend } from 'resend';
+import { EmailService } from '../common/email/email.service';
 
 @Injectable()
 export class AuthService {
-  private resend: Resend;
-
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
-  ) {
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
-    }
-  }
+    private jwtService: JwtService,
+    private emailService: EmailService
+  ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
@@ -30,7 +25,18 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id, role: user.role, phone: user.phone };
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException('Please verify your email address before logging in.');
+    }
+    
+    // Include tokenVersion in payload for session invalidation on password reset
+    const payload = { 
+      email: user.email, 
+      sub: user.id, 
+      role: user.role, 
+      phone: user.phone,
+      version: user.tokenVersion || 0 
+    };
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' })
@@ -38,12 +44,19 @@ export class AuthService {
   }
 
   async signup(data: any) {
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
     const createData: Prisma.UserCreateInput = {
       email: data.email,
       password: data.password,
       name: data.name,
       phone: data.phone,
       role: data.role || 'BUYER',
+      isEmailVerified: false,
+      verificationToken: hashedToken,
+      verificationTokenExpires: expiresAt
     };
 
     if (data.role === 'BUSINESS' && data.businessProfile) {
@@ -58,8 +71,58 @@ export class AuthService {
     }
 
     const user = await this.usersService.create(createData);
-    const tokens = await this.login(user);
-    return { ...tokens, user };
+    
+    // Trigger verification email in background
+    this.emailService.sendVerificationEmail(user.email, rawToken).catch(err => {
+      console.error('Failed to send verification email during signup:', err);
+    });
+    
+    return { 
+      message: 'Registration successful. Please check your email to verify your account.', 
+      userId: user.id 
+    };
+  }
+
+  async verifyEmail(token: string) {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await this.usersService.findByVerificationToken(hashedToken);
+    
+    if (!user || !user.verificationTokenExpires || user.verificationTokenExpires < new Date()) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+    
+    await this.usersService.update(user.id, {
+      isEmailVerified: true,
+      verificationToken: null,
+      verificationTokenExpires: null
+    });
+    
+    return { message: 'Email successfully verified. You can now log in.' };
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    // Silent return to prevent enumeration
+    if (!user) return { message: 'If this email is registered, a verification link has been sent.' };
+    
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Email is already verified.');
+    }
+    
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    await this.usersService.update(user.id, {
+      verificationToken: hashedToken,
+      verificationTokenExpires: expiresAt
+    });
+    
+    this.emailService.sendVerificationEmail(user.email, rawToken).catch(err => {
+      console.error('Failed to resend verification email:', err);
+    });
+    
+    return { message: 'If this email is registered, a verification link has been sent.' };
   }
 
   async generateTempToken(user: any) {
@@ -86,8 +149,9 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
+    // User enumeration prevention
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      return { message: 'If this email is registered, you will receive a password reset link.' };
     }
     
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -99,25 +163,11 @@ export class AuthService {
       resetPasswordExpires
     });
     
-    if (this.resend) {
-      await this.resend.emails.send({
-        from: 'Smart24 Support <onboarding@resend.dev>', // Should be a verified domain in production
-        to: email,
-        subject: 'Password Reset Request',
-        html: `
-          <h2>Password Reset Request</h2>
-          <p>You requested a password reset. Please click the link below to reset your password:</p>
-          <a href="http://localhost:3000/reset-password?token=${resetToken}">Reset Password</a>
-          <p>This link will expire in 15 minutes.</p>
-          <p>If you didn't request this, you can safely ignore this email.</p>
-        `
-      });
-    } else {
-      // Fallback for development if RESEND_API_KEY is missing
-      console.log(`\n\n[MOCK EMAIL] To: ${email}\nSubject: Password Reset\nLink: http://localhost:3000/reset-password?token=${resetToken}\n\n`);
-    }
+    this.emailService.sendPasswordResetEmail(user.email, resetToken).catch(err => {
+      console.error('Failed to send reset email:', err);
+    });
     
-    return { message: 'Password reset link sent to email' };
+    return { message: 'If this email is registered, you will receive a password reset link.' };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -125,17 +175,21 @@ export class AuthService {
     const user = await this.usersService.findByResetToken(hashedToken);
     
     if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new BadRequestException('Invalid or expired token');
     }
     
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Increment tokenVersion to invalidate existing JWT sessions
+    const nextTokenVersion = (user.tokenVersion || 0) + 1;
+    
     await this.usersService.update(user.id, { 
       password: hashedPassword,
+      tokenVersion: nextTokenVersion,
       resetPasswordToken: null,
       resetPasswordExpires: null
     });
     
-    return { message: 'Password updated successfully' };
+    return { message: 'Password updated successfully. All other sessions have been logged out.' };
   }
 
   async generateTwoFactorAuthSecret(user: any) {
