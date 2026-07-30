@@ -154,7 +154,7 @@ export const SubscriptionAd = () => {
                       <div className="mb-6">
                         <p className="text-[9px] uppercase tracking-[0.2em] text-indigo-400/70 mb-4 font-bold">Includes</p>
                         <ul className="space-y-3">
-                          {pkg.includes.map((item, i) => (
+                          {pkg.includes.map((item: string, i: number) => (
                             <li key={i} className="text-xs text-indigo-100/70 flex items-start gap-3 font-light">
                               <span className="text-indigo-600/60 mt-1.5 h-[1px] w-3 bg-indigo-600/60 shrink-0"></span>
                               <span>{item}</span>
