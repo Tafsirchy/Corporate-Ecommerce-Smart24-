@@ -217,16 +217,29 @@ export default function ContactPage() {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Attachment / Image URL (Optional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Attachment Image (Optional)</label>
                     <input 
-                      type="url" 
-                      name="attachmentUrl"
-                      value={formData.attachmentUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-                      placeholder="e.g., https://i.ibb.co/..."
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const objectUrl = URL.createObjectURL(file);
+                          setFormData(prev => ({ ...prev, attachmentUrl: objectUrl }));
+                        }
+                      }}
+                      className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Paste a link to your image (e.g. ImgBB, Google Drive)</p>
+                    {formData.attachmentUrl && (
+                      <div className="mt-4">
+                        <img 
+                          src={formData.attachmentUrl} 
+                          alt="Preview" 
+                          style={{ maxWidth: '100%', maxHeight: '300px' }} 
+                          className="rounded border"
+                        />
+                      </div>
+                    )}
                   </div>
                   
                   {status === 'error' && (
