@@ -52,12 +52,27 @@ export class BusinessController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async updateVerificationStatus(
+    @Req() req: any,
     @Param('id') id: string,
     @Body('status') status: 'APPROVED' | 'REJECTED'
   ) {
     if (!['APPROVED', 'REJECTED'].includes(status)) {
       throw new BadRequestException('Invalid status');
     }
-    return this.businessService.updateVerificationStatus(id, status);
+    return this.businessService.updateVerificationStatus(id, status, req.user.id);
+  }
+
+  @Patch(':id/credit')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async updateCreditLimit(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body('limit') limit: number
+  ) {
+    if (limit < 0) {
+      throw new BadRequestException('Credit limit cannot be negative');
+    }
+    return this.businessService.updateCreditLimit(id, limit, req.user.id);
   }
 }
