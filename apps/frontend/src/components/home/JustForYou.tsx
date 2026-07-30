@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
 import { ProductCard, Product } from '@/components/ProductCard';
+import { ProductSkeleton } from './Skeletons';
 
 export const JustForYou = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -51,8 +52,12 @@ export const JustForYou = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-foreground mb-6">Just For You</h2>
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div key={`skeleton-${index}`}>
+              <ProductSkeleton />
+            </div>
+          ))}
         </div>
       </div>
     );
