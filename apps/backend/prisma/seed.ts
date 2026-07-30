@@ -11,6 +11,8 @@ async function main() {
   await prisma.faq.deleteMany({});
   await prisma.setting.deleteMany({});
   await prisma.cartItem.deleteMany({});
+  await prisma.subscriptionItem.deleteMany({}).catch(() => {});
+  await prisma.subscription.deleteMany({}).catch(() => {});
   await prisma.subscriptionPlanItem.deleteMany({}).catch(() => {});
   await prisma.subscriptionPlan.deleteMany({}).catch(() => {});
   await prisma.orderItem.deleteMany({}).catch(() => {});
@@ -416,10 +418,53 @@ async function main() {
       }
     });
 
+    // Make the user a BUSINESS user and create a BusinessProfile
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: 'BUSINESS' }
+    });
+
+    const existingProfile = await prisma.businessProfile.findUnique({
+      where: { userId: user.id }
+    });
+
+    if (!existingProfile) {
+      await prisma.businessProfile.create({
+        data: {
+          userId: user.id,
+          businessName: 'Smart24 Enterprise',
+          businessType: 'REGISTERED_COMPANY',
+          ownerName: 'Tafsir',
+          address: 'Corporate Avenue, Dhaka',
+          tradeLicenseNo: 'TRD-12345',
+          bin: 'BIN-12345',
+          tin: 'TIN-12345',
+          verificationStatus: 'VERIFIED',
+          verificationLevel: 'PREMIUM',
+          creditLimit: 500000,
+          usedCredit: 0
+        }
+      });
+      console.log('Seeded business profile for tafsirchy@gmail.com');
+    }
+
     console.log('Seeded loyalty data for tafsirchy@gmail.com');
   } else {
     console.log('User tafsirchy@gmail.com not found, skipped user loyalty seeding.');
   }
+
+  // 13. Seed Pricing Rules for B2B
+  await prisma.pricingRule.deleteMany({});
+  await prisma.pricingRule.create({
+    data: {
+      businessType: 'REGISTERED_COMPANY',
+      verificationLevel: 'PREMIUM',
+      discountPercent: 15,
+      effectiveFrom: new Date(),
+      effectiveTo: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    }
+  });
+  console.log('Seeded B2B Pricing Rules.');
 
   console.log('Seeding completed successfully!');
 }
