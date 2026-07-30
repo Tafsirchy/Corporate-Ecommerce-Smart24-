@@ -74,12 +74,19 @@ export default function BusinessInvoicesPage() {
                       {inv.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
                     {inv.status !== 'PAID' && (
                       <button className="text-primary-600 hover:text-primary-800 font-bold">
                         Pay Now
                       </button>
                     )}
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/invoice/${inv.id}/export`}
+                      target="_blank"
+                      className="text-gray-600 hover:text-gray-800 font-medium ml-2"
+                    >
+                      Export PDF
+                    </a>
                   </td>
                 </tr>
               ))}
