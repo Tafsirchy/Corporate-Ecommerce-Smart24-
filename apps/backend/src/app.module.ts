@@ -31,6 +31,8 @@ import { MembershipsModule } from './memberships/memberships.module';
 import { RewardsModule } from './rewards/rewards.module';
 import { FiltersModule } from './filters/filters.module';
 import { BusinessModule } from './business/business.module';
+import { RfqModule } from './rfq/rfq.module';
+import { BulkOrderModule } from './bulk-order/bulk-order.module';
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { BusinessModule } from './business/business.module';
     RewardsModule,
     FiltersModule,
     BusinessModule,
+    RfqModule,
+    BulkOrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
