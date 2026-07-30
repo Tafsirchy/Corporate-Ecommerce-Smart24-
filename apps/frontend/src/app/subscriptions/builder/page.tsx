@@ -43,7 +43,7 @@ function BuilderContent() {
   const router = useRouter();
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
     
     // Fetch categories
     axios.get(`${apiUrl}/categories`).then(res => {
@@ -68,7 +68,7 @@ function BuilderContent() {
 
   const fetchProducts = () => {
     setLoadingProducts(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
     
     let url = searchQuery && searchQuery.trim().length > 0 
       ? `${apiUrl}/products/search?q=${encodeURIComponent(searchQuery)}&` 
