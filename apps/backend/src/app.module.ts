@@ -35,6 +35,9 @@ import { RfqModule } from './rfq/rfq.module';
 import { BulkOrderModule } from './bulk-order/bulk-order.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { ContractModule } from './contract/contract.module';
+import { PricingRuleModule } from './pricing-rule/pricing-rule.module';
+import { SavedListModule } from './saved-list/saved-list.module';
+import { AuditLogModule } from './audit-log/audit-log.module';
 
 @Module({
   imports: [
@@ -72,6 +75,9 @@ import { ContractModule } from './contract/contract.module';
     BulkOrderModule,
     InvoiceModule,
     ContractModule,
+    PricingRuleModule,
+    SavedListModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
