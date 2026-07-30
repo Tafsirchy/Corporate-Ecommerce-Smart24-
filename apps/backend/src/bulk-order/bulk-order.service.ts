@@ -12,8 +12,10 @@ export class BulkOrderService {
       throw new BadRequestException('CSV must contain a header and at least one row');
     }
 
-    const validItems = [];
-    const invalidItems = [];
+    const validItems: any[] = [];
+    const invalidItems: any[] = [];
+    const parsedRows: { rowNum: number; sku: string; quantity: number }[] = [];
+    const skusToFetch: string[] = [];
 
     // Assuming first line is header: SKU,Quantity
     for (let i = 1; i < lines.length; i++) {
@@ -31,25 +33,43 @@ export class BulkOrderService {
         continue;
       }
 
-      // Check if product exists with this SKU
-      const product = await this.prisma.product.findUnique({
-        where: { sku }
-      });
+      parsedRows.push({ rowNum: i + 1, sku, quantity });
+      skusToFetch.push(sku);
+    }
 
+    // Batch query products
+    let productMap = new Map<string, any>();
+    if (skusToFetch.length > 0) {
+      // Find products by sku. If sku is missing on old records, fallback to slug temporarily
+      const products = await this.prisma.product.findMany({
+        where: {
+          OR: [
+            { sku: { in: skusToFetch } },
+            { slug: { in: skusToFetch } } // Fallback for backwards compatibility
+          ]
+        }
+      });
+      for (const p of products) {
+        productMap.set(p.sku || p.slug, p);
+      }
+    }
+
+    for (const row of parsedRows) {
+      const product = productMap.get(row.sku);
       if (product) {
-        if (product.stockQuantity >= quantity) {
+        if (product.stock >= row.quantity) {
           validItems.push({ 
             productId: product.id, 
-            sku: product.sku,
+            sku: product.sku || product.slug,
             name: product.name,
-            quantity, 
+            quantity: row.quantity, 
             price: product.price 
           });
         } else {
-          invalidItems.push({ row: i + 1, sku, reason: `Insufficient stock. Available: ${product.stockQuantity}` });
+          invalidItems.push({ row: row.rowNum, sku: row.sku, reason: `Insufficient stock. Available: ${product.stock}` });
         }
       } else {
-        invalidItems.push({ row: i + 1, sku, reason: 'SKU not found' });
+        invalidItems.push({ row: row.rowNum, sku: row.sku, reason: 'SKU not found' });
       }
     }
 
