@@ -216,6 +216,23 @@ export default function ProductDetailPage() {
   const originalPrice = Math.round(product.price * 1.25);
   const discountPercent = Math.round(((originalPrice - product.price) / originalPrice) * 100);
 
+  // B2B Pricing Logic
+  let displayPrice = product.price;
+  let b2bDiscount = 0;
+  let b2bTier = '';
+
+  if (user?.role === 'BUSINESS' && user.businessProfile) {
+    b2bTier = user.businessProfile.membershipTier;
+    if (b2bTier === 'SILVER') b2bDiscount = 5;
+    if (b2bTier === 'GOLD') b2bDiscount = 10;
+    if (b2bTier === 'PLATINUM') b2bDiscount = 15;
+    if (b2bTier === 'DIAMOND') b2bDiscount = 20;
+
+    if (b2bDiscount > 0) {
+      displayPrice = product.price * (1 - b2bDiscount / 100);
+    }
+  }
+
   const handleQtyChange = (type: 'inc' | 'dec') => {
     if (type === 'inc') setQuantity(q => q + 1);
     if (type === 'dec' && quantity > 1) setQuantity(q => q - 1);
@@ -278,12 +295,29 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="py-4 border-b border-border">
-              <div className="flex items-end gap-3">
-                <span className="text-3xl font-bold text-primary/90">৳{product.price.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-muted-foreground line-through">৳{originalPrice.toLocaleString()}</span>
-                <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded">-{discountPercent}%</span>
+              <div className="flex flex-col gap-1">
+                {b2bDiscount > 0 ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl font-bold text-primary/90">৳{displayPrice.toLocaleString()}</span>
+                      <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded">B2B {b2bTier}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm text-muted-foreground line-through">৳{product.price.toLocaleString()}</span>
+                      <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded">-{b2bDiscount}% Corporate Discount</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-end gap-3">
+                      <span className="text-3xl font-bold text-primary/90">৳{product.price.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm text-muted-foreground line-through">৳{originalPrice.toLocaleString()}</span>
+                      <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded">-{discountPercent}%</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
