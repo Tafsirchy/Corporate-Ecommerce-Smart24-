@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Req, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Req, Body, Get, Patch, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BusinessService } from './business.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -30,7 +30,6 @@ export class BusinessController {
       throw new BadRequestException('documentType is required');
     }
 
-    // Since we're using ImgBB, we only accept images for MVP
     if (!file.mimetype.startsWith('image/')) {
       throw new BadRequestException('Only image files are allowed for documents currently');
     }
@@ -38,5 +37,27 @@ export class BusinessController {
     const fileUrl = await this.uploadService.uploadImageToImgBB(file);
     
     return this.businessService.addDocument(req.user.id, documentType, fileUrl);
+  }
+
+  // --- Admin Endpoints ---
+
+  @Get('verifications')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async getPendingVerifications() {
+    return this.businessService.getPendingVerifications();
+  }
+
+  @Patch(':id/verification')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async updateVerificationStatus(
+    @Param('id') id: string,
+    @Body('status') status: 'APPROVED' | 'REJECTED'
+  ) {
+    if (!['APPROVED', 'REJECTED'].includes(status)) {
+      throw new BadRequestException('Invalid status');
+    }
+    return this.businessService.updateVerificationStatus(id, status);
   }
 }
