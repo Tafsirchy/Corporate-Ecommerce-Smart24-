@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1',
   withCredentials: true,
 });
 
