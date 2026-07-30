@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Req, Body, Get } from '@nestjs/common';
+import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Req, Body, Get, Patch, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RfqService } from './rfq.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -36,7 +36,7 @@ export class RfqController {
       throw new BadRequestException('productItems must be valid JSON');
     }
 
-    let specFileUrl = null;
+    let specFileUrl: string | null = null;
     if (specFile) {
       // For MVP we are storing in ImgBB so we assume it's an image
       if (!specFile.mimetype.startsWith('image/')) {
