@@ -2,11 +2,14 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { CartRepositoryService } from '../repositories/cart.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
 
+import { PrismaService } from '../prisma/prisma.service';
+
 @Injectable()
 export class CartService {
   constructor(
     private cartRepo: CartRepositoryService,
-    private productRepo: ProductRepository
+    private productRepo: ProductRepository,
+    private prisma: PrismaService,
   ) {}
 
   async getCart(userId?: string, sessionId?: string) {
@@ -20,7 +23,37 @@ export class CartService {
       }
       cart = await this.cartRepo.getCart(userId, sessionId);
     }
-    return cart!;
+    
+    let cartToReturn = cart!;
+    
+    // Apply dynamic B2B discount if user is BUSINESS
+    if (userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: { businessProfile: true }
+      });
+      
+      if (user?.role === 'BUSINESS' && user.businessProfile) {
+        const tier = user.businessProfile.membershipTier;
+        let discountPercent = 0;
+        if (tier === 'SILVER') discountPercent = 5;
+        if (tier === 'GOLD') discountPercent = 10;
+        if (tier === 'PLATINUM') discountPercent = 15;
+        if (tier === 'DIAMOND') discountPercent = 20;
+
+        if (discountPercent > 0 && cartToReturn.items) {
+          cartToReturn.items = cartToReturn.items.map(item => {
+            if (item.product) {
+              const basePrice = item.product.price;
+              item.product.discountPrice = basePrice * (1 - discountPercent / 100);
+            }
+            return item;
+          });
+        }
+      }
+    }
+    
+    return cartToReturn;
   }
 
   async updateItem(userId: string | undefined, sessionId: string | undefined, productId: string, quantity: number) {
