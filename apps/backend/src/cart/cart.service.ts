@@ -34,18 +34,48 @@ export class CartService {
       });
       
       if (user?.role === 'BUSINESS' && user.businessProfile) {
+        // Base Tier Discount
         const tier = user.businessProfile.membershipTier;
-        let discountPercent = 0;
-        if (tier === 'SILVER') discountPercent = 5;
-        if (tier === 'GOLD') discountPercent = 10;
-        if (tier === 'PLATINUM') discountPercent = 15;
-        if (tier === 'DIAMOND') discountPercent = 20;
+        let tierDiscountPercent = 0;
+        if (tier === 'SILVER') tierDiscountPercent = 5;
+        if (tier === 'GOLD') tierDiscountPercent = 10;
+        if (tier === 'PLATINUM') tierDiscountPercent = 15;
+        if (tier === 'DIAMOND') tierDiscountPercent = 20;
 
-        if (discountPercent > 0 && cartToReturn.items) {
+        // Fetch Dynamic Pricing Rules
+        const now = new Date();
+        const pricingRules = await this.prisma.pricingRule.findMany({
+          where: {
+            effectiveFrom: { lte: now },
+            OR: [{ effectiveTo: null }, { effectiveTo: { gte: now } }],
+            AND: [
+              { OR: [{ businessType: user.businessProfile.businessType }, { businessType: null }] },
+              { OR: [{ verificationLevel: user.businessProfile.verificationLevel }, { verificationLevel: null }] }
+            ]
+          }
+        });
+
+        if (cartToReturn.items) {
           cartToReturn.items = cartToReturn.items.map(item => {
             if (item.product) {
-              const basePrice = item.product.price;
-              item.product.discountPrice = basePrice * (1 - discountPercent / 100);
+              let applicableDiscount = tierDiscountPercent;
+
+              // Find if any specific rule applies to this product's category
+              // Note: cart items product doesn't include categoryId by default in the cartRepo, 
+              // but we can check if it exists, or if there are global rules (categoryId: null)
+              for (const rule of pricingRules) {
+                // If the rule is global, or matches the product's category
+                if (!rule.categoryId || rule.categoryId === (item.product as any).categoryId) {
+                  if (rule.discountPercent > applicableDiscount) {
+                    applicableDiscount = rule.discountPercent;
+                  }
+                }
+              }
+
+              if (applicableDiscount > 0) {
+                const basePrice = item.product.price;
+                item.product.discountPrice = basePrice * (1 - applicableDiscount / 100);
+              }
             }
             return item;
           });
