@@ -16,7 +16,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
 
   // Business Specific Fields
-  const [businessType, setBusinessType] = useState('CORPORATE');
+  const [businessType, setBusinessType] = useState('BUSINESS');
   const [businessName, setBusinessName] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [address, setAddress] = useState('');
@@ -66,7 +66,7 @@ export default function SignupPage() {
               className="w-full text-left px-6 py-4 border rounded-xl hover:border-primary-500 hover:bg-primary-50 transition-colors"
             >
               <h3 className="text-lg font-semibold">Business Account</h3>
-              <p className="text-sm text-muted-foreground">Corporate pricing, bulk orders, and e-procurement.</p>
+              <p className="text-sm text-muted-foreground">business pricing, bulk orders, and e-procurement.</p>
             </button>
             
             <div className="text-sm text-center mt-6 pt-4">
@@ -88,7 +88,7 @@ export default function SignupPage() {
                       onChange={(e) => setBusinessType(e.target.value)}
                       className="relative block w-full rounded-md border-0 py-1.5 text-foreground ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6 px-3"
                     >
-                      <option value="CORPORATE">Corporate</option>
+                      <option value="BUSINESS">Business</option>
                       <option value="LOCAL_SHOP">Local Shop / SME</option>
                       <option value="SUPPLIER">Supplier</option>
                       <option value="GOVERNMENT">Government</option>
@@ -111,7 +111,7 @@ export default function SignupPage() {
                       type="text"
                       required
                       className="relative block w-full rounded-md border-0 py-1.5 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6 px-3"
-                      placeholder="123 Corporate Ave"
+                      placeholder="123 Business Ave"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                     />

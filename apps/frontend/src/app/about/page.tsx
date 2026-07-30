@@ -11,7 +11,7 @@ export default function AboutPage() {
         <div className="relative container mx-auto py-24 px-4 sm:py-32 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">About Smart24</h1>
           <p className="mx-auto mt-6 max-w-3xl text-xl text-primary-100">
-            Transforming corporate procurement in Bangladesh through technology, transparency, and reliable supply chains.
+            Transforming business procurement in Bangladesh through technology, transparency, and reliable supply chains.
           </p>
         </div>
       </div>

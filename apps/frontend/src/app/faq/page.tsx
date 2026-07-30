@@ -7,12 +7,12 @@ const faqs = [
     category: "Subscriptions & Orders",
     items: [
       {
-        question: "What is a Corporate Subscription?",
-        answer: "A corporate subscription allows businesses to automate their procurement. You can select a package of office essentials (like tea, coffee, sugar, and stationery) and we will automatically deliver them to your office at the start of every month."
+        question: "What is a Business Subscription?",
+        answer: "A business subscription allows businesses to automate their procurement. You can select a package of office essentials (like tea, coffee, sugar, and stationery) and we will automatically deliver them to your office at the start of every month."
       },
       {
         question: "How do I request a custom quotation?",
-        answer: "To request a custom quotation, you can use our Subscription Builder or add items to your standard cart. During checkout, select 'Request Quotation' instead of direct payment. Our corporate sales team will review your requirements and send a finalized quote for approval."
+        answer: "To request a custom quotation, you can use our Subscription Builder or add items to your standard cart. During checkout, select 'Request Quotation' instead of direct payment. Our business sales team will review your requirements and send a finalized quote for approval."
       },
       {
         question: "Can I modify my monthly subscription?",
@@ -24,7 +24,7 @@ const faqs = [
       },
       {
         question: "Is there a minimum order quantity (MOQ)?",
-        answer: "For standard retail purchases, there is no strict MOQ, though a minimum order value of ৳1,000 applies for free delivery. For wholesale and custom corporate quotations, MOQs may apply depending on the product category."
+        answer: "For standard retail purchases, there is no strict MOQ, though a minimum order value of ৳1,000 applies for free delivery. For wholesale and custom business quotations, MOQs may apply depending on the product category."
       }
     ]
   },
@@ -33,15 +33,15 @@ const faqs = [
     items: [
       {
         question: "What payment methods are supported?",
-        answer: "We support direct card payments, Mobile Financial Services (bKash, Nagad, Rocket), and manual corporate bank transfers. For manual payments, you will need to upload your Transaction ID (TrxID) or deposit slip for admin verification."
+        answer: "We support direct card payments, Mobile Financial Services (bKash, Nagad, Rocket), and manual business bank transfers. For manual payments, you will need to upload your Transaction ID (TrxID) or deposit slip for admin verification."
       },
       {
         question: "Do you provide standard VAT/Tax invoices?",
-        answer: "Yes. All corporate orders are provided with official invoices that include standard VAT (Mushak) and Tax documentation as required by Bangladesh regulations."
+        answer: "Yes. All business orders are provided with official invoices that include standard VAT (Mushak) and Tax documentation as required by Bangladesh regulations."
       },
       {
-        question: "What are your payment terms for corporate clients?",
-        answer: "Verified corporate clients can apply for credit terms (e.g., Net 15 or Net 30). This is subject to credit approval and a signed corporate agreement."
+        question: "What are your payment terms for business clients?",
+        answer: "Verified business clients can apply for credit terms (e.g., Net 15 or Net 30). This is subject to credit approval and a signed business agreement."
       }
     ]
   },
@@ -50,11 +50,11 @@ const faqs = [
     items: [
       {
         question: "Do you deliver outside Dhaka?",
-        answer: "Currently, our automated corporate subscription deliveries are restricted to the Dhaka Metropolitan Area. However, for one-off bulk retail orders, we can arrange nationwide delivery via our logistics partners."
+        answer: "Currently, our automated business subscription deliveries are restricted to the Dhaka Metropolitan Area. However, for one-off bulk retail orders, we can arrange nationwide delivery via our logistics partners."
       },
       {
         question: "How long does standard delivery take?",
-        answer: "For retail items in stock, delivery within Dhaka typically takes 24-48 hours. Corporate subscriptions are delivered on the first week of every month."
+        answer: "For retail items in stock, delivery within Dhaka typically takes 24-48 hours. Business subscriptions are delivered on the first week of every month."
       },
       {
         question: "What is the return policy for damaged items?",

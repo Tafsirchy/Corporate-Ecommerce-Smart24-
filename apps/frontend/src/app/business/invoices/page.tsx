@@ -29,7 +29,7 @@ export default function BusinessInvoicesPage() {
 
   return (
     <div className="container mx-auto p-4 sm:p-8">
-      <h1 className="text-2xl font-bold mb-6">Corporate Invoices (Net-30)</h1>
+      <h1 className="text-2xl font-bold mb-6">Business Invoices (Net-30)</h1>
 
       {invoices.length === 0 ? (
         <div className="bg-white p-8 rounded shadow text-center text-muted-foreground border border-border">

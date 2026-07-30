@@ -14,7 +14,7 @@ import { MembershipAd } from "@/components/home/MembershipAd";
 const DUMMY_ADS: HeroAd[] = [
   {
     id: "1",
-    title: "Corporate Pantry Essentials",
+    title: "Business Pantry Essentials",
     subtitle: "Stock up on premium coffee, tea, and snacks for your team.",
     imageUrl: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070&auto=format&fit=crop",
     categoryUrl: "/shop/pantry"
@@ -59,7 +59,7 @@ export default function Home() {
       {/* Subscription Advertisement */}
       <SubscriptionAd />
 
-      {/* Special Offer Banner before Corporate Collections */}
+      {/* Special Offer Banner before Business Collections */}
       <SpecialOfferBanner />
 
       {/* Flash Sale */}

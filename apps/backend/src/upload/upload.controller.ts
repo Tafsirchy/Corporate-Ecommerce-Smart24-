@@ -15,7 +15,7 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post('image')
-  @Roles(Role.ADMIN, Role.BUYER, Role.CORPORATE, Role.BUSINESS)
+  @Roles(Role.ADMIN, Role.BUYER, Role.BUSINESS)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

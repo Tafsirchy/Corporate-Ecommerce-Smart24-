@@ -7,7 +7,7 @@ const features = [
   { id: 3, text: '24/7 Support', icon: '🎧' },
   { id: 4, text: 'Quality Assured', icon: '⭐' },
   { id: 5, text: 'Easy Returns', icon: '🔄' },
-  { id: 6, text: 'Corporate Deals', icon: '💼' },
+  { id: 6, text: 'Business Deals', icon: '💼' },
   { id: 7, text: 'Fast Delivery', icon: '🚀' },
   { id: 8, text: 'Secure Payments', icon: '🔒' },
 ];

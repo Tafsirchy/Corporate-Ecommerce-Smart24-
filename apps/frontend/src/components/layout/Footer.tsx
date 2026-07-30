@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <img src="/asset/LogoWithSlogan.png" alt="Smart24" className="h-24 w-auto object-contain" />
-          <p className="text-primary-100/70 leading-relaxed text-sm">Your trusted corporate supply chain partner in Bangladesh, providing seamless B2B procurement and retail solutions.</p>
+          <p className="text-primary-100/70 leading-relaxed text-sm">Your trusted business supply chain partner in Bangladesh, providing seamless B2B procurement and retail solutions.</p>
         </div>
         <div>
           <h4 className="font-semibold mb-4 text-primary-50">Retail Shop</h4>
@@ -20,7 +20,7 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-4 text-primary-50">B2B Solutions</h4>
           <ul className="space-y-2 text-sm text-primary-100/70">
-            <li><Link href="/business" className="hover:text-white transition-colors">Corporate Dashboard</Link></li>
+            <li><Link href="/business" className="hover:text-white transition-colors">Business Dashboard</Link></li>
             <li><Link href="/business/bulk-order" className="hover:text-white transition-colors">Bulk Upload</Link></li>
             <li><Link href="/business/rfq" className="hover:text-white transition-colors">Request for Quote</Link></li>
             <li><Link href="/business/verify" className="hover:text-white transition-colors">Become a Partner</Link></li>

@@ -1,6 +1,6 @@
 import { IsString, IsUrl, IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpsertCorporateCollectionDto {
+export class UpsertBusinessCollectionDto {
   @IsString()
   @IsNotEmpty()
   title: string;

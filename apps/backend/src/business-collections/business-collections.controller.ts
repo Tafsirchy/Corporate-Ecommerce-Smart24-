@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
-import { CorporateCollectionsService } from './corporate-collections.service';
+import { BusinessCollectionsService } from './business-collections.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UpsertCorporateCollectionDto } from './dto/upsert-corporate-collection.dto';
+import { UpsertBusinessCollectionDto } from './dto/upsert-business-collection.dto';
 
-@Controller('corporate-collections')
-export class CorporateCollectionsController {
-  constructor(private readonly service: CorporateCollectionsService) {}
+@Controller('business-collections')
+export class BusinessCollectionsController {
+  constructor(private readonly service: BusinessCollectionsService) {}
 
   @Get()
   async getActiveCollections() {
@@ -31,7 +31,7 @@ export class CorporateCollectionsController {
   @Roles('ADMIN')
   async upsertCollection(
     @Param('position', ParseIntPipe) position: number,
-    @Body() data: UpsertCorporateCollectionDto,
+    @Body() data: UpsertBusinessCollectionDto,
   ) {
     return this.service.upsertSlot(position, data);
   }

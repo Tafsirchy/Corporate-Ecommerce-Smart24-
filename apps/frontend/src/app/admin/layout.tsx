@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       title: 'Home Page Settings',
       items: [
         { name: 'Banners (Slider)', path: '/admin/banners' },
-        { name: 'Corporate Collections', path: '/admin/corporate-collections' },
+        { name: 'Business Collections', path: '/admin/business-collections' },
       ]
     },
     {

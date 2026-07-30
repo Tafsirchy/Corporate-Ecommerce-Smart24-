@@ -5,15 +5,15 @@ const prisma = new PrismaClient();
 async function migrate() {
   console.log('Starting migration for Phase 0 B2B Ecosystem...');
   
-  const corporateUsers = await prisma.user.findMany({
-    where: { role: Role.CORPORATE },
+  const businessUsers = await prisma.user.findMany({
+    where: { role: Role.BUSINESS },
     include: { addresses: true }
   });
 
-  console.log(`Found ${corporateUsers.length} users with CORPORATE role.`);
+  console.log(`Found ${businessUsers.length} users with BUSINESS role.`);
   let count = 0;
 
-  for (const user of corporateUsers) {
+  for (const user of businessUsers) {
     try {
       // Determine placeholder address
       let defaultAddress = 'Address Pending';

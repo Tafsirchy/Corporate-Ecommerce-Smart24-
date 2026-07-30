@@ -72,9 +72,9 @@ function RequestQuoteForm() {
 
   return (
     <div className="container mx-auto p-6 max-w-2xl mt-10">
-      <h1 className="text-3xl font-bold mb-2">Request a Corporate Quote</h1>
+      <h1 className="text-3xl font-bold mb-2">Request a Business Quote</h1>
       <p className="text-muted-foreground mb-8">
-        Fill out the form below to request special pricing for bulk orders or custom corporate packages.
+        Fill out the form below to request special pricing for bulk orders or custom business packages.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

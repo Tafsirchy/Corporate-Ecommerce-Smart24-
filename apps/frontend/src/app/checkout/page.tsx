@@ -363,7 +363,7 @@ export default function CheckoutPage() {
                       className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                     />
                     <div>
-                      <div className="font-bold text-foreground">Corporate Terms (Net-30)</div>
+                      <div className="font-bold text-foreground">Business Terms (Net-30)</div>
                       <div className="text-sm text-muted-foreground">Pay invoice within 30 days of delivery</div>
                     </div>
                   </label>

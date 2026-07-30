@@ -130,7 +130,7 @@ export const OfferSlider = () => {
             )}
           </div>
 
-          {/* Right Side: Corporate Benefits Sidebar (approx 22%) */}
+          {/* Right Side: Business Benefits Sidebar (approx 22%) */}
           <div className="w-full lg:w-[22%] bg-white flex flex-col h-full shadow-sm rounded-none border-l-4 border-primary-600 lg:border-l-0 overflow-hidden">
             
             {/* Top Header */}
@@ -138,7 +138,7 @@ export const OfferSlider = () => {
               <div className="bg-primary-600 text-white p-1 rounded-md">
                 <ShieldCheck size={18} />
               </div>
-              <span className="font-bold text-foreground text-[14px]">Smart24 Corporate</span>
+              <span className="font-bold text-foreground text-[14px]">Smart24 Business</span>
             </div>
 
             {/* Gradient Middle Section */}

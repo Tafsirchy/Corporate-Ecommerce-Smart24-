@@ -705,7 +705,7 @@ model Offer {
   updatedAt       DateTime     @updatedAt
   deletedAt       DateTime?
 }
-model CorporateCollection {
+model BusinessCollection {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   subtitle    String

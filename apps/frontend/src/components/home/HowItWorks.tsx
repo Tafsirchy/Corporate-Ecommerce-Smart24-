@@ -21,7 +21,7 @@ export const HowItWorks = () => {
             Automate your procurement in <span className="text-primary/90">3 easy steps</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Say goodbye to last-minute market runs and repetitive ordering. Smart24 allows you to put your corporate supply chain on autopilot.
+            Say goodbye to last-minute market runs and repetitive ordering. Smart24 allows you to put your business supply chain on autopilot.
           </p>
         </div>
 
@@ -36,7 +36,7 @@ export const HowItWorks = () => {
             </div>
             <h3 className="text-xl font-bold text-foreground mb-3 relative z-10">Select a Package</h3>
             <p className="text-muted-foreground relative z-10 leading-relaxed">
-              Choose from our ready-made corporate bundles or build a custom subscription specifically tailored to your office's unique needs.
+              Choose from our ready-made business bundles or build a custom subscription specifically tailored to your office's unique needs.
             </p>
           </div>
 
@@ -50,7 +50,7 @@ export const HowItWorks = () => {
             </div>
             <h3 className="text-xl font-bold text-foreground mb-3 relative z-10">Request Quotation</h3>
             <p className="text-muted-foreground relative z-10 leading-relaxed">
-              Our dedicated B2B team will review your requirements and provide a finalized, competitive corporate quotation for your approval.
+              Our dedicated B2B team will review your requirements and provide a finalized, competitive business quotation for your approval.
             </p>
           </div>
 

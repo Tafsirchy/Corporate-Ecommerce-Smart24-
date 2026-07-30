@@ -59,7 +59,7 @@ export default function AdminQuotations() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Manage Corporate Quotations</h1>
+      <h1 className="text-2xl font-bold mb-6">Manage Business Quotations</h1>
       
       <div className="space-y-6">
         {quotations.map((quote: any) => (

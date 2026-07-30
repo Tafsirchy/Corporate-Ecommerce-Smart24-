@@ -71,7 +71,7 @@ export const SubscriptionAd = () => {
           const dbPackages = activePlans.map((plan: any) => ({
             id: plan.id,
             name: plan.name,
-            desc: plan.description || "Premium corporate subscription package.",
+            desc: plan.description || "Premium business subscription package.",
             includes: plan.items?.length > 0 
               ? plan.items.map((item: any) => `${item.product?.name || 'Included Item'} (x${item.quantity})`) 
               : ["Premium Assorted Items"],

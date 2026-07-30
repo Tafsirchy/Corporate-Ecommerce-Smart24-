@@ -4,7 +4,7 @@ import slugify from 'slugify';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting corporate data seeding with deep categories...');
+  console.log('Starting business data seeding with deep categories...');
 
   // 1. Clear existing generic data
   await prisma.supportTicket.deleteMany({});
@@ -182,7 +182,7 @@ async function main() {
   await prisma.banner.createMany({
     data: [
       {
-        title: 'Corporate Furniture Sale',
+        title: 'Business Furniture Sale',
         imageUrl: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=1200&h=400',
         targetUrl: '/shop',
         type: 'MAIN_CAROUSEL',
@@ -206,7 +206,7 @@ async function main() {
         order: 3
       },
       {
-        title: 'Corporate Pantry Essentials',
+        title: 'Business Pantry Essentials',
         imageUrl: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=2070&h=400',
         targetUrl: '/shop',
         type: 'MAIN_CAROUSEL',
@@ -249,7 +249,7 @@ async function main() {
       order: 3
     },
     {
-      title: "Corporate Stationery Kits",
+      title: "Business Stationery Kits",
       subtitle: "Keep your team stocked with stylish planners, notebooks, and writing essentials.",
       imageUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=2070&auto=format&fit=crop",
       categoryUrl: "/shop/stationery",
@@ -257,7 +257,7 @@ async function main() {
     },
     {
       title: "Executive Gift Bundles",
-      subtitle: "Celebrate clients and employees with polished, premium corporate gift sets.",
+      subtitle: "Celebrate clients and employees with polished, premium business gift sets.",
       imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=2070&auto=format&fit=crop",
       categoryUrl: "/shop/gifts",
       order: 5
@@ -387,9 +387,9 @@ async function main() {
 
   console.log('Subscription Plans created.');
 
-  // 9. Corporate Collections
-  await prisma.corporateCollection.deleteMany({});
-  await prisma.corporateCollection.createMany({
+  // 9. Business Collections
+  await prisma.businessCollection.deleteMany({});
+  await prisma.businessCollection.createMany({
     data: [
       { position: 1, title: "ELECTRONICS", subtitle: "Tech & Gadgets", buttonText: "Shop Tech", targetUrl: "/shop?category=electronics", imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800&h=600" },
       { position: 2, title: "ACCESSORIES", subtitle: "Premium Add-ons", buttonText: "Explore", targetUrl: "/shop?category=accessories", imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600&h=600" },
@@ -401,7 +401,7 @@ async function main() {
       { position: 8, title: "HOME LIFESTYLE", subtitle: "Decor & More", buttonText: "View Collection", targetUrl: "/shop?category=home-lifestyle", imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=600&h=600" }
     ]
   });
-  console.log('Corporate Collections created.');
+  console.log('Business Collections created.');
 
   // 10. Loyalty & Membership
   await prisma.membershipLevel.deleteMany({});
@@ -412,7 +412,7 @@ async function main() {
       { name: "Gold", requiredAmount: 75000, pointMultiplier: 1.5, priority: 3, benefits: ["Gold Badge", "Premium Offers", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
       { name: "Platinum", requiredAmount: 150000, pointMultiplier: 2.0, priority: 4, benefits: ["Platinum Badge", "VIP Offers", "Higher Point Multiplier", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
       { name: "Diamond", requiredAmount: 250000, pointMultiplier: 3.0, priority: 5, benefits: ["Diamond Badge", "Highest Point Multiplier", "Exclusive Diamond Rewards", "Priority Customer Support", "Premium Coupons", "Monthly Tickets", "1 Free Premium Subscription / Year"] },
-      { name: "Signature Elite", requiredAmount: 500000, pointMultiplier: 4.0, priority: 6, benefits: ["Signature Elite Badge", "Dedicated Account Manager", "Free Lifetime Premium Subscription", "VIP Event Invites", "Early Access to Corporate Gadgets", "Zero Delivery Fees", "24/7 Priority VIP Support", "Custom B2B Pricing Rates", "Extended 1-Year Warranty on Gadgets"] },
+      { name: "Signature Elite", requiredAmount: 500000, pointMultiplier: 4.0, priority: 6, benefits: ["Signature Elite Badge", "Dedicated Account Manager", "Free Lifetime Premium Subscription", "VIP Event Invites", "Early Access to Business Gadgets", "Zero Delivery Fees", "24/7 Priority VIP Support", "Custom B2B Pricing Rates", "Extended 1-Year Warranty on Gadgets"] },
     ]
   });
   console.log('Membership Levels created.');
@@ -421,8 +421,8 @@ async function main() {
   await prisma.loyaltyReward.deleteMany({});
   const reward1 = await prisma.loyaltyReward.create({
     data: {
-      title: "50% Off Corporate Gadgets",
-      description: "Get 50% off on your next corporate gadgets purchase.",
+      title: "50% Off Business Gadgets",
+      description: "Get 50% off on your next business gadgets purchase.",
       pointCost: 500,
       type: "COUPON",
       minMembershipPriority: 2, // Silver Priority
@@ -465,7 +465,7 @@ async function main() {
     await prisma.rewardTransaction.createMany({
       data: [
         { userId: user.id, earn: 2000, redeem: 0, balance: 2000, reason: 'WELCOME_BONUS', description: 'Welcome to Smart24 Rewards!' },
-        { userId: user.id, earn: 0, redeem: 750, balance: 1250, reason: 'REWARD_REDEEM', description: 'Redeemed for 50% Off Corporate Gadgets' },
+        { userId: user.id, earn: 0, redeem: 750, balance: 1250, reason: 'REWARD_REDEEM', description: 'Redeemed for 50% Off Business Gadgets' },
       ]
     });
 
@@ -496,7 +496,7 @@ async function main() {
           businessName: 'Smart24 Enterprise',
           businessType: 'REGISTERED_COMPANY',
           ownerName: 'Tafsir',
-          address: 'Corporate Avenue, Dhaka',
+          address: 'Business Avenue, Dhaka',
           tradeLicenseNo: 'TRD-12345',
           bin: 'BIN-12345',
           tin: 'TIN-12345',

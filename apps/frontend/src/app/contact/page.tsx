@@ -47,7 +47,7 @@ export default function ContactPage() {
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">Contact Us</h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Have a question about our corporate packages? Need a custom quotation? We'd love to hear from you.
+            Have a question about our business packages? Need a custom quotation? We'd love to hear from you.
           </p>
         </div>
 
@@ -80,13 +80,13 @@ export default function ContactPage() {
                 </div>
                 <div className="ml-4">
                   <h4 className="text-lg font-medium text-foreground">Email</h4>
-                  <p className="mt-1 text-muted-foreground">corporate@smart24.com.bd<br />support@smart24.com.bd</p>
+                  <p className="mt-1 text-muted-foreground">business@smart24.com.bd<br />support@smart24.com.bd</p>
                 </div>
               </div>
             </div>
             
             <div className="mt-12 bg-primary-50 p-6 rounded-xl border border-primary-100">
-              <h4 className="text-lg font-medium text-primary-900 mb-2">Corporate Sales Hours</h4>
+              <h4 className="text-lg font-medium text-primary-900 mb-2">Business Sales Hours</h4>
               <p className="text-primary-800">Sunday - Thursday: 9:00 AM to 6:00 PM</p>
               <p className="text-primary-800">Friday & Saturday: Closed</p>
             </div>

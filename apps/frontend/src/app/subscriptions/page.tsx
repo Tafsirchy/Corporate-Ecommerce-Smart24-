@@ -95,7 +95,7 @@ export default function SubscriptionsPage() {
     <div className="container mx-auto px-4 py-10 relative">
       <div className="flex flex-col md:flex-row items-center justify-between bg-primary/10 p-8 rounded-lg mb-10">
         <div>
-          <h1 className="text-4xl font-bold mb-4">Corporate Subscriptions</h1>
+          <h1 className="text-4xl font-bold mb-4">Business Subscriptions</h1>
           <p className="text-lg text-muted-foreground mb-6">
             Get your monthly supplies delivered automatically. Choose a fixed package or build your own custom package.
           </p>
@@ -194,7 +194,7 @@ export default function SubscriptionsPage() {
               </div>
               <div>
                 <label className="text-sm font-medium">Delivery Address</label>
-                <Input value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="e.g. 123 Corporate Tower, Gulshan" required />
+                <Input value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="e.g. 123 Business Tower, Gulshan" required />
               </div>
               <div>
                 <label className="text-sm font-medium">Contact Number</label>

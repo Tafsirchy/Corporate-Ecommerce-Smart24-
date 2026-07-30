@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Corporate Ecommerce",
+  title: "Business Ecommerce",
   description: "B2B and B2C Ecommerce Platform",
 };
 

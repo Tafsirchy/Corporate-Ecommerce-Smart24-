@@ -406,7 +406,7 @@ export const MembershipCard = ({
                       SMART24
                     </span>
                     <span className={`text-[6px] md:text-[7px] font-bold tracking-[0.4em] uppercase ${theme.text} opacity-80 mt-0.5`}>
-                      Corporate Member
+                      Business Member
                     </span>
                  </div>
                </div>

@@ -304,7 +304,7 @@ export default function ProductDetailPage() {
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-sm text-muted-foreground line-through">৳{product.price.toLocaleString()}</span>
-                      <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded">-{b2bDiscount}% Corporate Discount</span>
+                      <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded">-{b2bDiscount}% Business Discount</span>
                     </div>
                   </>
                 ) : (

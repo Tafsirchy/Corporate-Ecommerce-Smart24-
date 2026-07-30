@@ -44,7 +44,7 @@ export default function BusinessVerifyPage() {
       <div className="bg-white p-8 rounded-lg shadow-sm border">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Business Verification</h2>
         <p className="text-gray-600 mb-8">
-          Upload your business documents (Trade License, NID) to verify your account and unlock corporate pricing.
+          Upload your business documents (Trade License, NID) to verify your account and unlock business pricing.
         </p>
 
         <form onSubmit={handleUpload} className="space-y-6">

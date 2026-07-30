@@ -68,7 +68,7 @@ export const MembershipAd = () => {
               transition={{ delay: 0.1 }}
               className="text-3xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-amber-100 to-amber-500 leading-tight tracking-tight"
             >
-              Elevate your corporate purchasing power.
+              Elevate your business purchasing power.
             </motion.h2>
             
             <motion.p 

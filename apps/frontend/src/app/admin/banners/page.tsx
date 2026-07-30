@@ -140,7 +140,7 @@ export default function AdminBanners() {
               className="w-full px-4 py-2 border rounded focus:ring-primary-600 focus:border-primary-600"
             >
               <option value="MAIN_CAROUSEL">Main Carousel</option>
-              <option value="SPECIAL_OFFER">Special Offer (Before Corporate Collections)</option>
+              <option value="SPECIAL_OFFER">Special Offer (Before Business Collections)</option>
             </select>
           </div>
 

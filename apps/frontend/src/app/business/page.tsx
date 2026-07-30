@@ -37,7 +37,7 @@ export default function BusinessDashboardPage() {
         <div>
           <h2 className="text-lg font-semibold text-blue-900">Welcome to the Smart24 B2B Portal</h2>
           <p className="text-blue-700 mt-1">
-            Access corporate pricing, submit RFQs, and build bulk orders easily.
+            Access business pricing, submit RFQs, and build bulk orders easily.
           </p>
         </div>
         <Link 

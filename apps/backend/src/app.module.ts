@@ -25,7 +25,7 @@ import { SupportTicketsModule } from './support-tickets/support-tickets.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { SettingsModule } from './settings/settings.module';
 import { OffersModule } from './offers/offers.module';
-import { CorporateCollectionsModule } from './corporate-collections/corporate-collections.module';
+import { BusinessCollectionsModule } from './business-collections/business-collections.module';
 import { LoyaltyModule } from './loyalty/loyalty.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { RewardsModule } from './rewards/rewards.module';
@@ -66,7 +66,7 @@ import { HeroContentModule } from './hero-content/hero-content.module';
     FaqsModule,
     SettingsModule,
     OffersModule,
-    CorporateCollectionsModule,
+    BusinessCollectionsModule,
     LoyaltyModule,
     MembershipsModule,
     RewardsModule,

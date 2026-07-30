@@ -174,7 +174,7 @@ export default function AdminRewardsPage() {
                     type="text" required
                     value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
                     className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
-                    placeholder="e.g. 50% Off Corporate Gadgets"
+                    placeholder="e.g. 50% Off Business Gadgets"
                   />
                 </div>
                 

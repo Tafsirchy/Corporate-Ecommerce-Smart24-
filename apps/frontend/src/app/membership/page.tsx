@@ -30,7 +30,7 @@ export default async function MembershipPage() {
           Smart24 Elite Membership
         </h1>
         <p className="text-zinc-400 max-w-2xl mx-auto text-lg mb-8">
-          Unlock wholesale enterprise pricing, priority support, and exclusive corporate perks. Experience the premium standard of B2B procurement.
+          Unlock wholesale enterprise pricing, priority support, and exclusive business perks. Experience the premium standard of B2B procurement.
         </p>
         <Link href="/membership/upgrade">
           <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold hover:scale-105 transition-transform border-0 rounded-full px-8 h-14">

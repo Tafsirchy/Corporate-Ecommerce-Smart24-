@@ -4,7 +4,7 @@ import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Image as ImageIcon } from 'lucide-react';
 
-export default function AdminCorporateCollections() {
+export default function AdminBusinessCollections() {
   const [collections, setCollections] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -20,10 +20,10 @@ export default function AdminCorporateCollections() {
   const fetchCollections = async () => {
     try {
       setIsLoadingPage(true);
-      const res = await apiClient.get('/corporate-collections/admin/all');
+      const res = await apiClient.get('/business-collections/admin/all');
       setCollections(res.data);
     } catch (error) {
-      toast.error('Failed to fetch corporate collections');
+      toast.error('Failed to fetch business collections');
     } finally {
       setIsLoadingPage(false);
     }
@@ -79,7 +79,7 @@ export default function AdminCorporateCollections() {
 
     setIsLoading(true);
     try {
-      await apiClient.put(`/corporate-collections/${position}`, {
+      await apiClient.put(`/business-collections/${position}`, {
         title: data.title,
         subtitle: data.subtitle,
         buttonText: data.buttonText,
@@ -118,7 +118,7 @@ export default function AdminCorporateCollections() {
     ));
     
     try {
-      await apiClient.put(`/corporate-collections/${position}`, {
+      await apiClient.put(`/business-collections/${position}`, {
         ...data,
         isActive: !data.isActive
       });
@@ -134,7 +134,7 @@ export default function AdminCorporateCollections() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-2">Corporate Collections</h1>
+      <h1 className="text-3xl font-bold mb-2">Business Collections</h1>
       <p className="text-muted-foreground mb-8">Manage the 8 dynamic slots in the home page bento grid.</p>
       
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">

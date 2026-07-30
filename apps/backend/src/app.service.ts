@@ -13,7 +13,7 @@ export class AppService {
   }
 
   getHello() {
-    return { status: 'ok', service: 'Corporate E-Commerce API', timestamp: new Date().toISOString() };
+    return { status: 'ok', service: 'Business E-Commerce API', timestamp: new Date().toISOString() };
   }
 
   async submitContact(data: { name: string; email: string; company?: string; message: string }) {

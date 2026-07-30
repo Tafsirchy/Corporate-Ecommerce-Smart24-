@@ -37,7 +37,7 @@ export const CTA = () => {
               href="/signup"
               className="group flex items-center justify-center gap-2 px-8 py-4 w-full sm:w-auto text-base font-bold rounded-xl text-slate-900 bg-white hover:bg-muted transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] hover:-translate-y-1"
             >
-              Create Corporate Account
+              Create Business Account
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             

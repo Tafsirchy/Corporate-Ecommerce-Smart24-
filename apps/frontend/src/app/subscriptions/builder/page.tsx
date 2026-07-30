@@ -190,7 +190,7 @@ function BuilderContent() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Custom Package Builder</h1>
-            <p className="text-muted-foreground mt-1">Select at least 2 items to build your monthly corporate package.</p>
+            <p className="text-muted-foreground mt-1">Select at least 2 items to build your monthly business package.</p>
           </div>
         </div>
 

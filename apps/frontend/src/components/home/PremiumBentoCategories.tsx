@@ -92,10 +92,10 @@ export const PremiumBentoCategories = () => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const res = await apiClient.get('/corporate-collections');
+        const res = await apiClient.get('/business-collections');
         setCollections(res.data || []);
       } catch (error) {
-        console.error('Failed to fetch corporate collections:', error);
+        console.error('Failed to fetch business collections:', error);
       } finally {
         setIsLoading(false);
       }
@@ -127,7 +127,7 @@ export const PremiumBentoCategories = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-6">
           <div>
             <h2 className="text-3xl font-extrabold text-foreground tracking-tight uppercase">
-              Corporate Collections
+              Business Collections
             </h2>
             <p className="text-muted-foreground mt-1 font-medium text-sm">Curated office goods & supplies for the modern workplace</p>
           </div>
