@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/Footer";
 import StickySidebar from "@/components/StickySidebar";
 import { ToastContainer } from "react-toastify";
 import { Suspense } from "react";
+import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <NextTopLoader color="#000" showSpinner={false} />
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
