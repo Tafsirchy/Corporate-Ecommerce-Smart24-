@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Res, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { SignupDto, LoginDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
@@ -15,16 +24,20 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.authService.validateUser(body.email, body.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     if (user.isTwoFactorEnabled) {
-      return { 
-        twoFactorRequired: true, 
-        tempToken: await this.authService.generateTempToken(user) 
+      return {
+        twoFactorRequired: true,
+        tempToken: await this.authService.generateTempToken(user),
       };
     }
 
@@ -34,17 +47,21 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/api/v1/auth/refresh'
+      path: '/api/v1/auth/refresh',
     });
 
     return { access_token, user };
   }
 
   @Post('verify-2fa-login')
-  async verify2faLogin(@Body() body: any, @Res({ passthrough: true }) res: Response) {
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  async verify2faLogin(
+    @Body() body: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const { tempToken, code } = body;
     const user = await this.authService.verifyTempTokenAndCode(tempToken, code);
-    
+
     if (!user) {
       throw new UnauthorizedException('Invalid 2FA code or expired session');
     }
@@ -55,7 +72,7 @@ export class AuthController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/api/v1/auth/refresh'
+      path: '/api/v1/auth/refresh',
     });
 
     return { access_token, user };
@@ -68,6 +85,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async forgotPassword(@Body('email') email: string) {
     return this.authService.forgotPassword(email);
   }
@@ -83,6 +101,7 @@ export class AuthController {
   }
 
   @Post('resend-verification')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async resendVerification(@Body('email') email: string) {
     return this.authService.resendVerification(email);
   }
@@ -90,7 +109,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
   async generateTwoFactorAuth(@Req() req: any) {
-    const { secret, otpauthUrl } = await this.authService.generateTwoFactorAuthSecret(req.user);
+    const { secret, otpauthUrl } =
+      await this.authService.generateTwoFactorAuthSecret(req.user);
     const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl);
     return { qrCodeDataUrl, secret };
   }
