@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { BannersService } from './banners.service';
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
@@ -21,7 +31,7 @@ export class BannersController {
   @Get()
   findAll(
     @Query('activeOnly') activeOnly?: string,
-    @Query('type') type?: BannerType
+    @Query('type') type?: BannerType,
   ) {
     return this.bannersService.findAll(activeOnly === 'true', type);
   }
