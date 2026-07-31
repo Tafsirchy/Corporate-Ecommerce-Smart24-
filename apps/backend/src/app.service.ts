@@ -8,10 +8,19 @@ export class AppService {
   constructor(private emailService: EmailService) {}
 
   getHello() {
-    return { status: 'ok', service: 'Business E-Commerce API', timestamp: new Date().toISOString() };
+    return {
+      status: 'ok',
+      service: 'Business E-Commerce API',
+      timestamp: new Date().toISOString(),
+    };
   }
 
-  async submitContact(data: { name: string; email: string; company?: string; message: string }) {
+  async submitContact(data: {
+    name: string;
+    email: string;
+    company?: string;
+    message: string;
+  }) {
     try {
       await this.emailService.sendContactEmail(data);
       return { success: true, message: 'Message sent successfully.' };
