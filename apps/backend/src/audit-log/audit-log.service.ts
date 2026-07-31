@@ -7,13 +7,13 @@ export class AuditLogService {
 
   async create(data: any) {
     return this.prisma.auditLog.create({
-      data
+      data,
     });
   }
 
   async findAll() {
     return this.prisma.auditLog.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 }
