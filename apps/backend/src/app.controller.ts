@@ -11,7 +11,15 @@ export class AppController {
   }
 
   @Post('contact')
-  async submitContact(@Body() body: { name: string; email: string; company?: string; message: string }) {
+  async submitContact(
+    @Body()
+    body: {
+      name: string;
+      email: string;
+      company?: string;
+      message: string;
+    },
+  ) {
     return this.appService.submitContact(body);
   }
 }
