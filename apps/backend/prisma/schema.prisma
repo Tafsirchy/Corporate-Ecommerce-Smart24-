@@ -21,15 +21,24 @@ enum Role {
 
 enum BusinessType {
   REGISTERED_COMPANY
+  BUSINESS
   LOCAL_SHOP
   SMALL_BUSINESS
   STARTUP
+  SUPPLIER
+  MANUFACTURER
+  DISTRIBUTOR
+  WHOLESALER
+  RETAILER
   RESTAURANT
   PHARMACY
+  SERVICE_PROVIDER
+  CORPORATE
   EDUCATIONAL
   NGO
   HOSPITAL
   GOVERNMENT
+  INDIVIDUAL_SELLER
   OTHERS
 }
 
@@ -125,7 +134,7 @@ model User {
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   
-  cart               Cart?
+  carts              Cart[]
   wishlist           Wishlist?
   orders             Order[]
   subscriptions      Subscription[]
@@ -159,6 +168,7 @@ model Category {
   children  Category[] @relation("CategoryToCategory")
   level     Int        @default(1) // 1: Top, 2: Sub, 3: Sub-sub
   products  Product[]
+  isActive  Boolean    @default(true)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -288,9 +298,9 @@ model Product {
 
 model Cart {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String?    @unique @db.ObjectId
+  userId    String?    @db.ObjectId
   user      User?      @relation(fields: [userId], references: [id])
-  sessionId String?    @unique // For guest carts
+  sessionId String?    // For guest carts
   
   items     CartItem[]
   
