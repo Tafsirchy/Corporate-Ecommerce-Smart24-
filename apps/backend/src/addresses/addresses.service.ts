@@ -17,7 +17,7 @@ export class AddressesService {
 
     return this.addressRepository.create({
       ...data,
-      user: { connect: { id: userId } }
+      user: { connect: { id: userId } },
     });
   }
 
