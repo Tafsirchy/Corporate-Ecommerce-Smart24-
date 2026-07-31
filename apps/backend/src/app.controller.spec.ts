@@ -9,14 +9,18 @@ describe('AppController', () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService],
-    }).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     appController = app.get<AppController>(AppController);
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return health check object', () => {
+      const response = appController.getHello();
+      expect(response).toHaveProperty('service', 'Business E-Commerce API');
+      expect(response).toHaveProperty('status', 'ok');
     });
   });
 });
