@@ -1,4 +1,13 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, ValidateNested, IsEnum } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsOptional,
+  ValidateNested,
+  IsEnum,
+  IsIn,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { Role, BusinessType } from '@prisma/client';
 
@@ -37,9 +46,6 @@ export class SignupDto {
   @IsNotEmpty({ message: 'Phone number is required' })
   phone: string;
 
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
 
   @IsOptional()
   @ValidateNested()
