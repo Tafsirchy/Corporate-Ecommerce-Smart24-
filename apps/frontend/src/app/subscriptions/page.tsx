@@ -19,7 +19,7 @@ export default function SubscriptionsPage() {
   const [contactNumber, setContactNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { user, token } = useAuth();
+  const { user, openAuthModal } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function SubscriptionsPage() {
   const handleSubscribeClick = (plan: any) => {
     if (!user) {
       toast.error("Please login to subscribe");
-      router.push("/login?redirect=/subscriptions");
+      openAuthModal('login');
       return;
     }
     setSelectedPlan(plan);

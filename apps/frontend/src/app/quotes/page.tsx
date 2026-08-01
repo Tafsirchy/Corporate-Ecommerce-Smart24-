@@ -21,13 +21,13 @@ function RequestQuoteForm() {
   const searchParams = useSearchParams();
   const productId = searchParams.get("productId");
   
-  const { user, token } = useAuth();
+  const { user, loading, openAuthModal } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!user) {
       toast.info("Please login to request a quote.");
-      router.push(`/login?redirect=/quotes${productId ? `?productId=${productId}` : ''}`);
+      openAuthModal('login');
     }
   }, [user, router, productId]);
 

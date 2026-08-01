@@ -10,7 +10,7 @@ import { JustForYou } from "@/components/home/JustForYou";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { SubscriptionAd } from "@/components/home/SubscriptionAd";
 import { MembershipAd } from "@/components/home/MembershipAd";
-
+import { CTA } from "@/components/CTA";
 const DUMMY_ADS: HeroAd[] = [
   {
     id: "1",
@@ -76,6 +76,9 @@ export default function Home() {
 
       {/* How it Works */}
       <HowItWorks />
+
+      {/* CTA */}
+      <CTA />
     </div>
   );
 }

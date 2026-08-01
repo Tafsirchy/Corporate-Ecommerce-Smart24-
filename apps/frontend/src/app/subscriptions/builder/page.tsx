@@ -39,7 +39,7 @@ function BuilderContent() {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [activeOffers, setActiveOffers] = useState<any[]>([]);
-  const { user, token } = useAuth();
+  const { user, openAuthModal, token } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -142,7 +142,7 @@ function BuilderContent() {
     e.preventDefault();
     if (!user) {
       toast.error("Please login to create a subscription");
-      router.push("/login?redirect=/subscriptions/builder");
+      openAuthModal('login');
       return;
     }
     if (selectedItems.length < 2) {

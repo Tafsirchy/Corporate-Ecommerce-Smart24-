@@ -5,14 +5,15 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 
 export default function BusinessLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, openAuthModal } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        router.push('/login');
+        router.push('/');
+        setTimeout(() => openAuthModal('login'), 100);
       } else if (user.role !== 'BUSINESS') {
         router.push('/account'); // redirect normal buyers to their account dashboard
       }

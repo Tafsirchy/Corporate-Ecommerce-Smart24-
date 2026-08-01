@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, openAuthModal } = useAuth();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -88,7 +88,7 @@ export default function ProductDetailPage() {
     e.preventDefault();
     if (!user) {
       toast.error("Please login to submit a review");
-      router.push(`/login?redirect=/shop/${slug}`);
+      openAuthModal('login');
       return;
     }
     
@@ -549,9 +549,9 @@ export default function ProductDetailPage() {
                   {!user ? (
                     <div className="text-center py-6 bg-white rounded-lg border border-border">
                       <p className="text-muted-foreground mb-4">You must be logged in to leave a review.</p>
-                      <Link href={`/login?redirect=/shop/${slug}`} className="px-6 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700">
-                        Login Now
-                      </Link>
+                      <button onClick={() => openAuthModal('login')} className="px-6 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700">
+                        Sign In to Review
+                      </button>
                     </div>
                   ) : reviews.some(r => r.userId === user?.id) && !editingReviewId ? (
                     <div className="text-center py-6 bg-white rounded-lg border border-border">

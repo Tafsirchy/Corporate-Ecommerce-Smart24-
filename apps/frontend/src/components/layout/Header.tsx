@@ -1,5 +1,6 @@
 'use client';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
+import Image from 'next/image';
 
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -8,8 +9,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Search, ShoppingCart, Heart, X, Loader2 } from 'lucide-react';
 import HeaderNav from '@/components/layout/HeaderNav';
 import { CategoryDropdown } from '@/components/CategoryDropdown';
-import { useCart } from '@/context/CartContext';
-import { useWishlist } from '@/context/WishlistContext';
+import { useCartStore } from '@/store/useCartStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
 import { apiClient } from '@/context/AuthContext';
 
 // Debounce hook
@@ -33,8 +34,8 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { totalItems } = useCart();
-  const { items: wishlistItems } = useWishlist();
+  const totalItems = useCartStore(state => state.totalItems());
+  const wishlistItems = useWishlistStore(state => state.items);
 
   // --- Search State ---
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,7 +43,7 @@ export default function Header() {
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  
+
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Sync URL query to input when navigating
@@ -68,14 +69,14 @@ export default function Header() {
 
   // Keyboard navigation within dropdown
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  
+
   useEffect(() => {
     setSelectedIndex(-1);
   }, [debouncedSearchQuery]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isSearchFocused || liveResults.length === 0) return;
-    
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setSelectedIndex(prev => (prev < liveResults.length - 1 ? prev + 1 : prev));
@@ -132,7 +133,7 @@ export default function Header() {
   const handleScroll = useCallback(() => {
     setIsVisible(true);
     setIsScrolled(window.scrollY > 10);
-    
+
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
@@ -168,33 +169,32 @@ export default function Header() {
 
   return (
     <>
-      {!isHome && <div className="h-[105px] w-full" />} 
-      <header 
+      {!isHome && <div className="h-[105px] w-full" />}
+      <header
         className="fixed top-0 left-0 right-0 z-50 flex flex-col"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Search Bar */}
-        <div className={`w-full py-3 relative z-20 transition-all duration-300 ${
-          isTransparent 
-            ? 'bg-transparent border-transparent' 
+        <div className={`w-full py-3 relative z-20 transition-all duration-300 ${isTransparent
+            ? 'bg-transparent border-transparent'
             : 'bg-white/90 backdrop-blur-md border-b border-border shadow-sm'
-        }`}>
+          }`}>
           <div className="container mx-auto px-4 flex items-center justify-center gap-4">
             <div className="flex items-center w-full max-w-2xl gap-3">
-              
+
               {/* Search Container */}
               <div ref={searchContainerRef} className="relative flex-1">
                 <form onSubmit={handleSearchSubmit} className="relative flex items-center shadow-sm">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input 
+                  <input
                     id="search-input"
-                    type="text" 
+                    type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setIsSearchFocused(true)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Search for any product and similar products..." 
+                    placeholder="Search for any product and similar products..."
                     className="w-full pl-10 pr-24 py-2 text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-white rounded"
                     autoComplete="off"
                   />
@@ -220,12 +220,11 @@ export default function Header() {
                       <ul>
                         {liveResults.map((product, index) => (
                           <li key={product.id}>
-                            <Link 
+                            <Link
                               href={`/shop/${product.slug}`}
                               onClick={() => setIsSearchFocused(false)}
-                              className={`flex items-center gap-3 p-3 transition border-b border-gray-50 last:border-0 ${
-                                index === selectedIndex ? 'bg-primary-50' : 'hover:bg-muted'
-                              }`}
+                              className={`flex items-center gap-3 p-3 transition border-b border-gray-50 last:border-0 ${index === selectedIndex ? 'bg-primary-50' : 'hover:bg-muted'
+                                }`}
                             >
                               <div className="w-10 h-10 bg-muted rounded overflow-hidden flex-shrink-0">
                                 {product.images?.[0] ? (
@@ -245,7 +244,7 @@ export default function Header() {
                           </li>
                         ))}
                         <li>
-                          <Link 
+                          <Link
                             href={`/search?q=${encodeURIComponent(searchQuery.trim())}`}
                             onClick={() => setIsSearchFocused(false)}
                             className="block text-center py-2 text-sm text-primary/90 font-medium hover:bg-primary/10 transition bg-muted"
@@ -286,20 +285,18 @@ export default function Header() {
         </div>
 
         {/* Navbar */}
-        <div 
-          className={`w-full absolute left-0 right-0 z-10 transition-all duration-300 ease-in-out ${
-            isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-          } ${
-            isTransparent
+        <div
+          className={`w-full absolute left-0 right-0 z-10 transition-all duration-300 ease-in-out ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+            } ${isTransparent
               ? 'bg-transparent'
               : 'bg-white/90 backdrop-blur-md shadow-sm'
-          }`}
+            }`}
           style={{ top: '100%' }}
         >
           <div className="container mx-auto px-4 flex justify-between items-center">
             <div className="flex items-center gap-8">
               <a href="/" className="flex items-center">
-                <OptimizedImage src="/asset/Logo.png" alt="Smart24" className={`h-16 w-auto object-contain scale-[1.35] origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
+                <Image src="/asset/Logo.png" alt="Smart24" width={200} height={80} priority unoptimized={true} className={`h-16 w-auto object-contain origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
               </a>
               {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>

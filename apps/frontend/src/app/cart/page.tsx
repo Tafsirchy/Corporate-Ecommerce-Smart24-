@@ -2,18 +2,21 @@
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useCart } from '../../context/CartContext';
-import { useWishlist } from '../../context/WishlistContext';
+import { useCartStore } from '../../store/useCartStore';
+import { useWishlistStore } from '../../store/useWishlistStore';
+import { useAuth } from '../../context/AuthContext';
 import Link from 'next/link';
 
 // Helper component for Debounced Quantity Input
 function QuantityAdjuster({ 
   productId, 
   initialQuantity, 
+  maxStock,
   onUpdate 
 }: { 
   productId: string, 
   initialQuantity: number, 
+  maxStock?: number,
   onUpdate: (id: string, qty: number) => void 
 }) {
   const [qty, setQty] = useState(initialQuantity);
@@ -25,10 +28,14 @@ function QuantityAdjuster({
   }, [initialQuantity]);
 
   const changeQty = (newQty: number) => {
-    setQty(newQty);
+    let finalQty = Math.max(1, newQty);
+    if (maxStock !== undefined) {
+      finalQty = Math.min(finalQty, maxStock);
+    }
+    setQty(finalQty);
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
-      onUpdate(productId, newQty);
+      onUpdate(productId, finalQty);
     }, 500);
   };
 
@@ -36,14 +43,16 @@ function QuantityAdjuster({
     <div className="flex items-center gap-3">
       <button 
         onClick={() => changeQty(qty - 1)}
-        className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted"
+        disabled={qty <= 1}
+        className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted disabled:opacity-50"
       >
         -
       </button>
       <span className="w-8 text-center">{qty}</span>
       <button 
         onClick={() => changeQty(qty + 1)}
-        className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted"
+        disabled={maxStock !== undefined && qty >= maxStock}
+        className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted disabled:opacity-50"
       >
         +
       </button>
@@ -52,12 +61,18 @@ function QuantityAdjuster({
 }
 
 export default function CartPage() {
-  const { items, updateQuantity, removeFromCart, cartTotal, isInitialized } = useCart();
-  const { toggleWishlist, isInWishlist } = useWishlist();
+  const items = useCartStore(state => state.items);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const removeFromCart = useCartStore(state => state.removeFromCart);
+  const cartTotal = useCartStore(state => state.cartTotal());
+  const isInitialized = useCartStore(state => state.isInitialized);
+  const toggleWishlist = useWishlistStore(state => state.toggleWishlist);
+  const isInWishlist = useWishlistStore(state => state.isInWishlist);
+  const { user } = useAuth();
 
   const handleSaveForLater = useCallback(async (item: any) => {
     if (!isInWishlist(item.productId)) {
-      toggleWishlist(item.product);
+      toggleWishlist(item.product, !!user);
     }
     removeFromCart(item.productId);
   }, [toggleWishlist, isInWishlist, removeFromCart]);
@@ -111,6 +126,7 @@ export default function CartPage() {
                     <QuantityAdjuster 
                       productId={item.productId} 
                       initialQuantity={item.quantity} 
+                      maxStock={item.product?.stock}
                       onUpdate={updateQuantity} 
                     />
                   </div>

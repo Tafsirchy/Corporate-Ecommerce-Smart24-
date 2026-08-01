@@ -2,8 +2,9 @@
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 import Link from 'next/link';
-import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
+import { useCartStore } from '../store/useCartStore';
+import { useWishlistStore } from '../store/useWishlistStore';
+import { useAuth } from '../context/AuthContext';
 import { Star, ShoppingCart, MapPin, Check, Heart, Loader2 } from 'lucide-react';
 
 export interface Product {
@@ -78,8 +79,12 @@ export const generateMockData = (id: string) => {
 };
 
 export function ProductCard({ product, viewMode = 'grid' }: { product: Product, viewMode?: 'grid' | 'list' }) {
-  const { addToCart, pendingItems: cartPending } = useCart();
-  const { toggleWishlist, isInWishlist, pendingItems: wishlistPending } = useWishlist();
+  const addToCart = useCartStore(state => state.addToCart);
+  const cartPending = useCartStore(state => state.pendingItems);
+  const toggleWishlist = useWishlistStore(state => state.toggleWishlist);
+  const isInWishlist = useWishlistStore(state => state.isInWishlist);
+  const wishlistPending = useWishlistStore(state => state.pendingItems);
+  const { user } = useAuth();
   
   // Generate mock data for the UI since the real DB might not have these yet
   const mock = generateMockData(product.id);
@@ -117,7 +122,7 @@ export function ProductCard({ product, viewMode = 'grid' }: { product: Product, 
         <button
           onClick={(e) => {
             e.preventDefault();
-            if (!isTogglingWishlist) toggleWishlist(product);
+            if (!isTogglingWishlist) toggleWishlist(product, !!user);
           }}
           disabled={isTogglingWishlist}
           aria-label="Add to wishlist"

@@ -3,14 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "@/context/AuthContext";
-import { CartProvider } from "../context/CartContext";
-import { WishlistProvider } from "../context/WishlistContext";
+import { StoreInitializer } from "@/components/StoreInitializer";
 import Header from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import StickySidebar from "@/components/StickySidebar";
 import { ToastContainer } from "react-toastify";
 import { Suspense } from "react";
 import NextTopLoader from "nextjs-toploader";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,19 +40,18 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <NextTopLoader color="#000" showSpinner={false} />
         <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <Suspense fallback={<div className="h-16 bg-white border-b border-border shadow-sm"></div>}>
-                <Header />
-              </Suspense>
-              <StickySidebar />
-              <main className="flex-1 flex flex-col">
-                {children}
-              </main>
-              <Footer />
-              <ToastContainer position="bottom-right" />
-            </WishlistProvider>
-          </CartProvider>
+          <StoreInitializer />
+          <Suspense fallback={<div className="h-16 bg-white border-b border-border shadow-sm"></div>}>
+            <Header />
+          </Suspense>
+          <StickySidebar />
+          <main className="flex-1 flex flex-col">
+            {children}
+          </main>
+
+          <Footer />
+          <AuthModal />
+          <ToastContainer position="bottom-right" />
         </AuthProvider>
       </body>
     </html>

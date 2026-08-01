@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 export default function HeaderNav({ isTransparent = false }: { isTransparent?: boolean }) {
-  const { user, logout } = useAuth();
+  const { user, logout, openAuthModal } = useAuth();
   const pathname = usePathname();
   
   const getLinkClass = (path: string, hideOnMobile = false) => {
@@ -104,8 +104,8 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
         </>
       ) : (
         <>
-          <Link href="/login" className={getLinkClass('/login')}>Sign In</Link>
-          <Link href="/signup" className={`${isTransparent ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary/90"} font-medium border ${isTransparent ? 'border-white/50 hover:bg-white/10' : 'border-border hover:bg-muted'} px-3 py-1.5 rounded transition-colors`}>Sign Up</Link>
+          <button onClick={() => openAuthModal('login')} className={isTransparent ? "text-white/80 hover:text-white font-medium" : "text-muted-foreground hover:text-primary/90 font-medium"}>Sign In</button>
+          <button onClick={() => openAuthModal('signup')} className={`${isTransparent ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary/90"} font-medium border ${isTransparent ? 'border-white/50 hover:bg-white/10' : 'border-border hover:bg-muted'} px-3 py-1.5 rounded transition-colors`}>Sign Up</button>
         </>
       )}
       {user?.role === 'ADMIN' && (

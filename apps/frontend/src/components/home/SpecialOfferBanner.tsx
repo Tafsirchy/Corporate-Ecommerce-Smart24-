@@ -31,16 +31,19 @@ export const SpecialOfferBanner = () => {
     );
   }
 
-  if (banners.length === 0) return null;
-
-  // Render the first active special offer banner
-  const banner = banners[0];
+  // Render the first active special offer banner or a fallback if none exist
+  const banner = banners.length > 0 ? banners[0] : {
+    imageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070&auto=format&fit=crop',
+    title: 'Huge End of Season Sale',
+    targetUrl: '/shop'
+  };
 
   const content = (
-    <div className="w-full overflow-hidden rounded-xl shadow-sm border border-border mt-8 mb-4">
+    <div className="w-full aspect-[6/1] overflow-hidden rounded-xl shadow-sm border border-border mt-8 mb-4 relative">
       <OptimizedImage src={banner.imageUrl} 
         alt={banner.title || "Special Offer"} 
-        className="w-full h-24 md:h-32 lg:h-40 object-cover object-center" />
+        fill
+        className="object-cover object-center" />
     </div>
   );
 

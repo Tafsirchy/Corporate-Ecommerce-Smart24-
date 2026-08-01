@@ -2,7 +2,7 @@
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 import { useState, useEffect } from 'react';
-import { useCart } from '../../context/CartContext';
+import { useCartStore } from '../../store/useCartStore';
 import { useAuth, apiClient } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -10,8 +10,10 @@ import StripePaymentWrapper from '../../components/StripePaymentWrapper';
 import { CreditCard, Smartphone, Banknote, Rocket, CheckCircle2 } from 'lucide-react';
 
 export default function CheckoutPage() {
-  const { items, cartTotal, clearCart } = useCart();
-  const { user } = useAuth();
+  const items = useCartStore(state => state.items);
+  const cartTotal = useCartStore(state => state.cartTotal());
+  const clearCart = useCartStore(state => state.clearCart);
+  const { user, openAuthModal } = useAuth();
   const router = useRouter();
 
   const [address, setAddress] = useState('');
@@ -236,7 +238,7 @@ export default function CheckoutPage() {
               {!user && (
                 <div className="bg-info-bg p-4 rounded-lg border border-blue-100 mb-6">
                   <h3 className="font-medium text-blue-900 mb-2">Guest Checkout</h3>
-                  <p className="text-sm text-blue-700 mb-4">You are checking out as a guest. <button type="button" onClick={() => router.push('/login?redirect=/checkout')} className="underline font-semibold">Login</button> to use saved addresses, apply coupons, and earn reward points.</p>
+                  <p className="text-sm text-blue-700 mb-4">You are checking out as a guest. <button type="button" onClick={() => openAuthModal('login')} className="underline font-semibold">Login</button> to use saved addresses, apply coupons, and earn reward points.</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

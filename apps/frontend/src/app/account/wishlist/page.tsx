@@ -1,19 +1,20 @@
 'use client';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
-import { useWishlist } from '../../../context/WishlistContext';
+import { useWishlistStore } from '../../../store/useWishlistStore';
 import { useAuth, apiClient } from '../../../context/AuthContext';
-import { ProductCard } from '../../../components/ProductCard';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Store, Trash2 } from 'lucide-react';
-import { useCart } from '../../../context/CartContext';
+import { useCartStore } from '../../../store/useCartStore';
 import { useRouter } from 'next/navigation';
 
 export default function WishlistPage() {
-  const { user, logout } = useAuth();
-  const { items, isInitialized, toggleWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { user, logout, openAuthModal } = useAuth();
+  const items = useWishlistStore(state => state.items);
+  const isInitialized = useWishlistStore(state => state.isInitialized);
+  const toggleWishlist = useWishlistStore(state => state.toggleWishlist);
+  const addToCart = useCartStore(state => state.addToCart);
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<'wishlist' | 'stores'>('wishlist');
@@ -24,24 +25,24 @@ export default function WishlistPage() {
 
   const handleCheckoutItem = (product: any) => {
     addToCart(product, quantities[product.id] || 1);
-    toggleWishlist(product); // Remove from wishlist
+    toggleWishlist(product, !!user); // Remove from wishlist
     router.push('/checkout');
   };
 
   const handleCheckoutAll = () => {
     items.forEach(item => {
-      if (item.product?.stock > 0) {
+      if ((item.product?.stock ?? 0) > 0) {
         addToCart(item.product, quantities[item.productId] || 1);
-        toggleWishlist(item.product); // Remove from wishlist
+        toggleWishlist(item.product, !!user); // Remove from wishlist
       }
     });
     router.push('/checkout');
   };
 
-  const updateQty = (id: string, delta: number) => {
+  const updateQty = (id: string, delta: number, max: number) => {
     setQuantities(prev => ({
       ...prev,
-      [id]: Math.max(1, (prev[id] || 1) + delta)
+      [id]: Math.min(Math.max(1, (prev[id] || 1) + delta), max)
     }));
   };
 
@@ -76,9 +77,9 @@ export default function WishlistPage() {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <p className="text-xl text-muted-foreground mb-6">Please login to view your wishlist.</p>
-        <Link href="/login" className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium">
-          Login
-        </Link>
+        <button onClick={() => openAuthModal('login')} className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium">
+          Sign In to Wishlist
+        </button>
       </div>
     );
   }
@@ -243,15 +244,15 @@ export default function WishlistPage() {
                             </div>
                             <div className="mt-2 flex items-center justify-start gap-6">
                               <span className="text-xl font-bold text-primary/90">৳{item.product?.price?.toLocaleString() || 0}</span>
-                              <span className={`text-xs font-semibold px-2 py-1 rounded-sm ${item.product?.stock > 0 ? 'bg-success-bg text-success-text' : 'bg-danger-bg text-destructive'}`}>
-                                {item.product?.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                              <span className={`text-xs font-semibold px-2 py-1 rounded-sm ${(item.product?.stock ?? 0) > 0 ? 'bg-success-bg text-success-text' : 'bg-destructive-bg text-destructive-text'}`}>
+                                {(item.product?.stock ?? 0) > 0 ? 'In Stock' : 'Out of Stock'}
                               </span>
                               
                               {/* Quantity Adjuster */}
                               <div className="flex items-center gap-2 bg-muted rounded border border-border ml-4">
                                 <button 
-                                  onClick={() => updateQty(item.productId, -1)}
-                                  disabled={item.product?.stock === 0}
+                                  onClick={() => updateQty(item.productId, -1, item.product?.stock ?? 1)}
+                                  disabled={(item.product?.stock ?? 0) === 0 || (quantities[item.productId] || 1) <= 1}
                                   className="w-7 h-7 flex items-center justify-center hover:bg-muted/80 transition text-muted-foreground disabled:opacity-50"
                                 >
                                   -
@@ -260,8 +261,8 @@ export default function WishlistPage() {
                                   {quantities[item.productId] || 1}
                                 </span>
                                 <button 
-                                  onClick={() => updateQty(item.productId, 1)}
-                                  disabled={item.product?.stock === 0}
+                                  onClick={() => updateQty(item.productId, 1, item.product?.stock ?? 1)}
+                                  disabled={(item.product?.stock ?? 0) === 0 || (quantities[item.productId] || 1) >= (item.product?.stock ?? 0)}
                                   className="w-7 h-7 flex items-center justify-center hover:bg-muted/80 transition text-muted-foreground disabled:opacity-50"
                                 >
                                   +
@@ -273,13 +274,13 @@ export default function WishlistPage() {
                           <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 sm:pl-6 sm:border-l border-border">
                             <button
                               onClick={() => handleCheckoutItem(item.product)}
-                              disabled={item.product?.stock === 0}
+                              disabled={(item.product?.stock ?? 0) === 0}
                               className="w-full sm:w-auto px-8 py-2.5 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed text-center"
                             >
                               Checkout
                             </button>
                             <button
-                              onClick={() => toggleWishlist(item.product)}
+                              onClick={() => toggleWishlist(item.product, !!user)}
                               className="text-sm text-muted-foreground hover:text-destructive transition font-medium flex items-center gap-1 mt-2"
                             >
                               <Trash2 size={14} /> Remove

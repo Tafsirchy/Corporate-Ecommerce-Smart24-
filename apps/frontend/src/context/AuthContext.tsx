@@ -5,7 +5,19 @@ import { setupCache } from 'axios-cache-interceptor';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-export const baseApiClient = axios.create({
+import { z } from 'zod';
+
+export const UserSchema = z.object({
+  id: z.string().or(z.number()),
+  email: z.string().email(),
+  name: z.string().optional(),
+  role: z.string(),
+  phone: z.string().nullable().optional(),
+  gender: z.string().optional(),
+  birthday: z.string().optional(),
+}).catchall(z.any());
+
+const baseApiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1',
   withCredentials: true,
 });
@@ -27,19 +39,39 @@ if (typeof window !== 'undefined') {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('access_token');
-        // Optional: redirect to login if not already there, 
-        // but removing the token stops the loop.
-      }
+    if (!error.response) {
+      // Network error (e.g. server down)
+      toast.error("Unable to connect to the server. Please check your internet connection.");
+      return Promise.reject(error);
     }
+
+    const status = error.response.status;
+    const isClient = typeof window !== 'undefined';
+
+    if (status === 401) {
+      if (isClient) {
+        localStorage.removeItem('access_token');
+        delete apiClient.defaults.headers.common['Authorization'];
+        // Prevent redirect loop if already on login page
+        if (window.location.pathname !== '/login') {
+          toast.error("Your session has expired. Please log in again.");
+          window.location.href = '/login';
+        }
+      }
+    } else if (status === 403) {
+      toast.error("You don't have permission to perform this action.");
+    } else if (status === 429) {
+      toast.warning("Please slow down. You are making too many requests.");
+    } else if (status >= 500) {
+      toast.error("Our servers are experiencing an issue. Please try again later.");
+    }
+
     return Promise.reject(error);
   }
 );
 
 interface AuthContextType {
-  user: any;
+  user: z.infer<typeof UserSchema> | null;
   token: string | null;
   loading: boolean;
   login: (data: any) => Promise<any>;
@@ -47,15 +79,30 @@ interface AuthContextType {
   signup: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<boolean>;
+  isAuthModalOpen: boolean;
+  authModalView: 'login' | 'signup';
+  openAuthModal: (view?: 'login' | 'signup') => void;
+  closeAuthModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<z.infer<typeof UserSchema> | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalView, setAuthModalView] = useState<'login' | 'signup'>('login');
   const router = useRouter();
+
+  const openAuthModal = (view: 'login' | 'signup' = 'login') => {
+    setAuthModalView(view);
+    setIsAuthModalOpen(true);
+  };
+  
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem('access_token');
@@ -65,7 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       apiClient.get('/users/profile')
         .then(res => {
-          setUser(res.data);
+          try {
+            const parsedUser = UserSchema.parse(res.data);
+            setUser(parsedUser);
+          } catch (validationError) {
+            console.error("API Response Validation Failed (User Profile):", validationError);
+            toast.error("Received invalid data from the server.");
+          }
           setLoading(false);
         })
         .catch(err => {
@@ -76,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const payload = JSON.parse(payloadStr);
             setUser({ id: payload.sub, email: payload.email, role: payload.role, phone: payload.phone }); 
           } catch (e) {
-            setUser({ email: 'loaded@example.com' });
+            setUser({ id: 'fallback', email: 'loaded@example.com', role: 'user' });
           }
           setLoading(false);
         });
@@ -96,9 +149,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
       setToken(res.data.access_token);
-      setUser(res.data.user);
+      
+      const parsedUser = UserSchema.parse(res.data.user);
+      setUser(parsedUser);
+      
       toast.success('Logged in successfully!');
-      router.push('/account');
+      closeAuthModal();
       return { success: true };
     } catch (e: any) {
       const msg = e.response?.data?.message;
@@ -114,9 +170,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
       setToken(res.data.access_token);
-      setUser(res.data.user);
+      
+      const parsedUser = UserSchema.parse(res.data.user);
+      setUser(parsedUser);
+      
       toast.success('Logged in successfully!');
-      router.push('/account');
+      closeAuthModal();
       return { success: true };
     } catch (e: any) {
       const msg = e.response?.data?.message;
@@ -132,9 +191,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('access_token', res.data.access_token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
       setToken(res.data.access_token);
-      setUser(res.data.user);
+      
+      const parsedUser = UserSchema.parse(res.data.user);
+      setUser(parsedUser);
+      
       toast.success('Signed up successfully!');
-      router.push('/account');
+      closeAuthModal();
     } catch (e: any) {
       const msg = e.response?.data?.message;
       const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Signup failed');
@@ -159,7 +221,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = async (data: any) => {
     try {
       const res = await apiClient.patch('/users/profile', data);
-      setUser(res.data);
+      const parsedUser = UserSchema.parse(res.data);
+      setUser(parsedUser);
       toast.success('Profile updated successfully!');
       return true;
     } catch (e: any) {
@@ -171,7 +234,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal }}>
       {children}
     </AuthContext.Provider>
   );

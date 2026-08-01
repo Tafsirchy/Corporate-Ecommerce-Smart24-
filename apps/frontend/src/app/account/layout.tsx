@@ -4,15 +4,17 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, openAuthModal } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push('/');
+      // Small timeout to ensure route change starts before showing modal
+      setTimeout(() => openAuthModal('login'), 100);
     }
-  }, [user, loading, router, pathname]);
+  }, [user, loading, router, openAuthModal, pathname]);
 
   if (loading) {
     return (

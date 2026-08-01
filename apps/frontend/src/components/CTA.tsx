@@ -1,54 +1,53 @@
 'use client';
 import Link from 'next/link';
-import { ArrowRight, Building2, PhoneCall } from 'lucide-react';
+import { ShieldCheck, Truck, HeadphonesIcon } from 'lucide-react';
 
 export const CTA = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
-      {/* Dynamic Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950"></div>
-      
-      {/* Decorative Grid Pattern */}
-      <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-      
-      {/* Glowing Orbs */}
-      <div className="absolute -top-[30%] -right-[10%] w-[60%] h-[60%] rounded-full bg-blue-500/20 blur-[120px] pointer-events-none"></div>
-      <div className="absolute -bottom-[30%] -left-[10%] w-[60%] h-[60%] rounded-full bg-indigo-500/20 blur-[120px] pointer-events-none"></div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 mb-8 shadow-xl">
-            <Building2 size={32} className="text-white" />
-          </div>
-          
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
-            Ready to streamline your <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">
-              office supplies?
-            </span>
+    <section className="py-16 bg-muted border-t border-border">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Reliability You Can Trust for Your Business
           </h2>
-          
-          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto font-medium leading-relaxed">
-            Join hundreds of forward-thinking companies saving time, reducing costs, and automating their supply chain with Smart24.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            At Smart24, we ensure 99.9% uptime, secure transactions, and guaranteed on-time delivery so you can focus on growing your business without supply chain interruptions.
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link 
-              href="/signup"
-              className="group flex items-center justify-center gap-2 px-8 py-4 w-full sm:w-auto text-base font-bold rounded-xl text-slate-900 bg-white hover:bg-muted transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] hover:-translate-y-1"
-            >
-              Create Business Account
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-            
-            <Link 
-              href="/contact"
-              className="group flex items-center justify-center gap-2 px-8 py-4 w-full sm:w-auto text-base font-bold rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 transition-all duration-300 hover:-translate-y-1"
-            >
-              <PhoneCall size={20} className="opacity-80 group-hover:opacity-100" />
-              Contact Sales
-            </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="bg-card p-8 shadow-sm border border-border flex flex-col items-center text-center transition-all hover:shadow-md">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
+              <ShieldCheck size={32} />
+            </div>
+            <h3 className="text-xl font-semibold text-card-foreground mb-2">Secure Transactions</h3>
+            <p className="text-muted-foreground">Enterprise-grade security protecting your business data and payments.</p>
           </div>
+          
+          <div className="bg-card p-8 shadow-sm border border-border flex flex-col items-center text-center transition-all hover:shadow-md">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
+              <Truck size={32} />
+            </div>
+            <h3 className="text-xl font-semibold text-card-foreground mb-2">Guaranteed Delivery</h3>
+            <p className="text-muted-foreground">Verified suppliers and optimized logistics ensure your supplies arrive on time.</p>
+          </div>
+          
+          <div className="bg-card p-8 shadow-sm border border-border flex flex-col items-center text-center transition-all hover:shadow-md">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
+              <HeadphonesIcon size={32} />
+            </div>
+            <h3 className="text-xl font-semibold text-card-foreground mb-2">24/7 Support</h3>
+            <p className="text-muted-foreground">Dedicated account managers available around the clock for your procurement needs.</p>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <Link 
+            href="/signup"
+            className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-accent-foreground bg-accent hover:bg-accent/90 transition-colors shadow-lg"
+          >
+            Create Your Business Account Today
+          </Link>
         </div>
       </div>
     </section>

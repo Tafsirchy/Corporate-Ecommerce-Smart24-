@@ -147,7 +147,14 @@ export default function AdminBanners() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-1">Upload Banner Image (Landscape Recommended)</label>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Upload Banner Image
+              <span className="block text-xs text-muted-foreground font-normal mt-0.5">
+                {type === 'SPECIAL_OFFER' 
+                  ? 'Recommended: 1920x320 pixels (6:1 aspect ratio) to prevent cropping.'
+                  : 'Recommended: 1200x400 pixels (3:1 aspect ratio) to prevent cropping.'}
+              </span>
+            </label>
             <div className="flex items-center gap-4">
               <input 
                 type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading}
