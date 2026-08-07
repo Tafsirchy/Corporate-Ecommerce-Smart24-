@@ -4,6 +4,6 @@ import { BusinessCollectionsService } from './business-collections.service';
 
 @Module({
   controllers: [BusinessCollectionsController],
-  providers: [BusinessCollectionsService]
+  providers: [BusinessCollectionsService],
 })
 export class BusinessCollectionsModule {}
