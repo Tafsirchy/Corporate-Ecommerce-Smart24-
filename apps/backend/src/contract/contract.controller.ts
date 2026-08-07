@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,22 +20,30 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ContractController {
   constructor(
     private readonly contractService: ContractService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.BUSINESS)
   @Post()
-  async create(@Req() req: any, @Body('documentUrl') documentUrl: string, @Body('validUntil') validUntil?: Date) {
+  async create(
+    @Req() req: any,
+    @Body('documentUrl') documentUrl: string,
+    @Body('validUntil') validUntil?: Date,
+  ) {
     if (!documentUrl) throw new BadRequestException('Document URL is required');
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.id },
-      include: { businessProfile: true }
+      include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
       throw new BadRequestException('Business profile not found');
     }
-    return this.contractService.create(user.businessProfile.id, documentUrl, validUntil);
+    return this.contractService.create(
+      user.businessProfile.id,
+      documentUrl,
+      validUntil,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -34,7 +52,7 @@ export class ContractController {
   async getMyContracts(@Req() req: any) {
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.id },
-      include: { businessProfile: true }
+      include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
       return [];
