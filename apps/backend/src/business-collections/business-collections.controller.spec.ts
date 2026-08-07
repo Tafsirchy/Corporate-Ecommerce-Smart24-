@@ -7,9 +7,13 @@ describe('BusinessCollectionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BusinessCollectionsController],
-    }).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
-    controller = module.get<BusinessCollectionsController>(BusinessCollectionsController);
+    controller = module.get<BusinessCollectionsController>(
+      BusinessCollectionsController,
+    );
   });
 
   it('should be defined', () => {
