@@ -7,9 +7,13 @@ describe('BusinessCollectionsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [BusinessCollectionsService],
-    }).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
-    service = module.get<BusinessCollectionsService>(BusinessCollectionsService);
+    service = module.get<BusinessCollectionsService>(
+      BusinessCollectionsService,
+    );
   });
 
   it('should be defined', () => {
