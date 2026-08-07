@@ -1,4 +1,16 @@
-import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Req, Body, Get, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  Req,
+  Body,
+  Get,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BusinessService } from './business.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -31,11 +43,13 @@ export class BusinessController {
     }
 
     if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Only image files are allowed for documents currently');
+      throw new BadRequestException(
+        'Only image files are allowed for documents currently',
+      );
     }
 
     const fileUrl = await this.uploadService.uploadImageToImgBB(file);
-    
+
     return this.businessService.addDocument(req.user.id, documentType, fileUrl);
   }
 
@@ -54,12 +68,16 @@ export class BusinessController {
   async updateVerificationStatus(
     @Req() req: any,
     @Param('id') id: string,
-    @Body('status') status: 'APPROVED' | 'REJECTED'
+    @Body('status') status: 'APPROVED' | 'REJECTED',
   ) {
     if (!['APPROVED', 'REJECTED'].includes(status)) {
       throw new BadRequestException('Invalid status');
     }
-    return this.businessService.updateVerificationStatus(id, status, req.user.id);
+    return this.businessService.updateVerificationStatus(
+      id,
+      status,
+      req.user.id,
+    );
   }
 
   @Patch(':id/credit')
@@ -68,7 +86,7 @@ export class BusinessController {
   async updateCreditLimit(
     @Req() req: any,
     @Param('id') id: string,
-    @Body('limit') limit: number
+    @Body('limit') limit: number,
   ) {
     if (limit < 0) {
       throw new BadRequestException('Credit limit cannot be negative');
