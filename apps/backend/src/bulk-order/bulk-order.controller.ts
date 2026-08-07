@@ -1,4 +1,11 @@
-import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BulkOrderService } from './bulk-order.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -18,7 +25,7 @@ export class BulkOrderController {
     if (!file) {
       throw new BadRequestException('No CSV file uploaded');
     }
-    
+
     // Very basic CSV text extraction since file.buffer is populated by multer MemoryStorage by default
     const csvContent = file.buffer.toString('utf8');
     return this.bulkOrderService.validateCsv(csvContent);
