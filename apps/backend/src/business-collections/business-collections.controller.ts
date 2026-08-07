@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { BusinessCollectionsService } from './business-collections.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -22,7 +32,9 @@ export class BusinessCollectionsController {
   }
 
   @Get(':position')
-  async getCollectionByPosition(@Param('position', ParseIntPipe) position: number) {
+  async getCollectionByPosition(
+    @Param('position', ParseIntPipe) position: number,
+  ) {
     return this.service.getByPosition(position);
   }
 
