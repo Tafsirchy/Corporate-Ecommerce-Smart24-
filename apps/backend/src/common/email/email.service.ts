@@ -5,44 +5,90 @@ import { Resend } from 'resend';
 export class EmailService {
   private resend: Resend;
   private readonly logger = new Logger(EmailService.name);
-  
+
   // Set default fallback domain for sender if EMAIL_FROM is not set
-  private readonly defaultFrom = process.env.EMAIL_FROM || 'Smart24 Support <onboarding@resend.dev>';
-  private readonly frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  private readonly defaultFrom =
+    process.env.EMAIL_FROM || 'Smart24 Support <onboarding@resend.dev>';
+  private readonly frontendUrl =
+    process.env.FRONTEND_URL || 'http://localhost:3000';
 
   constructor() {
     if (process.env.RESEND_API_KEY) {
       this.resend = new Resend(process.env.RESEND_API_KEY);
     } else {
-      this.logger.warn('RESEND_API_KEY is not set. EmailService will mock email sends.');
+      this.logger.warn(
+        'RESEND_API_KEY is not set. EmailService will mock email sends.',
+      );
     }
   }
 
+  private escapeHtml(unsafe: string): string {
+    if (!unsafe) return '';
+    return unsafe
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   /**
-   * Internal generic send function wrapped with error handling
+   * Internal generic send function wrapped with error handling and retries
    */
-  private async sendEmail(to: string, subject: string, html: string, text?: string) {
+  private async sendEmail(
+    to: string,
+    subject: string,
+    html: string,
+    text?: string,
+    retries = 3,
+  ) {
     if (!this.resend) {
       this.logger.debug(`[MOCK EMAIL] To: ${to} | Subject: ${subject}`);
       this.logger.debug(`[MOCK EMAIL CONTENT]\n${html}`);
       return;
     }
 
-    try {
-      const response = await this.resend.emails.send({
-        from: this.defaultFrom,
-        to,
-        subject,
-        html,
-        text: text || html.replace(/<[^>]*>?/gm, ''), // basic fallback text
-      });
-      
-      this.logger.log(`Email sent successfully to ${to}. ID: ${response.data?.id}`);
-      return response;
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${to}`, error);
-      // We do not throw the error to prevent blocking the main thread (e.g. signup)
-      // For a truly critical system, we might want to throw or push to a queue.
+    const replyTo = process.env.SUPPORT_EMAIL || 'support@smart24.com';
+    let attempt = 0;
+
+    while (attempt < retries) {
+      try {
+        const response = await this.resend.emails.send({
+          from: this.defaultFrom,
+          to,
+          subject,
+          html,
+          text: text || html.replace(/<[^>]*>?/gm, ''), // basic fallback text
+          replyTo: replyTo,
+        });
+
+        if (response.error) {
+          throw new Error(response.error.message || 'Unknown Resend error');
+        }
+
+        this.logger.log(
+          `Email sent successfully to ${to}. ID: ${response.data?.id}`,
+        );
+        return response;
+      } catch (error) {
+        attempt++;
+        this.logger.error(
+          `Attempt ${attempt} failed to send email to ${to}`,
+          error,
+        );
+
+        if (attempt >= retries) {
+          this.logger.error(
+            `Final attempt failed to send email to ${to}. Giving up.`,
+          );
+          // Not throwing to prevent blocking the main thread
+          return;
+        }
+
+        // Exponential backoff: 1s, 2s, 4s...
+        const delay = Math.pow(2, attempt - 1) * 1000;
+        await new Promise((res) => setTimeout(res, delay));
+      }
     }
   }
 
@@ -84,7 +130,12 @@ export class EmailService {
     return this.sendEmail(email, subject, html);
   }
 
-  async sendOrderConfirmationEmail(email: string, orderId: string, grandTotal: number, userName: string) {
+  async sendOrderConfirmationEmail(
+    email: string,
+    orderId: string,
+    grandTotal: number,
+    userName: string,
+  ) {
     const subject = `Order Confirmation - ${orderId}`;
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
@@ -116,22 +167,27 @@ export class EmailService {
   }
 
   async sendSupportTicketEmail(adminEmail: string, ticket: any) {
-    const subject = `New Support Ticket: ${ticket.subject}`;
+    const subject = `New Support Ticket: ${this.escapeHtml(ticket.subject)}`;
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h2>New Support Ticket</h2>
-        <p><strong>From:</strong> ${ticket.name} (${ticket.email})</p>
-        <p><strong>Subject:</strong> ${ticket.subject}</p>
-        ${ticket.orderId ? `<p><strong>Linked Order ID:</strong> ${ticket.orderId}</p>` : ''}
+        <p><strong>From:</strong> ${this.escapeHtml(ticket.name)} (${this.escapeHtml(ticket.email)})</p>
+        <p><strong>Subject:</strong> ${this.escapeHtml(ticket.subject)}</p>
+        ${ticket.orderId ? `<p><strong>Linked Order ID:</strong> ${this.escapeHtml(ticket.orderId)}</p>` : ''}
         <p><strong>Message:</strong></p>
-        <p style="background: #f5f5f5; padding: 15px; border-radius: 4px;">${ticket.message}</p>
-        ${ticket.attachments && ticket.attachments.length > 0 ? `<p><strong>Attachments:</strong></p><ul>${ticket.attachments.map((url: string) => `<li><a href="${url}">${url}</a></li>`).join('')}</ul>` : ''}
+        <p style="background: #f5f5f5; padding: 15px; border-radius: 4px;">${this.escapeHtml(ticket.message)}</p>
+        ${ticket.attachments && ticket.attachments.length > 0 ? `<p><strong>Attachments:</strong></p><ul>${ticket.attachments.map((url: string) => `<li><a href="${this.escapeHtml(url)}">${this.escapeHtml(url)}</a></li>`).join('')}</ul>` : ''}
       </div>
     `;
     return this.sendEmail(adminEmail, subject, html);
   }
 
-  async sendSubscriptionInvoiceEmail(email: string, userName: string, orderId: string, amount: number) {
+  async sendSubscriptionInvoiceEmail(
+    email: string,
+    userName: string,
+    orderId: string,
+    amount: number,
+  ) {
     const subject = `Invoice for your Subscription (Order #${orderId})`;
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
@@ -179,16 +235,19 @@ export class EmailService {
     return this.sendEmail(email, subject, html);
   }
 
-  async sendContactEmail(data: { name: string; email: string; company?: string; message: string }, adminEmail: string = 'support@smart24.com') {
-    const subject = `New Contact Form Submission from ${data.name}`;
+  async sendContactEmail(
+    data: { name: string; email: string; company?: string; message: string },
+    adminEmail: string = 'support@smart24.com',
+  ) {
+    const subject = `New Contact Form Submission from ${this.escapeHtml(data.name)}`;
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
         <h2>New Contact Message</h2>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Company:</strong> ${data.company || 'N/A'}</p>
+        <p><strong>Name:</strong> ${this.escapeHtml(data.name)}</p>
+        <p><strong>Email:</strong> ${this.escapeHtml(data.email)}</p>
+        <p><strong>Company:</strong> ${this.escapeHtml(data.company || 'N/A')}</p>
         <p><strong>Message:</strong></p>
-        <p style="background: #f5f5f5; padding: 15px; border-radius: 4px;">${data.message}</p>
+        <p style="background: #f5f5f5; padding: 15px; border-radius: 4px;">${this.escapeHtml(data.message)}</p>
       </div>
     `;
     return this.sendEmail(adminEmail, subject, html);
