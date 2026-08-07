@@ -24,7 +24,7 @@ export class BusinessService {
 
     // Mock Service Logic: Auto-approve or flag based on fileUrl keywords
     let nextStatus: 'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' = 'PENDING';
-    
+
     if (fileUrl.includes('mock-approve-nid')) {
       nextStatus = 'VERIFIED';
     } else if (fileUrl.includes('mock-flag-nid')) {
@@ -34,7 +34,7 @@ export class BusinessService {
     if (businessProfile.verificationStatus !== nextStatus) {
       await this.prisma.businessProfile.update({
         where: { id: businessProfile.id },
-        data: { verificationStatus: nextStatus }
+        data: { verificationStatus: nextStatus },
       });
     }
 
@@ -46,18 +46,26 @@ export class BusinessService {
       where: { verificationStatus: 'PENDING' },
       include: {
         documents: true,
-        user: { select: { email: true, name: true, phone: true } }
+        user: { select: { email: true, name: true, phone: true } },
       },
     });
   }
 
-  async updateVerificationStatus(id: string, status: 'APPROVED' | 'REJECTED', adminId?: string) {
-    const profile = await this.prisma.businessProfile.findUnique({ where: { id } });
+  async updateVerificationStatus(
+    id: string,
+    status: 'APPROVED' | 'REJECTED',
+    adminId?: string,
+  ) {
+    const profile = await this.prisma.businessProfile.findUnique({
+      where: { id },
+    });
     if (!profile) throw new NotFoundException('Business profile not found');
 
     const updated = await this.prisma.businessProfile.update({
       where: { id },
-      data: { verificationStatus: status === 'APPROVED' ? 'VERIFIED' : 'REJECTED' },
+      data: {
+        verificationStatus: status === 'APPROVED' ? 'VERIFIED' : 'REJECTED',
+      },
     });
 
     if (adminId) {
@@ -67,8 +75,8 @@ export class BusinessService {
           action: 'UPDATE_VERIFICATION_STATUS',
           targetType: 'BusinessProfile',
           targetId: id,
-          reason: `Changed status to ${status}`
-        }
+          reason: `Changed status to ${status}`,
+        },
       });
     }
 
@@ -76,7 +84,9 @@ export class BusinessService {
   }
 
   async updateCreditLimit(id: string, limit: number, adminId: string) {
-    const profile = await this.prisma.businessProfile.findUnique({ where: { id } });
+    const profile = await this.prisma.businessProfile.findUnique({
+      where: { id },
+    });
     if (!profile) throw new NotFoundException('Business profile not found');
 
     const updated = await this.prisma.businessProfile.update({
@@ -90,8 +100,8 @@ export class BusinessService {
         action: 'UPDATE_CREDIT_LIMIT',
         targetType: 'BusinessProfile',
         targetId: id,
-        reason: `Changed credit limit from ${profile.creditLimit} to ${limit}`
-      }
+        reason: `Changed credit limit from ${profile.creditLimit} to ${limit}`,
+      },
     });
 
     return updated;
