@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryRepository } from '../repositories/category.repository.service';
@@ -10,7 +14,7 @@ export class CategoriesService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     const slug = slugify(createCategoryDto.name, { lower: true, strict: true });
-    
+
     const existing = await this.categoryRepository.findBySlug(slug);
     if (existing) {
       throw new ConflictException('Category with this name already exists');
@@ -18,7 +22,9 @@ export class CategoriesService {
 
     let level = 1;
     if (createCategoryDto.parentId) {
-      const parent = await this.categoryRepository.findById(createCategoryDto.parentId);
+      const parent = await this.categoryRepository.findById(
+        createCategoryDto.parentId,
+      );
       if (!parent) {
         throw new NotFoundException('Parent category not found');
       }
@@ -32,7 +38,10 @@ export class CategoriesService {
       name: createCategoryDto.name,
       slug,
       level,
-      parent: createCategoryDto.parentId ? { connect: { id: createCategoryDto.parentId } } : undefined
+      isActive: createCategoryDto.isActive !== undefined ? createCategoryDto.isActive : true,
+      parent: createCategoryDto.parentId
+        ? { connect: { id: createCategoryDto.parentId } }
+        : undefined,
     });
   }
 
@@ -60,7 +69,9 @@ export class CategoriesService {
 
     let level;
     if (updateCategoryDto.parentId) {
-      const parent = await this.categoryRepository.findById(updateCategoryDto.parentId);
+      const parent = await this.categoryRepository.findById(
+        updateCategoryDto.parentId,
+      );
       if (!parent) {
         throw new NotFoundException('Parent category not found');
       }
@@ -74,7 +85,9 @@ export class CategoriesService {
       ...updateCategoryDto,
       ...(slug && { slug }),
       ...(level && { level }),
-      parent: updateCategoryDto.parentId ? { connect: { id: updateCategoryDto.parentId } } : undefined
+      parent: updateCategoryDto.parentId
+        ? { connect: { id: updateCategoryDto.parentId } }
+        : undefined,
     });
   }
 
