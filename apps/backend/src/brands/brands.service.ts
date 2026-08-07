@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { BrandRepository } from '../repositories/brand.repository.service';
@@ -10,7 +14,7 @@ export class BrandsService {
 
   async create(createBrandDto: CreateBrandDto) {
     const slug = slugify(createBrandDto.name, { lower: true, strict: true });
-    
+
     const existing = await this.brandRepository.findBySlug(slug);
     if (existing) {
       throw new ConflictException('Brand with this name already exists');
