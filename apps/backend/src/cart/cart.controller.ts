@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Req, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CartService } from './cart.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
@@ -22,12 +33,14 @@ export class CartController {
   @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: 'Add or update item in cart' })
   @UsePipes(new ValidationPipe({ transform: true }))
-  updateItem(
-    @Req() req: any,
-    @Body() body: UpdateCartItemDto
-  ) {
+  updateItem(@Req() req: any, @Body() body: UpdateCartItemDto) {
     const sessionId = req.headers['x-session-id'] as string;
-    return this.cartService.updateItem(req.user?.id, sessionId, body.productId, body.quantity);
+    return this.cartService.updateItem(
+      req.user?.id,
+      sessionId,
+      body.productId,
+      body.quantity,
+    );
   }
 
   @Delete('items/:productId')
@@ -43,21 +56,20 @@ export class CartController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Merge local cart with server cart on login' })
   @UsePipes(new ValidationPipe({ transform: true }))
-  mergeCart(
-    @Req() req: any,
-    @Body() body: MergeCartDto
-  ) {
+  mergeCart(@Req() req: any, @Body() body: MergeCartDto) {
     const sessionId = req.headers['x-session-id'] as string;
     return this.cartService.mergeCart(req.user.id, sessionId, body.items);
   }
 
   @Post('bulk')
   @UseGuards(OptionalJwtAuthGuard)
-  @ApiOperation({ summary: 'Add multiple items to cart (e.g. from CSV bulk order)' })
+  @ApiOperation({
+    summary: 'Add multiple items to cart (e.g. from CSV bulk order)',
+  })
   @UsePipes(new ValidationPipe({ transform: true }))
   addBulkItems(
     @Req() req: any,
-    @Body() body: MergeCartDto // Using MergeCartDto because it's just { items: { productId, quantity }[] }
+    @Body() body: MergeCartDto, // Using MergeCartDto because it's just { items: { productId, quantity }[] }
   ) {
     const sessionId = req.headers['x-session-id'] as string;
     return this.cartService.addBulkItems(req.user?.id, sessionId, body.items);
