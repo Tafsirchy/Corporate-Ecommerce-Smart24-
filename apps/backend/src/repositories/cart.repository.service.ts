@@ -16,22 +16,23 @@ export class CartRepositoryService {
               include: {
                 category: true,
                 brand: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   async createCart(userId?: string, sessionId?: string) {
-    if (!userId && !sessionId) throw new Error('Must provide userId or sessionId');
+    if (!userId && !sessionId)
+      throw new Error('Must provide userId or sessionId');
     return this.prisma.cart.create({
-      data: { 
-        userId: userId || null, 
-        sessionId: sessionId || null 
+      data: {
+        userId: userId || null,
+        sessionId: sessionId || null,
       },
-      include: { items: true }
+      include: { items: true },
     });
   }
 
@@ -41,7 +42,7 @@ export class CartRepositoryService {
         cartId_productId: {
           cartId,
           productId,
-        }
+        },
       },
       update: {
         quantity,
@@ -52,8 +53,8 @@ export class CartRepositoryService {
         quantity,
       },
       include: {
-        product: true
-      }
+        product: true,
+      },
     });
   }
 
@@ -63,14 +64,14 @@ export class CartRepositoryService {
         cartId_productId: {
           cartId,
           productId,
-        }
-      }
+        },
+      },
     });
   }
 
   async clearCart(cartId: string) {
     return this.prisma.cartItem.deleteMany({
-      where: { cartId }
+      where: { cartId },
     });
   }
 }
