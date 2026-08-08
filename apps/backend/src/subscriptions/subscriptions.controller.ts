@@ -8,6 +8,7 @@ import {
   Patch,
   Param,
   Put,
+  Query,
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -37,8 +38,8 @@ export class SubscriptionsController {
   }
 
   @Get('plans')
-  getPlans() {
-    return this.subscriptionsService.getAllPlans();
+  getPlans(@Query() query: any) {
+    return this.subscriptionsService.getAllPlans(query);
   }
 
   @Put('plans/:id')
@@ -65,7 +66,7 @@ export class SubscriptionsController {
     @Body() body: CreateCustomSubscriptionDto,
   ) {
     return this.subscriptionsService.createCustomSubscription(
-      req.user.id,
+      (req.user?.id || req.user?.userId || req.user?.sub),
       body,
     );
   }
@@ -76,20 +77,20 @@ export class SubscriptionsController {
     @Req() req: any,
     @Body() body: CreateFixedSubscriptionDto,
   ) {
-    return this.subscriptionsService.createFixedSubscription(req.user.id, body);
+    return this.subscriptionsService.createFixedSubscription((req.user?.id || req.user?.userId || req.user?.sub), body);
   }
 
   @Get('my-subscriptions')
   @UseGuards(JwtAuthGuard)
-  getMySubscriptions(@Req() req: any) {
-    return this.subscriptionsService.getUserSubscriptions(req.user.id);
+  getMySubscriptions(@Req() req: any, @Query() query: any) {
+    return this.subscriptionsService.getUserSubscriptions((req.user?.id || req.user?.userId || req.user?.sub), query);
   }
 
   @Get('admin/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  getAllSubscriptions() {
-    return this.subscriptionsService.getAllSubscriptions();
+  getAllSubscriptions(@Query() query: any) {
+    return this.subscriptionsService.getAllSubscriptions(query);
   }
 
   @Patch(':id/status')
@@ -100,7 +101,7 @@ export class SubscriptionsController {
     @Body() body: UpdateSubscriptionStatusDto,
   ) {
     return this.subscriptionsService.updateUserStatus(
-      req.user.id,
+      (req.user?.id || req.user?.userId || req.user?.sub),
       id,
       body.status,
     );
