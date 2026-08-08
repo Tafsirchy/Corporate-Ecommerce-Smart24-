@@ -4,7 +4,7 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-import { Trash2, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Image as ImageIcon, Edit2, X } from 'lucide-react';
 
 export default function AdminBanners() {
   const [banners, setBanners] = useState<any[]>([]);
@@ -12,6 +12,7 @@ export default function AdminBanners() {
   const [targetUrl, setTargetUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [type, setType] = useState('MAIN_CAROUSEL');
+  const [editingId, setEditingId] = useState<string | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -54,6 +55,23 @@ export default function AdminBanners() {
     }
   };
 
+  const handleEdit = (banner: any) => {
+    setTitle(banner.title);
+    setTargetUrl(banner.targetUrl || '');
+    setImageUrl(banner.imageUrl);
+    setType(banner.type);
+    setEditingId(banner.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setTitle('');
+    setTargetUrl('');
+    setImageUrl('');
+    setType('MAIN_CAROUSEL');
+    setEditingId(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!imageUrl) {
@@ -62,25 +80,30 @@ export default function AdminBanners() {
 
     setIsLoading(true);
     try {
-      await apiClient.post('/banners', { 
-        title, 
-        imageUrl,
-        targetUrl: targetUrl || undefined,
-        isActive: true,
-        type,
-        order: banners.length
-      });
-      toast.success('Banner created');
+      if (editingId) {
+        await apiClient.patch(`/banners/${editingId}`, {
+          title,
+          imageUrl,
+          targetUrl: targetUrl || undefined,
+          type
+        });
+        toast.success('Banner updated');
+      } else {
+        await apiClient.post('/banners', { 
+          title, 
+          imageUrl,
+          targetUrl: targetUrl || undefined,
+          isActive: true,
+          type,
+          order: banners.length
+        });
+        toast.success('Banner created');
+      }
       
-      // Reset form
-      setTitle('');
-      setTargetUrl('');
-      setImageUrl('');
-      setType('MAIN_CAROUSEL');
-      
+      handleCancelEdit();
       fetchBanners();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to create banner');
+      toast.error(error.response?.data?.message || 'Failed to save banner');
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +138,14 @@ export default function AdminBanners() {
       <h1 className="text-3xl font-bold mb-6">Manage Offers & Banners</h1>
       
       <div className="bg-white p-6 rounded-xl shadow-sm border border-border mb-8">
-        <h2 className="text-xl font-bold mb-4">Add New Banner</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">{editingId ? 'Edit Banner' : 'Add New Banner'}</h2>
+          {editingId && (
+            <button onClick={handleCancelEdit} className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm">
+              <X size={16} /> Cancel Edit
+            </button>
+          )}
+        </div>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Banner Title</label>
@@ -169,13 +199,21 @@ export default function AdminBanners() {
             )}
           </div>
           
-          <div className="md:col-span-2 pt-4">
+          <div className="md:col-span-2 pt-4 flex gap-2">
             <button 
               type="submit" disabled={isLoading || isUploading}
               className="bg-primary-600 text-white px-6 py-2 rounded font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors"
             >
-              {isLoading ? 'Saving...' : 'Add Banner'}
+              {isLoading ? 'Saving...' : (editingId ? 'Update Banner' : 'Add Banner')}
             </button>
+            {editingId && (
+              <button 
+                type="button" onClick={handleCancelEdit} disabled={isLoading || isUploading}
+                className="bg-muted text-foreground px-6 py-2 rounded font-medium hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </form>
       </div>
@@ -226,12 +264,22 @@ export default function AdminBanners() {
                     </button>
                   </td>
                   <td className="p-4 text-right">
-                    <button 
-                      onClick={() => handleDelete(banner.id)}
-                      className="p-2 text-destructive hover:bg-danger-bg rounded transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => handleEdit(banner)}
+                        className="p-2 text-primary-600 hover:bg-primary-50 rounded transition-colors"
+                        title="Edit Banner"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(banner.id)}
+                        className="p-2 text-destructive hover:bg-danger-bg rounded transition-colors"
+                        title="Delete Banner"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
