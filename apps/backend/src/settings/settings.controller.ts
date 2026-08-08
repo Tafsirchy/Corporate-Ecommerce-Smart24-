@@ -4,8 +4,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SetSettingDto } from './dto/set-setting.dto';
+import { Req } from '@nestjs/common';
 
 @ApiTags('Settings')
 @Controller({ path: 'settings', version: '1' })
@@ -23,8 +24,12 @@ export class SettingsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get all settings (Admin only)' })
-  getAllSettings() {
-    return this.settingsService.getAllSettings();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  getAllSettings(@Req() req: any) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
+    return this.settingsService.getAllSettings(page, limit);
   }
 
   @Post(':key')
