@@ -8,7 +8,7 @@ export class RewardsService {
   // Loyalty Rewards
   async getAllRewards() {
     return this.prisma.loyaltyReward.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -27,7 +27,7 @@ export class RewardsService {
   // Coupons
   async getAllCoupons() {
     return this.prisma.coupon.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
