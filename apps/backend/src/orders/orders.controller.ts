@@ -1,11 +1,30 @@
-import { Controller, Get, Post, Body, Param, Patch, UseGuards, Req, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  UseGuards,
+  Req,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role, OrderStatus, PaymentMethod, PaymentStatus } from '@prisma/client';
+import {
+  Role,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+} from '@prisma/client';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @ApiTags('Orders')
 @Controller({ path: 'orders', version: '1' })
@@ -14,23 +33,15 @@ export class OrdersController {
 
   @Post()
   @UseGuards(OptionalJwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Create a new order from cart' })
-  createOrder(
-    @Req() req: any,
-    @Body() body: {
-      shippingAddress: string;
-      contactNumber: string;
-      saveAddress?: boolean;
-      paymentMethod: PaymentMethod;
-      paymentTrxId?: string;
-      paymentProofUrl?: string;
-      paymentAccountNumber?: string;
-      guestEmail?: string;
-      guestName?: string;
-    }
-  ) {
+  createOrder(@Req() req: any, @Body() body: CreateOrderDto) {
     const sessionId = req.headers['x-session-id'] as string;
-    return this.ordersService.createOrderFromCart(req.user?.id, sessionId, body);
+    return this.ordersService.createOrderFromCart(
+      req.user?.id,
+      sessionId,
+      body,
+    );
   }
 
   @Post('validate-promo')
@@ -39,7 +50,7 @@ export class OrdersController {
   validatePromo(
     @Req() req: any,
     @Body('promoCode') promoCode: string,
-    @Body('cartTotal') cartTotal: number
+    @Body('cartTotal') cartTotal: number,
   ) {
     return this.ordersService.validatePromo(req.user.id, promoCode, cartTotal);
   }
@@ -51,7 +62,7 @@ export class OrdersController {
   getOrders(
     @Req() req: any,
     @Query('page') page?: string,
-    @Query('limit') limit?: string
+    @Query('limit') limit?: string,
   ) {
     if (req.user.role === Role.ADMIN) {
       return this.ordersService.getAllOrders(page, limit);
@@ -64,7 +75,11 @@ export class OrdersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get order details' })
   getOrderDetails(@Req() req: any, @Param('id') id: string) {
-    return this.ordersService.getOrderDetails(req.user.id, id, req.user.role === Role.ADMIN);
+    return this.ordersService.getOrderDetails(
+      req.user.id,
+      id,
+      req.user.role === Role.ADMIN,
+    );
   }
 
   @Patch(':id/cancel')
@@ -74,7 +89,7 @@ export class OrdersController {
   cancelOrder(
     @Req() req: any,
     @Param('id') id: string,
-    @Body('reason') reason: string
+    @Body('reason') reason: string,
   ) {
     return this.ordersService.cancelOrder(req.user.id, id, reason);
   }
@@ -86,7 +101,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Update order status (Admin only)' })
   updateOrderStatus(
     @Param('id') id: string,
-    @Body('status') status: OrderStatus
+    @Body('status') status: OrderStatus,
   ) {
     return this.ordersService.updateOrderStatus(id, status);
   }
@@ -98,7 +113,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Update payment status (Admin only)' })
   updatePaymentStatus(
     @Param('id') id: string,
-    @Body('paymentStatus') paymentStatus: PaymentStatus
+    @Body('paymentStatus') paymentStatus: PaymentStatus,
   ) {
     return this.ordersService.updatePaymentStatus(id, paymentStatus);
   }
