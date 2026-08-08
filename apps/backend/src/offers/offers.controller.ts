@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -20,7 +30,10 @@ export class OffersController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  async getAllOffers(@Query('page') page?: string, @Query('limit') limit?: string) {
+  async getAllOffers(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
     return this.offersService.getAllOffers(page, limit);
   }
 
