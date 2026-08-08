@@ -22,8 +22,8 @@ export default function AdminBrands() {
 
   const fetchBrands = async () => {
     try {
-      const res = await apiClient.get('/brands');
-      setBrands(res.data);
+      const res = await apiClient.get('/brands?limit=100');
+      setBrands(res.data.data || res.data);
     } catch (error) {
       toast.error('Failed to fetch brands');
     }
@@ -35,7 +35,6 @@ export default function AdminBrands() {
     try {
       let finalLogoUrl = logoUrl;
       
-      // Upload file first if in upload mode
       if (isUploadMode && logoFile) {
         const formData = new FormData();
         formData.append('file', logoFile);
