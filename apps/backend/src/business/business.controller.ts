@@ -49,8 +49,9 @@ export class BusinessController {
     }
 
     const fileUrl = await this.uploadService.uploadImageToImgBB(file);
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
 
-    return this.businessService.addDocument(req.user.id, documentType, fileUrl);
+    return this.businessService.addDocument(userId, documentType, fileUrl);
   }
 
   // --- Admin Endpoints ---
@@ -58,8 +59,8 @@ export class BusinessController {
   @Get('verifications')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  async getPendingVerifications() {
-    return this.businessService.getPendingVerifications();
+  async getPendingVerifications(@Req() req: any) {
+    return this.businessService.getPendingVerifications(req.query);
   }
 
   @Patch(':id/verification')
@@ -73,10 +74,11 @@ export class BusinessController {
     if (!['APPROVED', 'REJECTED'].includes(status)) {
       throw new BadRequestException('Invalid status');
     }
+    const adminId = req.user?.id || req.user?.userId || req.user?.sub;
     return this.businessService.updateVerificationStatus(
       id,
       status,
-      req.user.id,
+      adminId,
     );
   }
 
@@ -91,6 +93,7 @@ export class BusinessController {
     if (limit < 0) {
       throw new BadRequestException('Credit limit cannot be negative');
     }
-    return this.businessService.updateCreditLimit(id, limit, req.user.id);
+    const adminId = req.user?.id || req.user?.userId || req.user?.sub;
+    return this.businessService.updateCreditLimit(id, limit, adminId);
   }
 }
