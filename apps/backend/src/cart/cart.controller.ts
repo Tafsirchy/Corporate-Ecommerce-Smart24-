@@ -58,7 +58,7 @@ export class CartController {
   @UsePipes(new ValidationPipe({ transform: true }))
   mergeCart(@Req() req: any, @Body() body: MergeCartDto) {
     const sessionId = req.headers['x-session-id'] as string;
-    return this.cartService.mergeCart(req.user.id, sessionId, body.items);
+    return this.cartService.mergeCart((req.user?.id || req.user?.userId || req.user?.sub), sessionId, body.items);
   }
 
   @Post('bulk')
