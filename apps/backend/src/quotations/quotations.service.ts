@@ -15,7 +15,9 @@ export class QuotationsService {
       deliveryLocation: data.deliveryLocation,
       deadline: data.deadline ? new Date(data.deadline) : null,
       instructions: data.instructions,
-      ...(data.productId ? { product: { connect: { id: data.productId } } } : {})
+      ...(data.productId
+        ? { product: { connect: { id: data.productId } } }
+        : {}),
     });
   }
 
@@ -27,14 +29,18 @@ export class QuotationsService {
     return this.quotationRepo.findAll();
   }
 
-  async respondToQuotation(id: string, offeredPrice: number, adminNotes?: string) {
+  async respondToQuotation(
+    id: string,
+    offeredPrice: number,
+    adminNotes?: string,
+  ) {
     const quote = await this.quotationRepo.findById(id);
     if (!quote) throw new NotFoundException('Quotation not found');
 
     return this.quotationRepo.updateStatus(id, {
       offeredPrice,
       adminNotes,
-      status: 'QUOTED'
+      status: 'QUOTED',
     });
   }
 
