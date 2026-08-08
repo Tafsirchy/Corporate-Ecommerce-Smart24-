@@ -1,10 +1,24 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { FaqsService } from './faqs.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
 import { Req } from '@nestjs/common';
@@ -28,9 +42,7 @@ export class FaqsController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
-  getAllFaqsAdmin(
-    @Req() req: any
-  ) {
+  getAllFaqsAdmin(@Req() req: any) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
     const search = req.query.search as string;
@@ -41,7 +53,7 @@ export class FaqsController {
   @ApiOperation({ summary: 'Submit feedback for an FAQ' })
   submitFeedback(
     @Param('id') id: string,
-    @Body('isHelpful') isHelpful: boolean
+    @Body('isHelpful') isHelpful: boolean,
   ) {
     return this.faqsService.submitFeedback(id, isHelpful);
   }
@@ -51,9 +63,7 @@ export class FaqsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Create a new FAQ (Admin only)' })
-  createFaq(
-    @Body() body: CreateFaqDto
-  ) {
+  createFaq(@Body() body: CreateFaqDto) {
     return this.faqsService.createFaq(body);
   }
 
@@ -62,10 +72,7 @@ export class FaqsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update an FAQ (Admin only)' })
-  updateFaq(
-    @Param('id') id: string,
-    @Body() body: UpdateFaqDto
-  ) {
+  updateFaq(@Param('id') id: string, @Body() body: UpdateFaqDto) {
     return this.faqsService.updateFaq(id, body);
   }
 
