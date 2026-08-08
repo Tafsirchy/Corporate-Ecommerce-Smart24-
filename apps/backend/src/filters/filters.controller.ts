@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { FiltersService } from './filters.service';
 import { CreateFilterDto } from './dto/create-filter.dto';
@@ -31,10 +32,10 @@ export class FiltersController {
     return this.filtersService.create(createFilterDto);
   }
 
-  @Get()
+  @Get('active')
   @ApiOperation({ summary: 'Get all active filter definitions' })
-  findActive() {
-    return this.filtersService.findActive();
+  findActive(@Query() query: any) {
+    return this.filtersService.findActive(query);
   }
 
   @Get('admin/all')
@@ -42,8 +43,8 @@ export class FiltersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get all filter definitions (Admin)' })
-  findAll() {
-    return this.filtersService.findAll();
+  findAll(@Query() query: any) {
+    return this.filtersService.findAll(query);
   }
 
   @Get('admin/suggested')
@@ -51,8 +52,8 @@ export class FiltersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get suggested filter definitions (Admin)' })
-  findSuggested() {
-    return this.filtersService.findSuggested();
+  findSuggested(@Query() query: any) {
+    return this.filtersService.findSuggested(query);
   }
 
   @Get(':id')
