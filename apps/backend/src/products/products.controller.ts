@@ -34,8 +34,35 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all products (Admin only - includes inactive)' })
+  findAllAdmin(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('sort') sort?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('dynamicFilters') dynamicFilters?: string,
+  ) {
+    return this.productsService.findAll(
+      page,
+      limit,
+      sort,
+      undefined, // isFlashSale
+      categoryId,
+      dynamicFilters,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true, // isAdmin
+    );
+  }
+
   @Get()
-  @ApiOperation({ summary: 'Get all products' })
+  @ApiOperation({ summary: 'Get all active products' })
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -59,6 +86,7 @@ export class ProductsController {
       maxPrice,
       rating,
       brands,
+      false, // isAdmin
     );
   }
 
