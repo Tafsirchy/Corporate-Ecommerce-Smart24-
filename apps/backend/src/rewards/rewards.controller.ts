@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { RewardsService } from './rewards.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -21,8 +22,8 @@ export class RewardsController {
 
   // Loyalty Rewards
   @Get('items')
-  async getAllRewards() {
-    return this.rewardsService.getAllRewards();
+  async getAllRewards(@Query() query: any) {
+    return this.rewardsService.getAllRewards(query);
   }
 
   @Post('items')
@@ -42,8 +43,8 @@ export class RewardsController {
 
   // Coupons
   @Get('coupons')
-  async getAllCoupons() {
-    return this.rewardsService.getAllCoupons();
+  async getAllCoupons(@Query() query: any) {
+    return this.rewardsService.getAllCoupons(query);
   }
 
   @Post('coupons')
