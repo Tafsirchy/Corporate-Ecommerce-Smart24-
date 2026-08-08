@@ -18,7 +18,7 @@ export default function AdminQuotations() {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
-      .then(data => setQuotations(data))
+      .then(data => setQuotations(data.data || data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, [token]);
