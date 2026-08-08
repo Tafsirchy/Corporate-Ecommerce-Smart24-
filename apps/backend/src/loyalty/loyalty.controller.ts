@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { LoyaltyService } from './loyalty.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -52,7 +62,10 @@ export class LoyaltyController {
 
   @Put('admin/rewards/:id')
   @Roles('ADMIN')
-  async updateLoyaltyReward(@Param('id') id: string, @Body() data: UpdateLoyaltyRewardDto) {
+  async updateLoyaltyReward(
+    @Param('id') id: string,
+    @Body() data: UpdateLoyaltyRewardDto,
+  ) {
     return this.loyaltyService.updateLoyaltyReward(id, data);
   }
 
