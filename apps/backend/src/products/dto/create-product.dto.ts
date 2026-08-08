@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsMongoId,
   IsArray,
+  Min,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -17,10 +18,12 @@ export class CreateProductDto {
   description: string;
 
   @IsNumber()
+  @Min(0)
   price: number;
 
   @IsOptional()
   @IsNumber()
+  @Min(0)
   stock?: number;
 
   @IsOptional()
@@ -39,4 +42,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   attributes?: any[];
+
+  @IsOptional()
+  isActive?: boolean;
 }
