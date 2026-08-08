@@ -1,4 +1,12 @@
-import { IsString, IsNumber, IsOptional, IsArray, ValidateNested, Min, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  Min,
+  IsEnum,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { SubscriptionStatus } from '@prisma/client';
 
@@ -31,7 +39,9 @@ export class CreateSubscriptionPlanDto {
 
 import { PartialType } from '@nestjs/swagger';
 
-export class UpdateSubscriptionPlanDto extends PartialType(CreateSubscriptionPlanDto) {}
+export class UpdateSubscriptionPlanDto extends PartialType(
+  CreateSubscriptionPlanDto,
+) {}
 
 export class CreateCustomSubscriptionDto {
   @IsArray()
