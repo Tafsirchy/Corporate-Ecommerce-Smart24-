@@ -35,4 +35,22 @@ export class UserRepository {
       data,
     });
   }
+
+  async findAll(skip?: number, limit?: number) {
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count(),
+    ]);
+    return { data, total };
+  }
+
+  async delete(id: string): Promise<User> {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
 }
