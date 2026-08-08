@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { OfferRepository } from '../repositories/offer.repository.service';
 import { Prisma } from '@prisma/client';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -12,8 +16,13 @@ export class OffersService {
     try {
       return await this.offerRepository.createOffer(data);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new BadRequestException('An offer for this subscription plan already exists.');
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'An offer for this subscription plan already exists.',
+        );
       }
       throw error;
     }
@@ -39,8 +48,13 @@ export class OffersService {
     try {
       return await this.offerRepository.updateOffer(id, data);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new BadRequestException('An offer for this subscription plan already exists.');
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'An offer for this subscription plan already exists.',
+        );
       }
       throw error;
     }
