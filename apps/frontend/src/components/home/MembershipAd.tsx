@@ -20,9 +20,10 @@ export const MembershipAd = () => {
     const fetchMemberships = async () => {
       try {
         const response = await apiClient.get('/memberships');
-        if (response.data && response.data.length > 0) {
+        const dataList = response.data?.data || response.data;
+        if (dataList && dataList.length > 0) {
           // Sort by requiredAmount desc to get the top tiers
-          const topTiers = [...response.data].sort((a: any, b: any) => b.requiredAmount - a.requiredAmount).slice(0, 3);
+          const topTiers = [...dataList].sort((a: any, b: any) => b.requiredAmount - a.requiredAmount).slice(0, 3);
           if (topTiers.length === 3) {
              setMemberships(topTiers);
           } else {

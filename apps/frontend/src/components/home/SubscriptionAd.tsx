@@ -65,7 +65,7 @@ export const SubscriptionAd = () => {
     const fetchPackages = async () => {
       try {
         const response = await apiClient.get('/subscriptions/plans');
-        const activePlans = response.data?.filter((p: any) => p.isActive);
+        const activePlans = (response.data?.data || response.data)?.filter((p: any) => p.isActive);
         
         if (activePlans && activePlans.length > 0) {
           const dbPackages = activePlans.map((plan: any) => ({

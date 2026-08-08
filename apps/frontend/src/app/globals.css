@@ -197,6 +197,12 @@
     @apply border-border outline-ring/50;
     border-radius: 0 !important;
   }
+
+  /* Hide navbar & footer on the 404 (Page Not Found) page */
+  body:has(.not-found-page) header,
+  body:has(.not-found-page) footer {
+    display: none !important;
+  }
   body {
     @apply bg-background text-foreground;
   }

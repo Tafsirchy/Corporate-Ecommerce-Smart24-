@@ -26,7 +26,8 @@ export default function SubscriptionsPage() {
     const fetchPlans = async () => {
       try {
         const res = await apiClient.get('/subscriptions/plans');
-        setPlans(res.data.filter((p: any) => p.isActive));
+        const resData = res.data?.data || res.data;
+        setPlans(resData?.filter((p: any) => p.isActive) || []);
       } catch (err) {
         console.error("Failed to fetch plans", err);
       } finally {

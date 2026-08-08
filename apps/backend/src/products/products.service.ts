@@ -202,7 +202,7 @@ export class ProductsService {
 
     const [data, total] = await Promise.all([
       this.productRepository.findAll({ where, skip, take: limit, orderBy }),
-      this.productRepository.count(where),
+      this.productRepository.count({ where }),
     ]);
 
     return {

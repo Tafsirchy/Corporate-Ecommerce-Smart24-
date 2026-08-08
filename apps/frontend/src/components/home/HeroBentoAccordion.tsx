@@ -26,8 +26,9 @@ export function HeroBentoAccordion({ ads: initialAds }: HeroBentoAccordionProps)
     const fetchBanners = async () => {
       try {
         const response = await apiClient.get('/hero-contents?activeOnly=true');
-        if (response.data && response.data.length > 0) {
-          const fetchedAds = response.data.map((content: any) => ({
+        const dataList = response.data?.data || response.data;
+        if (dataList && dataList.length > 0) {
+          const fetchedAds = dataList.map((content: any) => ({
             id: content.id,
             title: content.title,
             subtitle: content.subtitle,
