@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, Req, UseGuards, Patch, Param, Put } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Req,
+  UseGuards,
+  Patch,
+  Param,
+  Put,
+} from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,7 +20,7 @@ import {
   UpdateSubscriptionPlanDto,
   CreateCustomSubscriptionDto,
   CreateFixedSubscriptionDto,
-  UpdateSubscriptionStatusDto
+  UpdateSubscriptionStatusDto,
 } from './dto/subscriptions.dto';
 
 @ApiTags('Subscriptions')
@@ -41,19 +51,31 @@ export class SubscriptionsController {
   @Patch('plans/:id/toggle-active')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  togglePlanActive(@Param('id') id: string, @Body('isActive') isActive: boolean) {
+  togglePlanActive(
+    @Param('id') id: string,
+    @Body('isActive') isActive: boolean,
+  ) {
     return this.subscriptionsService.togglePlanActive(id, isActive);
   }
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  createCustomSubscription(@Req() req: any, @Body() body: CreateCustomSubscriptionDto) {
-    return this.subscriptionsService.createCustomSubscription(req.user.id, body);
+  createCustomSubscription(
+    @Req() req: any,
+    @Body() body: CreateCustomSubscriptionDto,
+  ) {
+    return this.subscriptionsService.createCustomSubscription(
+      req.user.id,
+      body,
+    );
   }
 
   @Post('fixed')
   @UseGuards(JwtAuthGuard)
-  createFixedSubscription(@Req() req: any, @Body() body: CreateFixedSubscriptionDto) {
+  createFixedSubscription(
+    @Req() req: any,
+    @Body() body: CreateFixedSubscriptionDto,
+  ) {
     return this.subscriptionsService.createFixedSubscription(req.user.id, body);
   }
 
@@ -72,14 +94,25 @@ export class SubscriptionsController {
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
-  updateUserStatus(@Req() req: any, @Param('id') id: string, @Body() body: UpdateSubscriptionStatusDto) {
-    return this.subscriptionsService.updateUserStatus(req.user.id, id, body.status);
+  updateUserStatus(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateSubscriptionStatusDto,
+  ) {
+    return this.subscriptionsService.updateUserStatus(
+      req.user.id,
+      id,
+      body.status,
+    );
   }
 
   @Patch('admin/:id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  updateAdminStatus(@Param('id') id: string, @Body() body: UpdateSubscriptionStatusDto) {
+  updateAdminStatus(
+    @Param('id') id: string,
+    @Body() body: UpdateSubscriptionStatusDto,
+  ) {
     return this.subscriptionsService.updateStatus(id, body.status);
   }
 }
