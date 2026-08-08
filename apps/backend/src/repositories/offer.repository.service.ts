@@ -12,16 +12,16 @@ export class OfferRepository {
 
   async findAllOffers(page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-    
+
     const [data, total] = await Promise.all([
       this.prisma.offer.findMany({
         where: { deletedAt: null },
         include: { plan: true },
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.offer.count({ where: { deletedAt: null } })
+      this.prisma.offer.count({ where: { deletedAt: null } }),
     ]);
 
     return {
@@ -30,8 +30,8 @@ export class OfferRepository {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -46,17 +46,20 @@ export class OfferRepository {
           { startDate: null, endDate: null },
           { startDate: { lte: now }, endDate: { gte: now } },
           { startDate: { lte: now }, endDate: null },
-          { startDate: null, endDate: { gte: now } }
-        ]
+          { startDate: null, endDate: { gte: now } },
+        ],
       },
       orderBy: {
-        priority: 'desc'
-      }
+        priority: 'desc',
+      },
     });
   }
 
   async findOfferById(id: string): Promise<Offer | null> {
-    return this.prisma.offer.findUnique({ where: { id }, include: { plan: true } });
+    return this.prisma.offer.findUnique({
+      where: { id },
+      include: { plan: true },
+    });
   }
 
   async updateOffer(id: string, data: Prisma.OfferUpdateInput): Promise<Offer> {
@@ -64,9 +67,9 @@ export class OfferRepository {
   }
 
   async deleteOffer(id: string): Promise<Offer> {
-    return this.prisma.offer.update({ 
+    return this.prisma.offer.update({
       where: { id },
-      data: { deletedAt: new Date(), isActive: false }
+      data: { deletedAt: new Date(), isActive: false },
     });
   }
 }
