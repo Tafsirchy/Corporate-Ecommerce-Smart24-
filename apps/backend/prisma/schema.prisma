@@ -115,6 +115,7 @@ model User {
   gender             String?
   birthday           String?
   role               Role     @default(BUYER)
+  isActive           Boolean  @default(true)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   
@@ -258,6 +259,7 @@ model Product {
   price       Float
   discountPrice Float?
   isFlashSale Boolean  @default(false)
+  isActive    Boolean  @default(true)
   stock       Int      @default(0)
   images      String[] 
   
@@ -275,11 +277,11 @@ model Product {
   returnPolicy         String?  @default("7 Days Return")
   returnWindowDays     Int?     @default(7)
   
-  categoryId  String   @db.ObjectId
-  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String?   @db.ObjectId
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
   brandId     String?  @db.ObjectId
-  brand       Brand?   @relation(fields: [brandId], references: [id])
+  brand       Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
   
   attributes  ProductAttribute[]
   
@@ -319,7 +321,7 @@ model CartItem {
   cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   
   productId String   @db.ObjectId
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -343,7 +345,7 @@ model WishlistItem {
   wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
   
   productId  String   @db.ObjectId
-  product    Product  @relation(fields: [productId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -426,7 +428,7 @@ model OrderItem {
   order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   
   productId       String   @db.ObjectId
-  product         Product  @relation(fields: [productId], references: [id])
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   quantity        Int
   priceAtPurchase Float
@@ -460,7 +462,7 @@ model SubscriptionPlanItem {
   plan            SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
   
   productId       String           @db.ObjectId
-  product         Product          @relation(fields: [productId], references: [id])
+  product         Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   quantity        Int
   
@@ -512,7 +514,7 @@ model SubscriptionItem {
   subscription    Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   
   productId       String       @db.ObjectId
-  product         Product      @relation(fields: [productId], references: [id])
+  product         Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   quantity        Int
   
@@ -539,7 +541,7 @@ model Quotation {
   
   // Can be linked to a specific product or general
   productId       String?         @db.ObjectId
-  product         Product?        @relation(fields: [productId], references: [id])
+  product         Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
   
   quantity        Int
   deliveryLocation String
