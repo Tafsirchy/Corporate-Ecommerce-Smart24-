@@ -6,14 +6,16 @@ import { Prisma, SavedPaymentMethod } from '@prisma/client';
 export class PaymentOptionRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.SavedPaymentMethodCreateInput): Promise<SavedPaymentMethod> {
+  async create(
+    data: Prisma.SavedPaymentMethodCreateInput,
+  ): Promise<SavedPaymentMethod> {
     return this.prisma.savedPaymentMethod.create({ data });
   }
 
   async findByUserId(userId: string): Promise<SavedPaymentMethod[]> {
-    return this.prisma.savedPaymentMethod.findMany({ 
+    return this.prisma.savedPaymentMethod.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -21,9 +23,13 @@ export class PaymentOptionRepository {
     return this.prisma.savedPaymentMethod.findUnique({ where: { id } });
   }
 
-  async findByUserIdAndProviderAndAccountNumber(userId: string, provider: any, accountNumber: string): Promise<SavedPaymentMethod | null> {
+  async findByUserIdAndProviderAndAccountNumber(
+    userId: string,
+    provider: any,
+    accountNumber: string,
+  ): Promise<SavedPaymentMethod | null> {
     return this.prisma.savedPaymentMethod.findFirst({
-      where: { userId, provider, accountNumber }
+      where: { userId, provider, accountNumber },
     });
   }
 
