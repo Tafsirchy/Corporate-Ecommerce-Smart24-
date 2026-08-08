@@ -26,8 +26,34 @@ export class BrandsService {
     });
   }
 
-  async findAll() {
-    return this.brandRepository.findAll({});
+  async findAll(query: { page?: number; limit?: number; search?: string } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where = query.search
+      ? { name: { contains: query.search, mode: 'insensitive' as any } }
+      : {};
+
+    const [data, total] = await Promise.all([
+      (this.brandRepository as any).prisma.brand.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      (this.brandRepository as any).prisma.brand.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: string) {
@@ -59,6 +85,17 @@ export class BrandsService {
     if (!brand) {
       throw new NotFoundException('Brand not found');
     }
+
+    const productsCount = await (this.brandRepository as any).prisma.product.count({
+      where: { brandId: id },
+    });
+
+    if (productsCount > 0) {
+      throw new ConflictException(
+        `Cannot delete brand because it is attached to ${productsCount} product(s).`
+      );
+    }
+
     return this.brandRepository.delete(id);
   }
 }
