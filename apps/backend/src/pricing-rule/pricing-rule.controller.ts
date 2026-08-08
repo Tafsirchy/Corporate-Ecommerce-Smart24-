@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PricingRuleService } from './pricing-rule.service';
 import { CreatePricingRuleDto } from './dto/create-pricing-rule.dto';
 import { UpdatePricingRuleDto } from './dto/update-pricing-rule.dto';
@@ -31,8 +43,16 @@ export class PricingRuleController {
 
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  update(@Req() req: any, @Param('id') id: string, @Body() updatePricingRuleDto: UpdatePricingRuleDto) {
-    return this.pricingRuleService.update(id, updatePricingRuleDto, req.user.id);
+  update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() updatePricingRuleDto: UpdatePricingRuleDto,
+  ) {
+    return this.pricingRuleService.update(
+      id,
+      updatePricingRuleDto,
+      req.user.id,
+    );
   }
 
   @Delete(':id')
