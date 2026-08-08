@@ -5,14 +5,23 @@ import { PrismaService } from '../prisma/prisma.service';
 export class InvoiceService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllByBusiness(businessProfileId: string) {
-    return this.prisma.businessInvoice.findMany({
-      where: { businessId: businessProfileId },
-      include: {
-        order: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAllByBusiness(businessProfileId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.businessInvoice.findMany({
+        where: { businessId: businessProfileId },
+        skip,
+        take: limit,
+        include: { order: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.businessInvoice.count({ where: { businessId: businessProfileId } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async findOne(id: string) {
@@ -44,6 +53,14 @@ export class InvoiceService {
             usedCredit: { decrement: invoice.totalAmount },
           },
         });
+      } else if (invoice.status === 'PAID' && status !== 'PAID') {
+        // If it was PAID but is now reversed to VOID/PENDING
+        await tx.businessProfile.update({
+          where: { id: invoice.businessId },
+          data: {
+            usedCredit: { increment: invoice.totalAmount },
+          },
+        });
       }
 
       return updated;
@@ -51,14 +68,22 @@ export class InvoiceService {
   }
 
   // Admin endpoint
-  async findAll() {
-    return this.prisma.businessInvoice.findMany({
-      include: {
-        businessProfile: true,
-        order: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.businessInvoice.findMany({
+        skip,
+        take: limit,
+        include: { businessProfile: true, order: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.businessInvoice.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async exportMushakPdf(id: string): Promise<Buffer> {
