@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, apiClient } from "@/context/AuthContext";
 
 import { Suspense } from "react";
 
@@ -33,8 +33,6 @@ function RequestQuoteForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
-
     try {
       const payload = {
         companyName,
@@ -47,24 +45,11 @@ function RequestQuoteForm() {
         productId
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quotations`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        toast.success("Quote requested successfully! We will contact you soon.");
-        router.push("/my-account/quotes");
-      } else {
-        const err = await res.json();
-        toast.error(err.message || "Failed to submit request");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
+      await apiClient.post("/quotations", payload);
+      toast.success("Quote requested successfully! We will contact you soon.");
+      router.push("/my-account/quotes");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
 
