@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,7 +21,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class InvoiceController {
   constructor(
     private readonly invoiceService: InvoiceService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -19,7 +30,7 @@ export class InvoiceController {
   async getMyInvoices(@Req() req: any) {
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.id },
-      include: { businessProfile: true }
+      include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
       return [];
@@ -56,7 +67,7 @@ export class InvoiceController {
     if (req.user.role === 'BUSINESS') {
       const user = await this.prisma.user.findUnique({
         where: { id: req.user.id },
-        include: { businessProfile: true }
+        include: { businessProfile: true },
       });
       const invoice = await this.invoiceService.findOne(id);
       if (invoice.businessId !== user?.businessProfile?.id) {
