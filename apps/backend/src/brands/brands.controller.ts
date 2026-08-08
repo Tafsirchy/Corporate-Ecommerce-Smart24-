@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -33,8 +34,8 @@ export class BrandsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all brands' })
-  findAll() {
-    return this.brandsService.findAll();
+  findAll(@Query() query: any) {
+    return this.brandsService.findAll(query);
   }
 
   @Get(':id')
