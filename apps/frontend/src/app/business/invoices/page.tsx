@@ -15,7 +15,7 @@ export default function BusinessInvoicesPage() {
   const fetchInvoices = async () => {
     try {
       const { data } = await apiClient.get('/invoice/my-invoices');
-      setInvoices(data);
+      setInvoices(data?.data || data);
     } catch (error) {
       toast.error('Failed to load invoices');
     } finally {

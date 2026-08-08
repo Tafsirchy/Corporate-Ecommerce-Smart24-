@@ -63,7 +63,7 @@ function BuilderContent() {
     }).catch(console.error);
       
     // Fetch brands
-    axios.get(`${apiUrl}/brands`).then(res => setBrands(res.data)).catch(console.error);
+    axios.get(`${apiUrl}/brands`).then(res => setBrands(res.data?.data || res.data)).catch(console.error);
   }, []);
 
   const fetchProducts = () => {

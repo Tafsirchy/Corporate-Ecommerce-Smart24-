@@ -16,7 +16,7 @@ export default function AdminAuditLogsPage() {
   const fetchLogs = async () => {
     try {
       const res = await apiClient.get('/audit-log');
-      setLogs(res.data);
+      setLogs(res.data?.data || res.data);
     } catch (err: any) {
       toast.error('Failed to fetch audit logs');
     } finally {

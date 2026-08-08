@@ -57,9 +57,9 @@ export default function AdminProducts() {
         apiClient.get('/brands'),
         apiClient.get('/filters/admin/all')
       ]);
-      setCategories(catsRes.data);
-      setBrands(brandsRes.data);
-      setFilterDefs(filtersRes.data);
+      setCategories(catsRes.data?.data || catsRes.data);
+      setBrands(brandsRes.data?.data || brandsRes.data);
+      setFilterDefs(filtersRes.data?.data || filtersRes.data);
     } catch (error) {
       toast.error('Failed to load initial data. Form might not work correctly.');
     }

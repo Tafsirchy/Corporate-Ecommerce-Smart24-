@@ -13,7 +13,8 @@ export default function AdminSettings() {
     const fetchSettings = async () => {
       try {
         const res = await apiClient.get('/settings');
-        const emailSetting = res.data.find((s: any) => s.key === 'SUPPORT_EMAIL');
+        const settingsData = res.data?.data || res.data;
+        const emailSetting = Array.isArray(settingsData) ? settingsData.find((s: any) => s.key === 'SUPPORT_EMAIL') : null;
         if (emailSetting) {
           setSupportEmail(emailSetting.value);
         }

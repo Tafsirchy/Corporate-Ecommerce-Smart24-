@@ -15,7 +15,7 @@ export default function AdminRfqPage() {
   const fetchRfqs = async () => {
     try {
       const { data } = await apiClient.get('/rfq/all');
-      setRfqs(data);
+      setRfqs(data?.data || data);
     } catch (error) {
       toast.error('Failed to fetch RFQs');
     } finally {

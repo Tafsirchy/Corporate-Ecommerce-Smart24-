@@ -16,7 +16,7 @@ export default function BusinessContractsPage() {
   const fetchContracts = async () => {
     try {
       const { data } = await apiClient.get('/contract/my-contracts');
-      setContracts(data);
+      setContracts(data?.data || data);
     } catch (error) {
       toast.error('Failed to load contracts');
     } finally {

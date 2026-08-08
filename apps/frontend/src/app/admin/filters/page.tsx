@@ -56,8 +56,8 @@ export default function AdminFilters() {
         apiClient.get('/filters/admin/all'),
         apiClient.get('/categories')
       ]);
-      setFilters(filtersRes.data);
-      setCategories(catsRes.data);
+      setFilters(filtersRes.data?.data || filtersRes.data);
+      setCategories(catsRes.data?.data || catsRes.data);
     } catch (error) {
       toast.error('Failed to load data');
     } finally {

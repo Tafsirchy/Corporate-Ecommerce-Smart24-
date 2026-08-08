@@ -34,7 +34,7 @@ export default function FAQPage() {
     const fetchFaqs = async () => {
       try {
         const res = await apiClient.get('/faqs');
-        setFaqs(res.data);
+        setFaqs(res.data?.data || res.data);
       } catch (error) {
         console.error('Failed to fetch FAQs:', error);
       } finally {

@@ -61,10 +61,10 @@ function ShopContent() {
     }).catch(console.error);
       
     // Fetch brands
-    axios.get(`${apiUrl}/brands`).then(res => setBrands(res.data)).catch(console.error);
+    axios.get(`${apiUrl}/brands`).then(res => setBrands(res.data?.data || res.data)).catch(console.error);
 
     // Fetch dynamic filter definitions
-    axios.get(`${apiUrl}/filters`).then(res => setActiveFilterDefs(res.data)).catch(console.error);
+    axios.get(`${apiUrl}/filters/active`).then(res => setActiveFilterDefs(res.data?.data || res.data)).catch(console.error);
   }, []);
 
   // Fetch Facets whenever category or search changes (facets represent available options)

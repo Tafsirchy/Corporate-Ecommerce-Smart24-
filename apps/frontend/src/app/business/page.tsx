@@ -12,7 +12,7 @@ export default function BusinessDashboardPage() {
     const fetchDashboardData = async () => {
       try {
         const { data } = await apiClient.get('/rfq/my-rfqs');
-        setRfqs(data);
+        setRfqs(data?.data || data);
       } catch (err) {
         console.error('Failed to load dashboard data', err);
       } finally {
