@@ -9,31 +9,30 @@ export class SavedListService {
     return this.prisma.businessSavedList.create({
       data: {
         ...data,
-        businessId
-      }
+        businessId,
+      },
     });
   }
 
   async findAllByBusiness(businessId: string) {
     return this.prisma.businessSavedList.findMany({
       where: { businessId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: string) {
-    const list = await this.prisma.businessSavedList.findUnique({ where: { id } });
+  async findOne(id: string, businessId: string) {
+    const list = await this.prisma.businessSavedList.findFirst({
+      where: { id, businessId },
+    });
     if (!list) throw new NotFoundException('Saved list not found');
     return list;
   }
 
   async remove(id: string, businessId: string) {
-    const list = await this.findOne(id);
-    if (list.businessId !== businessId) {
-      throw new NotFoundException('Saved list not found');
-    }
+    const list = await this.findOne(id, businessId);
     return this.prisma.businessSavedList.delete({
-      where: { id }
+      where: { id },
     });
   }
 }
