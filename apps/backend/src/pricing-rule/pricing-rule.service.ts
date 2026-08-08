@@ -9,14 +9,14 @@ export class PricingRuleService {
     return this.prisma.pricingRule.create({
       data: {
         ...data,
-        updatedBy: adminId
-      }
+        updatedBy: adminId,
+      },
     });
   }
 
   async findAll() {
     return this.prisma.pricingRule.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -31,14 +31,14 @@ export class PricingRuleService {
       where: { id },
       data: {
         ...data,
-        updatedBy: adminId
-      }
+        updatedBy: adminId,
+      },
     });
   }
 
   async remove(id: string) {
     return this.prisma.pricingRule.delete({
-      where: { id }
+      where: { id },
     });
   }
 }
