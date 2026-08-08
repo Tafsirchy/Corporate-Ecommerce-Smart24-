@@ -74,4 +74,10 @@ export class CartRepositoryService {
       where: { cartId },
     });
   }
+
+  async deleteCart(cartId: string) {
+    return this.prisma.cart.delete({
+      where: { id: cartId },
+    });
+  }
 }
