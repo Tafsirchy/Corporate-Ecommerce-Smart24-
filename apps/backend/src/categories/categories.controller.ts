@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
@@ -35,7 +36,7 @@ export class CategoriesController {
   async create(@Body() createCategoryDto: CreateCategoryDto, @Req() req: any) {
     const category = await this.categoriesService.create(createCategoryDto);
     await this.auditLogService.create({
-      adminId: req.user.id,
+      adminId: (req.user?.id || req.user?.userId || req.user?.sub),
       action: 'CREATE',
       targetType: 'CATEGORY',
       targetId: category.id,
@@ -46,8 +47,8 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.categoriesService.findAll(page, limit);
   }
 
   @Get(':id')
@@ -68,7 +69,7 @@ export class CategoriesController {
   ) {
     const category = await this.categoriesService.update(id, updateCategoryDto);
     await this.auditLogService.create({
-      adminId: req.user.id,
+      adminId: (req.user?.id || req.user?.userId || req.user?.sub),
       action: 'UPDATE',
       targetType: 'CATEGORY',
       targetId: category.id,
@@ -85,7 +86,7 @@ export class CategoriesController {
   async remove(@Param('id') id: string, @Req() req: any) {
     const category = await this.categoriesService.remove(id);
     await this.auditLogService.create({
-      adminId: req.user.id,
+      adminId: (req.user?.id || req.user?.userId || req.user?.sub),
       action: 'DELETE',
       targetType: 'CATEGORY',
       targetId: category.id,
