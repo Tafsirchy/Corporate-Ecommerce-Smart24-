@@ -15,7 +15,7 @@ export default function AdminVerificationsPage() {
   const fetchVerifications = async () => {
     try {
       const { data } = await apiClient.get('/business/verifications');
-      setVerifications(data);
+      setVerifications(data.data || data);
     } catch (error) {
       toast.error('Failed to fetch verifications');
     } finally {
