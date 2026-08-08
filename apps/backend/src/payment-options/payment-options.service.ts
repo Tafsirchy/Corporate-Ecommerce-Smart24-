@@ -7,7 +7,12 @@ export class PaymentOptionsService {
 
   async create(userId: string, data: any) {
     // Check if already exists
-    const existing = await this.paymentOptionRepo.findByUserIdAndProviderAndAccountNumber(userId, data.provider, data.accountNumber);
+    const existing =
+      await this.paymentOptionRepo.findByUserIdAndProviderAndAccountNumber(
+        userId,
+        data.provider,
+        data.accountNumber,
+      );
     if (existing) {
       return existing; // Already saved
     }
@@ -16,7 +21,7 @@ export class PaymentOptionsService {
       provider: data.provider,
       accountNumber: data.accountNumber,
       isDefault: data.isDefault || false,
-      user: { connect: { id: userId } }
+      user: { connect: { id: userId } },
     });
   }
 
