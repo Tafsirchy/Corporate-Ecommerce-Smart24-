@@ -7,7 +7,9 @@ describe('HeroContentController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HeroContentController],
-    }).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     controller = module.get<HeroContentController>(HeroContentController);
   });
