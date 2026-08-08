@@ -8,6 +8,8 @@ import {
   Param,
   UseGuards,
   Request,
+  Req,
+  Query,
 } from '@nestjs/common';
 import { LoyaltyService } from './loyalty.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -23,35 +25,35 @@ export class LoyaltyController {
 
   @Get('me')
   async getMyLoyaltyData(@Request() req: any) {
-    return this.loyaltyService.getUserLoyaltyData(req.user.id);
+    return this.loyaltyService.getUserLoyaltyData((req.user?.id || req.user?.userId || req.user?.sub));
   }
 
   @Get('transactions')
-  async getMyTransactions(@Request() req: any) {
-    return this.loyaltyService.getTransactions(req.user.id);
+  getTransactions(@Req() req: any, @Query() query: any) {
+    return this.loyaltyService.getTransactions((req.user?.id || req.user?.userId || req.user?.sub), query);
   }
 
   @Get('rewards/available')
   async getAvailableRewards(@Request() req: any) {
-    return this.loyaltyService.getAvailableRewards(req.user.id);
+    return this.loyaltyService.getAvailableRewards((req.user?.id || req.user?.userId || req.user?.sub));
   }
 
-  @Get('rewards/me')
-  async getMyRewards(@Request() req: any) {
-    return this.loyaltyService.getMyRewards(req.user.id);
+  @Get('my-rewards')
+  getMyRewards(@Req() req: any, @Query() query: any) {
+    return this.loyaltyService.getMyRewards((req.user?.id || req.user?.userId || req.user?.sub), query);
   }
 
   @Post('rewards/:id/claim')
   async claimReward(@Request() req: any, @Param('id') id: string) {
-    return this.loyaltyService.claimReward(req.user.id, id);
+    return this.loyaltyService.claimReward((req.user?.id || req.user?.userId || req.user?.sub), id);
   }
 
   // --- Admin Routes ---
 
   @Get('admin/rewards')
   @Roles('ADMIN')
-  async getAllLoyaltyRewards() {
-    return this.loyaltyService.getAllLoyaltyRewards();
+  getAllLoyaltyRewards(@Query() query: any) {
+    return this.loyaltyService.getAllLoyaltyRewards(query);
   }
 
   @Post('admin/rewards')
