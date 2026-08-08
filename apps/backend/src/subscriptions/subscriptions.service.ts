@@ -56,8 +56,17 @@ export class SubscriptionsService {
     return this.subscriptionRepo.togglePlanActive(id, isActive);
   }
 
-  async getAllPlans() {
-    return this.subscriptionRepo.findAllPlans();
+  async getAllPlans(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.subscriptionRepo.findAllPlans(skip, limit),
+      this.subscriptionRepo.countAllPlans(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async createCustomSubscription(userId: string, data: any) {
@@ -182,12 +191,30 @@ export class SubscriptionsService {
     });
   }
 
-  async getUserSubscriptions(userId: string) {
-    return this.subscriptionRepo.findSubscriptionsByUserId(userId);
+  async getUserSubscriptions(userId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.subscriptionRepo.findSubscriptionsByUserId(userId, skip, limit),
+      this.subscriptionRepo.countSubscriptionsByUserId(userId),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
-  async getAllSubscriptions() {
-    return this.subscriptionRepo.findAllSubscriptions();
+  async getAllSubscriptions(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.subscriptionRepo.findAllSubscriptions(skip, limit),
+      this.subscriptionRepo.countAllSubscriptions(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async updateStatus(id: string, status: string) {
