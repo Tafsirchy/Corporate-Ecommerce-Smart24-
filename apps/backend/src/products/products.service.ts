@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from '../repositories/product.repository.service';
@@ -11,22 +16,22 @@ export class ProductsService {
   constructor(
     private productRepository: ProductRepository,
     private prisma: PrismaService,
-    private emailService: EmailService
+    private emailService: EmailService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     const slug = slugify(createProductDto.name, { lower: true, strict: true });
-    
+
     const existing = await this.productRepository.findBySlug(slug);
     if (existing) {
       throw new ConflictException('Product with this name already exists');
     }
 
     const detectedAttributes = await this.autoDetectAttributes(
-      createProductDto.name, 
-      createProductDto.description, 
-      createProductDto.categoryId, 
-      createProductDto.attributes
+      createProductDto.name,
+      createProductDto.description,
+      createProductDto.categoryId,
+      createProductDto.attributes,
     );
 
     return this.productRepository.create({
@@ -38,7 +43,9 @@ export class ProductsService {
       images: createProductDto.images,
       attributes: detectedAttributes,
       category: { connect: { id: createProductDto.categoryId } },
-      ...(createProductDto.brandId && { brand: { connect: { id: createProductDto.brandId } } })
+      ...(createProductDto.brandId && {
+        brand: { connect: { id: createProductDto.brandId } },
+      }),
     });
   }
 
@@ -53,9 +60,9 @@ export class ProductsService {
             attributes: {
               some: {
                 filterKey: key,
-                value: { in: values }
-              }
-            }
+                value: { in: values },
+              },
+            },
           });
         }
       }
@@ -65,21 +72,26 @@ export class ProductsService {
     }
   }
 
-  private buildStandardFiltersWhere(minPrice?: string, maxPrice?: string, rating?: string, brands?: string) {
+  private buildStandardFiltersWhere(
+    minPrice?: string,
+    maxPrice?: string,
+    rating?: string,
+    brands?: string,
+  ) {
     const where: any = {};
-    
+
     // Price
     if (minPrice !== undefined || maxPrice !== undefined) {
       where.price = {};
       if (minPrice !== undefined) where.price.gte = parseFloat(minPrice);
       if (maxPrice !== undefined) where.price.lte = parseFloat(maxPrice);
     }
-    
+
     // Rating
     if (rating !== undefined) {
       where.rating = { gte: parseFloat(rating) };
     }
-    
+
     // Brands
     if (brands) {
       try {
@@ -94,21 +106,21 @@ export class ProductsService {
         }
       }
     }
-    
+
     return where;
   }
 
   async findAll(
-    pageStr?: string, 
-    limitStr?: string, 
-    sort?: string, 
-    isFlashSale?: string, 
-    categorySlugOrId?: string, 
+    pageStr?: string,
+    limitStr?: string,
+    sort?: string,
+    isFlashSale?: string,
+    categorySlugOrId?: string,
     dynamicFilters?: string,
     minPrice?: string,
     maxPrice?: string,
     rating?: string,
-    brands?: string
+    brands?: string,
   ) {
     let orderBy: any = undefined;
     if (sort === 'price-asc') orderBy = { price: 'asc' };
@@ -120,40 +132,60 @@ export class ProductsService {
       // OR we can just return { data, meta } and let the frontend handle it.
       // The prompt asks to add pagination, so returning { data, meta } is the standard way.
       // Let's implement it consistently.
-      let where: any = {};
+      const where: any = {};
       if (isFlashSale === 'true') {
         where.isFlashSale = true;
       }
       const data = await this.productRepository.findAll({ where, orderBy });
-      return { data, meta: { total: data.length, page: 1, limit: data.length, totalPages: 1 } };
+      return {
+        data,
+        meta: {
+          total: data.length,
+          page: 1,
+          limit: data.length,
+          totalPages: 1,
+        },
+      };
     }
 
-    const page = pageStr ? parseInt(pageStr, 10) : 1;
-    const limit = limitStr ? parseInt(limitStr, 10) : 20;
+    let page = pageStr ? parseInt(pageStr, 10) : 1;
+    let limit = limitStr ? parseInt(limitStr, 10) : 20;
+    if (Number.isNaN(page) || page < 1) page = 1;
+    if (Number.isNaN(limit) || limit < 1) limit = 20;
     const skip = (page - 1) * limit;
 
-    let where: any = {
-      ...this.buildStandardFiltersWhere(minPrice, maxPrice, rating, brands)
+    const where: any = {
+      ...this.buildStandardFiltersWhere(minPrice, maxPrice, rating, brands),
     };
-    
+
     if (isFlashSale === 'true') {
       where.isFlashSale = true;
     }
-    
+
     // Category resolution
     if (categorySlugOrId) {
       // Check if it's an ID or Slug
       const isObjectId = /^[0-9a-fA-F]{24}$/.test(categorySlugOrId);
-      const catCondition = isObjectId ? { id: categorySlugOrId } : { slug: categorySlugOrId };
-      const category = await this.prisma.category.findFirst({ where: catCondition });
-      
+      const catCondition = isObjectId
+        ? { id: categorySlugOrId }
+        : { slug: categorySlugOrId };
+      const category = await this.prisma.category.findFirst({
+        where: catCondition,
+      });
+
       if (category) {
         // Find descendants
-        const subCategories = await this.prisma.category.findMany({ where: { parentId: category.id }, select: { id: true } });
-        let catIds = [category.id, ...subCategories.map(c => c.id)];
+        const subCategories = await this.prisma.category.findMany({
+          where: { parentId: category.id },
+          select: { id: true },
+        });
+        let catIds = [category.id, ...subCategories.map((c) => c.id)];
         if (subCategories.length > 0) {
-          const subSub = await this.prisma.category.findMany({ where: { parentId: { in: subCategories.map(c => c.id) } }, select: { id: true } });
-          catIds = [...catIds, ...subSub.map(c => c.id)];
+          const subSub = await this.prisma.category.findMany({
+            where: { parentId: { in: subCategories.map((c) => c.id) } },
+            select: { id: true },
+          });
+          catIds = [...catIds, ...subSub.map((c) => c.id)];
         }
         where.categoryId = { in: catIds };
       }
@@ -167,7 +199,7 @@ export class ProductsService {
 
     const [data, total] = await Promise.all([
       this.productRepository.findAll({ where, skip, take: limit, orderBy }),
-      this.productRepository.count(where)
+      this.productRepository.count(where),
     ]);
 
     return {
@@ -176,27 +208,32 @@ export class ProductsService {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
   async search(
-    query: string, 
-    pageStr?: string, 
-    limitStr?: string, 
+    query: string,
+    pageStr?: string,
+    limitStr?: string,
     dynamicFilters?: string,
     minPrice?: string,
     maxPrice?: string,
     rating?: string,
-    brands?: string
+    brands?: string,
   ) {
-    const page = pageStr ? parseInt(pageStr, 10) : 1;
-    const limit = limitStr ? parseInt(limitStr, 10) : 10;
+    let page = pageStr ? parseInt(pageStr, 10) : 1;
+    let limit = limitStr ? parseInt(limitStr, 10) : 10;
+    if (Number.isNaN(page) || page < 1) page = 1;
+    if (Number.isNaN(limit) || limit < 1) limit = 10;
     const skip = (page - 1) * limit;
 
     // Tokenize query into separate words
-    const tokens = query.trim().split(/\s+/).filter(t => t.length > 0);
+    const tokens = query
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length > 0);
 
     if (tokens.length === 0) {
       return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
@@ -208,66 +245,72 @@ export class ProductsService {
     for (const token of tokens) {
       const matchingCategories = await this.prisma.category.findMany({
         where: { name: { contains: token, mode: 'insensitive' as any } },
-        select: { id: true }
+        select: { id: true },
       });
-      
-      let allCategoryIds = matchingCategories.map(c => c.id);
-      
+
+      let allCategoryIds = matchingCategories.map((c) => c.id);
+
       if (allCategoryIds.length > 0) {
         const subCategories = await this.prisma.category.findMany({
           where: { parentId: { in: allCategoryIds } },
-          select: { id: true }
+          select: { id: true },
         });
-        const subCategoryIds = subCategories.map(c => c.id);
+        const subCategoryIds = subCategories.map((c) => c.id);
         allCategoryIds = [...allCategoryIds, ...subCategoryIds];
-        
+
         if (subCategoryIds.length > 0) {
           const subSubCategories = await this.prisma.category.findMany({
             where: { parentId: { in: subCategoryIds } },
-            select: { id: true }
+            select: { id: true },
           });
-          allCategoryIds = [...allCategoryIds, ...subSubCategories.map(c => c.id)];
+          allCategoryIds = [
+            ...allCategoryIds,
+            ...subSubCategories.map((c) => c.id),
+          ];
         }
       }
-      
+
       tokenCategoryMap.set(token, allCategoryIds);
     }
 
     // 2. Build AND conditions for multi-token matching
-    const andConditions = tokens.map(token => {
+    const andConditions = tokens.map((token) => {
       const catIds = tokenCategoryMap.get(token) || [];
       return {
         OR: [
           { name: { contains: token, mode: 'insensitive' as any } },
           { description: { contains: token, mode: 'insensitive' as any } },
           { brand: { name: { contains: token, mode: 'insensitive' as any } } },
-          ...(catIds.length > 0 ? [{ categoryId: { in: catIds } }] : [])
-        ]
+          ...(catIds.length > 0 ? [{ categoryId: { in: catIds } }] : []),
+        ],
       };
     });
 
     // Dynamic filters
-    const dynamicFilterConditions = this.buildDynamicFilterWhere(dynamicFilters);
+    const dynamicFilterConditions =
+      this.buildDynamicFilterWhere(dynamicFilters);
 
     // Standard filters
-    const standardFilterConditions = this.buildStandardFiltersWhere(minPrice, maxPrice, rating, brands);
+    const standardFilterConditions = this.buildStandardFiltersWhere(
+      minPrice,
+      maxPrice,
+      rating,
+      brands,
+    );
 
     const where = {
-      AND: [
-        ...andConditions,
-        ...dynamicFilterConditions
-      ],
-      ...standardFilterConditions
+      AND: [...andConditions, ...dynamicFilterConditions],
+      ...standardFilterConditions,
     };
 
     const [data, total] = await Promise.all([
-      this.productRepository.findAll({ 
-        where, 
-        skip, 
-        take: limit, 
-        orderBy: { createdAt: 'desc' }
+      this.productRepository.findAll({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
       }),
-      this.productRepository.count({ where })
+      this.productRepository.count({ where }),
     ]);
 
     return {
@@ -276,8 +319,8 @@ export class ProductsService {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -306,17 +349,17 @@ export class ProductsService {
     }
 
     const existingAlert = await this.prisma.backInStockAlert.findFirst({
-      where: { productId, email }
+      where: { productId, email },
     });
 
     if (existingAlert) {
       if (!existingAlert.isNotified) {
-         throw new ConflictException('You are already subscribed to this alert');
+        throw new ConflictException('You are already subscribed to this alert');
       } else {
-         return this.prisma.backInStockAlert.update({
-            where: { id: existingAlert.id },
-            data: { isNotified: false }
-         });
+        return this.prisma.backInStockAlert.update({
+          where: { id: existingAlert.id },
+          data: { isNotified: false },
+        });
       }
     }
 
@@ -324,8 +367,8 @@ export class ProductsService {
       data: {
         productId,
         email,
-        userId
-      }
+        userId,
+      },
     });
   }
 
@@ -346,24 +389,30 @@ export class ProductsService {
     const updatedProduct = await this.productRepository.update(id, {
       ...dataToUpdate,
       ...(slug && { slug }),
-      ...(updateProductDto.categoryId && { category: { connect: { id: updateProductDto.categoryId } } }),
-      ...(updateProductDto.brandId && { brand: { connect: { id: updateProductDto.brandId } } })
+      ...(updateProductDto.categoryId && {
+        category: { connect: { id: updateProductDto.categoryId } },
+      }),
+      ...(updateProductDto.brandId && {
+        brand: { connect: { id: updateProductDto.brandId } },
+      }),
     });
 
     // Check if stock was updated and is > 0
     if (updateProductDto.stock !== undefined && updateProductDto.stock > 0) {
       const pendingAlerts = await this.prisma.backInStockAlert.findMany({
-        where: { productId: id, isNotified: false }
+        where: { productId: id, isNotified: false },
       });
       if (pendingAlerts.length > 0) {
         for (const alert of pendingAlerts) {
-          this.emailService.sendBackInStockEmail(alert.email, updatedProduct.name).catch(err => {
-            console.error('Alert email error:', err);
-          });
+          this.emailService
+            .sendBackInStockEmail(alert.email, updatedProduct.name)
+            .catch((err) => {
+              console.error('Alert email error:', err);
+            });
         }
         await this.prisma.backInStockAlert.updateMany({
-          where: { id: { in: pendingAlerts.map(a => a.id) } },
-          data: { isNotified: true }
+          where: { id: { in: pendingAlerts.map((a) => a.id) } },
+          data: { isNotified: true },
         });
       }
     }
@@ -380,16 +429,24 @@ export class ProductsService {
   }
 
   // --- Auto Detection Engine (Rule-based Regex) ---
-  private async autoDetectAttributes(name: string, description: string, categoryId: string, manualAttributes: any[] = []) {
+  private async autoDetectAttributes(
+    name: string,
+    description: string,
+    categoryId: string,
+    manualAttributes: any[] = [],
+  ) {
     // 1. Get all active filter definitions that apply to this category
     const activeFilters = await this.prisma.filterDefinition.findMany({
-      where: { 
-        status: 'ACTIVE'
-      }
+      where: {
+        status: 'ACTIVE',
+      },
     });
 
-    const applicableFilters = activeFilters.filter(f => 
-      !f.categoryIds || f.categoryIds.length === 0 || f.categoryIds.includes(categoryId)
+    const applicableFilters = activeFilters.filter(
+      (f) =>
+        !f.categoryIds ||
+        f.categoryIds.length === 0 ||
+        f.categoryIds.includes(categoryId),
     );
 
     const fullText = `${name} ${description}`.toLowerCase();
@@ -397,15 +454,22 @@ export class ProductsService {
 
     // 2. Scan text for each filter's predefined values
     for (const filter of applicableFilters) {
-      if (filter.type === 'RANGE' || !filter.values || !Array.isArray(filter.values)) continue;
-      
+      if (
+        filter.type === 'RANGE' ||
+        !filter.values ||
+        !Array.isArray(filter.values)
+      )
+        continue;
+
       // If the attribute was already provided manually, skip auto-detection for it (to respect admin choice)
-      const hasManualVal = manualAttributes.some(a => a.filterKey === filter.key);
+      const hasManualVal = manualAttributes.some(
+        (a) => a.filterKey === filter.key,
+      );
       if (hasManualVal && filter.type !== 'CHECKBOX') continue; // For checkboxes we might want multiple, but let's be safe and just merge them
 
       for (const valObj of filter.values) {
         const valStr = valObj.value.toLowerCase();
-        
+
         // Escape regex special characters from the value string
         const escapedVal = valStr.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
         // We look for whole word boundaries (or start/end of string)
@@ -414,7 +478,7 @@ export class ProductsService {
         if (regex.test(fullText)) {
           // Check if we haven't already added this value manually or detected it
           const alreadyExists = finalAttributes.some(
-            a => a.filterKey === filter.key && a.value === valObj.value
+            (a) => a.filterKey === filter.key && a.value === valObj.value,
           );
 
           if (!alreadyExists) {
@@ -422,7 +486,7 @@ export class ProductsService {
               filterKey: filter.key,
               value: valObj.value,
               source: 'auto_regex',
-              confidence: 0.9 // High confidence for exact regex match
+              confidence: 0.9, // High confidence for exact regex match
             });
           }
         }
@@ -433,22 +497,36 @@ export class ProductsService {
   }
 
   // --- Faceted Counts (MongoDB Aggregation) ---
-  async getFacetedCounts(categoryIdOrSlug?: string, searchQuery?: string, dynamicFilters?: string) {
-    let matchStage: any = {};
+  async getFacetedCounts(
+    categoryIdOrSlug?: string,
+    searchQuery?: string,
+    dynamicFilters?: string,
+  ) {
+    const matchStage: any = {};
 
     // 1. Resolve Category
     if (categoryIdOrSlug) {
       const isObjectId = /^[0-9a-fA-F]{24}$/.test(categoryIdOrSlug);
-      const catCondition = isObjectId ? { id: categoryIdOrSlug } : { slug: categoryIdOrSlug };
-      const category = await this.prisma.category.findFirst({ where: catCondition });
+      const catCondition = isObjectId
+        ? { id: categoryIdOrSlug }
+        : { slug: categoryIdOrSlug };
+      const category = await this.prisma.category.findFirst({
+        where: catCondition,
+      });
       if (category) {
-        const subCategories = await this.prisma.category.findMany({ where: { parentId: category.id }, select: { id: true } });
-        let catIds = [category.id, ...subCategories.map(c => c.id)];
+        const subCategories = await this.prisma.category.findMany({
+          where: { parentId: category.id },
+          select: { id: true },
+        });
+        let catIds = [category.id, ...subCategories.map((c) => c.id)];
         if (subCategories.length > 0) {
-          const subSub = await this.prisma.category.findMany({ where: { parentId: { in: subCategories.map(c => c.id) } }, select: { id: true } });
-          catIds = [...catIds, ...subSub.map(c => c.id)];
+          const subSub = await this.prisma.category.findMany({
+            where: { parentId: { in: subCategories.map((c) => c.id) } },
+            select: { id: true },
+          });
+          catIds = [...catIds, ...subSub.map((c) => c.id)];
         }
-        matchStage.categoryId = { $in: catIds.map(id => ({ $oid: id })) };
+        matchStage.categoryId = { $in: catIds.map((id) => ({ $oid: id })) };
       }
     }
 
@@ -456,13 +534,13 @@ export class ProductsService {
     if (searchQuery && searchQuery.trim().length > 0) {
       matchStage.$or = [
         { name: { $regex: searchQuery, $options: 'i' } },
-        { description: { $regex: searchQuery, $options: 'i' } }
+        { description: { $regex: searchQuery, $options: 'i' } },
       ];
     }
 
-    // (Optional: We could include dynamic filters in match stage to narrow counts, 
-    // but usually faceted counts should show what's available *within the current category/search*, 
-    // even if some filters are currently active, though behavior varies by design. 
+    // (Optional: We could include dynamic filters in match stage to narrow counts,
+    // but usually faceted counts should show what's available *within the current category/search*,
+    // even if some filters are currently active, though behavior varies by design.
     // We will omit dynamicFilters from the match stage so the user sees all options in the category).
 
     // 3. Aggregate
@@ -470,19 +548,22 @@ export class ProductsService {
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
-    
+
     pipeline.push(
-      { $unwind: "$attributes" },
-      { 
+      { $unwind: '$attributes' },
+      {
         $group: {
-          _id: { filterKey: "$attributes.filterKey", value: "$attributes.value" },
-          count: { $sum: 1 }
-        }
-      }
+          _id: {
+            filterKey: '$attributes.filterKey',
+            value: '$attributes.value',
+          },
+          count: { $sum: 1 },
+        },
+      },
     );
 
     const result = await this.prisma.product.aggregateRaw({
-      pipeline
+      pipeline,
     });
 
     // Parse the Raw result
@@ -500,4 +581,3 @@ export class ProductsService {
     return facets;
   }
 }
-
