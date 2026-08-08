@@ -45,8 +45,30 @@ export class CategoriesService {
     });
   }
 
-  async findAll() {
-    return this.categoryRepository.findAll({});
+  async findAll(pageStr?: string, limitStr?: string) {
+    if (!pageStr && !limitStr) {
+      return this.categoryRepository.findAll({});
+    }
+
+    const page = pageStr ? parseInt(pageStr, 10) : 1;
+    const limit = limitStr ? parseInt(limitStr, 10) : 50;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.categoryRepository.findAll({ skip, take: limit }),
+      // Using prisma directly for count since repository doesn't have count method
+      (this.categoryRepository as any).prisma.category.count(),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: string) {
@@ -98,6 +120,12 @@ export class CategoriesService {
     }
     if (category.children.length > 0) {
       throw new ConflictException('Cannot delete category with children');
+    }
+    const productsCount = await (this.categoryRepository as any).prisma.product.count({
+      where: { categoryId: id },
+    });
+    if (productsCount > 0) {
+      throw new ConflictException('Cannot delete category with associated products');
     }
     return this.categoryRepository.delete(id);
   }
