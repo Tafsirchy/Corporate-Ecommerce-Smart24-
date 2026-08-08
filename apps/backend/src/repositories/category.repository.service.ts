@@ -24,25 +24,28 @@ export class CategoryRepository {
       cursor,
       where,
       orderBy,
-      include: { children: true }
+      include: { children: true },
     });
   }
 
   async findById(id: string) {
     return this.prisma.category.findUnique({
       where: { id },
-      include: { children: true, parent: true }
+      include: { children: true, parent: true },
     });
   }
 
   async findBySlug(slug: string) {
     return this.prisma.category.findUnique({
       where: { slug },
-      include: { children: true, parent: true }
+      include: { children: true, parent: true },
     });
   }
 
-  async update(id: string, data: Prisma.CategoryUpdateInput): Promise<Category> {
+  async update(
+    id: string,
+    data: Prisma.CategoryUpdateInput,
+  ): Promise<Category> {
     return this.prisma.category.update({
       where: { id },
       data,
