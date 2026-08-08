@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateReviewDto, UpdateReviewDto } from './dto/review.dto';
 
 @Injectable()
 export class ReviewsService {
@@ -25,12 +26,8 @@ export class ReviewsService {
     });
   }
 
-  async create(userId: string, createReviewDto: any) {
+  async create(userId: string, createReviewDto: CreateReviewDto) {
     const { productId, rating, comment, images } = createReviewDto;
-
-    if (typeof rating !== 'number' || rating < 1 || rating > 5) {
-      throw new BadRequestException('Rating must be a number between 1 and 5');
-    }
 
     const product = await this.prisma.product.findUnique({
       where: { id: productId },
@@ -57,7 +54,7 @@ export class ReviewsService {
         userId,
         productId,
         rating,
-        comment,
+        comment: comment || '',
         images: images || [],
         verifiedPurchase: !!orderItem,
       },
@@ -70,24 +67,44 @@ export class ReviewsService {
     return review;
   }
 
-  async findAllByProduct(productId: string) {
-    return this.prisma.review.findMany({
-      where: { productId },
-      include: {
-        user: { select: { name: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAllByProduct(productId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where: { productId },
+        skip,
+        take: limit,
+        include: { user: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.review.count({ where: { productId } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
-  async findUserReviews(userId: string) {
-    return this.prisma.review.findMany({
-      where: { userId },
-      include: {
-        product: { select: { id: true, name: true, slug: true, images: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findUserReviews(userId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        include: {
+          product: { select: { id: true, name: true, slug: true, images: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.review.count({ where: { userId } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async findPendingReviews(userId: string) {
@@ -138,7 +155,7 @@ export class ReviewsService {
     return Array.from(pendingProducts.values());
   }
 
-  async update(userId: string, reviewId: string, updateReviewDto: any) {
+  async update(userId: string, reviewId: string, updateReviewDto: UpdateReviewDto) {
     const review = await this.prisma.review.findUnique({
       where: { id: reviewId },
     });
@@ -147,12 +164,6 @@ export class ReviewsService {
       throw new ForbiddenException('You can only edit your own reviews');
 
     const { rating, comment, images } = updateReviewDto;
-    if (
-      rating !== undefined &&
-      (typeof rating !== 'number' || rating < 1 || rating > 5)
-    ) {
-      throw new BadRequestException('Rating must be a number between 1 and 5');
-    }
 
     const updated = await this.prisma.review.update({
       where: { id: reviewId },
@@ -174,6 +185,40 @@ export class ReviewsService {
 
     await this.prisma.review.delete({ where: { id: reviewId } });
     await this._updateProductRating(review.productId);
-    return { success: true };
+    return { message: 'Review deleted successfully' };
+  }
+
+  // --- Admin Endpoints ---
+
+  async findAllAdmin(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.review.findMany({
+        skip,
+        take: limit,
+        include: {
+          user: { select: { name: true, email: true } },
+          product: { select: { name: true, slug: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.review.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async removeAdmin(reviewId: string) {
+    const review = await this.prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+    if (!review) throw new NotFoundException('Review not found');
+
+    await this.prisma.review.delete({ where: { id: reviewId } });
+    await this._updateProductRating(review.productId);
+    return { message: 'Review deleted successfully by admin' };
   }
 }
