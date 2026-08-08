@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, apiClient } from "@/context/AuthContext";
 import { X } from "lucide-react";
 
 export default function SubscriptionsPage() {
@@ -25,11 +25,8 @@ export default function SubscriptionsPage() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans`);
-        if (res.ok) {
-          const data = await res.json();
-          setPlans(data.filter((p: any) => p.isActive));
-        }
+        const res = await apiClient.get('/subscriptions/plans');
+        setPlans(res.data.filter((p: any) => p.isActive));
       } catch (err) {
         console.error("Failed to fetch plans", err);
       } finally {
@@ -67,24 +64,12 @@ export default function SubscriptionsPage() {
         paymentMethod: 'MANUAL'
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/fixed`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        toast.success(`Successfully subscribed to ${selectedPlan.name}!`);
-        setSelectedPlan(null);
-        router.push("/my-account/subscriptions");
-      } else {
-        const err = await res.json();
-        toast.error(err.message || "Failed to create subscription");
-      }
-    } catch (error) {
+      await apiClient.post('/subscriptions/fixed', payload);
+      toast.success(`Successfully subscribed to ${selectedPlan.name}!`);
+      setSelectedPlan(null);
+      router.push("/my-account/subscriptions");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to create subscription");
       toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
