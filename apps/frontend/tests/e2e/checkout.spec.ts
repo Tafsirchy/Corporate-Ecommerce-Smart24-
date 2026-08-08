@@ -15,9 +15,9 @@ test.describe('E2E Checkout Flow', () => {
     const header = page.locator('header');
     await expect(header).toBeVisible();
 
-    // Verify navigation works by going to the products page
-    await page.goto('/products');
-    await expect(page).toHaveURL(/.*products/);
+    // Verify navigation works by going to the shop page
+    await page.goto('/shop');
+    await expect(page).toHaveURL(/.*shop/);
 
     // Verify that the cart opens
     await page.goto('/cart');
