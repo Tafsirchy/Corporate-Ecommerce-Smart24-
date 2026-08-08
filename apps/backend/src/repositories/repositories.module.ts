@@ -28,7 +28,7 @@ import { OfferRepository } from './offer.repository.service';
     AddressRepository,
     PaymentOptionRepository,
     ReturnRepositoryService,
-    OfferRepository
+    OfferRepository,
   ],
   exports: [
     UserRepository,
@@ -43,7 +43,7 @@ import { OfferRepository } from './offer.repository.service';
     AddressRepository,
     PaymentOptionRepository,
     ReturnRepositoryService,
-    OfferRepository
+    OfferRepository,
   ],
 })
-export class RepositoriesModule { }
+export class RepositoriesModule {}
