@@ -1,10 +1,26 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { SupportTicketsService } from './support-tickets.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role, SupportTicketStatus } from '@prisma/client';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { CreateSupportTicketDto } from './dto/create-support-ticket.dto';
 
 @ApiTags('Support Tickets')
@@ -13,11 +29,9 @@ export class SupportTicketsController {
   constructor(private readonly supportTicketsService: SupportTicketsService) {}
 
   @Post()
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @ApiOperation({ summary: 'Create a new support ticket' })
-  createTicket(
-    @Req() req: any,
-    @Body() body: CreateSupportTicketDto
-  ) {
+  createTicket(@Req() req: any, @Body() body: CreateSupportTicketDto) {
     // req.user might be undefined if this endpoint is open to guests.
     // If you want guests to be able to contact support, we can extract userId safely.
     const userId = req.user?.id;
@@ -33,14 +47,17 @@ export class SupportTicketsController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'status', required: false, enum: SupportTicketStatus })
-  getAllTickets(
-    @Req() req: any
-  ) {
+  getAllTickets(@Req() req: any) {
     const page = req.query.page ? parseInt(req.query.page, 10) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const search = req.query.search as string;
     const status = req.query.status as SupportTicketStatus;
-    return this.supportTicketsService.getAllTickets(page, limit, search, status);
+    return this.supportTicketsService.getAllTickets(
+      page,
+      limit,
+      search,
+      status,
+    );
   }
 
   @Get(':id')
@@ -59,7 +76,7 @@ export class SupportTicketsController {
   @ApiOperation({ summary: 'Update ticket status (Admin only)' })
   updateTicketStatus(
     @Param('id') id: string,
-    @Body('status') status: SupportTicketStatus
+    @Body('status') status: SupportTicketStatus,
   ) {
     return this.supportTicketsService.updateTicketStatus(id, status);
   }
