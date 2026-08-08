@@ -20,9 +20,9 @@ export class HeroContentController {
   constructor(private readonly heroContentService: HeroContentService) {}
 
   @Get()
-  findAll(@Query('activeOnly') activeOnly?: string) {
-    const isActiveOnly = activeOnly === 'true';
-    return this.heroContentService.findAll(isActiveOnly);
+  findAll(@Query() query: any) {
+    const isActiveOnly = query.activeOnly === 'true';
+    return this.heroContentService.findAll(isActiveOnly, query);
   }
 
   @Get(':id')
