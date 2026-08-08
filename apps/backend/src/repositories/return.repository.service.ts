@@ -13,10 +13,10 @@ export class ReturnRepositoryService {
         order: true,
         orderItem: {
           include: {
-            product: true
-          }
-        }
-      }
+            product: true,
+          },
+        },
+      },
     });
   }
 
@@ -25,15 +25,15 @@ export class ReturnRepositoryService {
       where: { userId },
       include: {
         order: {
-          select: { id: true, createdAt: true, status: true }
+          select: { id: true, createdAt: true, status: true },
         },
         orderItem: {
           include: {
-            product: true
-          }
-        }
+            product: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -44,20 +44,24 @@ export class ReturnRepositoryService {
         order: true,
         orderItem: {
           include: {
-            product: true
-          }
-        }
-      }
+            product: true,
+          },
+        },
+      },
     });
   }
 
-  async updateReturnStatus(id: string, status: ReturnStatus, refundAmount?: number) {
+  async updateReturnStatus(
+    id: string,
+    status: ReturnStatus,
+    refundAmount?: number,
+  ) {
     return this.prisma.returnRequest.update({
       where: { id },
-      data: { 
+      data: {
         status,
-        ...(refundAmount !== undefined && { refundAmount })
-      }
+        ...(refundAmount !== undefined && { refundAmount }),
+      },
     });
   }
 }
