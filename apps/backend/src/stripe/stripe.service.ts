@@ -11,7 +11,11 @@ export class StripeService {
     });
   }
 
-  async createPaymentIntent(amount: number, currency: string = 'bdt', orderId: string) {
+  async createPaymentIntent(
+    amount: number,
+    currency: string = 'bdt',
+    orderId: string,
+  ) {
     return this.stripe.paymentIntents.create({
       amount: amount * 100, // Stripe expects amount in smallest currency unit (poisha/cents)
       currency,
@@ -24,6 +28,10 @@ export class StripeService {
     if (!webhookSecret) {
       throw new Error('Stripe webhook secret is not set');
     }
-    return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret,
+    );
   }
 }
