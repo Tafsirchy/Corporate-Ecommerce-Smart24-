@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { EmailService } from '../common/email/email.service';
 import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { CartRepositoryService } from '../repositories/cart.repository.service';
@@ -7,8 +11,12 @@ import { StripeService } from '../stripe/stripe.service';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoyaltyService } from '../loyalty/loyalty.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OrderCreatedEvent } from './events/order-created.event';
 
 import { PaymentOptionRepository } from '../repositories/payment-option.repository.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { PricingService } from './pricing.service';
 
 @Injectable()
 export class OrdersService {
@@ -20,90 +28,27 @@ export class OrdersService {
     private prisma: PrismaService,
     private paymentOptionRepo: PaymentOptionRepository,
     private loyaltyService: LoyaltyService,
-    private emailService: EmailService
-  ) { }
+    private emailService: EmailService,
+    private eventEmitter: EventEmitter2,
+    private pricingService: PricingService,
+  ) {}
 
-  async createOrderFromCart(userId: string | undefined, sessionId: string | undefined, data: {
-    shippingAddress: string;
-    contactNumber: string;
-    saveAddress?: boolean;
-    paymentMethod: PaymentMethod;
-    paymentTrxId?: string;
-    paymentProofUrl?: string;
-    paymentAccountNumber?: string;
-    promoCode?: string;
-    guestEmail?: string;
-    guestName?: string;
-  }) {
+  async createOrderFromCart(
+    userId: string | undefined,
+    sessionId: string | undefined,
+    data: CreateOrderDto,
+  ) {
     if (!userId && !sessionId) throw new BadRequestException('Session missing');
-    if (!userId && !data.guestEmail) throw new BadRequestException('Guest email is required');
+    if (!userId && !data.guestEmail)
+      throw new BadRequestException('Guest email is required');
 
     const cart = await this.cartRepo.getCart(userId, sessionId);
     if (!cart || cart.items.length === 0) {
       throw new BadRequestException('Cart is empty');
     }
 
-    let totalAmount = 0;
-    const orderItems: any[] = [];
+    const { totalAmount, deliveryCharge, orderItems } = await this.pricingService.calculateCartTotals(userId, cart.items);
 
-    // Fetch tier discount if business
-    let userTierDiscount = 0;
-    let pricingRules: any[] = [];
-    if (userId) {
-      const user = await this.prisma.user.findUnique({
-        where: { id: userId },
-        include: { businessProfile: true }
-      });
-      if (user?.role === 'BUSINESS' && user.businessProfile) {
-        const tier = user.businessProfile.membershipTier;
-        if (tier === 'SILVER') userTierDiscount = 5;
-        if (tier === 'GOLD') userTierDiscount = 10;
-        if (tier === 'PLATINUM') userTierDiscount = 15;
-        if (tier === 'DIAMOND') userTierDiscount = 20;
-        
-        // Fetch Dynamic Pricing Rules
-        const now = new Date();
-        pricingRules = await this.prisma.pricingRule.findMany({
-          where: {
-            effectiveFrom: { lte: now },
-            OR: [{ effectiveTo: null }, { effectiveTo: { gte: now } }],
-            AND: [
-              { OR: [{ businessType: user.businessProfile.businessType }, { businessType: null }] },
-              { OR: [{ verificationLevel: user.businessProfile.verificationLevel }, { verificationLevel: null }] }
-            ]
-          }
-        });
-      }
-    }
-
-    for (const item of cart.items) {
-      // Validate stock
-      if (item.product.stock < item.quantity) {
-        throw new BadRequestException(`Insufficient stock for product ${item.product.name}`);
-      }
-
-      let applicableDiscount = userTierDiscount;
-      for (const rule of pricingRules) {
-        if (!rule.categoryId || rule.categoryId === (item.product as any).categoryId) {
-          if (rule.discountPercent > applicableDiscount) {
-            applicableDiscount = rule.discountPercent;
-          }
-        }
-      }
-
-      const discountedPrice = item.product.price * (1 - applicableDiscount / 100);
-      totalAmount += discountedPrice * item.quantity;
-
-      orderItems.push({
-        productId: item.productId,
-        quantity: item.quantity,
-        priceAtPurchase: item.product.price
-      });
-    }
-
-    // Determine delivery charge based on simple logic for now
-    const deliveryCharge = 100; // Fixed delivery charge logic
-    
     let grandTotal = totalAmount + deliveryCharge;
     let finalDiscountAmount = 0;
     let appliedCouponId: string | undefined;
@@ -112,12 +57,22 @@ export class OrdersService {
     const order = await this.prisma.$transaction(async (tx) => {
       let discountAmount = 0;
       if (data.promoCode) {
-        if (!userId) throw new BadRequestException('Promo codes are only available for registered users');
-        const validation = await this.validatePromo(userId, data.promoCode, totalAmount, tx);
+        if (!userId)
+          throw new BadRequestException(
+            'Promo codes are only available for registered users',
+          );
+        const validation = await this.pricingService.validatePromo(
+          userId,
+          data.promoCode,
+          totalAmount,
+          tx,
+        );
         if (validation.valid) {
           discountAmount = validation.discountAmount;
-          if (validation.type === 'COUPON') appliedCouponId = validation.couponId;
-          if (validation.type === 'REWARD') appliedUserRewardId = validation.userRewardId;
+          if (validation.type === 'COUPON')
+            appliedCouponId = validation.couponId;
+          if (validation.type === 'REWARD')
+            appliedUserRewardId = validation.userRewardId;
         }
       }
 
@@ -126,34 +81,42 @@ export class OrdersService {
       // Ensure NET_30 is only for BUSINESS users and check Credit Limit
       let businessProfileId: string | undefined;
       if (data.paymentMethod === 'NET_30') {
-        if (!userId) throw new BadRequestException('NET_30 requires an active business account');
+        if (!userId)
+          throw new BadRequestException(
+            'NET_30 requires an active business account',
+          );
         const user = await tx.user.findUnique({
           where: { id: userId },
-          include: { businessProfile: true }
+          include: { businessProfile: true },
         });
         if (user?.role !== 'BUSINESS' || !user.businessProfile) {
-          throw new BadRequestException('NET_30 is only available for verified business accounts');
+          throw new BadRequestException(
+            'NET_30 is only available for verified business accounts',
+          );
         }
-        
-        const availableCredit = user.businessProfile.creditLimit - user.businessProfile.usedCredit;
+
+        const availableCredit =
+          user.businessProfile.creditLimit - user.businessProfile.usedCredit;
         if (grandTotal > availableCredit) {
-          throw new BadRequestException(`Insufficient credit limit. Available: ৳${availableCredit}`);
+          throw new BadRequestException(
+            `Insufficient credit limit. Available: ৳${availableCredit}`,
+          );
         }
-        
+
         businessProfileId = user.businessProfile.id;
-        
+
         // Increment used credit
         await tx.businessProfile.update({
           where: { id: businessProfileId },
-          data: { usedCredit: { increment: grandTotal } }
+          data: { usedCredit: { increment: grandTotal } },
         });
       }
 
       const createdOrder = await tx.order.create({
         data: {
           userId: userId || null,
-          guestEmail: !userId ? (data.guestEmail || null) : null,
-          guestName: !userId ? (data.guestName || null) : null,
+          guestEmail: !userId ? data.guestEmail || null : null,
+          guestName: !userId ? data.guestName || null : null,
           totalAmount: grandTotal,
           deliveryCharge,
           discountAmount,
@@ -165,37 +128,39 @@ export class OrdersService {
           paymentTrxId: data.paymentTrxId || null,
           paymentProofUrl: data.paymentProofUrl || null,
           items: {
-            create: orderItems
-          }
-        }
+            create: orderItems,
+          },
+        },
       });
 
-
-
-      // Deduct stock
+      // Deduct stock safely with atomic concurrency check
       for (const item of cart.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.quantity } }
+        const updateResult = await tx.product.updateMany({
+          where: {
+            id: item.productId,
+            stock: { gte: item.quantity },
+          },
+          data: { stock: { decrement: item.quantity } },
         });
-      }
 
-      // Clear cart
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id }
-      });
+        if (updateResult.count === 0) {
+          throw new BadRequestException(
+            `Insufficient stock for product ${item.product.name} during checkout.`,
+          );
+        }
+      }
 
       // Update coupon or reward usage
       if (appliedCouponId) {
         await tx.coupon.update({
           where: { id: appliedCouponId },
-          data: { currentUses: { increment: 1 } }
+          data: { currentUses: { increment: 1 } },
         });
       }
       if (appliedUserRewardId) {
         await tx.userReward.update({
           where: { id: appliedUserRewardId },
-          data: { status: 'USED', usedAt: new Date() }
+          data: { status: 'USED', usedAt: new Date() },
         });
       }
 
@@ -204,58 +169,57 @@ export class OrdersService {
 
     let clientSecret: string | null = null;
     if (data.paymentMethod === 'STRIPE') {
-      const paymentIntent = await this.stripeService.createPaymentIntent(grandTotal, 'bdt', order.id);
+      const paymentIntent = await this.stripeService.createPaymentIntent(
+        grandTotal,
+        'bdt',
+        order.id,
+      );
       clientSecret = paymentIntent.client_secret;
     } else if (data.paymentAccountNumber && userId) {
       // Auto-save the payment option for non-STRIPE payments if an account number is provided
-      const existing = await this.paymentOptionRepo.findByUserIdAndProviderAndAccountNumber(
-        userId,
-        data.paymentMethod,
-        data.paymentAccountNumber
-      );
+      const existing =
+        await this.paymentOptionRepo.findByUserIdAndProviderAndAccountNumber(
+          userId,
+          data.paymentMethod,
+          data.paymentAccountNumber,
+        );
       if (!existing) {
         await this.paymentOptionRepo.create({
           provider: data.paymentMethod,
           accountNumber: data.paymentAccountNumber,
-          user: { connect: { id: userId } }
+          user: { connect: { id: userId } },
         });
       }
     }
 
-    // Send Confirmation Email
-    let emailToSendTo = data.guestEmail;
-    let userName = data.guestName || 'Guest';
-    
-    if (userId) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (user) {
-        emailToSendTo = user.email;
-        userName = user.name || 'User';
-      }
-    }
-
-    if (emailToSendTo) {
-      this.emailService.sendOrderConfirmationEmail(emailToSendTo, order.id, grandTotal, userName).catch(err => {
-        console.error('Failed to send order confirmation email:', err);
-      });
-    }
+    // Emit event for post-checkout asynchronous processing
+    this.eventEmitter.emit(
+      'order.created',
+      new OrderCreatedEvent(
+        order,
+        cart.id,
+        userId,
+        data.guestEmail,
+        data.guestName,
+      ),
+    );
 
     // Auto-save address for registered users only, if requested
     if (userId && data.saveAddress === true) {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
       const existingAddress = await this.prisma.address.findFirst({
-        where: { userId, address: data.shippingAddress }
+        where: { userId, address: data.shippingAddress },
       });
       if (!existingAddress) {
         await this.prisma.address.create({
           data: {
             userId,
-            fullName: userName,
+            fullName: user?.name || data.guestName || 'User',
             address: data.shippingAddress,
             postcode: '0000',
             phone: data.contactNumber || '',
-            label: 'HOME'
-          }
+            label: 'HOME',
+          },
         });
       }
     }
@@ -263,77 +227,19 @@ export class OrdersService {
     return { order, clientSecret };
   }
 
-  async validatePromo(userId: string | undefined, promoCode: string, cartTotal: number, txClient?: any) {
-    if (!userId) throw new BadRequestException('Promo codes are only available for registered users');
+  async validatePromo(
+    userId: string | undefined,
+    promoCode: string,
+    cartTotal: number,
+  ) {
+    if (!userId)
+      throw new BadRequestException(
+        'Promo codes are only available for registered users',
+      );
     if (!promoCode) {
       throw new BadRequestException('Promo code is required');
     }
-
-    const prismaClient = txClient || this.prisma;
-
-    // 1. Check Coupon
-    const coupon = await prismaClient.coupon.findFirst({ 
-      where: { code: { equals: promoCode, mode: 'insensitive' } } 
-    });
-    if (coupon) {
-      if (coupon.status !== 'ACTIVE') throw new BadRequestException('Coupon is inactive');
-      if (coupon.usageLimit && coupon.currentUses >= coupon.usageLimit) throw new BadRequestException('Coupon usage limit reached');
-      if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) throw new BadRequestException('Coupon has expired');
-      if (coupon.minOrderAmount && cartTotal < coupon.minOrderAmount) throw new BadRequestException(`Minimum order amount of ৳${coupon.minOrderAmount} required`);
-      
-      let discountAmount = 0;
-      if (coupon.discountType === 'PERCENTAGE') {
-        discountAmount = (cartTotal * coupon.discountValue) / 100;
-        if (coupon.maxDiscount && discountAmount > coupon.maxDiscount) {
-          discountAmount = coupon.maxDiscount;
-        }
-      } else {
-        discountAmount = coupon.discountValue;
-      }
-      
-      discountAmount = Math.min(discountAmount, cartTotal);
-      return { valid: true, type: 'COUPON', discountAmount, couponId: coupon.id };
-    }
-
-    // 2. Check UserReward
-    const userReward = await prismaClient.userReward.findFirst({
-      where: { userId, code: { equals: promoCode, mode: 'insensitive' }, status: 'AVAILABLE' },
-      include: { reward: true }
-    });
-
-    if (userReward) {
-      if (userReward.expiresAt && new Date(userReward.expiresAt) < new Date()) {
-        throw new BadRequestException('Reward ticket has expired');
-      }
-
-      let discountAmount = 0;
-      if (userReward.reward.type === 'COUPON' && userReward.reward.couponId) {
-        const linkedCoupon = await prismaClient.coupon.findUnique({
-          where: { id: userReward.reward.couponId }
-        });
-
-        if (linkedCoupon) {
-          if (linkedCoupon.minOrderAmount && cartTotal < linkedCoupon.minOrderAmount) {
-            throw new BadRequestException(`Minimum order amount of ৳${linkedCoupon.minOrderAmount} required for this ticket`);
-          }
-          if (linkedCoupon.discountType === 'PERCENTAGE') {
-            discountAmount = (cartTotal * linkedCoupon.discountValue) / 100;
-            if (linkedCoupon.maxDiscount && discountAmount > linkedCoupon.maxDiscount) {
-              discountAmount = linkedCoupon.maxDiscount;
-            }
-          } else {
-            discountAmount = linkedCoupon.discountValue;
-          }
-        }
-      } else {
-        throw new BadRequestException('This type of reward cannot be applied as a promo code');
-      }
-
-      discountAmount = Math.min(discountAmount, cartTotal);
-      return { valid: true, type: 'REWARD', discountAmount, userRewardId: userReward.id };
-    }
-
-    throw new BadRequestException('Invalid promo code or ticket');
+    return this.pricingService.validatePromo(userId, promoCode, cartTotal);
   }
 
   async getUserOrders(userId: string, pageStr?: string, limitStr?: string) {
@@ -344,15 +250,19 @@ export class OrdersService {
     const limit = limitStr ? parseInt(limitStr, 10) : 20;
     const skip = (page - 1) * limit;
 
-    const result = await this.orderRepo.findOrdersByUser(userId, skip, limit) as { data: any[], total: number };
+    const result = (await this.orderRepo.findOrdersByUser(
+      userId,
+      skip,
+      limit,
+    )) as { data: any[]; total: number };
     return {
       data: result.data,
       meta: {
         total: result.total,
         page,
         limit,
-        totalPages: Math.ceil(result.total / limit)
-      }
+        totalPages: Math.ceil(result.total / limit),
+      },
     };
   }
 
@@ -380,37 +290,37 @@ export class OrdersService {
     const updatedOrder = await this.prisma.$transaction(async (tx) => {
       const cancelled = await tx.order.update({
         where: { id: orderId },
-        data: { 
+        data: {
           status: 'CANCELLED',
-          cancellationReason: reason
-        }
+          cancellationReason: reason,
+        },
       });
-      
+
       for (const item of order.items) {
         await tx.product.update({
           where: { id: item.productId },
-          data: { stock: { increment: item.quantity } }
+          data: { stock: { increment: item.quantity } },
         });
       }
-      
+
       // Refund NET_30 credit
       if (order.paymentMethod === 'NET_30' && order.userId) {
         const user = await tx.user.findUnique({
           where: { id: order.userId },
-          include: { businessProfile: true }
+          include: { businessProfile: true },
         });
         if (user && user.businessProfile) {
           await tx.businessProfile.update({
             where: { id: user.businessProfile.id },
-            data: { usedCredit: { decrement: order.totalAmount } }
+            data: { usedCredit: { decrement: order.totalAmount } },
           });
         }
         await tx.businessInvoice.updateMany({
           where: { orderId: order.id },
-          data: { status: 'VOID' }
+          data: { status: 'VOID' },
         });
       }
-      
+
       return cancelled;
     });
 
@@ -425,15 +335,18 @@ export class OrdersService {
     const limit = limitStr ? parseInt(limitStr, 10) : 20;
     const skip = (page - 1) * limit;
 
-    const result = await this.orderRepo.findAllOrders(skip, limit) as { data: any[], total: number };
+    const result = (await this.orderRepo.findAllOrders(skip, limit)) as {
+      data: any[];
+      total: number;
+    };
     return {
       data: result.data,
       meta: {
         total: result.total,
         page,
         limit,
-        totalPages: Math.ceil(result.total / limit)
-      }
+        totalPages: Math.ceil(result.total / limit),
+      },
     };
   }
 
@@ -454,34 +367,34 @@ export class OrdersService {
       updatedOrder = await this.prisma.$transaction(async (tx) => {
         const result = await tx.order.update({
           where: { id: orderId },
-          data: { status }
+          data: { status },
         });
-        
+
         for (const item of order.items) {
           await tx.product.update({
             where: { id: item.productId },
-            data: { stock: { increment: item.quantity } }
+            data: { stock: { increment: item.quantity } },
           });
         }
-        
+
         // Refund NET_30 credit
         if (order.paymentMethod === 'NET_30' && order.userId) {
           const user = await tx.user.findUnique({
             where: { id: order.userId },
-            include: { businessProfile: true }
+            include: { businessProfile: true },
           });
           if (user && user.businessProfile) {
             await tx.businessProfile.update({
               where: { id: user.businessProfile.id },
-              data: { usedCredit: { decrement: order.totalAmount } }
+              data: { usedCredit: { decrement: order.totalAmount } },
             });
           }
           await tx.businessInvoice.updateMany({
             where: { orderId: order.id },
-            data: { status: 'VOID' }
+            data: { status: 'VOID' },
           });
         }
-        
+
         return result;
       });
     } else {
@@ -489,14 +402,18 @@ export class OrdersService {
     }
 
     // Generate Invoice for NET_30 upon fulfillment processing
-    if (status === 'PROCESSING' && order.paymentMethod === 'NET_30' && order.userId) {
+    if (
+      status === 'PROCESSING' &&
+      order.paymentMethod === 'NET_30' &&
+      order.userId
+    ) {
       const user = await this.prisma.user.findUnique({
         where: { id: order.userId },
-        include: { businessProfile: true }
+        include: { businessProfile: true },
       });
       if (user && user.businessProfile) {
         const existingInvoice = await this.prisma.businessInvoice.findUnique({
-          where: { orderId: order.id }
+          where: { orderId: order.id },
         });
         if (!existingInvoice) {
           await this.prisma.businessInvoice.create({
@@ -504,29 +421,31 @@ export class OrdersService {
               businessId: user.businessProfile.id,
               orderId: order.id,
               totalAmount: order.totalAmount,
-              status: 'GENERATED'
-            }
+              status: 'GENERATED',
+            },
           });
         }
       }
     }
-    
+
     // Send delivery email
     if (status === 'DELIVERED') {
       const orderData = await this.orderRepo.findOrderById(orderId);
       const email = orderData?.guestEmail || orderData?.user?.email;
       if (orderData && email) {
-        this.emailService.sendOrderDeliveredEmail(email, orderId).catch(err => {
-          console.error('Failed to send delivery email:', err);
-        });
+        this.emailService
+          .sendOrderDeliveredEmail(email, orderId)
+          .catch((err) => {
+            console.error('Failed to send delivery email:', err);
+          });
       }
 
       // Loyalty Ecosystem Hook
-      await this.loyaltyService.processOrderCompletion(orderId).catch(err => {
+      await this.loyaltyService.processOrderCompletion(orderId).catch((err) => {
         console.error(`Failed to process loyalty for order ${orderId}:`, err);
       });
     }
 
-    return order;
+    return updatedOrder;
   }
 }
