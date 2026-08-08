@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -15,11 +19,13 @@ export class RfqService {
     }
 
     if (data.productItems && Array.isArray(data.productItems)) {
-      const productIds = data.productItems.map((item: any) => item.productId).filter(Boolean);
+      const productIds = data.productItems
+        .map((item: any) => item.productId)
+        .filter(Boolean);
       if (productIds.length > 0) {
         const foundProducts = await this.prisma.product.findMany({
           where: { id: { in: productIds } },
-          select: { id: true }
+          select: { id: true },
         });
         if (foundProducts.length !== productIds.length) {
           throw new BadRequestException('One or more product IDs are invalid');
@@ -35,8 +41,8 @@ export class RfqService {
         expectedDate: data.expectedDate,
         specFileUrl: data.specFileUrl,
         // SLA is typically 24 hours from submission
-        slaDeadline: new Date(Date.now() + 24 * 60 * 60 * 1000)
-      }
+        slaDeadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
     });
   }
 
@@ -51,7 +57,7 @@ export class RfqService {
 
     return this.prisma.businessRFQ.findMany({
       where: { businessId: businessProfile.id },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -60,9 +66,11 @@ export class RfqService {
       orderBy: { createdAt: 'desc' },
       include: {
         businessProfile: {
-          include: { user: { select: { email: true, name: true, phone: true } } }
-        }
-      }
+          include: {
+            user: { select: { email: true, name: true, phone: true } },
+          },
+        },
+      },
     });
   }
 
@@ -74,8 +82,8 @@ export class RfqService {
       where: { id },
       data: {
         status,
-        ...(adminNotes !== undefined && { adminNotes })
-      }
+        ...(adminNotes !== undefined && { adminNotes }),
+      },
     });
   }
 }
