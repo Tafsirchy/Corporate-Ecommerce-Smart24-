@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { QuotationRepository } from '../repositories/quotation.repository.service';
 
 @Injectable()
@@ -21,12 +21,46 @@ export class QuotationsService {
     });
   }
 
-  async getMyQuotations(userId: string) {
-    return this.quotationRepo.findByUserId(userId);
+  async getMyQuotations(userId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      (this.quotationRepo as any).prisma.quotation.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      (this.quotationRepo as any).prisma.quotation.count({ where: { userId } }),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
-  async getAllQuotations() {
-    return this.quotationRepo.findAll();
+  async getAllQuotations(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      (this.quotationRepo as any).prisma.quotation.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { name: true, email: true } } },
+      }),
+      (this.quotationRepo as any).prisma.quotation.count(),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async respondToQuotation(
@@ -48,6 +82,9 @@ export class QuotationsService {
     const quote = await this.quotationRepo.findById(id);
     if (!quote) throw new NotFoundException('Quotation not found');
     if (quote.userId !== userId) throw new NotFoundException('Not authorized');
+    if (quote.status !== 'QUOTED') {
+      throw new ConflictException('You can only accept quotations that have been quoted by an admin');
+    }
 
     // In a full flow, accepting this would generate a PENDING Order based on the offeredPrice.
     // For now, we simply update the status to ACCEPTED.
@@ -58,6 +95,9 @@ export class QuotationsService {
     const quote = await this.quotationRepo.findById(id);
     if (!quote) throw new NotFoundException('Quotation not found');
     if (quote.userId !== userId) throw new NotFoundException('Not authorized');
+    if (quote.status !== 'QUOTED' && quote.status !== 'PENDING') {
+      throw new ConflictException('You cannot reject a quotation in its current status');
+    }
 
     return this.quotationRepo.updateStatus(id, { status: 'REJECTED' });
   }
