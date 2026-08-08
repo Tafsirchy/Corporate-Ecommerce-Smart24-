@@ -37,25 +37,25 @@ export class SavedListController {
 
   @Post()
   async create(@Req() req: any, @Body() createSavedListDto: any) {
-    const businessId = await this.getBusinessId(req.user.id);
+    const businessId = await this.getBusinessId((req.user?.id || req.user?.userId || req.user?.sub));
     return this.savedListService.create(createSavedListDto, businessId);
   }
 
   @Get()
   async findAll(@Req() req: any) {
-    const businessId = await this.getBusinessId(req.user.id);
+    const businessId = await this.getBusinessId((req.user?.id || req.user?.userId || req.user?.sub));
     return this.savedListService.findAllByBusiness(businessId);
   }
 
   @Get(':id')
   async findOne(@Req() req: any, @Param('id') id: string) {
-    const businessId = await this.getBusinessId(req.user.id);
+    const businessId = await this.getBusinessId((req.user?.id || req.user?.userId || req.user?.sub));
     return this.savedListService.findOne(id, businessId);
   }
 
   @Delete(':id')
   async remove(@Req() req: any, @Param('id') id: string) {
-    const businessId = await this.getBusinessId(req.user.id);
+    const businessId = await this.getBusinessId((req.user?.id || req.user?.userId || req.user?.sub));
     return this.savedListService.remove(id, businessId);
   }
 }
