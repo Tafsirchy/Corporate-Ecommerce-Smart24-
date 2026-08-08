@@ -10,27 +10,34 @@ export class MembershipsService {
   async evaluateUserMembership(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { membership: true }
+      include: { membership: true },
     });
 
     if (!user) return null;
 
     // Get all membership levels ordered by requiredAmount DESC
     const levels = await this.prisma.membershipLevel.findMany({
-      orderBy: { requiredAmount: 'desc' }
+      orderBy: { requiredAmount: 'desc' },
     });
 
     // Find the highest level the user qualifies for
-    const qualifiedLevel = levels.find(l => user.lifetimeSpent >= l.requiredAmount);
+    const qualifiedLevel = levels.find(
+      (l) => user.lifetimeSpent >= l.requiredAmount,
+    );
 
     if (qualifiedLevel) {
       // Check if upgrade is needed
-      if (!user.membershipId || (user.membership && qualifiedLevel.priority > user.membership.priority)) {
-        this.logger.log(`Upgrading user ${userId} to membership ${qualifiedLevel.name}`);
-        
+      if (
+        !user.membershipId ||
+        (user.membership && qualifiedLevel.priority > user.membership.priority)
+      ) {
+        this.logger.log(
+          `Upgrading user ${userId} to membership ${qualifiedLevel.name}`,
+        );
+
         await this.prisma.user.update({
           where: { id: userId },
-          data: { membershipId: qualifiedLevel.id }
+          data: { membershipId: qualifiedLevel.id },
         });
 
         // Send Notification
@@ -39,8 +46,8 @@ export class MembershipsService {
             userId: userId,
             title: 'Membership Upgraded! 🎉',
             message: `Congratulations! You have been upgraded to the ${qualifiedLevel.name} tier.`,
-            type: 'MEMBERSHIP_UPGRADE'
-          }
+            type: 'MEMBERSHIP_UPGRADE',
+          },
         });
 
         return qualifiedLevel;
@@ -52,7 +59,7 @@ export class MembershipsService {
   // Admin Methods
   async getAllLevels() {
     return this.prisma.membershipLevel.findMany({
-      orderBy: { priority: 'asc' }
+      orderBy: { priority: 'asc' },
     });
   }
 
