@@ -31,7 +31,7 @@ export default function AdminPricingRulesPage() {
       // Force cache eviction and fetch fresh data
       await apiClient.storage.remove('pricing-rules-list');
       const res = await apiClient.get('/pricing-rule', { id: 'pricing-rules-list' });
-      setRules(res.data);
+      setRules(res.data.data || res.data);
     } catch (err: any) {
       toast.error('Failed to fetch pricing rules');
     } finally {
