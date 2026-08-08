@@ -19,7 +19,13 @@ export class SettingsService {
     });
   }
 
-  async getAllSettings() {
-    return this.prisma.setting.findMany();
+  async getAllSettings(page: number = 1, limit: number = 50) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.setting.findMany({ skip, take: limit }),
+      this.prisma.setting.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 }
