@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+  Req,
+} from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -34,9 +46,20 @@ export class ProductsController {
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
     @Query('rating') rating?: string,
-    @Query('brands') brands?: string
+    @Query('brands') brands?: string,
   ) {
-    return this.productsService.findAll(page, limit, sort, isFlashSale, categoryId, dynamicFilters, minPrice, maxPrice, rating, brands);
+    return this.productsService.findAll(
+      page,
+      limit,
+      sort,
+      isFlashSale,
+      categoryId,
+      dynamicFilters,
+      minPrice,
+      maxPrice,
+      rating,
+      brands,
+    );
   }
 
   @Get('facets')
@@ -44,13 +67,15 @@ export class ProductsController {
   getFacets(
     @Query('categoryId') categoryId?: string,
     @Query('q') q?: string,
-    @Query('dynamicFilters') dynamicFilters?: string
+    @Query('dynamicFilters') dynamicFilters?: string,
   ) {
     return this.productsService.getFacetedCounts(categoryId, q, dynamicFilters);
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Search products by title, description, or category' })
+  @ApiOperation({
+    summary: 'Search products by title, description, or category',
+  })
   search(
     @Query('q') query: string,
     @Query('page') page?: string,
@@ -59,12 +84,24 @@ export class ProductsController {
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
     @Query('rating') rating?: string,
-    @Query('brands') brands?: string
+    @Query('brands') brands?: string,
   ) {
     if (!query || query.trim().length === 0) {
-      return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 0 } };
+      return {
+        data: [],
+        meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
+      };
     }
-    return this.productsService.search(query.trim(), page, limit, dynamicFilters, minPrice, maxPrice, rating, brands);
+    return this.productsService.search(
+      query.trim(),
+      page,
+      limit,
+      dynamicFilters,
+      minPrice,
+      maxPrice,
+      rating,
+      brands,
+    );
   }
 
   @Get('slug/:slug')
@@ -80,8 +117,13 @@ export class ProductsController {
   }
 
   @Post(':id/alert')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @ApiOperation({ summary: 'Subscribe to back-in-stock alerts' })
-  subscribeToAlert(@Param('id') id: string, @Body('email') email: string, @Req() req: any) {
+  subscribeToAlert(
+    @Param('id') id: string,
+    @Body('email') email: string,
+    @Req() req: any,
+  ) {
     return this.productsService.subscribeToAlert(id, email, req.user?.id);
   }
 
