@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   Res,
+  Query,
 } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,15 +28,15 @@ export class InvoiceController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.BUSINESS)
   @Get('my-invoices')
-  async getMyInvoices(@Req() req: any) {
+  async getMyInvoices(@Req() req: any, @Query() query: any) {
     const user = await this.prisma.user.findUnique({
-      where: { id: req.user.id },
+      where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
       include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
-      return [];
+      return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
     }
-    return this.invoiceService.findAllByBusiness(user.businessProfile.id);
+    return this.invoiceService.findAllByBusiness(user.businessProfile.id, query);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -48,8 +49,8 @@ export class InvoiceController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Get('admin/all')
-  findAll() {
-    return this.invoiceService.findAll();
+  findAll(@Query() query: any) {
+    return this.invoiceService.findAll(query);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -66,7 +67,7 @@ export class InvoiceController {
     // Check if BUSINESS user is authorized to view this invoice
     if (req.user.role === 'BUSINESS') {
       const user = await this.prisma.user.findUnique({
-        where: { id: req.user.id },
+        where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
         include: { businessProfile: true },
       });
       const invoice = await this.invoiceService.findOne(id);
