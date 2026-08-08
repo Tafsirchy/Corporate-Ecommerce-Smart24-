@@ -10,6 +10,7 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { PricingRuleService } from './pricing-rule.service';
 import { CreatePricingRuleDto } from './dto/create-pricing-rule.dto';
@@ -28,12 +29,12 @@ export class PricingRuleController {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Req() req: any, @Body() createPricingRuleDto: CreatePricingRuleDto) {
-    return this.pricingRuleService.create(createPricingRuleDto, req.user.id);
+    return this.pricingRuleService.create(createPricingRuleDto, (req.user?.id || req.user?.userId || req.user?.sub));
   }
 
   @Get()
-  findAll() {
-    return this.pricingRuleService.findAll();
+  findAll(@Query() query: any) {
+    return this.pricingRuleService.findAll(query);
   }
 
   @Get(':id')
@@ -51,7 +52,7 @@ export class PricingRuleController {
     return this.pricingRuleService.update(
       id,
       updatePricingRuleDto,
-      req.user.id,
+      (req.user?.id || req.user?.userId || req.user?.sub),
     );
   }
 
