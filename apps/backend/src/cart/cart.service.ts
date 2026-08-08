@@ -177,8 +177,10 @@ export class CartService {
         // Note: Prisma does not easily allow deleting the Cart record without breaking items if we don't clear items first
         // But since we did clearCart, we can delete the guest cart
         try {
-          // This assumes a delete method exists or we can just leave it empty
-        } catch (e) {}
+          await this.cartRepo.deleteCart(guestCart.id);
+        } catch (e) {
+          console.error('Failed to delete guest cart', e);
+        }
       }
     }
 
