@@ -14,28 +14,31 @@ export class QuotationRepository {
     return this.prisma.quotation.findMany({
       where: { userId },
       include: { product: true },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async findAll(): Promise<Quotation[]> {
     return this.prisma.quotation.findMany({
       include: { user: true, product: true },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async findById(id: string): Promise<Quotation | null> {
     return this.prisma.quotation.findUnique({
-      where: { id }
+      where: { id },
     });
   }
 
-  async updateStatus(id: string, data: Prisma.QuotationUpdateInput): Promise<Quotation> {
+  async updateStatus(
+    id: string,
+    data: Prisma.QuotationUpdateInput,
+  ): Promise<Quotation> {
     return this.prisma.quotation.update({
       where: { id },
       data,
-      include: { product: true, user: true }
+      include: { product: true, user: true },
     });
   }
 }
