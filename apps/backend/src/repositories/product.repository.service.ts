@@ -26,14 +26,12 @@ export class ProductRepository {
       orderBy,
       include: {
         category: true,
-        brand: true
-      }
+        brand: true,
+      },
     });
   }
 
-  async count(params: {
-    where?: Prisma.ProductWhereInput;
-  }): Promise<number> {
+  async count(params: { where?: Prisma.ProductWhereInput }): Promise<number> {
     const { where } = params;
     return this.prisma.product.count({ where });
   }
@@ -43,8 +41,8 @@ export class ProductRepository {
       where: { id },
       include: {
         category: true,
-        brand: true
-      }
+        brand: true,
+      },
     });
   }
 
@@ -53,8 +51,8 @@ export class ProductRepository {
       where: { slug },
       include: {
         category: true,
-        brand: true
-      }
+        brand: true,
+      },
     });
   }
 
