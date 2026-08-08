@@ -7,7 +7,9 @@ describe('LoyaltyController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LoyaltyController],
-    }).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     controller = module.get<LoyaltyController>(LoyaltyController);
   });
