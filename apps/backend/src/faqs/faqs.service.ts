@@ -5,11 +5,19 @@ import { PrismaService } from '../prisma/prisma.service';
 export class FaqsService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllFaqs() {
-    return this.prisma.faq.findMany({
-      where: { isActive: true },
-      orderBy: { order: 'asc' },
-    });
+  async getAllFaqs(page: number = 1, limit: number = 50) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.faq.findMany({
+        where: { isActive: true },
+        skip,
+        take: limit,
+        orderBy: { order: 'asc' },
+      }),
+      this.prisma.faq.count({ where: { isActive: true } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async getAllFaqsAdmin(page: number = 1, limit: number = 50, search?: string) {
