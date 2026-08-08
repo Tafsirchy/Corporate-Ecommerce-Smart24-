@@ -361,6 +361,7 @@ export class OrdersService {
     }
 
     const isCancelling = status === 'CANCELLED' && order.status !== 'CANCELLED';
+    const isUncancelling = order.status === 'CANCELLED' && status !== 'CANCELLED';
 
     let updatedOrder;
     if (isCancelling) {
@@ -392,6 +393,47 @@ export class OrdersService {
           await tx.businessInvoice.updateMany({
             where: { orderId: order.id },
             data: { status: 'VOID' },
+          });
+        }
+
+        return result;
+      });
+    } else if (isUncancelling) {
+      updatedOrder = await this.prisma.$transaction(async (tx) => {
+        const result = await tx.order.update({
+          where: { id: orderId },
+          data: { status },
+        });
+
+        for (const item of order.items) {
+          const updateResult = await tx.product.updateMany({
+            where: { id: item.productId, stock: { gte: item.quantity } },
+            data: { stock: { decrement: item.quantity } },
+          });
+          if (updateResult.count === 0) {
+            throw new BadRequestException(`Insufficient stock to revert order for product ${item.productId}`);
+          }
+        }
+
+        // Re-deduct NET_30 credit
+        if (order.paymentMethod === 'NET_30' && order.userId) {
+          const user = await tx.user.findUnique({
+            where: { id: order.userId },
+            include: { businessProfile: true },
+          });
+          if (user && user.businessProfile) {
+            const availableCredit = user.businessProfile.creditLimit - user.businessProfile.usedCredit;
+            if (order.totalAmount > availableCredit) {
+               throw new BadRequestException('Insufficient credit limit to revert this order');
+            }
+            await tx.businessProfile.update({
+              where: { id: user.businessProfile.id },
+              data: { usedCredit: { increment: order.totalAmount } },
+            });
+          }
+          await tx.businessInvoice.updateMany({
+            where: { orderId: order.id },
+            data: { status: 'GENERATED' },
           });
         }
 
