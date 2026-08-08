@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { MembershipsService } from './memberships.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -25,7 +34,10 @@ export class MembershipsController {
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async updateLevel(@Param('id') id: string, @Body() data: UpdateMembershipDto) {
+  async updateLevel(
+    @Param('id') id: string,
+    @Body() data: UpdateMembershipDto,
+  ) {
     return this.membershipsService.updateLevel(id, data);
   }
 
