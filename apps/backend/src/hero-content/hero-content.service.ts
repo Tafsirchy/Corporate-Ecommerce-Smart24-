@@ -5,20 +5,28 @@ import { PrismaService } from '../prisma/prisma.service';
 export class HeroContentService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(activeOnly: boolean = false) {
-    if (activeOnly) {
-      return this.prisma.heroContent.findMany({
-        where: { isActive: true },
+  async findAll(activeOnly: boolean = false, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const where = activeOnly ? { isActive: true } : {};
+
+    const [data, total] = await Promise.all([
+      this.prisma.banner.findMany({
+        where,
+        skip,
+        take: limit,
         orderBy: { order: 'asc' },
-      });
-    }
-    return this.prisma.heroContent.findMany({
-      orderBy: { order: 'asc' },
-    });
+      }),
+      this.prisma.banner.count({ where }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async findOne(id: string) {
-    const content = await this.prisma.heroContent.findUnique({
+    const content = await this.prisma.banner.findUnique({
       where: { id },
     });
     if (!content) throw new NotFoundException('HeroContent not found');
@@ -26,14 +34,14 @@ export class HeroContentService {
   }
 
   async create(data: any) {
-    return this.prisma.heroContent.create({
+    return this.prisma.banner.create({
       data,
     });
   }
 
   async update(id: string, data: any) {
     await this.findOne(id);
-    return this.prisma.heroContent.update({
+    return this.prisma.banner.update({
       where: { id },
       data,
     });
@@ -41,7 +49,7 @@ export class HeroContentService {
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.heroContent.delete({
+    return this.prisma.banner.delete({
       where: { id },
     });
   }
