@@ -9,16 +9,16 @@ export class InvoiceService {
     return this.prisma.businessInvoice.findMany({
       where: { businessId: businessProfileId },
       include: {
-        order: true
+        order: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async findOne(id: string) {
     const invoice = await this.prisma.businessInvoice.findUnique({
       where: { id },
-      include: { order: true }
+      include: { order: true },
     });
     if (!invoice) throw new NotFoundException('Invoice not found');
     return invoice;
@@ -27,13 +27,13 @@ export class InvoiceService {
   async updateStatus(id: string, status: any) {
     return this.prisma.$transaction(async (tx) => {
       const invoice = await tx.businessInvoice.findUnique({
-        where: { id }
+        where: { id },
       });
       if (!invoice) throw new NotFoundException('Invoice not found');
 
       const updated = await tx.businessInvoice.update({
         where: { id },
-        data: { status }
+        data: { status },
       });
 
       // If the invoice is being marked as PAID and it wasn't PAID before
@@ -41,8 +41,8 @@ export class InvoiceService {
         await tx.businessProfile.update({
           where: { id: invoice.businessId },
           data: {
-            usedCredit: { decrement: invoice.totalAmount }
-          }
+            usedCredit: { decrement: invoice.totalAmount },
+          },
         });
       }
 
@@ -55,9 +55,9 @@ export class InvoiceService {
     return this.prisma.businessInvoice.findMany({
       include: {
         businessProfile: true,
-        order: true
+        order: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -70,12 +70,12 @@ export class InvoiceService {
         order: {
           include: {
             items: {
-              include: { product: true }
-            }
-          }
+              include: { product: true },
+            },
+          },
         },
-        businessProfile: true
-      }
+        businessProfile: true,
+      },
     });
 
     if (!invoice) throw new NotFoundException('Invoice not found');
@@ -88,14 +88,23 @@ export class InvoiceService {
         doc.on('end', () => resolve(Buffer.concat(buffers)));
 
         // NBR Mushak 6.3 Header
-        doc.fontSize(20).text('GOVERNMENT OF THE PEOPLE\'S REPUBLIC OF BANGLADESH', { align: 'center' });
+        doc
+          .fontSize(20)
+          .text("GOVERNMENT OF THE PEOPLE'S REPUBLIC OF BANGLADESH", {
+            align: 'center',
+          });
         doc.fontSize(14).text('NATIONAL BOARD OF REVENUE', { align: 'center' });
         doc.moveDown();
-        doc.fontSize(16).text('TAX INVOICE (Mushak 6.3)', { align: 'center', underline: true });
+        doc.fontSize(16).text('TAX INVOICE (Mushak 6.3)', {
+          align: 'center',
+          underline: true,
+        });
         doc.moveDown();
 
         // Business Info
-        doc.fontSize(12).text(`Business Name: ${invoice.businessProfile.businessName}`);
+        doc
+          .fontSize(12)
+          .text(`Business Name: ${invoice.businessProfile.businessName}`);
         doc.text(`BIN / VAT Reg No: ${invoice.businessProfile.bin || 'N/A'}`);
         doc.text(`TIN: ${invoice.businessProfile.tin || 'N/A'}`);
         doc.text(`Invoice ID: ${invoice.id}`);
@@ -111,8 +120,11 @@ export class InvoiceService {
         doc.text('Qty', 250, tableTop);
         doc.text('Unit Price', 300, tableTop);
         doc.text('Total', 400, tableTop);
-        
-        doc.moveTo(50, tableTop + 15).lineTo(500, tableTop + 15).stroke();
+
+        doc
+          .moveTo(50, tableTop + 15)
+          .lineTo(500, tableTop + 15)
+          .stroke();
         doc.font('Helvetica');
 
         // Items
@@ -131,7 +143,11 @@ export class InvoiceService {
         // Totals
         doc.font('Helvetica-Bold');
         doc.text('Subtotal:', 300, y);
-        doc.text((invoice.order.totalAmount - invoice.order.deliveryCharge).toString(), 400, y);
+        doc.text(
+          (invoice.order.totalAmount - invoice.order.deliveryCharge).toString(),
+          400,
+          y,
+        );
         y += 20;
         doc.text('Delivery Charge:', 300, y);
         doc.text(invoice.order.deliveryCharge.toString(), 400, y);
