@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SavedListService } from './saved-list.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -12,15 +22,16 @@ import { PrismaService } from '../prisma/prisma.service';
 export class SavedListController {
   constructor(
     private readonly savedListService: SavedListService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   private async getBusinessId(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { businessProfile: true }
+      include: { businessProfile: true },
     });
-    if (!user || !user.businessProfile) throw new UnauthorizedException('Not a business account');
+    if (!user || !user.businessProfile)
+      throw new UnauthorizedException('Not a business account');
     return user.businessProfile.id;
   }
 
@@ -37,8 +48,9 @@ export class SavedListController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.savedListService.findOne(id);
+  async findOne(@Req() req: any, @Param('id') id: string) {
+    const businessId = await this.getBusinessId(req.user.id);
+    return this.savedListService.findOne(id, businessId);
   }
 
   @Delete(':id')
