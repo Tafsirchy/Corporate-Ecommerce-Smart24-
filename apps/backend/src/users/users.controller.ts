@@ -1,4 +1,12 @@
-import { Controller, Get, Patch, Body, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Body,
+  Req,
+  UseGuards,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 
@@ -33,10 +41,10 @@ export class UsersController {
       gender: updateData.gender,
       birthday: updateData.birthday,
     };
-    
+
     // Remove undefined fields
-    Object.keys(allowedUpdates).forEach(key => 
-      allowedUpdates[key] === undefined && delete allowedUpdates[key]
+    Object.keys(allowedUpdates).forEach(
+      (key) => allowedUpdates[key] === undefined && delete allowedUpdates[key],
     );
 
     const user = await this.usersService.update(req.user.id, allowedUpdates);
