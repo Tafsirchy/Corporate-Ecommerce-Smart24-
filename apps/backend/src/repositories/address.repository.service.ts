@@ -11,9 +11,9 @@ export class AddressRepository {
   }
 
   async findByUserId(userId: string): Promise<Address[]> {
-    return this.prisma.address.findMany({ 
+    return this.prisma.address.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -35,14 +35,14 @@ export class AddressRepository {
   async unsetDefaultShipping(userId: string): Promise<void> {
     await this.prisma.address.updateMany({
       where: { userId, isDefaultShipping: true },
-      data: { isDefaultShipping: false }
+      data: { isDefaultShipping: false },
     });
   }
 
   async unsetDefaultBilling(userId: string): Promise<void> {
     await this.prisma.address.updateMany({
       where: { userId, isDefaultBilling: true },
-      data: { isDefaultBilling: false }
+      data: { isDefaultBilling: false },
     });
   }
 }
