@@ -27,24 +27,57 @@ export class FiltersService {
     });
   }
 
-  async findAll() {
-    return this.prisma.filterDefinition.findMany({
-      orderBy: { displayOrder: 'asc' },
-    });
+  async findAll(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.filterDefinition.findMany({
+        skip,
+        take: limit,
+        orderBy: { displayOrder: 'asc' },
+      }),
+      this.prisma.filterDefinition.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
-  async findActive() {
-    return this.prisma.filterDefinition.findMany({
-      where: { status: 'ACTIVE' },
-      orderBy: { displayOrder: 'asc' },
-    });
+  async findActive(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.filterDefinition.findMany({
+        where: { status: 'ACTIVE' },
+        skip,
+        take: limit,
+        orderBy: { displayOrder: 'asc' },
+      }),
+      this.prisma.filterDefinition.count({ where: { status: 'ACTIVE' } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
-  async findSuggested() {
-    return this.prisma.filterDefinition.findMany({
-      where: { status: 'SUGGESTED' },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findSuggested(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.filterDefinition.findMany({
+        where: { status: 'SUGGESTED' },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.filterDefinition.count({ where: { status: 'SUGGESTED' } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async findOne(id: string) {
