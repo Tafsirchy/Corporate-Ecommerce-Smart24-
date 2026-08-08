@@ -17,7 +17,7 @@ export default function MyQuotationsPage() {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
-      .then(data => setQuotes(data))
+      .then(data => setQuotes(data.data || data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, [token]);
