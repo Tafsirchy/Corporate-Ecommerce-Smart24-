@@ -14,10 +14,24 @@ export class PricingRuleService {
     });
   }
 
-  async findAll() {
-    return this.prisma.pricingRule.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.pricingRule.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.pricingRule.count(),
+    ]);
+
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findOne(id: string) {
