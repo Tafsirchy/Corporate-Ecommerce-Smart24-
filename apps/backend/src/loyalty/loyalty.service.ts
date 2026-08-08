@@ -88,11 +88,22 @@ export class LoyaltyService {
     return user;
   }
 
-  async getTransactions(userId: string) {
-    return this.prisma.rewardTransaction.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async getTransactions(userId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.rewardTransaction.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.rewardTransaction.count({ where: { userId } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async getAvailableRewards(userId: string) {
@@ -112,12 +123,23 @@ export class LoyaltyService {
     });
   }
 
-  async getMyRewards(userId: string) {
-    return this.prisma.userReward.findMany({
-      where: { userId },
-      include: { reward: true },
-      orderBy: { claimedAt: 'desc' },
-    });
+  async getMyRewards(userId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.userReward.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        include: { reward: true },
+        orderBy: { claimedAt: 'desc' },
+      }),
+      this.prisma.userReward.count({ where: { userId } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async claimReward(userId: string, rewardId: string) {
@@ -136,59 +158,72 @@ export class LoyaltyService {
       throw new Error('Membership level too low');
     }
 
-    if (reward.claimType === 'POINT_REDEEM') {
-      if (user.rewardPoints < reward.pointCost) {
-        throw new Error('Not enough points');
+    return this.prisma.$transaction(async (tx) => {
+      if (reward.claimType === 'POINT_REDEEM') {
+        if (user.rewardPoints < reward.pointCost) {
+          throw new Error('Not enough points');
+        }
+
+        // Deduct points
+        await tx.user.update({
+          where: { id: userId },
+          data: { rewardPoints: { decrement: reward.pointCost } },
+        });
+
+        // Record transaction
+        await tx.rewardTransaction.create({
+          data: {
+            userId,
+            earn: 0,
+            redeem: reward.pointCost,
+            balance: user.rewardPoints - reward.pointCost,
+            reason: 'REWARD_REDEEM',
+            description: `Redeemed ${reward.title}`,
+          },
+        });
       }
 
-      // Deduct points
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { rewardPoints: { decrement: reward.pointCost } },
-      });
+      // Grant Reward
+      const expiryDate = reward.expiryDays
+        ? new Date(Date.now() + reward.expiryDays * 24 * 60 * 60 * 1000)
+        : null;
 
-      // Record transaction
-      await this.prisma.rewardTransaction.create({
+      // Generate unique code if it's a coupon or ticket
+      let code: string | null = null;
+      if (reward.type === 'COUPON' || reward.type === 'TICKET') {
+        code = `${reward.type.substring(0, 3)}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      }
+
+      const userReward = await tx.userReward.create({
         data: {
           userId,
-          earn: 0,
-          redeem: reward.pointCost,
-          balance: user.rewardPoints - reward.pointCost,
-          reason: 'REWARD_REDEEM',
-          description: `Redeemed ${reward.title}`,
+          rewardId,
+          expiresAt: expiryDate,
+          code,
         },
       });
-    }
 
-    // Grant Reward
-    const expiryDate = reward.expiryDays
-      ? new Date(Date.now() + reward.expiryDays * 24 * 60 * 60 * 1000)
-      : null;
-
-    // Generate unique code if it's a coupon or ticket
-    let code: string | null = null;
-    if (reward.type === 'COUPON' || reward.type === 'TICKET') {
-      code = `${reward.type.substring(0, 3)}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    }
-
-    const userReward = await this.prisma.userReward.create({
-      data: {
-        userId,
-        rewardId,
-        expiresAt: expiryDate,
-        code,
-      },
+      return userReward;
     });
-
-    return userReward;
   }
 
   // --- Admin Methods for Rewards ---
 
-  async getAllLoyaltyRewards() {
-    return this.prisma.loyaltyReward.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async getAllLoyaltyRewards(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.loyaltyReward.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.loyaltyReward.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async createLoyaltyReward(data: any) {
