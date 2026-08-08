@@ -121,18 +121,20 @@ export class ProductsService {
     maxPrice?: string,
     rating?: string,
     brands?: string,
+    isAdmin: boolean = false,
   ) {
     let orderBy: any = undefined;
     if (sort === 'price-asc') orderBy = { price: 'asc' };
     else if (sort === 'price-desc') orderBy = { price: 'desc' };
     else if (sort === 'newest') orderBy = { createdAt: 'desc' };
 
+    const baseWhere: any = {};
+    if (!isAdmin) {
+      baseWhere.isActive = true;
+    }
+
     if (!pageStr && !limitStr) {
-      // For backwards compatibility, if no pagination params are provided, return all
-      // OR we can just return { data, meta } and let the frontend handle it.
-      // The prompt asks to add pagination, so returning { data, meta } is the standard way.
-      // Let's implement it consistently.
-      const where: any = {};
+      const where: any = { ...baseWhere };
       if (isFlashSale === 'true') {
         where.isFlashSale = true;
       }
@@ -155,6 +157,7 @@ export class ProductsService {
     const skip = (page - 1) * limit;
 
     const where: any = {
+      ...baseWhere,
       ...this.buildStandardFiltersWhere(minPrice, maxPrice, rating, brands),
     };
 
@@ -222,6 +225,7 @@ export class ProductsService {
     maxPrice?: string,
     rating?: string,
     brands?: string,
+    isAdmin: boolean = false,
   ) {
     let page = pageStr ? parseInt(pageStr, 10) : 1;
     let limit = limitStr ? parseInt(limitStr, 10) : 10;
@@ -229,7 +233,6 @@ export class ProductsService {
     if (Number.isNaN(limit) || limit < 1) limit = 10;
     const skip = (page - 1) * limit;
 
-    // Tokenize query into separate words
     const tokens = query
       .trim()
       .split(/\s+/)
@@ -239,38 +242,41 @@ export class ProductsService {
       return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
     }
 
-    // 1. Resolve Category IDs for EACH token
-    const tokenCategoryMap = new Map<string, string[]>();
-
-    for (const token of tokens) {
-      const matchingCategories = await this.prisma.category.findMany({
-        where: { name: { contains: token, mode: 'insensitive' as any } },
+    // 1. Optimize: Find all matching categories in one query
+    const categoryTokensRegex = tokens.map(t => ({ name: { contains: t, mode: 'insensitive' as any } }));
+    const matchingCategories = await this.prisma.category.findMany({
+      where: { OR: categoryTokensRegex },
+      select: { id: true, name: true },
+    });
+    
+    // Resolve descendants
+    let allCategoryIds = matchingCategories.map((c) => c.id);
+    if (allCategoryIds.length > 0) {
+      const subCategories = await this.prisma.category.findMany({
+        where: { parentId: { in: allCategoryIds } },
         select: { id: true },
       });
-
-      let allCategoryIds = matchingCategories.map((c) => c.id);
-
-      if (allCategoryIds.length > 0) {
-        const subCategories = await this.prisma.category.findMany({
-          where: { parentId: { in: allCategoryIds } },
+      const subCategoryIds = subCategories.map((c) => c.id);
+      allCategoryIds = [...allCategoryIds, ...subCategoryIds];
+      if (subCategoryIds.length > 0) {
+        const subSubCategories = await this.prisma.category.findMany({
+          where: { parentId: { in: subCategoryIds } },
           select: { id: true },
         });
-        const subCategoryIds = subCategories.map((c) => c.id);
-        allCategoryIds = [...allCategoryIds, ...subCategoryIds];
-
-        if (subCategoryIds.length > 0) {
-          const subSubCategories = await this.prisma.category.findMany({
-            where: { parentId: { in: subCategoryIds } },
-            select: { id: true },
-          });
-          allCategoryIds = [
-            ...allCategoryIds,
-            ...subSubCategories.map((c) => c.id),
-          ];
-        }
+        allCategoryIds = [...allCategoryIds, ...subSubCategories.map((c) => c.id)];
       }
+    }
 
-      tokenCategoryMap.set(token, allCategoryIds);
+    // Map token to category IDs purely in memory to avoid N+1 DB queries per token
+    const tokenCategoryMap = new Map<string, string[]>();
+    for (const token of tokens) {
+      const regex = new RegExp(token, 'i');
+      const matchedBaseCatIds = matchingCategories.filter(c => regex.test(c.name)).map(c => c.id);
+      // If a token matches a base category, we consider ALL resolved descendants valid for this token
+      // For simplicity in search, if any category matched, we'll use all resolved IDs for that token
+      if (matchedBaseCatIds.length > 0) {
+         tokenCategoryMap.set(token, allCategoryIds);
+      }
     }
 
     // 2. Build AND conditions for multi-token matching
@@ -298,10 +304,14 @@ export class ProductsService {
       brands,
     );
 
-    const where = {
+    const where: any = {
       AND: [...andConditions, ...dynamicFilterConditions],
       ...standardFilterConditions,
     };
+
+    if (!isAdmin) {
+      where.isActive = true;
+    }
 
     const [data, total] = await Promise.all([
       this.productRepository.findAll({
