@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ReturnRepositoryService } from '../repositories/return.repository.service';
 import { OrderRepositoryService } from '../repositories/order.repository.service';
 import { ReturnStatus } from '@prisma/client';
@@ -7,10 +11,18 @@ import { ReturnStatus } from '@prisma/client';
 export class ReturnsService {
   constructor(
     private returnRepo: ReturnRepositoryService,
-    private orderRepo: OrderRepositoryService
+    private orderRepo: OrderRepositoryService,
   ) {}
 
-  async createReturn(userId: string, data: { orderId: string, orderItemId?: string, reason: string, comments?: string }) {
+  async createReturn(
+    userId: string,
+    data: {
+      orderId: string;
+      orderItemId?: string;
+      reason: string;
+      comments?: string;
+    },
+  ) {
     // Verify order exists and belongs to user
     const order = await this.orderRepo.findOrderById(data.orderId);
     if (!order || order.userId !== userId) {
@@ -19,15 +31,19 @@ export class ReturnsService {
 
     // Usually, we only allow returns if the order is DELIVERED
     if (order.status !== 'DELIVERED') {
-      throw new BadRequestException('Can only request return for delivered orders');
+      throw new BadRequestException(
+        'Can only request return for delivered orders',
+      );
     }
 
     return this.returnRepo.createReturn({
       user: { connect: { id: userId } },
       order: { connect: { id: data.orderId } },
-      ...(data.orderItemId && { orderItem: { connect: { id: data.orderItemId } } }),
+      ...(data.orderItemId && {
+        orderItem: { connect: { id: data.orderItemId } },
+      }),
       reason: data.reason,
-      comments: data.comments
+      comments: data.comments,
     });
   }
 
@@ -43,7 +59,11 @@ export class ReturnsService {
     return returnReq;
   }
 
-  async updateReturnStatus(id: string, status: ReturnStatus, refundAmount?: number) {
+  async updateReturnStatus(
+    id: string,
+    status: ReturnStatus,
+    refundAmount?: number,
+  ) {
     return this.returnRepo.updateReturnStatus(id, status, refundAmount);
   }
 }
