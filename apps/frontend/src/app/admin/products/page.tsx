@@ -19,6 +19,7 @@ export default function AdminProducts() {
   const [categoryId, setCategoryId] = useState('');
   const [brandId, setBrandId] = useState('');
   const [images, setImages] = useState<string[]>([]);
+  const [isActive, setIsActive] = useState(true);
   
   // Generic attributes state: { [filterKey]: value }
   const [productAttributes, setProductAttributes] = useState<Record<string, any>>({});
@@ -39,7 +40,7 @@ export default function AdminProducts() {
 
   const fetchProducts = async () => {
     try {
-      const res = await apiClient.get(`/products?page=${page}&limit=10`);
+      const res = await apiClient.get(`/products/admin?page=${page}&limit=10`);
       setProducts(res.data.data || res.data);
       if (res.data.meta) {
         setTotalPages(res.data.meta.totalPages);
@@ -125,6 +126,7 @@ export default function AdminProducts() {
         categoryId,
         brandId: brandId || undefined,
         images,
+        isActive,
         attributes: attributesPayload
       };
 
@@ -145,6 +147,7 @@ export default function AdminProducts() {
       setCategoryId('');
       setBrandId('');
       setImages([]);
+      setIsActive(true);
       setProductAttributes({});
       
       fetchProducts();
@@ -181,6 +184,7 @@ export default function AdminProducts() {
     setCategoryId(product.categoryId);
     setBrandId(product.brandId || '');
     setImages(product.images || []);
+    setIsActive(product.isActive ?? true);
     
     // Parse attributes
     const attrs: Record<string, any> = {};
@@ -211,7 +215,7 @@ export default function AdminProducts() {
               onClick={() => {
                 setEditingId(null);
                 setName(''); setDescription(''); setPrice(''); setStock('');
-                setCategoryId(''); setBrandId(''); setImages([]); setProductAttributes({});
+                setCategoryId(''); setBrandId(''); setImages([]); setProductAttributes({}); setIsActive(true);
               }}
               className="text-sm text-muted-foreground hover:text-black border px-3 py-1 rounded"
             >
@@ -276,6 +280,18 @@ export default function AdminProducts() {
               rows={3} value={description} onChange={e => setDescription(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black"
             />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="flex items-center gap-2 cursor-pointer w-max">
+              <input 
+                type="checkbox"
+                checked={isActive}
+                onChange={e => setIsActive(e.target.checked)}
+                className="rounded text-black focus:ring-black"
+              />
+              <span className="text-sm font-medium text-foreground">Product is Active</span>
+            </label>
           </div>
 
           {/* Dynamic Category-Scoped Attributes */}
@@ -354,9 +370,18 @@ export default function AdminProducts() {
               {isUploading && <span className="text-sm text-muted-foreground">Uploading...</span>}
             </div>
             {images.length > 0 && (
-              <div className="flex gap-2 mt-4">
+              <div className="flex flex-wrap gap-4 mt-4">
                 {images.map((img, i) => (
-                  <OptimizedImage key={i} src={img} alt="Preview" className="h-20 w-20 object-cover rounded border" />
+                  <div key={i} className="relative group">
+                    <OptimizedImage src={img} alt="Preview" className="h-24 w-24 object-cover rounded-lg border shadow-sm" />
+                    <button
+                      type="button"
+                      onClick={() => setImages(images.filter((_, index) => index !== i))}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -379,6 +404,7 @@ export default function AdminProducts() {
             <tr>
               <th className="p-4 font-medium text-muted-foreground">Image</th>
               <th className="p-4 font-medium text-muted-foreground">Name</th>
+              <th className="p-4 font-medium text-muted-foreground">Status</th>
               <th className="p-4 font-medium text-muted-foreground">Price</th>
               <th className="p-4 font-medium text-muted-foreground">Stock</th>
               <th className="p-4 font-medium text-muted-foreground">Actions</th>
@@ -391,6 +417,11 @@ export default function AdminProducts() {
                   {prod.images?.[0] ? <OptimizedImage src={prod.images[0]} alt={prod.name} className="h-10 w-10 object-cover rounded" /> : '-'}
                 </td>
                 <td className="p-4 font-medium">{prod.name}</td>
+                <td className="p-4">
+                  <span className={`px-2 py-1 text-xs rounded-full font-medium ${prod.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {prod.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
                 <td className="p-4 text-muted-foreground">৳{prod.price}</td>
                 <td className="p-4 text-muted-foreground">{prod.stock}</td>
                 <td className="p-4 flex gap-3">
