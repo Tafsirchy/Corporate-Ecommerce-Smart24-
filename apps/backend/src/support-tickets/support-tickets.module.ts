@@ -6,6 +6,6 @@ import { SupportTicketsService } from './support-tickets.service';
 @Module({
   imports: [SettingsModule],
   controllers: [SupportTicketsController],
-  providers: [SupportTicketsService]
+  providers: [SupportTicketsService],
 })
 export class SupportTicketsModule {}
