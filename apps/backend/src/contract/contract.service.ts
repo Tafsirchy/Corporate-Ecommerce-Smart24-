@@ -21,11 +21,22 @@ export class ContractService {
     });
   }
 
-  async findAllByBusiness(businessProfileId: string) {
-    return this.prisma.businessContract.findMany({
-      where: { businessProfileId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAllByBusiness(businessProfileId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.businessContract.findMany({
+        where: { businessProfileId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.businessContract.count({ where: { businessProfileId } }),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async findOne(id: string) {
@@ -45,10 +56,21 @@ export class ContractService {
   }
 
   // Admin endpoint
-  async findAll() {
-    return this.prisma.businessContract.findMany({
-      include: { businessProfile: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.businessContract.findMany({
+        skip,
+        take: limit,
+        include: { businessProfile: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.businessContract.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 }
