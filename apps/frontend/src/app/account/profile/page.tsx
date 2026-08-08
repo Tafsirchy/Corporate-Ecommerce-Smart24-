@@ -8,6 +8,18 @@ export default function ProfilePage() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
 
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone and your data will be anonymized.')) return;
+    try {
+      const { apiClient } = await import('../../../context/AuthContext');
+      await apiClient.delete('/users/me');
+      logout();
+      router.push('/');
+    } catch (error) {
+      alert('Failed to delete account');
+    }
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
@@ -154,9 +166,12 @@ export default function ProfilePage() {
               <Link href="/account/profile/edit" className="block w-full bg-primary text-white text-center py-3 text-[14px] font-medium hover:bg-primary/90 transition uppercase">
                 Edit Profile
               </Link>
-              <Link href="/account/profile/password" className="block w-full bg-primary text-white text-center py-3 text-[14px] font-medium hover:bg-primary/90 transition uppercase">
+              <Link href="/account/profile/password" className="block w-full border border-primary text-primary text-center py-3 text-[14px] font-medium hover:bg-primary/5 transition uppercase">
                 Change Password
               </Link>
+              <button onClick={handleDeleteAccount} className="block w-full border border-destructive text-destructive text-center py-3 text-[14px] font-medium hover:bg-destructive/5 transition uppercase">
+                Delete Account
+              </button>
             </div>
           </div>
         </div>
