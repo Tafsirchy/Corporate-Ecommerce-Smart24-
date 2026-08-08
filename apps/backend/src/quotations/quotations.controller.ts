@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, Req, UseGuards, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Req,
+  UseGuards,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { QuotationsService } from './quotations.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -34,9 +43,13 @@ export class QuotationsController {
   respondToQuotation(
     @Param('id') id: string,
     @Body('offeredPrice') offeredPrice: number,
-    @Body('adminNotes') adminNotes?: string
+    @Body('adminNotes') adminNotes?: string,
   ) {
-    return this.quotationsService.respondToQuotation(id, offeredPrice, adminNotes);
+    return this.quotationsService.respondToQuotation(
+      id,
+      offeredPrice,
+      adminNotes,
+    );
   }
 
   @Patch(':id/accept')
