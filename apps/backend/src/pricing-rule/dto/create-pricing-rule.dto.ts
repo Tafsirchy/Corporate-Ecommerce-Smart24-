@@ -1,4 +1,12 @@
-import { IsString, IsNumber, IsOptional, IsDateString, Min, Max, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsDateString,
+  Min,
+  Max,
+  IsEnum,
+} from 'class-validator';
 import { BusinessType, VerificationLevel } from '@prisma/client';
 
 export class CreatePricingRuleDto {
