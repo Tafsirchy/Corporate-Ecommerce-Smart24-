@@ -12,7 +12,7 @@ export class PricingService {
 
   async calculateCartTotals(
     userId: string | undefined,
-    cartItems: { productId: string; quantity: number; product: { name: string; price: number; stock: number; categoryId?: string } }[],
+    cartItems: { productId: string; quantity: number; product: { name: string; price: number; stock: number; categoryId?: string | null } }[],
   ) {
     let totalAmount = 0;
     let userTierDiscount = 0;
