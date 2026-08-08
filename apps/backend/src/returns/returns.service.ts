@@ -47,8 +47,30 @@ export class ReturnsService {
     });
   }
 
-  async getUserReturns(userId: string) {
-    return this.returnRepo.findReturnsByUser(userId);
+  async getUserReturns(userId: string, query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.returnRepo.findReturnsByUser(userId, skip, limit),
+      this.returnRepo.countReturnsByUser(userId),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+  }
+
+  async getAllReturns(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.returnRepo.findAllReturns(skip, limit),
+      this.returnRepo.countAllReturns(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async getReturnById(id: string, userId: string) {
