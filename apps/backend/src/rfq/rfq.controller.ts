@@ -1,4 +1,16 @@
-import { Controller, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Req, Body, Get, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  Req,
+  Body,
+  Get,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RfqService } from './rfq.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -40,7 +52,9 @@ export class RfqController {
     if (specFile) {
       // For MVP we are storing in ImgBB so we assume it's an image
       if (!specFile.mimetype.startsWith('image/')) {
-        throw new BadRequestException('Only image specifications are allowed in MVP');
+        throw new BadRequestException(
+          'Only image specifications are allowed in MVP',
+        );
       }
       specFileUrl = await this.uploadService.uploadImageToImgBB(specFile);
     }
@@ -77,7 +91,7 @@ export class RfqController {
   async updateRfqStatus(
     @Param('id') id: string,
     @Body('status') status: any,
-    @Body('adminNotes') adminNotes?: string
+    @Body('adminNotes') adminNotes?: string,
   ) {
     if (!status) throw new BadRequestException('Status is required');
     return this.rfqService.updateRfqStatus(id, status, adminNotes);
