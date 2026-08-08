@@ -20,9 +20,11 @@ export class ReturnRepositoryService {
     });
   }
 
-  async findReturnsByUser(userId: string) {
+  async findReturnsByUser(userId: string, skip?: number, take?: number) {
     return this.prisma.returnRequest.findMany({
       where: { userId },
+      skip,
+      take,
       include: {
         order: {
           select: { id: true, createdAt: true, status: true },
@@ -35,6 +37,32 @@ export class ReturnRepositoryService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async countReturnsByUser(userId: string) {
+    return this.prisma.returnRequest.count({ where: { userId } });
+  }
+
+  async findAllReturns(skip?: number, take?: number) {
+    return this.prisma.returnRequest.findMany({
+      skip,
+      take,
+      include: {
+        order: {
+          select: { id: true, createdAt: true, status: true },
+        },
+        orderItem: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async countAllReturns() {
+    return this.prisma.returnRequest.count();
   }
 
   async findReturnById(id: string) {
