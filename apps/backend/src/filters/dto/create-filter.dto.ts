@@ -1,4 +1,13 @@
-import { IsString, IsEnum, IsOptional, IsArray, IsObject, ValidateNested, IsBoolean, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsArray,
+  IsObject,
+  ValidateNested,
+  IsBoolean,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { FilterType, FilterStatus } from '@prisma/client';
 
