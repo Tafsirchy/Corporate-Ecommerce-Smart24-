@@ -38,4 +38,30 @@ export class UsersService {
   async update(id: string, data: Prisma.UserUpdateInput) {
     return this.userRepository.update(id, data);
   }
+
+  async findAll(pageStr?: string, limitStr?: string) {
+    const page = pageStr ? parseInt(pageStr, 10) : 1;
+    const limit = limitStr ? parseInt(limitStr, 10) : 20;
+    const skip = (page - 1) * limit;
+
+    const result = await this.userRepository.findAll(skip, limit);
+    return {
+      data: result.data.map(({ password, twoFactorSecret, ...rest }) => rest),
+      meta: {
+        total: result.total,
+        page,
+        limit,
+        totalPages: Math.ceil(result.total / limit),
+      },
+    };
+  }
+
+  async delete(id: string) {
+    return this.userRepository.update(id, {
+      name: 'Deleted User',
+      email: `deleted_${id}_${Date.now()}@deleted.local`,
+      phone: null,
+      isActive: false,
+    });
+  }
 }
