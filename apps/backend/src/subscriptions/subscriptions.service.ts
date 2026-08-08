@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SubscriptionRepository } from '../repositories/subscription.repository.service';
 import { ProductRepository } from '../repositories/product.repository.service';
 import { OfferRepository } from '../repositories/offer.repository.service';
@@ -8,30 +12,34 @@ export class SubscriptionsService {
   constructor(
     private readonly subscriptionRepo: SubscriptionRepository,
     private readonly productRepo: ProductRepository,
-    private readonly offerRepo: OfferRepository
+    private readonly offerRepo: OfferRepository,
   ) {}
 
   async createPlan(data: any) {
     const { name, description, price, items } = data;
-    const planItems = items ? items.map((item: any) => ({
-      product: { connect: { id: item.productId } },
-      quantity: item.quantity
-    })) : [];
+    const planItems = items
+      ? items.map((item: any) => ({
+          product: { connect: { id: item.productId } },
+          quantity: item.quantity,
+        }))
+      : [];
 
     return this.subscriptionRepo.createPlan({
       name,
       description,
       price,
-      items: { create: planItems }
+      items: { create: planItems },
     });
   }
 
   async updatePlan(id: string, data: any) {
     const { name, description, price, items } = data;
-    const planItems = items ? items.map((item: any) => ({
-      product: { connect: { id: item.productId } },
-      quantity: item.quantity
-    })) : [];
+    const planItems = items
+      ? items.map((item: any) => ({
+          product: { connect: { id: item.productId } },
+          quantity: item.quantity,
+        }))
+      : [];
 
     return this.subscriptionRepo.updatePlan(id, {
       name,
@@ -39,8 +47,8 @@ export class SubscriptionsService {
       price,
       items: {
         deleteMany: {},
-        create: planItems
-      }
+        create: planItems,
+      },
     });
   }
 
@@ -55,7 +63,9 @@ export class SubscriptionsService {
   async createCustomSubscription(userId: string, data: any) {
     // Basic validation
     if (!data.items || data.items.length < 2) {
-      throw new BadRequestException('A custom subscription requires at least 2 items.');
+      throw new BadRequestException(
+        'A custom subscription requires at least 2 items.',
+      );
     }
 
     let totalAmount = 0;
@@ -64,12 +74,13 @@ export class SubscriptionsService {
     // Verify items and calculate price
     for (const item of data.items) {
       const product = await this.productRepo.findById(item.productId);
-      if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
-      
+      if (!product)
+        throw new NotFoundException(`Product ${item.productId} not found`);
+
       totalAmount += product.price * item.quantity;
       itemsData.push({
         productId: item.productId,
-        quantity: item.quantity
+        quantity: item.quantity,
       });
     }
 
@@ -87,8 +98,10 @@ export class SubscriptionsService {
     let discountAmount = 0;
 
     const activeOffers = await this.offerRepo.findActiveAmountBasedOffers();
-    const eligibleOffer = activeOffers.find(o => !o.minAmount || totalAmount >= o.minAmount);
-    
+    const eligibleOffer = activeOffers.find(
+      (o) => !o.minAmount || totalAmount >= o.minAmount,
+    );
+
     if (eligibleOffer) {
       appliedOfferId = eligibleOffer.id;
       if (eligibleOffer.discountType === 'PERCENTAGE') {
@@ -110,7 +123,7 @@ export class SubscriptionsService {
       billingDay: data.billingDay,
       nextDeliveryDate: nextDelivery,
       paymentMethod: data.paymentMethod || 'MANUAL',
-      status: 'ACTIVE'
+      status: 'ACTIVE',
     });
   }
 
@@ -129,7 +142,7 @@ export class SubscriptionsService {
     // Since SubscriptionPlanItem is different from SubscriptionItem, we create them
     const itemsData = (plan as any).items.map((item: any) => ({
       productId: item.productId,
-      quantity: item.quantity
+      quantity: item.quantity,
     }));
 
     let finalTotalAmount = plan.price;
@@ -165,7 +178,7 @@ export class SubscriptionsService {
       billingDay: data.billingDay,
       nextDeliveryDate: nextDelivery,
       paymentMethod: data.paymentMethod || 'MANUAL',
-      status: 'ACTIVE'
+      status: 'ACTIVE',
     });
   }
 
@@ -183,9 +196,11 @@ export class SubscriptionsService {
 
   async updateUserStatus(userId: string, id: string, status: string) {
     const sub = await this.subscriptionRepo.findSubscriptionsByUserId(userId);
-    const exists = sub.find(s => s.id === id);
+    const exists = sub.find((s) => s.id === id);
     if (!exists) {
-      throw new NotFoundException('Subscription not found or you do not have permission.');
+      throw new NotFoundException(
+        'Subscription not found or you do not have permission.',
+      );
     }
     return this.subscriptionRepo.updateSubscriptionStatus(id, status);
   }
