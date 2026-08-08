@@ -59,13 +59,28 @@ export class FaqsService {
     }
   }
 
-  async createFaq(data: { category: string; question: string; answer: string; isActive?: boolean; order?: number }) {
+  async createFaq(data: {
+    category: string;
+    question: string;
+    answer: string;
+    isActive?: boolean;
+    order?: number;
+  }) {
     return this.prisma.faq.create({
       data,
     });
   }
 
-  async updateFaq(id: string, data: Partial<{ category: string; question: string; answer: string; isActive: boolean; order: number }>) {
+  async updateFaq(
+    id: string,
+    data: Partial<{
+      category: string;
+      question: string;
+      answer: string;
+      isActive: boolean;
+      order: number;
+    }>,
+  ) {
     return this.prisma.faq.update({
       where: { id },
       data,
