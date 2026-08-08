@@ -30,8 +30,12 @@ export class FaqsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all active FAQs (Public)' })
-  getAllFaqs() {
-    return this.faqsService.getAllFaqs();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  getAllFaqs(@Req() req: any) {
+    const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
+    return this.faqsService.getAllFaqs(page, limit);
   }
 
   @Get('admin/all')
