@@ -7,6 +7,7 @@ import {
   UseGuards,
   Patch,
   Param,
+  Query,
 } from '@nestjs/common';
 import { QuotationsService } from './quotations.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -28,14 +29,14 @@ export class QuotationsController {
   }
 
   @Get('my-quotes')
-  getMyQuotations(@Req() req: any) {
-    return this.quotationsService.getMyQuotations(req.user.userId);
+  getMyQuotations(@Req() req: any, @Query() query: any) {
+    return this.quotationsService.getMyQuotations(req.user.userId, query);
   }
 
   @Get('admin/all')
   @Roles(Role.ADMIN)
-  getAllQuotations() {
-    return this.quotationsService.getAllQuotations();
+  getAllQuotations(@Query() query: any) {
+    return this.quotationsService.getAllQuotations(query);
   }
 
   @Patch('admin/:id/respond')
