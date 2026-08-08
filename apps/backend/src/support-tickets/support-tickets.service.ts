@@ -12,7 +12,15 @@ export class SupportTicketsService {
     private emailService: EmailService,
   ) {}
 
-  async createTicket(data: { name: string; email: string; subject: string; message: string; userId?: string; orderId?: string; attachments?: string[] }) {
+  async createTicket(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    userId?: string;
+    orderId?: string;
+    attachments?: string[];
+  }) {
     const ticket = await this.prisma.supportTicket.create({
       data: {
         name: data.name,
@@ -26,19 +34,27 @@ export class SupportTicketsService {
     });
 
     // Fetch the admin support email from settings
-    const supportEmailSetting = await this.settingsService.getSetting('SUPPORT_EMAIL');
+    const supportEmailSetting =
+      await this.settingsService.getSetting('SUPPORT_EMAIL');
     const supportEmail = supportEmailSetting?.value;
 
     if (supportEmail) {
-      this.emailService.sendSupportTicketEmail(supportEmail, ticket).catch(err => {
-        console.error('Failed to send support ticket email:', err);
-      });
+      this.emailService
+        .sendSupportTicketEmail(supportEmail, ticket)
+        .catch((err) => {
+          console.error('Failed to send support ticket email:', err);
+        });
     }
 
     return ticket;
   }
 
-  async getAllTickets(page: number = 1, limit: number = 10, search?: string, status?: SupportTicketStatus) {
+  async getAllTickets(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: SupportTicketStatus,
+  ) {
     const where: any = {};
     if (status) {
       where.status = status;
