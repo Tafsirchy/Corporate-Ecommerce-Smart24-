@@ -29,10 +29,16 @@ export class SubscriptionRepository {
     });
   }
 
-  async findAllPlans(): Promise<SubscriptionPlan[]> {
+  async findAllPlans(skip?: number, take?: number): Promise<SubscriptionPlan[]> {
     return this.prisma.subscriptionPlan.findMany({
+      skip,
+      take,
       include: { items: { include: { product: true } }, offer: true },
     });
+  }
+
+  async countAllPlans(): Promise<number> {
+    return this.prisma.subscriptionPlan.count();
   }
 
   async findPlanById(id: string): Promise<SubscriptionPlan | null> {
@@ -51,9 +57,11 @@ export class SubscriptionRepository {
     });
   }
 
-  async findSubscriptionsByUserId(userId: string): Promise<Subscription[]> {
+  async findSubscriptionsByUserId(userId: string, skip?: number, take?: number): Promise<Subscription[]> {
     return this.prisma.subscription.findMany({
       where: { userId },
+      skip,
+      take,
       include: {
         items: { include: { product: true } },
         plan: true,
@@ -62,14 +70,24 @@ export class SubscriptionRepository {
     });
   }
 
-  async findAllSubscriptions(): Promise<Subscription[]> {
+  async countSubscriptionsByUserId(userId: string): Promise<number> {
+    return this.prisma.subscription.count({ where: { userId } });
+  }
+
+  async findAllSubscriptions(skip?: number, take?: number): Promise<Subscription[]> {
     return this.prisma.subscription.findMany({
+      skip,
+      take,
       include: {
         user: true,
         items: { include: { product: true } },
         plan: true,
       },
     });
+  }
+
+  async countAllSubscriptions(): Promise<number> {
+    return this.prisma.subscription.count();
   }
 
   async updateSubscriptionStatus(
