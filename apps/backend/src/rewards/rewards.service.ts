@@ -6,10 +6,21 @@ export class RewardsService {
   constructor(private prisma: PrismaService) {}
 
   // Loyalty Rewards
-  async getAllRewards() {
-    return this.prisma.loyaltyReward.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async getAllRewards(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.loyaltyReward.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.loyaltyReward.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async createReward(data: any) {
@@ -25,10 +36,21 @@ export class RewardsService {
   }
 
   // Coupons
-  async getAllCoupons() {
-    return this.prisma.coupon.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async getAllCoupons(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.coupon.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.coupon.count(),
+    ]);
+
+    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
   }
 
   async createCoupon(data: any) {
