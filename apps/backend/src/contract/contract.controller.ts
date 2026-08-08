@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -33,7 +34,7 @@ export class ContractController {
   ) {
     if (!documentUrl) throw new BadRequestException('Document URL is required');
     const user = await this.prisma.user.findUnique({
-      where: { id: req.user.id },
+      where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
       include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
@@ -49,15 +50,15 @@ export class ContractController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.BUSINESS)
   @Get('my-contracts')
-  async getMyContracts(@Req() req: any) {
+  async getMyContracts(@Req() req: any, @Query() query: any) {
     const user = await this.prisma.user.findUnique({
-      where: { id: req.user.id },
+      where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
       include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
-      return [];
+      return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
     }
-    return this.contractService.findAllByBusiness(user.businessProfile.id);
+    return this.contractService.findAllByBusiness(user.businessProfile.id, query);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -70,8 +71,8 @@ export class ContractController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Get('admin/all')
-  findAll() {
-    return this.contractService.findAll();
+  findAll(@Query() query: any) {
+    return this.contractService.findAll(query);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
