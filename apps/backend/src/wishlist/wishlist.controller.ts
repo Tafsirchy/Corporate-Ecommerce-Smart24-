@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -18,10 +27,7 @@ export class WishlistController {
 
   @Post('items')
   @ApiOperation({ summary: 'Add item to wishlist' })
-  addItem(
-    @Req() req: any,
-    @Body() body: { productId: string }
-  ) {
+  addItem(@Req() req: any, @Body() body: { productId: string }) {
     return this.wishlistService.addItem(req.user.id, body.productId);
   }
 
@@ -32,11 +38,10 @@ export class WishlistController {
   }
 
   @Post('merge')
-  @ApiOperation({ summary: 'Merge local wishlist with server wishlist on login' })
-  mergeWishlist(
-    @Req() req: any,
-    @Body() body: { productIds: string[] }
-  ) {
+  @ApiOperation({
+    summary: 'Merge local wishlist with server wishlist on login',
+  })
+  mergeWishlist(@Req() req: any, @Body() body: { productIds: string[] }) {
     return this.wishlistService.mergeWishlist(req.user.id, body.productIds);
   }
 }
