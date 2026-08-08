@@ -14,21 +14,28 @@ export class UploadService {
     formData.append('image', file.buffer.toString('base64'));
 
     try {
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
 
       const data = await response.json();
-      
+
       if (data.success) {
         return data.data.url;
       } else {
-        console.warn(`ImgBB upload failed: ${data.error?.message}. Using placeholder image instead.`);
+        console.warn(
+          `ImgBB upload failed: ${data.error?.message}. Using placeholder image instead.`,
+        );
         return 'https://placehold.co/600x400/eeeeee/333333?text=Review+Image';
       }
     } catch (error: any) {
-      console.warn(`Failed to upload image to ImgBB: ${error.message}. Using placeholder image instead.`);
+      console.warn(
+        `Failed to upload image to ImgBB: ${error.message}. Using placeholder image instead.`,
+      );
       return 'https://placehold.co/600x400/eeeeee/333333?text=Review+Image';
     }
   }
