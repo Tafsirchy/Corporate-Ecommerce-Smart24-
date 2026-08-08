@@ -41,14 +41,35 @@ export class BusinessService {
     return document;
   }
 
-  async getPendingVerifications() {
-    return this.prisma.businessProfile.findMany({
-      where: { verificationStatus: 'PENDING' },
-      include: {
-        documents: true,
-        user: { select: { email: true, name: true, phone: true } },
+  async getPendingVerifications(query: { page?: number; limit?: number } = {}) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.businessProfile.findMany({
+        where: { verificationStatus: 'PENDING' },
+        skip,
+        take: limit,
+        include: {
+          documents: true,
+          user: { select: { email: true, name: true, phone: true } },
+        },
+      }),
+      this.prisma.businessProfile.count({
+        where: { verificationStatus: 'PENDING' },
+      }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async updateVerificationStatus(
