@@ -18,16 +18,19 @@ export class PaymentOptionsController {
 
   @Post()
   create(@Req() req: any, @Body() data: any) {
-    return this.paymentOptionsService.create(req.user.id, data);
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+    return this.paymentOptionsService.create(userId, data);
   }
 
   @Get()
   findAll(@Req() req: any) {
-    return this.paymentOptionsService.findByUserId(req.user.id);
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+    return this.paymentOptionsService.findByUserId(userId);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: any) {
-    return this.paymentOptionsService.delete(id, req.user.id);
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+    return this.paymentOptionsService.delete(id, userId);
   }
 }
