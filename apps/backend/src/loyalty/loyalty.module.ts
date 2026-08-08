@@ -8,6 +8,6 @@ import { MembershipsModule } from '../memberships/memberships.module';
   imports: [PrismaModule, MembershipsModule],
   controllers: [LoyaltyController],
   providers: [LoyaltyService],
-  exports: [LoyaltyService]
+  exports: [LoyaltyService],
 })
 export class LoyaltyModule {}
