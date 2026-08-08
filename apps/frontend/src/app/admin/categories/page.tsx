@@ -6,22 +6,41 @@ import { Edit2, Trash2 } from 'lucide-react';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState<any[]>([]);
+  const [allCategories, setAllCategories] = useState<any[]>([]);
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchCategories();
+  }, [page]);
+
+  useEffect(() => {
+    fetchAllCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const res = await apiClient.get('/categories');
-      setCategories(res.data);
+      const res = await apiClient.get(`/categories?page=${page}&limit=10`);
+      setCategories(res.data.data || res.data);
+      if (res.data.meta) {
+        setTotalPages(res.data.meta.totalPages);
+      }
     } catch (error) {
       toast.error('Failed to fetch categories');
+    }
+  };
+
+  const fetchAllCategories = async () => {
+    try {
+      const res = await apiClient.get('/categories');
+      setAllCategories(res.data);
+    } catch (error) {
+      console.error('Failed to fetch all categories for dropdown');
     }
   };
 
@@ -48,6 +67,7 @@ export default function AdminCategories() {
       setParentId('');
       setIsActive(true);
       fetchCategories();
+      fetchAllCategories();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to save category');
     } finally {
@@ -69,8 +89,9 @@ export default function AdminCategories() {
       await apiClient.delete(`/categories/${id}`);
       toast.success('Category deleted');
       fetchCategories();
+      fetchAllCategories();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete category');
+      toast.error(error?.response?.data?.message || 'Failed to delete category');
     }
   };
 
@@ -114,11 +135,7 @@ export default function AdminCategories() {
               className="w-full px-4 py-2 border rounded focus:ring-black focus:border-black bg-white"
             >
               <option value="">None (Top Level)</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id} disabled={editingId === cat.id}>
-                  {cat.name} {cat.level ? `(Level ${cat.level})` : ''}
-                </option>
-              ))}
+              {allCategories.map(c => <option key={c.id} value={c.id} disabled={editingId === c.id}>{c.name}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-2">
@@ -157,7 +174,7 @@ export default function AdminCategories() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {categories.map(cat => {
-              const parentName = categories.find(c => c.id === cat.parentId)?.name || '-';
+              const parentName = allCategories.find(c => c.id === cat.parentId)?.name || '-';
               return (
                 <tr key={cat.id} className="hover:bg-muted">
                   <td className="p-4 font-medium">{cat.name}</td>
@@ -182,6 +199,27 @@ export default function AdminCategories() {
             })}
           </tbody>
         </table>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center p-4 border-t border-border gap-2">
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className="px-3 py-1 border rounded hover:bg-muted disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="px-3 py-1 text-muted-foreground">Page {page} of {totalPages}</span>
+            <button 
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className="px-3 py-1 border rounded hover:bg-muted disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
