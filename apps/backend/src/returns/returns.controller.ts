@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, UseGuards, Req, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Req,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { ReturnsService } from './returns.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReturnStatus } from '@prisma/client';
@@ -9,7 +18,16 @@ export class ReturnsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createReturn(@Req() req: any, @Body() data: { orderId: string, orderItemId?: string, reason: string, comments?: string }) {
+  async createReturn(
+    @Req() req: any,
+    @Body()
+    data: {
+      orderId: string;
+      orderItemId?: string;
+      reason: string;
+      comments?: string;
+    },
+  ) {
     return this.returnsService.createReturn(req.user.userId, data);
   }
 
@@ -27,8 +45,12 @@ export class ReturnsController {
   @Patch(':id/status')
   async updateReturnStatus(
     @Param('id') id: string,
-    @Body() data: { status: ReturnStatus, refundAmount?: number }
+    @Body() data: { status: ReturnStatus; refundAmount?: number },
   ) {
-    return this.returnsService.updateReturnStatus(id, data.status, data.refundAmount);
+    return this.returnsService.updateReturnStatus(
+      id,
+      data.status,
+      data.refundAmount,
+    );
   }
 }
