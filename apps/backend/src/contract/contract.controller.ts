@@ -34,7 +34,7 @@ export class ContractController {
   ) {
     if (!documentUrl) throw new BadRequestException('Document URL is required');
     const user = await this.prisma.user.findUnique({
-      where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
+      where: { id: req.user?.id || req.user?.userId || req.user?.sub },
       include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
@@ -52,13 +52,19 @@ export class ContractController {
   @Get('my-contracts')
   async getMyContracts(@Req() req: any, @Query() query: any) {
     const user = await this.prisma.user.findUnique({
-      where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
+      where: { id: req.user?.id || req.user?.userId || req.user?.sub },
       include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
-      return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
+      return {
+        data: [],
+        meta: { total: 0, page: 1, limit: 20, totalPages: 0 },
+      };
     }
-    return this.contractService.findAllByBusiness(user.businessProfile.id, query);
+    return this.contractService.findAllByBusiness(
+      user.businessProfile.id,
+      query,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
