@@ -11,7 +11,7 @@ export default function AdminSecurityPage() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const generate2FA = async () => {
+  async function generate2FA() {
     setLoading(true);
     try {
       const res = await apiClient.post('/auth/2fa/generate');
@@ -25,7 +25,7 @@ export default function AdminSecurityPage() {
     }
   };
 
-  const enable2FA = async () => {
+  async function enable2FA() {
     if (!code) {
       toast.error('Please enter the 6-digit code');
       return;
