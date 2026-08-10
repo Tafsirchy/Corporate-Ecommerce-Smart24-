@@ -17,7 +17,10 @@ export class FaqsService {
       this.prisma.faq.count({ where: { isActive: true } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async getAllFaqsAdmin(page: number = 1, limit: number = 50, search?: string) {
