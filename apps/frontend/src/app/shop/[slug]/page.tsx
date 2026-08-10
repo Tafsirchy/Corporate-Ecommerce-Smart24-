@@ -69,7 +69,7 @@ export default function ProductDetailPage() {
     }
   }, [user]);
 
-  const handleSubscribeAlert = async (e: React.FormEvent) => {
+  async function handleSubscribeAlert(e: React.FormEvent) {
     e.preventDefault();
     if (!alertEmail) return;
     setSubscribingAlert(true);
@@ -84,7 +84,7 @@ export default function ProductDetailPage() {
     }
   };
 
-  const handleSubmitReview = async (e: React.FormEvent) => {
+  async function handleSubmitReview(e: React.FormEvent) {
     e.preventDefault();
     if (!user) {
       toast.error("Please login to submit a review");
@@ -94,7 +94,7 @@ export default function ProductDetailPage() {
     
     setSubmittingReview(true);
     try {
-      let imageUrls: string[] = [];
+      const imageUrls: string[] = [];
       
       // Upload image if selected
       if (reviewForm.imageFile) {
@@ -147,7 +147,7 @@ export default function ProductDetailPage() {
     }
   };
 
-  const handleDeleteReview = async (id: string) => {
+  async function handleDeleteReview(id: string) {
     if (!window.confirm("Are you sure you want to delete this review?")) return;
     try {
       await apiClient.delete(`/reviews/${id}`);
