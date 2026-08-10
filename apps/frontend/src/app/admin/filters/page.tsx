@@ -50,7 +50,7 @@ export default function AdminFilters() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [filtersRes, catsRes] = await Promise.all([
         apiClient.get('/filters/admin/all'),
@@ -118,7 +118,7 @@ export default function AdminFilters() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const payload: any = {
@@ -151,7 +151,7 @@ export default function AdminFilters() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!window.confirm('Are you sure you want to delete this filter? This will break existing product filters of this type.')) return;
     try {
       await apiClient.delete(`/filters/${id}`);
@@ -164,7 +164,7 @@ export default function AdminFilters() {
 
   if (isLoading) return <div className="p-8 text-center">Loading filters...</div>;
 
-  const handleApprove = async (id: string) => {
+  async function handleApprove(id: string) {
     try {
       await apiClient.patch(`/filters/${id}`, { status: 'ACTIVE' });
       toast.success('Filter approved');
