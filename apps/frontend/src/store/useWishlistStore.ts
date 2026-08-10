@@ -20,7 +20,7 @@ const WishlistResponseSchema = z.object({
   items: z.array(WishlistItemSchema).optional(),
 }).catchall(z.any());
 
-export type WishlistItem = z.infer<typeof WishlistItemSchema>;
+type WishlistItem = z.infer<typeof WishlistItemSchema>;
 
 interface WishlistStore {
   items: WishlistItem[];
