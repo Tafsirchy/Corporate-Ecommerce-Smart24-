@@ -26,7 +26,9 @@ export class BrandsService {
     });
   }
 
-  async findAll(query: { page?: number; limit?: number; search?: string } = {}) {
+  async findAll(
+    query: { page?: number; limit?: number; search?: string } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -86,13 +88,15 @@ export class BrandsService {
       throw new NotFoundException('Brand not found');
     }
 
-    const productsCount = await (this.brandRepository as any).prisma.product.count({
+    const productsCount = await (
+      this.brandRepository as any
+    ).prisma.product.count({
       where: { brandId: id },
     });
 
     if (productsCount > 0) {
       throw new ConflictException(
-        `Cannot delete brand because it is attached to ${productsCount} product(s).`
+        `Cannot delete brand because it is attached to ${productsCount} product(s).`,
       );
     }
 
