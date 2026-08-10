@@ -20,7 +20,10 @@ export class RewardsService {
       this.prisma.loyaltyReward.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async createReward(data: any) {
@@ -50,7 +53,10 @@ export class RewardsService {
       this.prisma.coupon.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async createCoupon(data: any) {
