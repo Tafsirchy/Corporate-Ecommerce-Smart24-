@@ -20,7 +20,7 @@ export default function AccountPage() {
     }
   }, [user, loading, router]);
 
-  const fetchOrders = async () => {
+  async function fetchOrders() {
     try {
       setLoadingOrders(true);
       const res = await apiClient.get('/orders');
