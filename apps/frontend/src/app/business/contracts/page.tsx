@@ -13,7 +13,7 @@ export default function BusinessContractsPage() {
     fetchContracts();
   }, []);
 
-  const fetchContracts = async () => {
+  async function fetchContracts() {
     try {
       const { data } = await apiClient.get('/contract/my-contracts');
       setContracts(data?.data || data);
@@ -24,7 +24,7 @@ export default function BusinessContractsPage() {
     }
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
+  async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
     if (!file) {
       toast.error('Please select a contract document');
