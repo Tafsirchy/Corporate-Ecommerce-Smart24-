@@ -47,7 +47,10 @@ export class ReturnsService {
     });
   }
 
-  async getUserReturns(userId: string, query: { page?: number; limit?: number } = {}) {
+  async getUserReturns(
+    userId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -57,7 +60,10 @@ export class ReturnsService {
       this.returnRepo.countReturnsByUser(userId),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async getAllReturns(query: { page?: number; limit?: number } = {}) {
@@ -70,7 +76,10 @@ export class ReturnsService {
       this.returnRepo.countAllReturns(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async getReturnById(id: string, userId: string) {
