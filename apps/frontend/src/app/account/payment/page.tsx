@@ -25,7 +25,7 @@ export default function PaymentOptionsPage() {
     }
   }, [user, loading, router]);
 
-  const fetchPaymentOptions = async () => {
+  async function fetchPaymentOptions() {
     try {
       const res = await apiClient.get('/payment-options');
       setPaymentOptions(res.data);
@@ -34,7 +34,7 @@ export default function PaymentOptionsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (confirm('Are you sure you want to remove this payment method?')) {
       try {
         await apiClient.delete(`/payment-options/${id}`);
@@ -46,7 +46,7 @@ export default function PaymentOptionsPage() {
     }
   };
 
-  const handleSavePaymentMethod = async (e: React.FormEvent) => {
+  async function handleSavePaymentMethod(e: React.FormEvent) {
     e.preventDefault();
     try {
       await apiClient.post('/payment-options', formData);
