@@ -19,7 +19,7 @@ function SearchResults() {
       return;
     }
 
-    const fetchSearchResults = async () => {
+    async function fetchSearchResults() {
       setIsLoading(true);
       try {
         const res = await apiClient.get(`/products/search?q=${encodeURIComponent(query)}&limit=24`);
