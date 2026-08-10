@@ -31,7 +31,7 @@ export default function AddressBookPage() {
     }
   }, [user, loading, router]);
 
-  const fetchAddresses = async () => {
+  async function fetchAddresses() {
     try {
       const res = await apiClient.get('/addresses');
       setAddresses(res.data);
@@ -72,7 +72,7 @@ export default function AddressBookPage() {
     setEditingId(null);
   };
 
-  const handleSaveAddress = async (e: React.FormEvent) => {
+  async function handleSaveAddress(e: React.FormEvent) {
     e.preventDefault();
     try {
       if (editingId) {
@@ -89,7 +89,7 @@ export default function AddressBookPage() {
     }
   };
 
-  const handleMakeDefaultShipping = async (id: string) => {
+  async function handleMakeDefaultShipping(id: string) {
     try {
       await apiClient.patch(`/addresses/${id}/default-shipping`);
       toast.success('Default shipping address updated');
@@ -99,7 +99,7 @@ export default function AddressBookPage() {
     }
   };
 
-  const handleMakeDefaultBilling = async (id: string) => {
+  async function handleMakeDefaultBilling(id: string) {
     try {
       await apiClient.patch(`/addresses/${id}/default-billing`);
       toast.success('Default billing address updated');
