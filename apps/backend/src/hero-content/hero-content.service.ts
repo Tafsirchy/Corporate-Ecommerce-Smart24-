@@ -5,7 +5,10 @@ import { PrismaService } from '../prisma/prisma.service';
 export class HeroContentService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(activeOnly: boolean = false, query: { page?: number; limit?: number } = {}) {
+  async findAll(
+    activeOnly: boolean = false,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -22,7 +25,10 @@ export class HeroContentService {
       this.prisma.banner.count({ where }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findOne(id: string) {
