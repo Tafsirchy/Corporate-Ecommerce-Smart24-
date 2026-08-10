@@ -31,7 +31,7 @@ export default function AdminFaqs() {
   const [isAdding, setIsAdding] = useState(false);
   const [addForm, setAddForm] = useState({ category: '', question: '', answer: '', isActive: true, order: 0 });
 
-  const fetchFaqs = async () => {
+  async function fetchFaqs() {
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -58,7 +58,7 @@ export default function AdminFaqs() {
     fetchFaqs();
   }, [page, searchTerm]);
 
-  const handleAddSubmit = async (e: React.FormEvent) => {
+  async function handleAddSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       await apiClient.post('/faqs', {
@@ -73,7 +73,7 @@ export default function AdminFaqs() {
     }
   };
 
-  const handleEditSubmit = async (id: string) => {
+  async function handleEditSubmit(id: string) {
     try {
       await apiClient.patch(`/faqs/${id}`, {
         ...editForm,
@@ -86,7 +86,7 @@ export default function AdminFaqs() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this FAQ?')) return;
     try {
       await apiClient.delete(`/faqs/${id}`);
