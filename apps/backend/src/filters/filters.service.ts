@@ -41,7 +41,10 @@ export class FiltersService {
       this.prisma.filterDefinition.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findActive(query: { page?: number; limit?: number } = {}) {
@@ -59,7 +62,10 @@ export class FiltersService {
       this.prisma.filterDefinition.count({ where: { status: 'ACTIVE' } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findSuggested(query: { page?: number; limit?: number } = {}) {
@@ -77,7 +83,10 @@ export class FiltersService {
       this.prisma.filterDefinition.count({ where: { status: 'SUGGESTED' } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findOne(id: string) {
