@@ -12,7 +12,7 @@ export default function BusinessSavedListsPage() {
     fetchLists();
   }, []);
 
-  const fetchLists = async () => {
+  async function fetchLists() {
     try {
       const res = await apiClient.get('/saved-list');
       setLists(res.data);
@@ -23,7 +23,7 @@ export default function BusinessSavedListsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this saved list?')) return;
     try {
       await apiClient.delete(`/saved-list/${id}`);
@@ -34,7 +34,7 @@ export default function BusinessSavedListsPage() {
     }
   };
 
-  const handleAddToCart = async (list: any) => {
+  async function handleAddToCart(list: any) {
     try {
       for (const item of list.productItems) {
         await apiClient.post('/cart/items', {
