@@ -12,7 +12,7 @@ export default function BusinessInvoicesPage() {
     fetchInvoices();
   }, []);
 
-  const fetchInvoices = async () => {
+  async function fetchInvoices() {
     try {
       const { data } = await apiClient.get('/invoice/my-invoices');
       setInvoices(data?.data || data);
