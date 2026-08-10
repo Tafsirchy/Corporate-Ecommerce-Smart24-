@@ -52,7 +52,7 @@ export default function WishlistPage() {
     }
   }, [user, activeTab]);
 
-  const fetchFollowedStores = async () => {
+  async function fetchFollowedStores() {
     try {
       setLoadingStores(true);
       const res = await apiClient.get('/followed-brands/me');
@@ -64,7 +64,7 @@ export default function WishlistPage() {
     }
   };
 
-  const unfollowStore = async (brandId: string) => {
+  async function unfollowStore(brandId: string) {
     try {
       await apiClient.delete(`/followed-brands/${brandId}/follow`);
       setFollowedStores(followedStores.filter(store => store.brandId !== brandId));
