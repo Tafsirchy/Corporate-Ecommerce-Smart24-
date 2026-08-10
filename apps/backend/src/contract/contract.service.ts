@@ -21,7 +21,10 @@ export class ContractService {
     });
   }
 
-  async findAllByBusiness(businessProfileId: string, query: { page?: number; limit?: number } = {}) {
+  async findAllByBusiness(
+    businessProfileId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -36,7 +39,10 @@ export class ContractService {
       this.prisma.businessContract.count({ where: { businessProfileId } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findOne(id: string) {
@@ -71,6 +77,9 @@ export class ContractService {
       this.prisma.businessContract.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 }
