@@ -46,7 +46,6 @@ export class SignupDto {
   @IsNotEmpty({ message: 'Phone number is required' })
   phone: string;
 
-
   @IsOptional()
   @ValidateNested()
   @Type(() => BusinessProfileDto)
