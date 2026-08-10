@@ -38,7 +38,7 @@ export default function AdminProducts() {
     fetchInitialData();
   }, []);
 
-  const fetchProducts = async () => {
+  async function fetchProducts() {
     try {
       const res = await apiClient.get(`/products/admin?page=${page}&limit=10`);
       setProducts(res.data.data || res.data);
@@ -50,7 +50,7 @@ export default function AdminProducts() {
     }
   };
 
-  const fetchInitialData = async () => {
+  async function fetchInitialData() {
     try {
       const [catsRes, brandsRes, filtersRes] = await Promise.all([
         apiClient.get('/categories'),
@@ -65,7 +65,7 @@ export default function AdminProducts() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files || e.target.files.length === 0) return;
     
     const file = e.target.files[0];
@@ -101,7 +101,7 @@ export default function AdminProducts() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
     
@@ -164,7 +164,7 @@ export default function AdminProducts() {
     (!f.categoryIds || f.categoryIds.length === 0 || f.categoryIds.includes(categoryId))
   );
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       await apiClient.delete(`/products/${id}`);
