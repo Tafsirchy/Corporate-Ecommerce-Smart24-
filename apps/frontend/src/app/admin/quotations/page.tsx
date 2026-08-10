@@ -23,7 +23,7 @@ export default function AdminQuotations() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const handleRespond = async (id: string) => {
+  async function handleRespond(id: string) {
     const data = replyData[id];
     if (!data || !data.offeredPrice) {
       toast.error("Please provide an offered price.");
