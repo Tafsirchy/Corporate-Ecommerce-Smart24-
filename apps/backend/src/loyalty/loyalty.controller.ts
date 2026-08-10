@@ -25,27 +25,40 @@ export class LoyaltyController {
 
   @Get('me')
   async getMyLoyaltyData(@Request() req: any) {
-    return this.loyaltyService.getUserLoyaltyData((req.user?.id || req.user?.userId || req.user?.sub));
+    return this.loyaltyService.getUserLoyaltyData(
+      req.user?.id || req.user?.userId || req.user?.sub,
+    );
   }
 
   @Get('transactions')
   getTransactions(@Req() req: any, @Query() query: any) {
-    return this.loyaltyService.getTransactions((req.user?.id || req.user?.userId || req.user?.sub), query);
+    return this.loyaltyService.getTransactions(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      query,
+    );
   }
 
   @Get('rewards/available')
   async getAvailableRewards(@Request() req: any) {
-    return this.loyaltyService.getAvailableRewards((req.user?.id || req.user?.userId || req.user?.sub));
+    return this.loyaltyService.getAvailableRewards(
+      req.user?.id || req.user?.userId || req.user?.sub,
+    );
   }
 
   @Get('my-rewards')
   getMyRewards(@Req() req: any, @Query() query: any) {
-    return this.loyaltyService.getMyRewards((req.user?.id || req.user?.userId || req.user?.sub), query);
+    return this.loyaltyService.getMyRewards(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      query,
+    );
   }
 
   @Post('rewards/:id/claim')
   async claimReward(@Request() req: any, @Param('id') id: string) {
-    return this.loyaltyService.claimReward((req.user?.id || req.user?.userId || req.user?.sub), id);
+    return this.loyaltyService.claimReward(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      id,
+    );
   }
 
   // --- Admin Routes ---
