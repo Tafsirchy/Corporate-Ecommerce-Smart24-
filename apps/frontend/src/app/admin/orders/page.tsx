@@ -15,7 +15,7 @@ export default function AdminOrders() {
     fetchOrders(page);
   }, [page]);
 
-  const fetchOrders = async (pageNum: number) => {
+  async function fetchOrders(pageNum: number) {
     try {
       setLoading(true);
       const res = await apiClient.get(`/orders?page=${pageNum}&limit=20`);
@@ -33,7 +33,7 @@ export default function AdminOrders() {
     }
   };
 
-  const handleStatusChange = async (orderId: string, newStatus: string) => {
+  async function handleStatusChange(orderId: string, newStatus: string) {
     const previousOrders = [...orders];
     setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     
@@ -46,7 +46,7 @@ export default function AdminOrders() {
     }
   };
 
-  const handlePaymentStatusChange = async (orderId: string, newStatus: string) => {
+  async function handlePaymentStatusChange(orderId: string, newStatus: string) {
     const previousOrders = [...orders];
     setOrders(orders.map(o => o.id === orderId ? { ...o, paymentStatus: newStatus } : o));
 
