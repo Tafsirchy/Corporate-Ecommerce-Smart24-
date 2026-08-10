@@ -21,11 +21,18 @@ export default function EditProfilePage() {
     if (!loading && !user) {
       router.push('/login');
     } else if (user) {
-      setFormData({
-        name: user.name || '',
-        phone: user.phone || '',
-        gender: user.gender || '',
-        birthday: user.birthday || '',
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData((prev) => {
+        // Only update if it's currently empty to avoid overwriting user edits
+        if (!prev.name && user.name) {
+          return {
+            name: user.name || '',
+            phone: user.phone || '',
+            gender: user.gender || '',
+            birthday: user.birthday || '',
+          };
+        }
+        return prev;
       });
     }
   }, [user, loading, router]);
@@ -34,7 +41,7 @@ export default function EditProfilePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsSubmitting(true);
     const success = await updateProfile(formData);
