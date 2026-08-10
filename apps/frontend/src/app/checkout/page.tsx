@@ -52,7 +52,7 @@ export default function CheckoutPage() {
   const deliveryCharge = 100;
   const grandTotal = cartTotal - discountAmount + deliveryCharge;
 
-  const handleApplyPromo = async () => {
+  async function handleApplyPromo() {
     if (!promoCode.trim()) return;
     setIsApplyingPromo(true);
     try {
@@ -80,7 +80,7 @@ export default function CheckoutPage() {
     setDiscountAmount(0);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user && (!guestEmail || !guestName)) {
       toast.error('Please provide your name and email to proceed as a guest, or login.');
