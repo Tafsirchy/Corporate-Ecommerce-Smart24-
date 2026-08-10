@@ -23,7 +23,7 @@ export default function SubscriptionsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    async function fetchPlans() {
       try {
         const res = await apiClient.get('/subscriptions/plans');
         const resData = res.data?.data || res.data;
@@ -46,7 +46,7 @@ export default function SubscriptionsPage() {
     setSelectedPlan(plan);
   };
 
-  const handleConfirmSubscription = async (e: React.FormEvent) => {
+  async function handleConfirmSubscription(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedPlan) return;
     
