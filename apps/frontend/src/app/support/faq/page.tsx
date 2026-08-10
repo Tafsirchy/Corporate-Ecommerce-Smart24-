@@ -31,7 +31,7 @@ export default function FAQPage() {
       }, 500);
     }
 
-    const fetchFaqs = async () => {
+    async function fetchFaqs() {
       try {
         const res = await apiClient.get('/faqs');
         setFaqs(res.data?.data || res.data);
@@ -54,7 +54,7 @@ export default function FAQPage() {
     ? faqs 
     : faqs.filter(f => f.category === activeCategory);
 
-  const handleFeedback = async (id: string, isHelpful: boolean) => {
+  async function handleFeedback(id: string, isHelpful: boolean) {
     if (feedbackGiven.has(id)) return;
     try {
       await apiClient.post(`/faqs/${id}/feedback`, { isHelpful });
