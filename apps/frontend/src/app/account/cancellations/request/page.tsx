@@ -30,7 +30,7 @@ export default function CancellationRequestPage() {
     }
   }, [user, loading, router, orderId]);
 
-  const fetchOrder = async () => {
+  async function fetchOrder() {
     try {
       setLoadingOrder(true);
       const res = await apiClient.get(`/orders/${orderId}`);
@@ -45,7 +45,7 @@ export default function CancellationRequestPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
