@@ -30,13 +30,19 @@ export class InvoiceController {
   @Get('my-invoices')
   async getMyInvoices(@Req() req: any, @Query() query: any) {
     const user = await this.prisma.user.findUnique({
-      where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
+      where: { id: req.user?.id || req.user?.userId || req.user?.sub },
       include: { businessProfile: true },
     });
     if (!user || !user.businessProfile) {
-      return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
+      return {
+        data: [],
+        meta: { total: 0, page: 1, limit: 20, totalPages: 0 },
+      };
     }
-    return this.invoiceService.findAllByBusiness(user.businessProfile.id, query);
+    return this.invoiceService.findAllByBusiness(
+      user.businessProfile.id,
+      query,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -67,7 +73,7 @@ export class InvoiceController {
     // Check if BUSINESS user is authorized to view this invoice
     if (req.user.role === 'BUSINESS') {
       const user = await this.prisma.user.findUnique({
-        where: { id: (req.user?.id || req.user?.userId || req.user?.sub) },
+        where: { id: req.user?.id || req.user?.userId || req.user?.sub },
         include: { businessProfile: true },
       });
       const invoice = await this.invoiceService.findOne(id);
