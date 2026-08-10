@@ -21,7 +21,7 @@ export default function MyCancellationsPage() {
     }
   }, [user, loading, router]);
 
-  const fetchOrders = async () => {
+  async function fetchOrders() {
     try {
       setLoadingOrders(true);
       const res = await apiClient.get('/orders');
