@@ -20,7 +20,7 @@ function ResetPasswordForm() {
     }
   }, [token, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
