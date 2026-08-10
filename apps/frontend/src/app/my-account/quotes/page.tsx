@@ -22,7 +22,7 @@ export default function MyQuotationsPage() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const handleAction = async (id: string, action: 'accept' | 'reject') => {
+  async function handleAction(id: string, action: 'accept' | 'reject') {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quotations/${id}/${action}`, {
         method: "PATCH",
