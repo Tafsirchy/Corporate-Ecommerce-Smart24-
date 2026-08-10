@@ -38,7 +38,10 @@ export class CategoriesService {
       name: createCategoryDto.name,
       slug,
       level,
-      isActive: createCategoryDto.isActive !== undefined ? createCategoryDto.isActive : true,
+      isActive:
+        createCategoryDto.isActive !== undefined
+          ? createCategoryDto.isActive
+          : true,
       parent: createCategoryDto.parentId
         ? { connect: { id: createCategoryDto.parentId } }
         : undefined,
@@ -121,11 +124,15 @@ export class CategoriesService {
     if (category.children.length > 0) {
       throw new ConflictException('Cannot delete category with children');
     }
-    const productsCount = await (this.categoryRepository as any).prisma.product.count({
+    const productsCount = await (
+      this.categoryRepository as any
+    ).prisma.product.count({
       where: { categoryId: id },
     });
     if (productsCount > 0) {
-      throw new ConflictException('Cannot delete category with associated products');
+      throw new ConflictException(
+        'Cannot delete category with associated products',
+      );
     }
     return this.categoryRepository.delete(id);
   }
