@@ -23,7 +23,7 @@ export default function AdminCategories() {
     fetchAllCategories();
   }, []);
 
-  const fetchCategories = async () => {
+  async function fetchCategories() {
     try {
       const res = await apiClient.get(`/categories?page=${page}&limit=10`);
       setCategories(res.data.data || res.data);
@@ -35,7 +35,7 @@ export default function AdminCategories() {
     }
   };
 
-  const fetchAllCategories = async () => {
+  async function fetchAllCategories() {
     try {
       const res = await apiClient.get('/categories');
       setAllCategories(res.data);
@@ -44,7 +44,7 @@ export default function AdminCategories() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
     try {
@@ -83,7 +83,7 @@ export default function AdminCategories() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!window.confirm('Are you sure you want to delete this category?')) return;
     try {
       await apiClient.delete(`/categories/${id}`);
