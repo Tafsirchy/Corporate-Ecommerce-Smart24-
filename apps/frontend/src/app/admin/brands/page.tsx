@@ -20,7 +20,7 @@ export default function AdminBrands() {
     fetchBrands();
   }, []);
 
-  const fetchBrands = async () => {
+  async function fetchBrands() {
     try {
       const res = await apiClient.get('/brands?limit=100');
       setBrands(res.data.data || res.data);
@@ -29,7 +29,7 @@ export default function AdminBrands() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
     try {
@@ -81,7 +81,7 @@ export default function AdminBrands() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!window.confirm('Are you sure you want to delete this brand?')) return;
     try {
       await apiClient.delete(`/brands/${id}`);
