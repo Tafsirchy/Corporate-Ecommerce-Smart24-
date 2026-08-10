@@ -26,7 +26,7 @@ export default function AdminPricingRulesPage() {
     fetchCategories();
   }, []);
 
-  const fetchRules = async () => {
+  async function fetchRules() {
     try {
       // Force cache eviction and fetch fresh data
       await apiClient.storage.remove('pricing-rules-list');
@@ -39,7 +39,7 @@ export default function AdminPricingRulesPage() {
     }
   };
 
-  const fetchCategories = async () => {
+  async function fetchCategories() {
     try {
       const res = await apiClient.get('/categories', { id: 'categories-list' });
       // Depending on API, might be res.data or res.data.items
@@ -49,7 +49,7 @@ export default function AdminPricingRulesPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const dataToSubmit = {
@@ -79,7 +79,7 @@ export default function AdminPricingRulesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this rule?')) return;
     try {
       await apiClient.delete(`/pricing-rule/${id}`);
