@@ -27,7 +27,7 @@ export default function MyOrdersPage() {
     }
   }, [user, loading, router, page]);
 
-  const fetchOrders = async (pageNum: number) => {
+  async function fetchOrders(pageNum: number) {
     try {
       setLoadingOrders(true);
       const res = await apiClient.get(`/orders?page=${pageNum}&limit=10`);
