@@ -9,7 +9,7 @@ export default function BusinessDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    async function fetchDashboardData() {
       try {
         const { data } = await apiClient.get('/rfq/my-rfqs');
         setRfqs(data?.data || data);
