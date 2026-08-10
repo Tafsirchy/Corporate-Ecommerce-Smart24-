@@ -5,7 +5,10 @@ import { PrismaService } from '../prisma/prisma.service';
 export class InvoiceService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllByBusiness(businessProfileId: string, query: { page?: number; limit?: number } = {}) {
+  async findAllByBusiness(
+    businessProfileId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -18,10 +21,15 @@ export class InvoiceService {
         include: { order: true },
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.businessInvoice.count({ where: { businessId: businessProfileId } }),
+      this.prisma.businessInvoice.count({
+        where: { businessId: businessProfileId },
+      }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findOne(id: string) {
@@ -83,7 +91,10 @@ export class InvoiceService {
       this.prisma.businessInvoice.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async exportMushakPdf(id: string): Promise<Buffer> {
