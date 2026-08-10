@@ -15,7 +15,7 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, [page]);
 
-  const fetchUsers = async () => {
+  async function fetchUsers() {
     setLoading(true);
     try {
       const res = await apiClient.get(`/users?page=${page}&limit=15`);
@@ -30,7 +30,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleRoleChange = async (userId: string, newRole: string) => {
+  async function handleRoleChange(userId: string, newRole: string) {
     if (!window.confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
     try {
       await apiClient.patch(`/users/${userId}/role`, { role: newRole });
@@ -41,7 +41,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleDelete = async (userId: string) => {
+  async function handleDelete(userId: string) {
     if (!window.confirm('Are you sure you want to ban/delete this user? This will anonymize their data.')) return;
     try {
       await apiClient.delete(`/users/${userId}`);
