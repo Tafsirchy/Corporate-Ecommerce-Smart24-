@@ -14,7 +14,7 @@ export default function MembershipPage() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [meRes, levelsRes] = await Promise.all([
         apiClient.get('/loyalty/me'),
