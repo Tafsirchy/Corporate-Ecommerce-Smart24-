@@ -23,7 +23,7 @@ function TrackOrderContent() {
     }
   }, [id]);
 
-  const fetchOrder = async (orderId: string) => {
+  async function fetchOrder(orderId: string) {
     try {
       setLoading(true);
       const res = await apiClient.get(`/orders/${orderId}`);
