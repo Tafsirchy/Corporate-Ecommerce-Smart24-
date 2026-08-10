@@ -26,7 +26,7 @@ export default function AdminRewardsPage() {
     fetchRewards();
   }, []);
 
-  const fetchRewards = async () => {
+  async function fetchRewards() {
     try {
       const res = await apiClient.get('/loyalty/admin/rewards');
       setRewards(res.data);
@@ -71,7 +71,7 @@ export default function AdminRewardsPage() {
     setEditingId(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const cleanedData = {
@@ -93,7 +93,7 @@ export default function AdminRewardsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this reward?')) return;
     try {
       await apiClient.delete(`/loyalty/admin/rewards/${id}`);
