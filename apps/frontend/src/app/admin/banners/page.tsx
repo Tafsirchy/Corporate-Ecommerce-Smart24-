@@ -22,7 +22,7 @@ export default function AdminBanners() {
     fetchBanners();
   }, []);
 
-  const fetchBanners = async () => {
+  async function fetchBanners() {
     try {
       setIsLoadingTable(true);
       const res = await apiClient.get('/banners');
@@ -34,7 +34,7 @@ export default function AdminBanners() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files || e.target.files.length === 0) return;
     
     const file = e.target.files[0];
@@ -72,7 +72,7 @@ export default function AdminBanners() {
     setEditingId(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!imageUrl) {
       return toast.error('Please upload an image first');
@@ -109,7 +109,7 @@ export default function AdminBanners() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this banner?')) return;
     try {
       await apiClient.delete(`/banners/${id}`);
@@ -120,7 +120,7 @@ export default function AdminBanners() {
     }
   };
 
-  const toggleStatus = async (id: string, currentStatus: boolean) => {
+  async function toggleStatus(id: string, currentStatus: boolean) {
     const previousBanners = [...banners];
     setBanners(banners.map(b => b.id === id ? { ...b, isActive: !currentStatus } : b));
     
