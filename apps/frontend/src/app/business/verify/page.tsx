@@ -12,7 +12,7 @@ export default function BusinessVerifyPage() {
   const [documentType, setDocumentType] = useState('TRADE_LICENSE');
   const [uploading, setUploading] = useState(false);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
     if (!file) {
       toast.error('Please select a file');
