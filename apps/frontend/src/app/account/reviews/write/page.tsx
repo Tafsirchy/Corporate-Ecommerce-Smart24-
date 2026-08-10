@@ -31,7 +31,7 @@ export default function WriteReviewPage() {
     }
   }, [user, loading, router, productId]);
 
-  const fetchProduct = async () => {
+  async function fetchProduct() {
     try {
       setLoadingProduct(true);
       const res = await apiClient.get(`/products/${productId}`);
@@ -43,7 +43,7 @@ export default function WriteReviewPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
