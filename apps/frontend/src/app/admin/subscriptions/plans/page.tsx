@@ -33,7 +33,7 @@ export default function AdminSubscriptionPlans() {
     fetchProducts();
   }, [token]);
 
-  const fetchPlans = async () => {
+  async function fetchPlans() {
     if (!token) return;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans`);
@@ -45,7 +45,7 @@ export default function AdminSubscriptionPlans() {
     }
   };
 
-  const fetchProducts = async () => {
+  async function fetchProducts() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?limit=100`);
       if (res.ok) {
@@ -77,7 +77,7 @@ export default function AdminSubscriptionPlans() {
     setSelectedItems(selectedItems.filter(i => i.product.id !== productId));
   };
 
-  const handleSavePlan = async (e: React.FormEvent) => {
+  async function handleSavePlan(e: React.FormEvent) {
     e.preventDefault();
     try {
       const payload = {
@@ -133,7 +133,7 @@ export default function AdminSubscriptionPlans() {
     setIsModalOpen(true);
   };
 
-  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+  async function handleToggleActive(id: string, currentStatus: boolean) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans/${id}/toggle-active`, {
         method: "PATCH",
