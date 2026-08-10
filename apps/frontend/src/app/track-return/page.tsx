@@ -21,7 +21,7 @@ function TrackReturnContent() {
     }
   }, [id]);
 
-  const fetchReturn = async (returnId: string) => {
+  async function fetchReturn(returnId: string) {
     try {
       setLoading(true);
       const res = await apiClient.get(`/returns/${returnId}`);
