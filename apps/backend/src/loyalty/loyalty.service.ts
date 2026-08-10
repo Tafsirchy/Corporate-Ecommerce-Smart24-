@@ -88,7 +88,10 @@ export class LoyaltyService {
     return user;
   }
 
-  async getTransactions(userId: string, query: { page?: number; limit?: number } = {}) {
+  async getTransactions(
+    userId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -103,7 +106,10 @@ export class LoyaltyService {
       this.prisma.rewardTransaction.count({ where: { userId } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async getAvailableRewards(userId: string) {
@@ -123,7 +129,10 @@ export class LoyaltyService {
     });
   }
 
-  async getMyRewards(userId: string, query: { page?: number; limit?: number } = {}) {
+  async getMyRewards(
+    userId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -139,7 +148,10 @@ export class LoyaltyService {
       this.prisma.userReward.count({ where: { userId } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async claimReward(userId: string, rewardId: string) {
@@ -223,7 +235,10 @@ export class LoyaltyService {
       this.prisma.loyaltyReward.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async createLoyaltyReward(data: any) {
