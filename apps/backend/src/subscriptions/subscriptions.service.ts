@@ -66,7 +66,10 @@ export class SubscriptionsService {
       this.subscriptionRepo.countAllPlans(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async createCustomSubscription(userId: string, data: any) {
@@ -191,7 +194,10 @@ export class SubscriptionsService {
     });
   }
 
-  async getUserSubscriptions(userId: string, query: { page?: number; limit?: number } = {}) {
+  async getUserSubscriptions(
+    userId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -201,7 +207,10 @@ export class SubscriptionsService {
       this.subscriptionRepo.countSubscriptionsByUserId(userId),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async getAllSubscriptions(query: { page?: number; limit?: number } = {}) {
@@ -214,7 +223,10 @@ export class SubscriptionsService {
       this.subscriptionRepo.countAllSubscriptions(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async updateStatus(id: string, status: string) {
