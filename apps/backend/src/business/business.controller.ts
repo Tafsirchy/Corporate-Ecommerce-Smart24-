@@ -75,11 +75,7 @@ export class BusinessController {
       throw new BadRequestException('Invalid status');
     }
     const adminId = req.user?.id || req.user?.userId || req.user?.sub;
-    return this.businessService.updateVerificationStatus(
-      id,
-      status,
-      adminId,
-    );
+    return this.businessService.updateVerificationStatus(id, status, adminId);
   }
 
   @Patch(':id/credit')
