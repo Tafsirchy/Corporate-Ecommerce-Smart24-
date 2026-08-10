@@ -14,7 +14,8 @@ import { EmailService } from '../common/email/email.service';
 const IV_LENGTH = 12; // For AES-GCM
 const ALGORITHM = 'aes-256-gcm';
 const getEncryptionKey = () => {
-  const secret = process.env.ENCRYPTION_KEY || 'default_secret_key_change_me_in_prod';
+  const secret =
+    process.env.ENCRYPTION_KEY || 'default_secret_key_change_me_in_prod';
   return crypto.scryptSync(secret, 'salt', 32);
 };
 
@@ -31,7 +32,11 @@ const decryptSecret = (encryptedText: string) => {
   if (!encryptedText || !encryptedText.includes(':')) return encryptedText; // Fallback for old plaintext
   try {
     const [ivHex, authTagHex, encrypted] = encryptedText.split(':');
-    const decipher = crypto.createDecipheriv(ALGORITHM, getEncryptionKey(), Buffer.from(ivHex, 'hex'));
+    const decipher = crypto.createDecipheriv(
+      ALGORITHM,
+      getEncryptionKey(),
+      Buffer.from(ivHex, 'hex'),
+    );
     decipher.setAuthTag(Buffer.from(authTagHex, 'hex'));
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
@@ -271,7 +276,9 @@ export class AuthService {
   async generateTwoFactorAuthSecret(user: any) {
     const secret = authenticator.generateSecret();
     const otpauthUrl = authenticator.keyuri(user.email, 'Smart24', secret);
-    await this.usersService.update(user.id, { twoFactorSecret: encryptSecret(secret) });
+    await this.usersService.update(user.id, {
+      twoFactorSecret: encryptSecret(secret),
+    });
     return { secret, otpauthUrl };
   }
 
