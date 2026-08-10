@@ -12,7 +12,7 @@ export default function AdminVerificationsPage() {
     fetchVerifications();
   }, []);
 
-  const fetchVerifications = async () => {
+  async function fetchVerifications() {
     try {
       const { data } = await apiClient.get('/business/verifications');
       setVerifications(data.data || data);
@@ -23,7 +23,7 @@ export default function AdminVerificationsPage() {
     }
   };
 
-  const handleUpdateStatus = async (id: string, status: 'APPROVED' | 'REJECTED') => {
+  async function handleUpdateStatus(id: string, status: 'APPROVED' | 'REJECTED') {
     setProcessing(id);
     try {
       await apiClient.patch(`/business/${id}/verification`, { status });
