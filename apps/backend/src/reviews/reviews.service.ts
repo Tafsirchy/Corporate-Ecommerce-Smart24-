@@ -67,7 +67,10 @@ export class ReviewsService {
     return review;
   }
 
-  async findAllByProduct(productId: string, query: { page?: number; limit?: number } = {}) {
+  async findAllByProduct(
+    productId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -83,10 +86,16 @@ export class ReviewsService {
       this.prisma.review.count({ where: { productId } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
-  async findUserReviews(userId: string, query: { page?: number; limit?: number } = {}) {
+  async findUserReviews(
+    userId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -97,14 +106,19 @@ export class ReviewsService {
         skip,
         take: limit,
         include: {
-          product: { select: { id: true, name: true, slug: true, images: true } },
+          product: {
+            select: { id: true, name: true, slug: true, images: true },
+          },
         },
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.review.count({ where: { userId } }),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async findPendingReviews(userId: string) {
@@ -155,7 +169,11 @@ export class ReviewsService {
     return Array.from(pendingProducts.values());
   }
 
-  async update(userId: string, reviewId: string, updateReviewDto: UpdateReviewDto) {
+  async update(
+    userId: string,
+    reviewId: string,
+    updateReviewDto: UpdateReviewDto,
+  ) {
     const review = await this.prisma.review.findUnique({
       where: { id: reviewId },
     });
@@ -208,7 +226,10 @@ export class ReviewsService {
       this.prisma.review.count(),
     ]);
 
-    return { data, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async removeAdmin(reviewId: string) {
