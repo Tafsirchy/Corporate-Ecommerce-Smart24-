@@ -12,7 +12,7 @@ export default function AdminRfqPage() {
     fetchRfqs();
   }, []);
 
-  const fetchRfqs = async () => {
+  async function fetchRfqs() {
     try {
       const { data } = await apiClient.get('/rfq/all');
       setRfqs(data?.data || data);
@@ -23,7 +23,7 @@ export default function AdminRfqPage() {
     }
   };
 
-  const handleUpdateStatus = async (id: string, status: string, notes?: string) => {
+  async function handleUpdateStatus(id: string, status: string, notes?: string) {
     setProcessing(id);
     try {
       await apiClient.patch(`/rfq/${id}/status`, { status, adminNotes: notes });
