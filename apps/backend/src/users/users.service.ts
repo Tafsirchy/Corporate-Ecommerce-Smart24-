@@ -46,7 +46,10 @@ export class UsersService {
 
     const result = await this.userRepository.findAll(skip, limit);
     return {
-      data: result.data.map(({ password, twoFactorSecret, ...rest }) => rest),
+      data: result.data.map(
+        ({ password: _password, twoFactorSecret: _twoFactorSecret, ...rest }) =>
+          rest,
+      ),
       meta: {
         total: result.total,
         page,
