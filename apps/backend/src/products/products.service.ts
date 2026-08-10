@@ -243,12 +243,14 @@ export class ProductsService {
     }
 
     // 1. Optimize: Find all matching categories in one query
-    const categoryTokensRegex = tokens.map(t => ({ name: { contains: t, mode: 'insensitive' as any } }));
+    const categoryTokensRegex = tokens.map((t) => ({
+      name: { contains: t, mode: 'insensitive' as any },
+    }));
     const matchingCategories = await this.prisma.category.findMany({
       where: { OR: categoryTokensRegex },
       select: { id: true, name: true },
     });
-    
+
     // Resolve descendants
     let allCategoryIds = matchingCategories.map((c) => c.id);
     if (allCategoryIds.length > 0) {
@@ -263,7 +265,10 @@ export class ProductsService {
           where: { parentId: { in: subCategoryIds } },
           select: { id: true },
         });
-        allCategoryIds = [...allCategoryIds, ...subSubCategories.map((c) => c.id)];
+        allCategoryIds = [
+          ...allCategoryIds,
+          ...subSubCategories.map((c) => c.id),
+        ];
       }
     }
 
@@ -271,11 +276,13 @@ export class ProductsService {
     const tokenCategoryMap = new Map<string, string[]>();
     for (const token of tokens) {
       const regex = new RegExp(token, 'i');
-      const matchedBaseCatIds = matchingCategories.filter(c => regex.test(c.name)).map(c => c.id);
+      const matchedBaseCatIds = matchingCategories
+        .filter((c) => regex.test(c.name))
+        .map((c) => c.id);
       // If a token matches a base category, we consider ALL resolved descendants valid for this token
       // For simplicity in search, if any category matched, we'll use all resolved IDs for that token
       if (matchedBaseCatIds.length > 0) {
-         tokenCategoryMap.set(token, allCategoryIds);
+        tokenCategoryMap.set(token, allCategoryIds);
       }
     }
 
