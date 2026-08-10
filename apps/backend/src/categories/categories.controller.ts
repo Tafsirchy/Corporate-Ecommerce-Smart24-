@@ -36,7 +36,7 @@ export class CategoriesController {
   async create(@Body() createCategoryDto: CreateCategoryDto, @Req() req: any) {
     const category = await this.categoriesService.create(createCategoryDto);
     await this.auditLogService.create({
-      adminId: (req.user?.id || req.user?.userId || req.user?.sub),
+      adminId: req.user?.id || req.user?.userId || req.user?.sub,
       action: 'CREATE',
       targetType: 'CATEGORY',
       targetId: category.id,
@@ -69,7 +69,7 @@ export class CategoriesController {
   ) {
     const category = await this.categoriesService.update(id, updateCategoryDto);
     await this.auditLogService.create({
-      adminId: (req.user?.id || req.user?.userId || req.user?.sub),
+      adminId: req.user?.id || req.user?.userId || req.user?.sub,
       action: 'UPDATE',
       targetType: 'CATEGORY',
       targetId: category.id,
@@ -86,7 +86,7 @@ export class CategoriesController {
   async remove(@Param('id') id: string, @Req() req: any) {
     const category = await this.categoriesService.remove(id);
     await this.auditLogService.create({
-      adminId: (req.user?.id || req.user?.userId || req.user?.sub),
+      adminId: req.user?.id || req.user?.userId || req.user?.sub,
       action: 'DELETE',
       targetType: 'CATEGORY',
       targetId: category.id,
