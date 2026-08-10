@@ -13,7 +13,7 @@ export default function AdminAuditLogsPage() {
     fetchLogs();
   }, []);
 
-  const fetchLogs = async () => {
+  async function fetchLogs() {
     try {
       const res = await apiClient.get('/audit-log');
       setLogs(res.data?.data || res.data);
