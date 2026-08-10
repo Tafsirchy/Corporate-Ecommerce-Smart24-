@@ -27,7 +27,7 @@ export default function AdminSupportTickets() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchTickets = async () => {
+  async function fetchTickets() {
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -57,7 +57,7 @@ export default function AdminSupportTickets() {
     fetchTickets();
   }, [page, searchTerm, statusFilter]);
 
-  const updateStatus = async (id: string, status: string) => {
+  async function updateStatus(id: string, status: string) {
     try {
       await apiClient.patch(`/support-tickets/${id}/status`, { status });
       fetchTickets(); // Refresh
@@ -67,7 +67,7 @@ export default function AdminSupportTickets() {
     }
   };
 
-  const deleteTicket = async (id: string) => {
+  async function deleteTicket(id: string) {
     if (!confirm('Are you sure you want to delete this support ticket?')) return;
     try {
       await apiClient.delete(`/support-tickets/${id}`);
