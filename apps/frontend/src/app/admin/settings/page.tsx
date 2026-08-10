@@ -10,7 +10,7 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    async function fetchSettings() {
       try {
         const res = await apiClient.get('/settings');
         const settingsData = res.data?.data || res.data;
@@ -27,7 +27,7 @@ export default function AdminSettings() {
     fetchSettings();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     try {
