@@ -21,7 +21,7 @@ const CartResponseSchema = z.object({
   items: z.array(CartItemSchema).optional(),
 }).catchall(z.any());
 
-export type CartItem = z.infer<typeof CartItemSchema>;
+type CartItem = z.infer<typeof CartItemSchema>;
 
 interface CartStore {
   items: CartItem[];
