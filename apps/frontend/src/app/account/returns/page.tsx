@@ -24,7 +24,7 @@ export default function MyReturnsPage() {
     }
   }, [user, loading, router]);
 
-  const fetchReturns = async () => {
+  async function fetchReturns() {
     try {
       setLoadingReturns(true);
       const res = await apiClient.get('/returns/me');
