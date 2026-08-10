@@ -29,7 +29,7 @@ export default function RFQPage() {
     setItems(newItems);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (items.some(item => !item.productName || item.quantity < 1)) {
       toast.error('Please fill out all product details correctly.');
