@@ -55,7 +55,11 @@ export class ReviewsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Patch(':id')
-  update(@Req() req, @Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
+  update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateReviewDto: UpdateReviewDto,
+  ) {
     const userId = req.user?.id || req.user?.userId || req.user?.sub;
     return this.reviewsService.update(userId, id, updateReviewDto);
   }
