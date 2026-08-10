@@ -23,7 +23,7 @@ export default function MyReviewsPage() {
     }
   }, [user, loading, router]);
 
-  const fetchReviews = async () => {
+  async function fetchReviews() {
     try {
       setLoadingData(true);
       const [pendingRes, historyRes] = await Promise.all([
