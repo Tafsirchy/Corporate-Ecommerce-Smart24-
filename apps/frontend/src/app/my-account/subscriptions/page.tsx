@@ -20,7 +20,7 @@ export default function MySubscriptions() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const updateStatus = async (id: string, status: string) => {
+  async function updateStatus(id: string, status: string) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/${id}/status`, {
         method: "PATCH",
