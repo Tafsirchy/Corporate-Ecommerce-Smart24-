@@ -66,14 +66,19 @@ export class RfqController {
       specFileUrl,
     };
 
-    return this.rfqService.createRfq((req.user?.id || req.user?.userId || req.user?.sub), dto);
+    return this.rfqService.createRfq(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      dto,
+    );
   }
 
   @Get('my-rfqs')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.BUSINESS)
   async getMyRfqs(@Req() req: any) {
-    return this.rfqService.getBusinessRfqs((req.user?.id || req.user?.userId || req.user?.sub));
+    return this.rfqService.getBusinessRfqs(
+      req.user?.id || req.user?.userId || req.user?.sub,
+    );
   }
 
   // --- Admin Endpoints ---
