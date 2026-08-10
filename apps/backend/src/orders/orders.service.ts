@@ -47,7 +47,8 @@ export class OrdersService {
       throw new BadRequestException('Cart is empty');
     }
 
-    const { totalAmount, deliveryCharge, orderItems } = await this.pricingService.calculateCartTotals(userId, cart.items);
+    const { totalAmount, deliveryCharge, orderItems } =
+      await this.pricingService.calculateCartTotals(userId, cart.items);
 
     let grandTotal = totalAmount + deliveryCharge;
     let finalDiscountAmount = 0;
@@ -361,7 +362,8 @@ export class OrdersService {
     }
 
     const isCancelling = status === 'CANCELLED' && order.status !== 'CANCELLED';
-    const isUncancelling = order.status === 'CANCELLED' && status !== 'CANCELLED';
+    const isUncancelling =
+      order.status === 'CANCELLED' && status !== 'CANCELLED';
 
     let updatedOrder;
     if (isCancelling) {
@@ -411,7 +413,9 @@ export class OrdersService {
             data: { stock: { decrement: item.quantity } },
           });
           if (updateResult.count === 0) {
-            throw new BadRequestException(`Insufficient stock to revert order for product ${item.productId}`);
+            throw new BadRequestException(
+              `Insufficient stock to revert order for product ${item.productId}`,
+            );
           }
         }
 
@@ -422,9 +426,13 @@ export class OrdersService {
             include: { businessProfile: true },
           });
           if (user && user.businessProfile) {
-            const availableCredit = user.businessProfile.creditLimit - user.businessProfile.usedCredit;
+            const availableCredit =
+              user.businessProfile.creditLimit -
+              user.businessProfile.usedCredit;
             if (order.totalAmount > availableCredit) {
-               throw new BadRequestException('Insufficient credit limit to revert this order');
+              throw new BadRequestException(
+                'Insufficient credit limit to revert this order',
+              );
             }
             await tx.businessProfile.update({
               where: { id: user.businessProfile.id },
