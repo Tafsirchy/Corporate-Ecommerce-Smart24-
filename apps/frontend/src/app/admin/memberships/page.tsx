@@ -27,7 +27,7 @@ export default function AdminMembershipsPage() {
     fetchLevels();
   }, []);
 
-  const fetchLevels = async () => {
+  async function fetchLevels() {
     try {
       const res = await apiClient.get('/memberships');
       setLevels(res.data);
@@ -87,7 +87,7 @@ export default function AdminMembershipsPage() {
     setFormData({ ...formData, benefits: newBenefits.length ? newBenefits : [''] });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       let finalBadgeUrl = formData.badgeUrl;
@@ -124,7 +124,7 @@ export default function AdminMembershipsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this level? Users on this level might be affected.')) return;
     try {
       await apiClient.delete(`/memberships/${id}`);
