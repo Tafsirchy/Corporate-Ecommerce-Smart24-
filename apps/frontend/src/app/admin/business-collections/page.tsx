@@ -19,7 +19,7 @@ export default function AdminBusinessCollections() {
     fetchCollections();
   }, []);
 
-  const fetchCollections = async () => {
+  async function fetchCollections() {
     try {
       setIsLoadingPage(true);
       const res = await apiClient.get('/business-collections/admin/all');
@@ -37,7 +37,7 @@ export default function AdminBusinessCollections() {
     };
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, position: number) => {
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, position: number) {
     if (!e.target.files || e.target.files.length === 0) return;
     
     const file = e.target.files[0];
@@ -68,7 +68,7 @@ export default function AdminBusinessCollections() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent, position: number) => {
+  async function handleSubmit(e: React.FormEvent, position: number) {
     e.preventDefault();
     const data = getCollectionForPosition(position);
     
@@ -110,7 +110,7 @@ export default function AdminBusinessCollections() {
     });
   };
 
-  const toggleStatus = async (position: number) => {
+  async function toggleStatus(position: number) {
     const data = getCollectionForPosition(position);
     if (!data.id) return toast.error('Save the slot before toggling status');
     
