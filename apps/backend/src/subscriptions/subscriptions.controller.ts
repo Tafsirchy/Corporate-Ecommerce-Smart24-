@@ -66,7 +66,7 @@ export class SubscriptionsController {
     @Body() body: CreateCustomSubscriptionDto,
   ) {
     return this.subscriptionsService.createCustomSubscription(
-      (req.user?.id || req.user?.userId || req.user?.sub),
+      req.user?.id || req.user?.userId || req.user?.sub,
       body,
     );
   }
@@ -77,13 +77,19 @@ export class SubscriptionsController {
     @Req() req: any,
     @Body() body: CreateFixedSubscriptionDto,
   ) {
-    return this.subscriptionsService.createFixedSubscription((req.user?.id || req.user?.userId || req.user?.sub), body);
+    return this.subscriptionsService.createFixedSubscription(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      body,
+    );
   }
 
   @Get('my-subscriptions')
   @UseGuards(JwtAuthGuard)
   getMySubscriptions(@Req() req: any, @Query() query: any) {
-    return this.subscriptionsService.getUserSubscriptions((req.user?.id || req.user?.userId || req.user?.sub), query);
+    return this.subscriptionsService.getUserSubscriptions(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      query,
+    );
   }
 
   @Get('admin/all')
@@ -101,7 +107,7 @@ export class SubscriptionsController {
     @Body() body: UpdateSubscriptionStatusDto,
   ) {
     return this.subscriptionsService.updateUserStatus(
-      (req.user?.id || req.user?.userId || req.user?.sub),
+      req.user?.id || req.user?.userId || req.user?.sub,
       id,
       body.status,
     );
