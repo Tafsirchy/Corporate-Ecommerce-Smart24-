@@ -3,7 +3,6 @@ import {
   Get,
   Patch,
   Body,
-  Req,
   Param,
   Delete,
   Query,
@@ -13,6 +12,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -22,22 +22,29 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@Req() req: any) {
-    if (!req.user) {
+  async getProfile(@CurrentUser() userId: string) {
+    if (!userId) {
       throw new UnauthorizedException();
     }
-    const user = await this.usersService.findById((req.user?.id || req.user?.userId || req.user?.sub));
+    const user = await this.usersService.findById(userId);
     if (!user) {
       throw new UnauthorizedException();
     }
-    const { password, twoFactorSecret, ...result } = user;
+    const {
+      password: _password,
+      twoFactorSecret: _twoFactorSecret,
+      ...result
+    } = user;
     return result;
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('profile')
-  async updateProfile(@Req() req: any, @Body() updateData: UpdateProfileDto) {
-    if (!req.user) {
+  async updateProfile(
+    @CurrentUser() userId: string,
+    @Body() updateData: UpdateProfileDto,
+  ) {
+    if (!userId) {
       throw new UnauthorizedException();
     }
 
@@ -53,16 +60,20 @@ export class UsersController {
       (key) => allowedUpdates[key] === undefined && delete allowedUpdates[key],
     );
 
-    const user = await this.usersService.update((req.user?.id || req.user?.userId || req.user?.sub), allowedUpdates);
-    const { password, twoFactorSecret, ...result } = user;
+    const user = await this.usersService.update(userId, allowedUpdates);
+    const {
+      password: _password,
+      twoFactorSecret: _twoFactorSecret,
+      ...result
+    } = user;
     return result;
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('me')
-  async deleteAccount(@Req() req: any) {
-    if (!req.user) throw new UnauthorizedException();
-    await this.usersService.delete((req.user?.id || req.user?.userId || req.user?.sub));
+  async deleteAccount(@CurrentUser() userId: string) {
+    if (!userId) throw new UnauthorizedException();
+    await this.usersService.delete(userId);
     return { message: 'Account deleted successfully' };
   }
 
@@ -80,7 +91,11 @@ export class UsersController {
   @Patch(':id/role')
   async updateRole(@Param('id') id: string, @Body('role') role: string) {
     const user = await this.usersService.update(id, { role: role as any });
-    const { password, twoFactorSecret, ...result } = user as any;
+    const {
+      password: _password,
+      twoFactorSecret: _twoFactorSecret,
+      ...result
+    } = user as any;
     return result;
   }
 
