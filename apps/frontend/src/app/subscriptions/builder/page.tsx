@@ -138,7 +138,7 @@ function BuilderContent() {
   }
   const totalPrice = Math.max(0, subtotalPrice - discountAmount);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!user) {
       toast.error("Please login to create a subscription");
