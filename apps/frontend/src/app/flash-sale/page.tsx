@@ -16,7 +16,7 @@ export default function FlashSalePage() {
 
   const limit = 24;
 
-  const fetchFlashSaleProducts = async (pageNumber: number) => {
+  async function fetchFlashSaleProducts(pageNumber: number) {
     setIsLoading(true);
     try {
       const res = await apiClient.get(`/products?isFlashSale=true&page=${pageNumber}&limit=${limit}`);
