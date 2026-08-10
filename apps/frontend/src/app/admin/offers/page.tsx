@@ -52,7 +52,7 @@ export default function AdminOffersPage() {
     }
   }, [token, page]);
 
-  const fetchOffers = async () => {
+  async function fetchOffers() {
     setLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers?page=${page}&limit=10`, {
@@ -79,14 +79,14 @@ export default function AdminOffersPage() {
     }
   };
 
-  const fetchPlans = async () => {
+  async function fetchPlans() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans`);
       if (res.ok) setPlans(await res.json());
     } catch (e) {}
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const payload: any = {
@@ -148,7 +148,7 @@ export default function AdminOffersPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this offer?")) return;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/offers/${id}`, {
