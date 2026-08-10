@@ -29,7 +29,10 @@ export class PricingRuleController {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Req() req: any, @Body() createPricingRuleDto: CreatePricingRuleDto) {
-    return this.pricingRuleService.create(createPricingRuleDto, (req.user?.id || req.user?.userId || req.user?.sub));
+    return this.pricingRuleService.create(
+      createPricingRuleDto,
+      req.user?.id || req.user?.userId || req.user?.sub,
+    );
   }
 
   @Get()
@@ -52,7 +55,7 @@ export class PricingRuleController {
     return this.pricingRuleService.update(
       id,
       updatePricingRuleDto,
-      (req.user?.id || req.user?.userId || req.user?.sub),
+      req.user?.id || req.user?.userId || req.user?.sub,
     );
   }
 
