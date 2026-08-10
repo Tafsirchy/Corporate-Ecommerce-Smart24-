@@ -52,7 +52,11 @@ export class OrdersController {
     @Body('promoCode') promoCode: string,
     @Body('cartTotal') cartTotal: number,
   ) {
-    return this.ordersService.validatePromo((req.user?.id || req.user?.userId || req.user?.sub), promoCode, cartTotal);
+    return this.ordersService.validatePromo(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      promoCode,
+      cartTotal,
+    );
   }
 
   @Get()
@@ -67,7 +71,11 @@ export class OrdersController {
     if (req.user.role === Role.ADMIN) {
       return this.ordersService.getAllOrders(page, limit);
     }
-    return this.ordersService.getUserOrders((req.user?.id || req.user?.userId || req.user?.sub), page, limit);
+    return this.ordersService.getUserOrders(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      page,
+      limit,
+    );
   }
 
   @Get(':id')
@@ -76,7 +84,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get order details' })
   getOrderDetails(@Req() req: any, @Param('id') id: string) {
     return this.ordersService.getOrderDetails(
-      (req.user?.id || req.user?.userId || req.user?.sub),
+      req.user?.id || req.user?.userId || req.user?.sub,
       id,
       req.user.role === Role.ADMIN,
     );
@@ -91,7 +99,11 @@ export class OrdersController {
     @Param('id') id: string,
     @Body('reason') reason: string,
   ) {
-    return this.ordersService.cancelOrder((req.user?.id || req.user?.userId || req.user?.sub), id, reason);
+    return this.ordersService.cancelOrder(
+      req.user?.id || req.user?.userId || req.user?.sub,
+      id,
+      reason,
+    );
   }
 
   @Patch(':id/status')
