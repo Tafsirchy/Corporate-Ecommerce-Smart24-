@@ -12,7 +12,16 @@ export class PricingService {
 
   async calculateCartTotals(
     userId: string | undefined,
-    cartItems: { productId: string; quantity: number; product: { name: string; price: number; stock: number; categoryId?: string | null } }[],
+    cartItems: {
+      productId: string;
+      quantity: number;
+      product: {
+        name: string;
+        price: number;
+        stock: number;
+        categoryId?: string | null;
+      };
+    }[],
   ) {
     let totalAmount = 0;
     let userTierDiscount = 0;
@@ -74,7 +83,8 @@ export class PricingService {
         }
       }
 
-      const discountedPrice = item.product.price * (1 - applicableDiscount / 100);
+      const discountedPrice =
+        item.product.price * (1 - applicableDiscount / 100);
       totalAmount += discountedPrice * item.quantity;
 
       orderItems.push({
@@ -95,7 +105,7 @@ export class PricingService {
     txClient?: any,
   ) {
     const prismaClient = txClient || this.prisma;
-    
+
     // Check if it's a Coupon
     const coupon = await prismaClient.coupon.findUnique({
       where: { code: promoCode },
@@ -126,7 +136,12 @@ export class PricingService {
       }
 
       discountAmount = Math.min(discountAmount, cartTotal);
-      return { valid: true, type: 'COUPON', discountAmount, couponId: coupon.id };
+      return {
+        valid: true,
+        type: 'COUPON',
+        discountAmount,
+        couponId: coupon.id,
+      };
     }
 
     // Check if it's a Reward Ticket
@@ -140,7 +155,9 @@ export class PricingService {
         throw new BadRequestException('This ticket does not belong to you');
       }
       if (userReward.status !== 'ACTIVE') {
-        throw new BadRequestException(`Ticket is ${userReward.status.toLowerCase()}`);
+        throw new BadRequestException(
+          `Ticket is ${userReward.status.toLowerCase()}`,
+        );
       }
       if (userReward.expiresAt < new Date()) {
         throw new BadRequestException('Ticket has expired');
