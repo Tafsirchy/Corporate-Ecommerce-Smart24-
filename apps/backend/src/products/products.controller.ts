@@ -38,7 +38,9 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all products (Admin only - includes inactive)' })
+  @ApiOperation({
+    summary: 'Get all products (Admin only - includes inactive)',
+  })
   findAllAdmin(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
