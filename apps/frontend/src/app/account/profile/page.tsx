@@ -8,7 +8,7 @@ export default function ProfilePage() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
 
-  const handleDeleteAccount = async () => {
+  async function handleDeleteAccount() {
     if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone and your data will be anonymized.')) return;
     try {
       const { apiClient } = await import('../../../context/AuthContext');
