@@ -17,7 +17,7 @@ export default function SupportHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
-    const fetchFaqs = async () => {
+    async function fetchFaqs() {
       try {
         const res = await apiClient.get('/faqs');
         setFaqs(res.data?.data || res.data);
