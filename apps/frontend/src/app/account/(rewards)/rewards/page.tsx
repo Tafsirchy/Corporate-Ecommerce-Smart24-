@@ -13,7 +13,7 @@ export default function RewardsPage() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const [availableRes, myRes, meRes] = await Promise.all([
         apiClient.get('/loyalty/rewards/available'),
@@ -30,7 +30,7 @@ export default function RewardsPage() {
     }
   };
 
-  const handleClaim = async (rewardId: string) => {
+  async function handleClaim(rewardId: string) {
     try {
       await apiClient.post(`/loyalty/rewards/${rewardId}/claim`);
       alert('Reward claimed successfully!');
