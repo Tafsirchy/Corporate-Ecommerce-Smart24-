@@ -39,12 +39,16 @@ describe('PricingService', () => {
   describe('calculateCartTotals', () => {
     it('should calculate basic cart total without discounts', async () => {
       const cartItems = [
-        { productId: '1', quantity: 2, product: { name: 'A', price: 100, stock: 10 } },
+        {
+          productId: '1',
+          quantity: 2,
+          product: { name: 'A', price: 100, stock: 10 },
+        },
       ];
       prisma.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.calculateCartTotals(undefined, cartItems as any);
-      
+      const result = await service.calculateCartTotals(undefined, cartItems);
+
       expect(result.totalAmount).toBe(200);
       expect(result.deliveryCharge).toBe(100);
       expect(result.orderItems.length).toBe(1);
@@ -53,16 +57,20 @@ describe('PricingService', () => {
 
     it('should apply CORPORATE tier discount of 15%', async () => {
       const cartItems = [
-        { productId: '1', quantity: 1, product: { name: 'B', price: 1000, stock: 10 } },
+        {
+          productId: '1',
+          quantity: 1,
+          product: { name: 'B', price: 1000, stock: 10 },
+        },
       ];
       prisma.user.findUnique.mockResolvedValue({
         id: 'user1',
         role: 'BUSINESS',
-        businessProfile: { membershipTier: 'PLATINUM', businessType: 'RETAIL' }
+        businessProfile: { membershipTier: 'PLATINUM', businessType: 'RETAIL' },
       });
 
-      const result = await service.calculateCartTotals('user1', cartItems as any);
-      
+      const result = await service.calculateCartTotals('user1', cartItems);
+
       // PLATINUM discount is 15%. 15% of 1000 is 150.
       // So discounted price is 850.
       expect(result.totalAmount).toBe(850);
@@ -73,9 +81,10 @@ describe('PricingService', () => {
   describe('validatePromo', () => {
     it('should reject if coupon is inactive', async () => {
       prisma.coupon.findUnique.mockResolvedValue({ isActive: false });
-      
-      await expect(service.validatePromo('user1', 'CODE', 1000))
-        .rejects.toThrow('Coupon is inactive');
+
+      await expect(
+        service.validatePromo('user1', 'CODE', 1000),
+      ).rejects.toThrow('Coupon is inactive');
     });
 
     it('should apply valid PERCENTAGE coupon', async () => {
@@ -92,7 +101,7 @@ describe('PricingService', () => {
       });
 
       const result = await service.validatePromo('user1', 'SAVE20', 1000);
-      
+
       expect(result.valid).toBe(true);
       expect(result.discountAmount).toBe(50);
       expect(result.type).toBe('COUPON');
