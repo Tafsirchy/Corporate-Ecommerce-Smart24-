@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { QuotationRepository } from '../repositories/quotation.repository.service';
 
 @Injectable()
@@ -21,7 +25,10 @@ export class QuotationsService {
     });
   }
 
-  async getMyQuotations(userId: string, query: { page?: number; limit?: number } = {}) {
+  async getMyQuotations(
+    userId: string,
+    query: { page?: number; limit?: number } = {},
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -83,7 +90,9 @@ export class QuotationsService {
     if (!quote) throw new NotFoundException('Quotation not found');
     if (quote.userId !== userId) throw new NotFoundException('Not authorized');
     if (quote.status !== 'QUOTED') {
-      throw new ConflictException('You can only accept quotations that have been quoted by an admin');
+      throw new ConflictException(
+        'You can only accept quotations that have been quoted by an admin',
+      );
     }
 
     // In a full flow, accepting this would generate a PENDING Order based on the offeredPrice.
@@ -96,7 +105,9 @@ export class QuotationsService {
     if (!quote) throw new NotFoundException('Quotation not found');
     if (quote.userId !== userId) throw new NotFoundException('Not authorized');
     if (quote.status !== 'QUOTED' && quote.status !== 'PENDING') {
-      throw new ConflictException('You cannot reject a quotation in its current status');
+      throw new ConflictException(
+        'You cannot reject a quotation in its current status',
+      );
     }
 
     return this.quotationRepo.updateStatus(id, { status: 'REJECTED' });
