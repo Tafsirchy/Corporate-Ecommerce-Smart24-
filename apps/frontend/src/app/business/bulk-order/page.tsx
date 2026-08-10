@@ -10,7 +10,7 @@ export default function BulkOrderPage() {
   const [processing, setProcessing] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  async function handleUpload(e: React.FormEvent) {
     e.preventDefault();
     if (!csvFile) {
       toast.error('Please upload a CSV file');
@@ -38,7 +38,7 @@ export default function BulkOrderPage() {
     }
   };
 
-  const handleAddToCart = async () => {
+  async function handleAddToCart() {
     if (!validationResult || validationResult.invalidItems?.length > 0) {
       // In MVP, we might require perfect validation, or just add the valid ones
       toast.info('Only valid items will be added to cart');
