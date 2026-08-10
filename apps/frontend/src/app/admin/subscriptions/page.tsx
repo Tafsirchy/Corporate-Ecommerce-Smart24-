@@ -30,7 +30,7 @@ export default function AdminSubscriptions() {
       .finally(() => setLoading(false));
   };
 
-  const handleStatusChange = async (id: string, status: string) => {
+  async function handleStatusChange(id: string, status: string) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/admin/${id}/status`, {
         method: "PATCH",
