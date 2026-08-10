@@ -29,7 +29,10 @@ export class SubscriptionRepository {
     });
   }
 
-  async findAllPlans(skip?: number, take?: number): Promise<SubscriptionPlan[]> {
+  async findAllPlans(
+    skip?: number,
+    take?: number,
+  ): Promise<SubscriptionPlan[]> {
     return this.prisma.subscriptionPlan.findMany({
       skip,
       take,
@@ -57,7 +60,11 @@ export class SubscriptionRepository {
     });
   }
 
-  async findSubscriptionsByUserId(userId: string, skip?: number, take?: number): Promise<Subscription[]> {
+  async findSubscriptionsByUserId(
+    userId: string,
+    skip?: number,
+    take?: number,
+  ): Promise<Subscription[]> {
     return this.prisma.subscription.findMany({
       where: { userId },
       skip,
@@ -74,7 +81,10 @@ export class SubscriptionRepository {
     return this.prisma.subscription.count({ where: { userId } });
   }
 
-  async findAllSubscriptions(skip?: number, take?: number): Promise<Subscription[]> {
+  async findAllSubscriptions(
+    skip?: number,
+    take?: number,
+  ): Promise<Subscription[]> {
     return this.prisma.subscription.findMany({
       skip,
       take,
