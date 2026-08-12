@@ -26,7 +26,7 @@ export const SpecialOfferBanner = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4">
-        <div className="w-full h-24 md:h-32 lg:h-40 bg-muted/80 animate-pulse rounded-xl mt-8 mb-4 border border-border"></div>
+        <div className="w-full aspect-[21/9] sm:aspect-[4/1] lg:aspect-[6/1] bg-muted/80 animate-pulse rounded-xl mt-8 mb-4 border border-border"></div>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export const SpecialOfferBanner = () => {
   };
 
   const content = (
-    <div className="w-full aspect-[6/1] overflow-hidden rounded-xl shadow-sm border border-border mt-8 mb-4 relative">
+    <div className="w-full aspect-[21/9] sm:aspect-[4/1] lg:aspect-[6/1] overflow-hidden rounded-xl shadow-sm border border-border mt-8 mb-4 relative">
       <OptimizedImage src={banner.imageUrl} 
         alt={banner.title || "Special Offer"} 
         fill
@@ -50,7 +50,7 @@ export const SpecialOfferBanner = () => {
   return (
     <div className="container mx-auto px-4">
       {banner.targetUrl ? (
-        <a href={banner.targetUrl} className="block hover:opacity-95 transition-opacity">
+        <a href={banner.targetUrl} className="block hover:opacity-95 active:scale-[0.98] transition-all">
           {content}
         </a>
       ) : content}
