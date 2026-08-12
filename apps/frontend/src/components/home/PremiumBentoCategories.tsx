@@ -20,7 +20,7 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
   return (
     <Link
       href={href}
-      className={`group relative overflow-hidden rounded-[24px] bg-[#f0f0f0] transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col p-5 md:p-6 ${className}`}
+      className={`group relative overflow-hidden rounded-[24px] bg-[#f0f0f0] transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] flex flex-col p-5 md:p-6 ${className}`}
     >
       {/* Background Image Setup */}
       {isLarge ? (
@@ -42,15 +42,15 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
 
       {/* Content */}
       <div className={`relative z-20 flex flex-col h-full ${isLarge ? 'text-white' : 'text-foreground'} w-full`}>
-        <h3 className={`font-bold tracking-tight leading-none mb-1 ${isLarge ? 'text-3xl md:text-4xl lg:text-5xl max-w-[80%]' : 'text-xl lg:text-2xl uppercase max-w-[70%]'}`}>
+        <h3 className={`font-bold tracking-tight leading-none mb-1 ${isLarge ? 'text-3xl md:text-4xl lg:text-5xl max-w-[80%]' : 'text-xl lg:text-2xl uppercase max-w-[60%] md:max-w-[70%]'}`}>
           {title}
         </h3>
-        <p className={`font-medium mb-auto mt-1 ${isLarge ? 'text-xs md:text-sm text-gray-200 tracking-wider uppercase mb-3 order-first' : 'text-xs text-muted-foreground'}`}>
+        <p className={`font-medium mb-auto mt-1 ${isLarge ? 'text-sm md:text-sm text-gray-200 tracking-wider uppercase mb-3 order-first' : 'text-sm text-muted-foreground'}`}>
           {subtitle}
         </p>
 
         <div className={`mt-auto pt-6`}>
-          <span className={`inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold transition-colors ${isLarge
+          <span className={`inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-semibold transition-colors ${isLarge
             ? 'bg-white text-black hover:bg-muted'
             : 'bg-transparent border border-gray-900 text-foreground group-hover:bg-primary group-hover:text-white'
             }`}>
@@ -64,7 +64,7 @@ const BentoCard = ({ title, subtitle, buttonText, imageUrl, href, className, ima
 
 // Default layout configuration for the 8 slots to preserve the premium bento grid exactly
 const layoutConfig = [
-  { position: 1, isLarge: true, className: "md:col-span-2 md:row-span-2", imageClassName: "" },
+  { position: 1, isLarge: true, className: "row-span-2 md:col-span-2 md:row-span-2", imageClassName: "" },
   { position: 2, isLarge: false, className: "", imageClassName: "w-full h-full object-right-bottom" },
   { position: 3, isLarge: false, className: "md:col-start-2 lg:col-start-3 md:row-start-3 lg:row-start-2 md:row-span-2 lg:row-span-2", imageClassName: "w-[85%] h-[85%] object-right-bottom pb-2" },
   { position: 4, isLarge: false, className: "lg:col-start-1 lg:row-start-3", imageClassName: "w-full h-full object-right-bottom" },
@@ -124,9 +124,9 @@ export const PremiumBentoCategories = () => {
       <div className="container mx-auto px-4">
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
           <div>
-            <h2 className="text-3xl font-extrabold text-foreground tracking-tight uppercase">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight uppercase">
               Business Collections
             </h2>
             <p className="text-muted-foreground mt-1 font-medium text-sm">Curated office goods & supplies for the modern workplace</p>
@@ -137,7 +137,7 @@ export const PremiumBentoCategories = () => {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 auto-rows-[180px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 auto-rows-[200px] md:auto-rows-[180px]">
           {isLoading ? (
             layoutConfig.map(config => (
               <div 
