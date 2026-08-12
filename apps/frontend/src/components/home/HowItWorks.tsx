@@ -27,7 +27,7 @@ export const HowItWorks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="group relative bg-white rounded-2xl p-8 border border-border shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-primary-100 transition-all duration-300">
+          <div className="group relative bg-white rounded-2xl p-6 sm:p-8 border border-border shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-primary-100 transition-all duration-300">
             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity duration-300">
               <span className="text-8xl font-black text-primary/90">1</span>
             </div>
@@ -41,7 +41,7 @@ export const HowItWorks = () => {
           </div>
 
           {/* Step 2 */}
-          <div className="group relative bg-white rounded-2xl p-8 border border-border shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-primary-100 transition-all duration-300 mt-0 md:mt-8">
+          <div className="group relative bg-white rounded-2xl p-6 sm:p-8 border border-border shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-primary-100 transition-all duration-300 mt-0 md:mt-8">
             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity duration-300">
               <span className="text-8xl font-black text-primary/90">2</span>
             </div>
@@ -55,7 +55,7 @@ export const HowItWorks = () => {
           </div>
 
           {/* Step 3 */}
-          <div className="group relative bg-white rounded-2xl p-8 border border-border shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-primary-100 transition-all duration-300 mt-0 md:mt-16">
+          <div className="group relative bg-white rounded-2xl p-6 sm:p-8 border border-border shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-primary-100 transition-all duration-300 mt-0 md:mt-16">
             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity duration-300">
               <span className="text-8xl font-black text-primary/90">3</span>
             </div>
@@ -72,7 +72,7 @@ export const HowItWorks = () => {
         <div className="mt-16 text-center">
           <Link 
             href="/contact"
-            className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold rounded-full text-white bg-primary-600 hover:bg-primary-700 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
+            className="inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold rounded-full text-white bg-primary-600 hover:bg-primary-700 active:scale-95 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
           >
             Start Your Journey Today
           </Link>
