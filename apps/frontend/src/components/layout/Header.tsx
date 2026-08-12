@@ -6,12 +6,12 @@ import Image from 'next/image';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Search, ShoppingCart, Heart, X, Loader2 } from 'lucide-react';
+import { Search, ShoppingCart, Heart, X, Loader2, Menu } from 'lucide-react';
 import HeaderNav from '@/components/layout/HeaderNav';
 import { CategoryDropdown } from '@/components/CategoryDropdown';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { apiClient } from '@/context/AuthContext';
+import { apiClient, useAuth } from '@/context/AuthContext';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -24,6 +24,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 export default function Header() {
+  const { user, openAuthModal } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,6 +43,7 @@ export default function Header() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -139,11 +141,11 @@ export default function Header() {
     }
 
     timerRef.current = setTimeout(() => {
-      if (window.scrollY > 50 && !isHovered) {
+      if (window.scrollY > 50 && !isHovered && !isSearchFocused) {
         setIsVisible(false);
       }
     }, 1000);
-  }, [isHovered]);
+  }, [isHovered, isSearchFocused]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -154,7 +156,7 @@ export default function Header() {
   }, [handleScroll]);
 
   useEffect(() => {
-    if (!isHovered && window.scrollY > 50) {
+    if (!isHovered && !isSearchFocused && window.scrollY > 50) {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
         setIsVisible(false);
@@ -163,30 +165,48 @@ export default function Header() {
       setIsVisible(true);
       if (timerRef.current) clearTimeout(timerRef.current);
     }
-  }, [isHovered]);
+  }, [isHovered, isSearchFocused]);
 
-  const isTransparent = isHome && !isScrolled && !isHovered;
+  const isTransparent = isHome && !isScrolled && !isHovered && !isSearchFocused;
 
   return (
     <>
-      {!isHome && <div className="h-[105px] w-full" />}
+      {!isHome && <div className="h-[90px] md:h-[80px] w-full" />}
       <header
-        className="fixed top-0 left-0 right-0 z-50 flex flex-col"
+        className={`fixed top-0 left-0 right-0 z-50 flex flex-col transition-colors duration-300 ${
+          isMobileMenuOpen ? 'bg-white' : ''
+        }`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Mobile Top Bar (Logo + Hamburger) - Hidden on MD */}
+        <div className={`relative z-30 w-full flex md:hidden items-center justify-between px-4 py-2 transition-colors ${
+          (isTransparent && !isMobileMenuOpen) ? 'bg-transparent' : 'bg-white/90 backdrop-blur-md border-b border-border'
+        }`}>
+          <Link href="/" className="flex items-center">
+             <Image src="/asset/Logo.png" alt="Smart24" width={150} height={50} priority unoptimized={true} className={`h-10 w-auto object-contain origin-left ${(isTransparent && !isMobileMenuOpen) ? 'brightness-0 invert' : ''}`} />
+          </Link>
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className={`p-2 -mr-2 ${(isTransparent && !isMobileMenuOpen) ? 'text-white' : 'text-foreground'}`}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
         {/* Search Bar */}
-        <div className={`w-full py-3 relative z-20 transition-all duration-300 ${isTransparent
+        <div className={`w-full py-2 z-20 transition-all duration-300 ease-in-out ${(isTransparent && !isMobileMenuOpen)
             ? 'bg-transparent border-transparent'
             : 'bg-white/90 backdrop-blur-md border-b border-border shadow-sm'
-          }`}>
+          } absolute top-full left-0 right-0 md:relative md:top-auto md:translate-y-0 md:opacity-100 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
           <div className="container mx-auto px-4 flex items-center justify-center gap-4">
             <div className="flex items-center w-full max-w-2xl gap-3">
 
               {/* Search Container */}
               <div ref={searchContainerRef} className="relative flex-1">
                 <form onSubmit={handleSearchSubmit} className="relative flex items-center shadow-sm">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${(isTransparent && !isMobileMenuOpen) ? 'text-white/80' : 'text-muted-foreground'}`} />
                   <input
                     id="search-input"
                     type="text"
@@ -195,11 +215,17 @@ export default function Header() {
                     onFocus={() => setIsSearchFocused(true)}
                     onKeyDown={handleKeyDown}
                     placeholder="Search for any product and similar products..."
-                    className="w-full pl-10 pr-24 py-2 text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-white rounded"
+                    className={`w-full pl-10 pr-24 py-1.5 text-sm border focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all rounded ${
+                      (isTransparent && !isMobileMenuOpen)
+                        ? 'bg-transparent border-white/40 text-white placeholder:text-white/80'
+                        : 'bg-white border-border text-foreground'
+                    }`}
                     autoComplete="off"
                   />
                   {searchQuery && (
-                    <button type="button" onClick={clearSearch} className="absolute right-24 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-muted-foreground transition">
+                    <button type="button" onClick={clearSearch} className={`absolute right-24 top-1/2 -translate-y-1/2 p-1 transition ${
+                      (isTransparent && !isMobileMenuOpen) ? 'text-white/80 hover:text-white' : 'text-muted-foreground hover:text-foreground'
+                    }`}>
                       <X className="w-4 h-4" />
                     </button>
                   )}
@@ -284,9 +310,9 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Navbar */}
+        {/* Desktop Navbar Row */}
         <div
-          className={`w-full absolute left-0 right-0 z-10 transition-all duration-300 ease-in-out ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+          className={`hidden md:flex w-full absolute left-0 right-0 z-10 transition-all duration-300 ease-in-out ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
             } ${isTransparent
               ? 'bg-transparent'
               : 'bg-white/90 backdrop-blur-md shadow-sm'
@@ -294,15 +320,39 @@ export default function Header() {
           style={{ top: '100%' }}
         >
           <div className="container mx-auto px-4 flex justify-between items-center">
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-8 py-1">
               <a href="/" className="flex items-center">
-                <Image src="/asset/Logo.png" alt="Smart24" width={200} height={80} priority unoptimized={true} className={`h-16 w-auto object-contain origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
+                <Image src="/asset/Logo.png" alt="Smart24" width={200} height={80} priority unoptimized={true} className={`h-11 w-auto object-contain origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
               </a>
               {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>
             <HeaderNav isTransparent={isTransparent} />
           </div>
         </div>
+
+        {/* Mobile Full-Screen Menu Drawer */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-full left-0 right-0 h-screen bg-white z-40 overflow-y-auto pb-[env(safe-area-inset-bottom)] md:hidden border-t border-border">
+             <div className="flex flex-col px-6 py-6 gap-6 min-h-full pb-32">
+                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Home</Link>
+                <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Shop</Link>
+                <Link href="/subscriptions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Subscriptions</Link>
+                <Link href="/account/rewards" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Rewards</Link>
+                
+                {user ? (
+                  <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">My Account</Link>
+                ) : (
+                  <>
+                    <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('login'); }} className="text-lg font-medium border-b border-border/40 pb-3 text-left">Sign In</button>
+                    <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('signup'); }} className="text-lg font-medium border-b border-border/40 pb-3 text-left text-primary">Sign Up</button>
+                  </>
+                )}
+                
+                <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Support & FAQ</Link>
+                <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">About Us</Link>
+             </div>
+          </div>
+        )}
       </header>
     </>
   );
