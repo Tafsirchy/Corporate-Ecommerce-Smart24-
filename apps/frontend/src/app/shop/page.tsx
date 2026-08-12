@@ -9,10 +9,11 @@ import { PriceFilter } from '../../components/PriceFilter';
 import { RatingFilter } from '../../components/RatingFilter';
 import { Pagination } from '../../components/Pagination';
 import { useSearchParams } from 'next/navigation';
-
 import { Suspense } from 'react';
+import { Filter, X } from 'lucide-react';
 
 function ShopContent() {
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -124,6 +125,16 @@ function ShopContent() {
     setPage(1);
   }, [categorySlug, searchQuery, sortBy, limit, selectedBrands, minPrice, maxPrice, selectedRating, selectedDynamicFilters]);
 
+  // Lock body scroll when mobile filters are open
+  useEffect(() => {
+    if (isMobileFiltersOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMobileFiltersOpen]);
+
   // Determine applicable filter defs for the current category
   const applicableFilterDefs = useMemo(() => {
     if (!categorySlug) return activeFiltersDefs; 
@@ -161,10 +172,27 @@ function ShopContent() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 relative">
+      {/* Mobile Floating Filter Button */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 md:hidden">
+         <button onClick={() => setIsMobileFiltersOpen(true)} className="bg-primary-600 text-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.2)] font-medium flex items-center gap-2">
+            <Filter className="w-5 h-5" />
+            Filters & Sort
+         </button>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar */}
-        <aside className="w-full md:w-[240px] shrink-0">
+        {/* Sidebar / Mobile Bottom Sheet */}
+        <aside className={`
+          fixed inset-0 z-50 bg-white overflow-y-auto p-4 transition-transform duration-300
+          ${isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full'}
+          md:static md:translate-y-0 md:bg-transparent md:p-0 md:w-[240px] md:shrink-0 md:block md:z-auto
+        `}>
+          <div className="flex justify-between items-center mb-6 md:hidden">
+            <h2 className="text-xl font-bold">Filters</h2>
+            <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 -mr-2"><X className="w-6 h-6" /></button>
+          </div>
+
           <div className="mb-6">
             <input 
               type="text" 
@@ -224,6 +252,13 @@ function ShopContent() {
               />
             );
           })}
+
+          {/* Mobile Apply Button */}
+          <div className="sticky bottom-0 bg-white pt-4 pb-2 mt-8 md:hidden border-t border-border">
+            <button onClick={() => setIsMobileFiltersOpen(false)} className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition-colors">
+              Show Results ({totalProducts})
+            </button>
+          </div>
         </aside>
 
         {/* Product Grid */}
