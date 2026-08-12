@@ -36,7 +36,7 @@ export const WhyChooseUsMarquee = () => {
         <div className="flex flex-col md:flex-row items-center w-full relative gap-6">
           
           {/* Badge / Button on the left */}
-          <div className="w-full md:w-auto bg-primary-50 text-primary-700 py-2.5 px-6 rounded-full font-bold text-[13px] uppercase tracking-widest flex items-center justify-center gap-2 whitespace-nowrap z-10 shrink-0 group cursor-pointer transition-colors hover:bg-primary-100">
+          <div className="w-full md:w-auto bg-primary-50 text-primary-700 py-3 sm:py-2.5 px-6 rounded-full font-bold text-sm sm:text-[13px] uppercase tracking-widest flex items-center justify-center gap-2 whitespace-nowrap z-10 shrink-0 group cursor-pointer transition-all active:scale-95 hover:bg-primary-100">
             <span>Why Choose Smart24</span>
             <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
           </div>
@@ -45,14 +45,14 @@ export const WhyChooseUsMarquee = () => {
           <div className="flex-1 overflow-hidden relative w-full marquee-mask">
             <div className="flex gap-10 pr-8 animate-scroll-left">
               {features.map((feature) => (
-                <div key={feature.id} className="flex items-center gap-2.5 whitespace-nowrap text-[15px] font-medium text-muted-foreground cursor-default hover:text-primary/90 transition-colors">
+                <div key={feature.id} className="flex items-center gap-2.5 whitespace-nowrap text-base font-medium text-muted-foreground cursor-default hover:text-primary/90 transition-colors">
                   <span className="text-[18px]">{feature.icon}</span>
                   <span>{feature.text}</span>
                 </div>
               ))}
               {/* Duplicate for infinite scroll */}
               {features.map((feature) => (
-                <div key={`${feature.id}-dup`} className="flex items-center gap-2.5 whitespace-nowrap text-[15px] font-medium text-muted-foreground cursor-default hover:text-primary/90 transition-colors">
+                <div key={`${feature.id}-dup`} className="flex items-center gap-2.5 whitespace-nowrap text-base font-medium text-muted-foreground cursor-default hover:text-primary/90 transition-colors">
                   <span className="text-[18px]">{feature.icon}</span>
                   <span>{feature.text}</span>
                 </div>
