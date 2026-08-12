@@ -38,7 +38,7 @@ export function proxy(request: NextRequest) {
   // Adjusted to allow inline scripts for Next.js functionality
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https:; font-src 'self'; connect-src 'self' http://localhost:4000 https://api.stripe.com;"
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https:; font-src 'self'; connect-src 'self' http://localhost:4000 https://smart24-backend.onrender.com https://api.stripe.com;"
   );
 
   return response;
