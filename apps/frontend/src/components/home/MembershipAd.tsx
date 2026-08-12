@@ -59,7 +59,7 @@ export const MembershipAd = () => {
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/30 backdrop-blur-md"
             >
               <Sparkles className="w-3 h-3 text-amber-400" />
-              <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Smart24 Elite Membership</span>
+              <span className="text-sm md:text-[10px] font-bold text-amber-300 uppercase tracking-widest">Smart24 Elite Membership</span>
             </motion.div>
             
             <motion.h2 
@@ -67,7 +67,7 @@ export const MembershipAd = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-amber-100 to-amber-500 leading-tight tracking-tight"
+              className="text-2xl md:text-3xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-amber-100 to-amber-500 leading-tight tracking-tight"
             >
               Elevate your business purchasing power.
             </motion.h2>
@@ -90,12 +90,12 @@ export const MembershipAd = () => {
               className="flex flex-col sm:flex-row gap-3 pt-2"
             >
               <Link href="/membership">
-                <Button className="w-full sm:w-auto h-12 px-6 border-0 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-sm shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:-translate-y-1">
+                <Button className="w-full sm:w-auto h-12 px-6 border-0 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-base sm:text-sm shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] active:scale-95 hover:-translate-y-1">
                   View Benefits
                 </Button>
               </Link>
               <Link href="/membership/upgrade">
-                <Button variant="outline" className="w-full sm:w-auto h-12 px-6 rounded-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white font-bold text-sm transition-all hover:-translate-y-1 group">
+                <Button variant="outline" className="w-full sm:w-auto h-12 px-6 rounded-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white font-bold text-base sm:text-sm transition-all active:scale-95 hover:-translate-y-1 group">
                   Upgrade to Elite
                   <ChevronRight className="w-4 h-4 ml-1 text-zinc-400 group-hover:text-white transition-colors" />
                 </Button>
