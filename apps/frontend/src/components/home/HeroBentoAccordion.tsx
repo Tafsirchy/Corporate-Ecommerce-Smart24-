@@ -45,12 +45,24 @@ export function HeroBentoAccordion({ ads: initialAds }: HeroBentoAccordionProps)
     fetchBanners();
   }, []);
 
+  useEffect(() => {
+    if (!ads || ads.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveId((currentId) => {
+        const currentIndex = ads.findIndex((ad) => ad.id === currentId);
+        const nextIndex = (currentIndex + 1) % ads.length;
+        return ads[nextIndex].id;
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [ads]);
+
   const activeAd = ads.find((a) => a.id === activeId) || ads[0];
 
   if (!ads || ads.length === 0) return null;
 
   return (
-    <section className="relative w-full h-[600px] md:h-[700px] bg-black overflow-hidden">
+    <section className="relative w-full min-h-[600px] md:h-[700px] bg-black overflow-hidden">
       {/* Dynamic Aurora Blurred Background */}
       <AnimatePresence>
         <motion.div
@@ -151,77 +163,61 @@ export function HeroBentoAccordion({ ads: initialAds }: HeroBentoAccordionProps)
           })}
         </div>
 
-        {/* Mobile Layout: Vertical Stack */}
-        <div className="flex md:hidden flex-col h-full w-full gap-4 pt-[60px] pb-8">
-          {ads.map((ad) => {
-            const isActive = activeId === ad.id;
-            return (
-              <motion.div
-                key={ad.id}
-                layout
-                onClick={() => setActiveId(ad.id)}
-                className="relative overflow-hidden cursor-pointer rounded-3xl"
-                animate={{
-                  flex: isActive ? 3 : 1,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 30,
-                }}
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-in-out"
-                  style={{
-                    backgroundImage: `url(${ad.imageUrl})`,
-                    transform: isActive ? "scale(1.05)" : "scale(1)",
-                  }}
-                />
-                <div
-                  className={`absolute inset-0 transition-opacity duration-500 ${isActive
-                      ? "bg-gradient-to-t from-black/80 via-black/40 to-transparent"
-                      : "bg-black/60"
-                    }`}
-                />
-                <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                  <AnimatePresence mode="popLayout">
-                    {isActive ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="w-full"
-                      >
-                        <h2 className="text-2xl font-bold text-white mb-2">
-                          {ad.title}
-                        </h2>
-                        <p className="text-sm text-gray-200 mb-4 line-clamp-2">
-                          {ad.subtitle}
-                        </p>
-                        <Link
-                          href={ad.categoryUrl}
-                          className="inline-flex items-center text-sm font-medium text-white hover:text-primary-200 transition-colors"
-                        >
-                          Explore <ArrowRight className="ml-1 h-4 w-4" />
-                        </Link>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center justify-center h-full"
-                      >
-                        <h3 className="text-lg font-bold text-white text-center">
-                          {ad.title}
-                        </h3>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            );
-          })}
+        {/* Mobile Layout: Auto-animating Hero + Thumbnail Row */}
+        <div className="flex md:hidden flex-col w-full gap-4 pt-[60px] pb-12 relative">
+          {/* Main Hero Ad (Active Item) */}
+          <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700"
+              style={{ backgroundImage: `url(${activeAd.imageUrl})` }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            <div className="absolute inset-0 p-6 flex flex-col justify-end">
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  key={activeAd.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="w-full"
+                >
+                  <h2 className="text-2xl font-bold text-white mb-2">{activeAd.title}</h2>
+                  <p className="text-sm text-gray-200 mb-4 line-clamp-2">{activeAd.subtitle}</p>
+                  <Link
+                    href={activeAd.categoryUrl}
+                    className="inline-flex items-center text-sm font-medium text-white hover:text-primary-200 transition-colors py-2"
+                  >
+                    Explore <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Remaining Ads in a Horizontal Row */}
+          {ads.length > 1 && (
+            <div className="flex w-full overflow-x-auto snap-x snap-mandatory gap-4 scrollbar-hide pb-2">
+              {ads.filter(a => a.id !== activeAd.id).map((ad) => (
+                <button
+                  key={ad.id}
+                  onClick={() => setActiveId(ad.id)}
+                  className="relative flex-none w-[45%] aspect-square snap-center rounded-2xl overflow-hidden shadow-md group block text-left"
+                >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${ad.imageUrl})` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                  <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                    <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">{ad.title}</h3>
+                    <div className="inline-flex items-center text-xs font-medium text-white/90 group-hover:text-white">
+                      View <ArrowRight className="ml-1 h-3 w-3" />
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
