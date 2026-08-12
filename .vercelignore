@@ -12,3 +12,8 @@ coverage/
 .env.production.local
 
 .vercel
+
+apps/*/node_modules/
+apps/*/.next/
+apps/*/dist/
+.git/
