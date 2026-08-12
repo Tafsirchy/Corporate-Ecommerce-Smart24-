@@ -84,7 +84,7 @@ export const JustForYou = () => {
             <button
               onClick={handleLoadMore}
               disabled={isLoading}
-              className="px-16 py-3 border border-primary-600 text-primary/90 font-semibold rounded hover:bg-primary/10 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto min-w-[300px]"
+              className="px-16 py-3 border border-primary-600 text-primary/90 font-semibold rounded hover:bg-primary/10 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-base sm:text-sm tracking-wider w-full sm:w-auto sm:min-w-[300px] active:bg-primary/20 active:scale-95"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
