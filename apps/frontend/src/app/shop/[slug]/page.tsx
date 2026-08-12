@@ -31,6 +31,7 @@ export default function ProductDetailPage() {
   const [alertEmail, setAlertEmail] = useState('');
   const [subscribingAlert, setSubscribingAlert] = useState(false);
   const [isAlertSubscribed, setIsAlertSubscribed] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +62,12 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     fetchProductAndReviews();
+    
+    // Set desktop state for responsive accordions
+    setIsDesktop(window.innerWidth >= 1024);
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [slug, apiUrl]);
 
   useEffect(() => {
@@ -255,15 +262,35 @@ export default function ProductDetailPage() {
         {/* Top Section */}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Column 1: Image Gallery (40%) */}
-          <div className="w-full lg:w-[40%] bg-white p-4 rounded-xl shadow-sm border border-border flex flex-col">
-            <div className="aspect-square rounded-lg overflow-hidden border border-border mb-4 bg-muted relative group cursor-crosshair">
-              <OptimizedImage src={activeImage || 'https://placehold.co/800x800?text=No+Image'} 
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+          <div className="w-[calc(100%+2rem)] -mx-4 lg:mx-0 lg:w-[40%] bg-white p-0 lg:p-4 rounded-none lg:rounded-xl shadow-none lg:shadow-sm border-none lg:border lg:border-border flex flex-col">
+            {/* Mobile swipeable, Desktop static */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide lg:block w-full">
+              {/* Desktop Active Image */}
+              <div className="hidden lg:block aspect-square rounded-lg overflow-hidden border border-border mb-4 bg-muted relative group cursor-crosshair w-full">
+                <OptimizedImage src={activeImage || 'https://placehold.co/800x800?text=No+Image'} 
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              </div>
+              
+              {/* Mobile All Images Swipeable */}
+              <div className="flex lg:hidden w-max">
+                {product.images && product.images.length > 0 ? (
+                  product.images.map((img: string, i: number) => (
+                    <div key={`mob-${i}`} className="aspect-square w-[100vw] shrink-0 snap-center relative bg-muted border-b border-border">
+                      <OptimizedImage src={img} alt={`${product.name} ${i+1}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))
+                ) : (
+                  <div className="aspect-square w-[100vw] shrink-0 snap-center relative bg-muted border-b border-border">
+                    <OptimizedImage src={'https://placehold.co/800x800?text=No+Image'} alt={product.name} className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
             </div>
             
+            {/* Desktop Thumbnails */}
             {product.images && product.images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              <div className="hidden lg:flex gap-3 overflow-x-auto pb-2 scrollbar-hide mt-4 lg:mt-0">
                 {product.images.map((img: string, i: number) => (
                   <button 
                     key={i} 
@@ -337,7 +364,7 @@ export default function ProductDetailPage() {
                 <h3 className="text-sm text-muted-foreground mb-2">Quantity</h3>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center border border-border rounded-md">
-                    <button onClick={() => handleQtyChange('dec')} className="p-2 hover:bg-muted text-muted-foreground transition-colors">
+                    <button onClick={() => handleQtyChange('dec')} className="p-3 hover:bg-muted text-muted-foreground transition-colors">
                       <Minus size={16} />
                     </button>
                     <input 
@@ -346,7 +373,7 @@ export default function ProductDetailPage() {
                       readOnly 
                       className="w-12 text-center text-sm font-medium border-x border-border py-2 focus:outline-none"
                     />
-                    <button onClick={() => handleQtyChange('inc')} className="p-2 hover:bg-muted text-muted-foreground transition-colors">
+                    <button onClick={() => handleQtyChange('inc')} className="p-3 hover:bg-muted text-muted-foreground transition-colors">
                       <Plus size={16} />
                     </button>
                   </div>
@@ -355,123 +382,147 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {((product as any).stock ?? 50) > 0 ? (
-              <div className="flex gap-3 pt-4">
-                <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98]">
-                  Buy Now
-                </button>
-                <button className="flex-1 bg-accent/10 text-primary/90 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
-                  Add to Cart
-                </button>
-              </div>
-            ) : (
-              <div className="pt-4 space-y-3">
-                <div className="bg-danger-bg text-destructive px-4 py-3 rounded-lg text-sm font-medium border border-red-100">
-                  Currently Out of Stock
+            {/* Mobile Sticky CTA Container / Desktop Inline CTA */}
+            <div className="fixed bottom-0 left-0 right-0 z-[90] bg-white border-t border-border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:static lg:p-0 lg:border-none lg:z-auto lg:pb-0">
+              {((product as any).stock ?? 50) > 0 ? (
+                <div className="flex gap-3">
+                  <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98]">
+                    Buy Now
+                  </button>
+                  <button className="flex-1 bg-accent/10 text-primary/90 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
+                    Add to Cart
+                  </button>
                 </div>
-                {isAlertSubscribed ? (
-                  <div className="bg-success-bg text-success-text px-4 py-3 rounded-lg text-sm font-medium border border-green-100">
-                    We'll email you when it's back in stock!
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-danger-bg text-destructive px-4 py-3 rounded-lg text-sm font-medium border border-red-100">
+                    Currently Out of Stock
                   </div>
-                ) : (
-                  <form onSubmit={handleSubscribeAlert} className="flex gap-2">
-                    <input 
-                      type="email" 
-                      required
-                      placeholder="Enter email for restock alert"
-                      value={alertEmail}
-                      onChange={e => setAlertEmail(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
-                    />
-                    <button 
-                      type="submit" 
-                      disabled={subscribingAlert}
-                      className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-secondary transition-colors disabled:opacity-70"
-                    >
-                      {subscribingAlert ? 'Subscribing...' : 'Notify Me'}
-                    </button>
-                  </form>
-                )}
-              </div>
-            )}
+                  {isAlertSubscribed ? (
+                    <div className="bg-success-bg text-success-text px-4 py-3 rounded-lg text-sm font-medium border border-green-100">
+                      We'll email you when it's back in stock!
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSubscribeAlert} className="flex gap-2">
+                      <input 
+                        type="email" 
+                        required
+                        placeholder="Enter email for restock alert"
+                        value={alertEmail}
+                        onChange={e => setAlertEmail(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={subscribingAlert}
+                        className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-secondary transition-colors disabled:opacity-70"
+                      >
+                        {subscribingAlert ? 'Subscribing...' : 'Notify Me'}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Column 3: Delivery & Service (25%) */}
           <div className="w-full lg:w-[25%] space-y-4">
-            <div className="bg-white rounded-xl shadow-sm border border-border p-4">
-              <h3 className="text-sm font-medium text-foreground mb-4">Delivery Options</h3>
-              <div className="flex gap-3 mb-4">
-                <MapPin size={20} className="text-muted-foreground shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-foreground line-clamp-2">Dhaka, Dhaka North, Banani Road No. 12 - 19</p>
-                  <button className="text-xs text-primary/90 font-medium mt-1">Change</button>
+            <details className="bg-white rounded-xl shadow-sm border border-border group" open={isDesktop ? true : undefined}>
+              <summary className="text-sm font-medium text-foreground p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex justify-between items-center lg:cursor-auto">
+                Delivery Options
+                <span className="lg:hidden transition-transform duration-300 group-open:rotate-180">
+                  <ChevronRight size={16} className="rotate-90" />
+                </span>
+              </summary>
+              <div className="px-4 pb-4 pt-1 lg:pt-0">
+                <div className="flex gap-3 mb-4">
+                  <MapPin size={20} className="text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground line-clamp-2">Dhaka, Dhaka North, Banani Road No. 12 - 19</p>
+                    <button className="text-xs text-primary/90 font-medium mt-1">Change</button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-3 mb-4">
-                <Truck size={20} className="text-muted-foreground shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Standard Delivery</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">3 - 5 days</p>
+                <div className="flex gap-3 mb-4">
+                  <Truck size={20} className="text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Standard Delivery</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">3 - 5 days</p>
+                      </div>
+                      <span className="text-sm font-medium text-foreground">{hasFreeShipping ? 'Free' : '৳55'}</span>
                     </div>
-                    <span className="text-sm font-medium text-foreground">{hasFreeShipping ? 'Free' : '৳55'}</span>
+                  </div>
+                </div>
+                <div className="flex gap-3 pt-3 border-t border-gray-50">
+                  <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
+                    <span className="text-[10px] font-bold text-muted-foreground">৳</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground">{hasCOD ? 'Cash on Delivery Available' : 'Cash on Delivery Not Available'}</p>
                   </div>
                 </div>
               </div>
-              <div className="flex gap-3 pt-3 border-t border-gray-50">
-                <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-muted-foreground">৳</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-foreground">{hasCOD ? 'Cash on Delivery Available' : 'Cash on Delivery Not Available'}</p>
-                </div>
-              </div>
-            </div>
+            </details>
 
-            <div className="bg-white rounded-xl shadow-sm border border-border p-4">
-              <h3 className="text-sm font-medium text-foreground mb-4">Return & Warranty</h3>
-              <div className="flex gap-3 mb-4">
-                <ShieldCheck size={20} className="text-muted-foreground shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-foreground">{returnPolicy}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Change of mind is not applicable</p>
+            <details className="bg-white rounded-xl shadow-sm border border-border group" open={isDesktop ? true : undefined}>
+              <summary className="text-sm font-medium text-foreground p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex justify-between items-center lg:cursor-auto">
+                Return & Warranty
+                <span className="lg:hidden transition-transform duration-300 group-open:rotate-180">
+                  <ChevronRight size={16} className="rotate-90" />
+                </span>
+              </summary>
+              <div className="px-4 pb-4 pt-1 lg:pt-0">
+                <div className="flex gap-3 mb-4">
+                  <ShieldCheck size={20} className="text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground">{returnPolicy}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Change of mind is not applicable</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Info size={20} className="text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground">{warrantyType}</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <Info size={20} className="text-muted-foreground shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-foreground">{warrantyType}</p>
-                </div>
-              </div>
-            </div>
+            </details>
 
-            <div className="bg-white rounded-xl shadow-sm border border-border p-4">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Sold by</p>
-                  <h3 className="text-base font-medium text-foreground">{sellerName}</h3>
+            <details className="bg-white rounded-xl shadow-sm border border-border group" open={isDesktop ? true : undefined}>
+              <summary className="text-sm font-medium text-foreground p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex justify-between items-center lg:cursor-auto">
+                Sold by
+                <span className="lg:hidden transition-transform duration-300 group-open:rotate-180">
+                  <ChevronRight size={16} className="rotate-90" />
+                </span>
+              </summary>
+              <div className="px-4 pb-4 pt-1 lg:pt-0">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-base font-medium text-foreground">{sellerName}</h3>
+                  </div>
+                  <button className="flex items-center gap-1 text-xs text-primary/90 bg-accent/10 px-2 py-1 rounded">
+                    <MessageSquare size={12} />
+                    Chat
+                  </button>
                 </div>
-                <button className="flex items-center gap-1 text-xs text-primary/90 bg-accent/10 px-2 py-1 rounded">
-                  <MessageSquare size={12} />
-                  Chat
-                </button>
+                <div className="grid grid-cols-3 gap-2 text-center pt-4 border-t border-gray-50">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Positive Seller Ratings</p>
+                    <p className="text-lg font-medium text-foreground">92%</p>
+                  </div>
+                  <div className="border-x border-border">
+                    <p className="text-xs text-muted-foreground mb-1">Ship on Time</p>
+                    <p className="text-lg font-medium text-foreground">98%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Chat Response</p>
+                    <p className="text-lg font-medium text-foreground">100%</p>
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center pt-4 border-t border-gray-50">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Positive Seller Ratings</p>
-                  <p className="text-lg font-medium text-foreground">92%</p>
-                </div>
-                <div className="border-x border-border">
-                  <p className="text-xs text-muted-foreground mb-1">Ship on Time</p>
-                  <p className="text-lg font-medium text-foreground">98%</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Chat Response</p>
-                  <p className="text-lg font-medium text-foreground">100%</p>
-                </div>
-              </div>
-            </div>
+            </details>
           </div>
         </div>
 
