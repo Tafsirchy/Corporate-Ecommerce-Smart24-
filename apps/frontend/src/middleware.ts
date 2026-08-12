@@ -8,7 +8,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS_PER_WINDOW = 100; // Allow 100 requests per minute per IP
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') || 'anonymous';
   const now = Date.now();
 
