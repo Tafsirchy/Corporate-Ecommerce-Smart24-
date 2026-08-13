@@ -12,6 +12,7 @@ export function AuthModal() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const [show2fa, setShow2fa] = useState(false);
   const [tempToken, setTempToken] = useState('');
   const [code, setCode] = useState('');
@@ -38,6 +39,7 @@ export function AuthModal() {
     if (isAuthModalOpen) {
       setLoginEmail('');
       setLoginPassword('');
+      setLoginError('');
       setShow2fa(false);
       setTempToken('');
       setCode('');
@@ -61,13 +63,17 @@ export function AuthModal() {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError('');
     if (show2fa) {
-      await verify2faLogin({ tempToken, code });
+      const res = await verify2faLogin({ tempToken, code });
+      if (res?.error) setLoginError(res.error);
     } else {
       const res = await login({ email: loginEmail, password: loginPassword });
       if (res?.twoFactorRequired) {
         setShow2fa(true);
         setTempToken(res.tempToken);
+      } else if (res?.error) {
+        setLoginError(res.error);
       }
     }
   };
@@ -175,6 +181,12 @@ export function AuthModal() {
                   </div>
                 )}
               </div>
+
+              {loginError && (
+                <div className="rounded-md bg-red-50 p-3">
+                  <p className="text-sm text-red-700 font-medium text-center">{loginError}</p>
+                </div>
+              )}
 
               <div>
                 <button
