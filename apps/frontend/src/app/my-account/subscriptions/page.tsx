@@ -42,8 +42,8 @@ export default function MySubscriptions() {
   if (loading) return <div className="p-6">Loading...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold mb-6">My Subscriptions</h1>
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10">
+      <h1 className="text-xl sm:text-2xl font-bold mb-6">My Subscriptions</h1>
       
       {subscriptions.length === 0 ? (
         <p>You have no active subscriptions.</p>
@@ -69,11 +69,11 @@ export default function MySubscriptions() {
                   <p><strong>Billing Day:</strong> {sub.billingDay}th of the month</p>
                 </div>
                 {sub.status === 'ACTIVE' ? (
-                  <Button variant="outline" className="text-yellow-600 border-yellow-600" onClick={() => updateStatus(sub.id, 'PAUSED')}>Pause Subscription</Button>
+                  <Button variant="outline" className="text-yellow-600 border-yellow-600 min-h-[44px]" onClick={() => updateStatus(sub.id, 'PAUSED')}>Pause Subscription</Button>
                 ) : (
-                  <Button variant="outline" className="text-success-text border-green-600" onClick={() => updateStatus(sub.id, 'ACTIVE')}>Resume Subscription</Button>
+                  <Button variant="outline" className="text-success-text border-green-600 min-h-[44px]" onClick={() => updateStatus(sub.id, 'ACTIVE')}>Resume Subscription</Button>
                 )}
-                <Button variant="destructive" onClick={() => updateStatus(sub.id, 'CANCELLED')}>Cancel Subscription</Button>
+                <Button variant="destructive" className="min-h-[44px]" onClick={() => updateStatus(sub.id, 'CANCELLED')}>Cancel Subscription</Button>
               </div>
             </div>
           ))}
