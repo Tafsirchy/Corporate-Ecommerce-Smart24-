@@ -185,12 +185,12 @@ function BuilderContent() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-      <div className="md:col-span-2 space-y-6">
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 relative">
+      <div className="lg:col-span-2 space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">Custom Package Builder</h1>
-            <p className="text-muted-foreground mt-1">Select at least 2 items to build your monthly business package.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Custom Package Builder</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">Select at least 2 items to build your monthly business package.</p>
           </div>
         </div>
 
@@ -200,12 +200,12 @@ function BuilderContent() {
             placeholder="Search products..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 bg-white"
+            className="flex-1 bg-white min-h-[44px]"
           />
           <Button 
             variant={isFilterOpen ? "default" : "outline"}
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-h-[44px]"
           >
             <Filter className="w-4 h-4" />
             Filters
@@ -261,6 +261,7 @@ function BuilderContent() {
                   variant="outline" 
                   onClick={() => addItem(p)}
                   disabled={!!selectedItems.find(i => i.productId === p.id)}
+                  className="min-h-[44px]"
                 >
                   {selectedItems.find(i => i.productId === p.id) ? 'Added' : 'Add'}
                 </Button>
@@ -276,6 +277,7 @@ function BuilderContent() {
               variant="outline" 
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
+              className="min-h-[44px]"
             >
               Previous
             </Button>
@@ -284,6 +286,7 @@ function BuilderContent() {
               variant="outline" 
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
+              className="min-h-[44px]"
             >
               Next
             </Button>
@@ -291,7 +294,7 @@ function BuilderContent() {
         )}
       </div>
 
-      <div className="bg-muted p-6 rounded-lg h-fit border sticky top-24">
+      <div className="bg-muted p-4 sm:p-6 rounded-lg h-fit border sticky lg:top-24 mt-6 lg:mt-0 order-last lg:order-none">
         <h2 className="text-xl font-bold mb-4">Your Package</h2>
         {selectedItems.length === 0 ? (
           <p className="text-muted-foreground text-sm mb-4">No items added yet.</p>
@@ -306,12 +309,12 @@ function BuilderContent() {
                 <div className="flex items-center space-x-2">
                   <Input 
                     type="number" 
-                    className="w-16 h-8 text-sm" 
+                    className="w-16 min-h-[44px] text-sm" 
                     value={item.quantity}
                     onChange={(e) => updateQuantity(item.productId, parseInt(e.target.value))}
                     min={1}
                   />
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => removeItem(item.productId)}>✕</Button>
+                  <Button variant="ghost" size="sm" className="min-h-[44px] min-w-[44px] p-0 text-destructive" onClick={() => removeItem(item.productId)}>✕</Button>
                 </div>
               </div>
             ))}
@@ -349,18 +352,18 @@ function BuilderContent() {
         <form onSubmit={handleSubmit} className="space-y-4 mt-6 border-t pt-4">
           <div>
             <label className="text-sm font-medium">Delivery Day (Every Month)</label>
-            <Input type="number" min={1} max={28} value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
+            <Input type="number" min={1} max={28} className="min-h-[44px]" value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
             <p className="text-xs text-muted-foreground mt-1">Select a date between 1 and 28.</p>
           </div>
           <div>
             <label className="text-sm font-medium">Delivery Address</label>
-            <Input value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} required />
+            <Input className="min-h-[44px]" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} required />
           </div>
           <div>
             <label className="text-sm font-medium">Contact Number</label>
-            <Input value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} required />
+            <Input className="min-h-[44px]" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} required />
           </div>
-          <Button type="submit" className="w-full" disabled={selectedItems.length < 2}>
+          <Button type="submit" className="w-full min-h-[44px]" disabled={selectedItems.length < 2}>
             Confirm Subscription
           </Button>
         </form>
