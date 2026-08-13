@@ -158,6 +158,9 @@ export class AuthService {
       verificationTokenExpires: null,
     });
 
+    // Update the user object in memory so login() doesn't throw UnauthorizedException
+    user.isEmailVerified = true;
+
     const { access_token, refresh_token } = await this.login(user);
     // Exclude password from returned user object
     const { password, ...userWithoutPassword } = user;
