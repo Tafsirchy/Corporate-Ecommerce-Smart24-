@@ -26,6 +26,7 @@ export function AuthModal() {
   const [phone, setPhone] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [signupError, setSignupError] = useState('');
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -53,6 +54,7 @@ export function AuthModal() {
       setShowLoginPassword(false);
       setShowSignupPassword(false);
       setShowConfirmPassword(false);
+      setSignupError('');
       setBusinessName('');
       setOwnerName('');
       setAddress('');
@@ -78,17 +80,19 @@ export function AuthModal() {
     }
   };
 
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupError('');
     if (signupPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+      setSignupError("Passwords do not match");
       return;
     }
 
+    let res;
     if (accountType === 'BUYER') {
-      signup({ name, email: signupEmail, phone, password: signupPassword });
+      res = await signup({ name, email: signupEmail, phone, password: signupPassword });
     } else {
-      signup({
+      res = await signup({
         name,
         email: signupEmail,
         phone,
@@ -101,6 +105,10 @@ export function AuthModal() {
           address
         }
       });
+    }
+    
+    if (res?.error) {
+      setSignupError(res.error);
     }
   };
 
@@ -392,6 +400,12 @@ export function AuthModal() {
                     )}
                   </div>
                 </div>
+
+                {signupError && (
+                  <div className="rounded-md bg-red-50 p-3 mt-4 md:col-span-2">
+                    <p className="text-sm text-red-700 font-medium text-center">{signupError}</p>
+                  </div>
+                )}
 
                 <div className="flex gap-4 pt-2">
                   <button

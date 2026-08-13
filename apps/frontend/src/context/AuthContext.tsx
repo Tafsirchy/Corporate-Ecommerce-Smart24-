@@ -82,7 +82,7 @@ interface AuthContextType {
   loading: boolean;
   login: (data: any) => Promise<any>;
   verify2faLogin: (data: any) => Promise<any>;
-  signup: (data: any) => Promise<void>;
+  signup: (data: any) => Promise<any>;
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<boolean>;
   isAuthModalOpen: boolean;
@@ -216,10 +216,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       toast.success('Signed up successfully!');
       closeAuthModal();
+      return { success: true };
     } catch (e: any) {
       const msg = e.response?.data?.message;
       const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Signup failed');
-      toast.error(errorText);
+      return { success: false, error: errorText };
     }
   };
 
