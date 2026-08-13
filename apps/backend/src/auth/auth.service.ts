@@ -158,7 +158,16 @@ export class AuthService {
       verificationTokenExpires: null,
     });
 
-    return { message: 'Email successfully verified. You can now log in.' };
+    const { access_token, refresh_token } = await this.login(user);
+    // Exclude password from returned user object
+    const { password, ...userWithoutPassword } = user;
+
+    return { 
+      message: 'Email successfully verified. You are now logged in.',
+      access_token,
+      refresh_token,
+      user: userWithoutPassword
+    };
   }
 
   async resendVerification(email: string) {

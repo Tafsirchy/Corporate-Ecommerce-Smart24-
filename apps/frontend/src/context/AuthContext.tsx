@@ -86,9 +86,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<boolean>;
   isAuthModalOpen: boolean;
-  authModalView: 'login' | 'signup';
-  openAuthModal: (view?: 'login' | 'signup') => void;
+  authModalView: 'login' | 'signup' | 'verification-pending';
+  openAuthModal: (view?: 'login' | 'signup' | 'verification-pending') => void;
   closeAuthModal: () => void;
+  setAuthModalView: (view: 'login' | 'signup' | 'verification-pending') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -98,10 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalView, setAuthModalView] = useState<'login' | 'signup'>('login');
+  const [authModalView, setAuthModalView] = useState<'login' | 'signup' | 'verification-pending'>('login');
   const router = useRouter();
 
-  const openAuthModal = (view: 'login' | 'signup' = 'login') => {
+  const openAuthModal = (view: 'login' | 'signup' | 'verification-pending' = 'login') => {
     setAuthModalView(view);
     setIsAuthModalOpen(true);
   };
@@ -210,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Backend returns { message, userId } - email verification is required before login
       toast.success(res.data.message || 'Signed up successfully! Please check your email to verify.');
-      closeAuthModal();
+      setAuthModalView('verification-pending');
       return { success: true };
     } catch (e: any) {
       const msg = e.response?.data?.message;
@@ -249,7 +250,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView }}>
       {children}
     </AuthContext.Provider>
   );

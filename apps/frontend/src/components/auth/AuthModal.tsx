@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { X, Eye, EyeOff } from 'lucide-react';
+import { X, Eye, EyeOff, Mail } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 
@@ -60,6 +60,28 @@ export function AuthModal() {
       setAddress('');
     }
   }, [isAuthModalOpen]);
+
+  // Listen for storage events (e.g., when the user verifies their email in another tab)
+  useEffect(() => {
+    if (!isAuthModalOpen) return;
+    
+    const handleStorage = (e: StorageEvent) => {
+      // If the access_token is set in another tab, auto close the modal
+      if (e.key === 'access_token' && e.newValue) {
+        toast.success("Login successful from another tab!");
+        closeAuthModal();
+        // Option to reload if necessary: window.location.reload();
+      }
+      // Or if we specifically use verification_success key
+      if (e.key === 'verification_success' && e.newValue) {
+        toast.success("Email verified! You are now logged in.");
+        closeAuthModal();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [isAuthModalOpen, closeAuthModal]);
 
   if (!isAuthModalOpen) return null;
 
@@ -215,6 +237,23 @@ export function AuthModal() {
                 </div>
               )}
             </form>
+          </div>
+        ) : authModalView === 'verification-pending' ? (
+          <div className="space-y-6 text-center py-8">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-100">
+              <Mail className="h-8 w-8 text-primary-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                Check your email
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                We've sent a verification link to <span className="font-semibold text-foreground">{signupEmail}</span>.
+              </p>
+              <p className="mt-3 text-sm text-muted-foreground bg-gray-50 p-4 rounded-lg text-left">
+                Please check your inbox and click the link to verify your account. Once verified, this window will automatically close and you will be signed in.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="space-y-4 md:space-y-6">
