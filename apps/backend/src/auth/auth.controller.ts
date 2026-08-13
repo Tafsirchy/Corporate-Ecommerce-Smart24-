@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { SignupDto, LoginDto } from './dto/auth.dto';
+import { SignupDto, LoginDto, ResetPasswordDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
 import * as QRCode from 'qrcode';
@@ -19,6 +19,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async signup(@Body() body: SignupDto) {
     return this.authService.signup(body);
   }
@@ -78,8 +79,10 @@ export class AuthController {
     return { access_token, user };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
-  logout(@Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    await this.authService.logout(req.user.id);
     res.clearCookie('refresh_token', { path: '/api/v1/auth/refresh' });
     return { message: 'Logged out successfully' };
   }
@@ -91,7 +94,7 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() body: any) {
+  async resetPassword(@Body() body: ResetPasswordDto) {
     return this.authService.resetPassword(body.token, body.password);
   }
 
