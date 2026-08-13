@@ -13,10 +13,17 @@ export class UsersService {
       throw new ConflictException('Email already in use');
     }
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    return this.userRepository.create({
-      ...data,
-      password: hashedPassword,
-    });
+    try {
+      return await this.userRepository.create({
+        ...data,
+        password: hashedPassword,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('Email already in use');
+      }
+      throw error;
+    }
   }
 
   async findByEmail(email: string) {
