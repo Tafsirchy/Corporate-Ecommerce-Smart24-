@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, apiClient } from '@/context/AuthContext';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 
 export default function VerifyEmailPage() {
   const router = useRouter();

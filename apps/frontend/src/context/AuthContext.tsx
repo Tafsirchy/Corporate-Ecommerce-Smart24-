@@ -90,6 +90,8 @@ interface AuthContextType {
   openAuthModal: (view?: 'login' | 'signup' | 'verification-pending') => void;
   closeAuthModal: () => void;
   setAuthModalView: (view: 'login' | 'signup' | 'verification-pending') => void;
+  setToken: (token: string | null) => void;
+  setUser: (user: z.infer<typeof UserSchema> | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -250,7 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView, setToken, setUser }}>
       {children}
     </AuthContext.Provider>
   );
