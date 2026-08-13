@@ -67,22 +67,22 @@ export default function AdminSubscriptions() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Manage Subscriptions</h1>
-        <Link href="/admin/subscriptions/plans">
-          <Button variant="outline">Manage Fixed Plans</Button>
+        <Link href="/admin/subscriptions/plans" className="w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto">Manage Fixed Plans</Button>
         </Link>
       </div>
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <Input 
           placeholder="Search by ID, Name or Email..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-md"
+          className="w-full sm:max-w-md text-base"
         />
         <select 
-          className="border rounded-md px-3 py-2 bg-white text-sm"
+          className="border rounded-md p-3 min-h-[44px] bg-white text-base w-full sm:w-auto"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -127,7 +127,7 @@ export default function AdminSubscriptions() {
                   <select
                     value={sub.status}
                     onChange={(e) => handleStatusChange(sub.id, e.target.value)}
-                    className={`border rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer ${
+                    className={`border rounded p-2 min-h-[44px] text-base font-bold outline-none cursor-pointer ${
                       sub.status === 'ACTIVE' ? 'bg-success-bg text-success-text border-green-200' :
                       sub.status === 'PAUSED' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
                       'bg-danger-bg text-destructive border-red-200'
