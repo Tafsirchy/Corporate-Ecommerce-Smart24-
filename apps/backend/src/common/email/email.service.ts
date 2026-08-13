@@ -94,6 +94,10 @@ export class EmailService {
 
   async sendVerificationEmail(email: string, token: string) {
     const verificationUrl = `${this.frontendUrl}/verify-email?token=${token}`;
+    
+    // Log the URL for local testing purposes when email sending fails
+    this.logger.log(`\n======================================================\n[TESTING] Verification URL for ${email}:\n${verificationUrl}\n======================================================\n`);
+    
     const subject = 'Verify your email address - Smart24';
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
