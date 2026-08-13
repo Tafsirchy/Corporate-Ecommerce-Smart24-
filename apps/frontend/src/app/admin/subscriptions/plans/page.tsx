@@ -172,16 +172,16 @@ export default function AdminSubscriptionPlans() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold">Subscription Plans</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage fixed subscription packages</p>
+          <p className="text-muted-foreground text-base mt-1">Manage fixed subscription packages</p>
         </div>
-        <div className="space-x-4">
-          <Link href="/admin/subscriptions">
-            <Button variant="outline">Back to Subscriptions</Button>
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
+          <Link href="/admin/subscriptions" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full">Back to Subscriptions</Button>
           </Link>
-          <Button onClick={openCreateModal}>Create New Plan</Button>
+          <Button onClick={openCreateModal} className="w-full sm:w-auto">Create New Plan</Button>
         </div>
       </div>
 
@@ -243,13 +243,13 @@ export default function AdminSubscriptionPlans() {
             <h2 className="text-2xl font-bold mb-6">{editingId ? "Edit Plan" : "Create New Fixed Plan"}</h2>
 
             <form onSubmit={handleSavePlan} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Plan Name</label>
+                  <label className="text-base font-medium">Plan Name</label>
                   <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Office Basics" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Monthly Price (৳)</label>
+                  <label className="text-base font-medium">Monthly Price (৳)</label>
                   <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="e.g. 5000" />
                 </div>
               </div>
@@ -265,12 +265,12 @@ export default function AdminSubscriptionPlans() {
                   <div className="space-y-2 mb-4 bg-muted p-4 rounded border">
                     {selectedItems.map((item) => (
                       <div key={item.product.id} className="flex items-center justify-between bg-white p-2 rounded shadow-sm">
-                        <span className="text-sm truncate w-1/2">{item.product.name}</span>
+                        <span className="text-base truncate w-1/2">{item.product.name}</span>
                         <div className="flex items-center gap-2">
-                          <Button type="button" variant="outline" size="sm" onClick={() => handleUpdateQuantity(item.product.id, -1)}>-</Button>
-                          <span className="text-sm w-4 text-center">{item.quantity}</span>
-                          <Button type="button" variant="outline" size="sm" onClick={() => handleUpdateQuantity(item.product.id, 1)}>+</Button>
-                          <Button type="button" variant="destructive" size="sm" onClick={() => handleRemoveItem(item.product.id)}><X className="w-4 h-4"/></Button>
+                          <Button type="button" variant="outline" className="min-h-[44px] min-w-[44px]" onClick={() => handleUpdateQuantity(item.product.id, -1)}>-</Button>
+                          <span className="text-base w-6 text-center">{item.quantity}</span>
+                          <Button type="button" variant="outline" className="min-h-[44px] min-w-[44px]" onClick={() => handleUpdateQuantity(item.product.id, 1)}>+</Button>
+                          <Button type="button" variant="destructive" className="min-h-[44px] min-w-[44px]" onClick={() => handleRemoveItem(item.product.id)}><X className="w-4 h-4"/></Button>
                         </div>
                       </div>
                     ))}
