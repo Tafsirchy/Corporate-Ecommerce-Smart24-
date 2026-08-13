@@ -387,6 +387,9 @@ export function AuthModal() {
                     {confirmPassword && signupPassword !== confirmPassword && (
                       <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
                     )}
+                    {confirmPassword && signupPassword === confirmPassword && (
+                      <p className="text-xs text-green-500 mt-1">Passwords match</p>
+                    )}
                   </div>
                 </div>
 

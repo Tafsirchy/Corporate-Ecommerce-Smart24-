@@ -75,6 +75,12 @@ function ResetPasswordForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
+            {confirmPassword && password !== confirmPassword && (
+              <p className="text-xs text-red-500 pt-2 px-1">Passwords do not match</p>
+            )}
+            {confirmPassword && password === confirmPassword && (
+              <p className="text-xs text-green-500 pt-2 px-1">Passwords match</p>
+            )}
           </div>
 
           <div>
