@@ -96,7 +96,9 @@ export class EmailService {
     const verificationUrl = `${this.frontendUrl}/verify-email?token=${token}`;
     
     // Log the URL for local testing purposes when email sending fails
-    this.logger.log(`\n======================================================\n[TESTING] Verification URL for ${email}:\n${verificationUrl}\n======================================================\n`);
+    if (process.env.NODE_ENV !== 'production') {
+      this.logger.log(`\n======================================================\n[TESTING] Verification URL for ${email}:\n${verificationUrl}\n======================================================\n`);
+    }
     
     const subject = 'Verify your email address - Smart24';
     const html = `
@@ -110,6 +112,22 @@ export class EmailService {
         <p><a href="${verificationUrl}">${verificationUrl}</a></p>
         <p>This link will expire in 24 hours.</p>
         <p>If you didn't create an account, you can safely ignore this email.</p>
+      </div>
+    `;
+    return this.sendEmail(email, subject, html);
+  }
+
+  async sendWelcomeEmail(email: string, userName: string) {
+    const subject = 'Welcome to Smart24!';
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+        <h2>Welcome aboard, ${this.escapeHtml(userName)}! 🎉</h2>
+        <p>Your email has been successfully verified, and your account is now fully active.</p>
+        <p>We are thrilled to have you join the Smart24 platform. Start exploring our wide range of products and enjoy exclusive deals just for you.</p>
+        <div style="margin: 30px 0;">
+          <a href="${this.frontendUrl}" style="background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Shop Now</a>
+        </div>
+        <p>If you have any questions or need assistance, our support team is always here to help.</p>
       </div>
     `;
     return this.sendEmail(email, subject, html);
@@ -129,6 +147,23 @@ export class EmailService {
         <p><a href="${resetUrl}">${resetUrl}</a></p>
         <p>This password reset is only valid for the next 15 minutes.</p>
         <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
+      </div>
+    `;
+    return this.sendEmail(email, subject, html);
+  }
+
+  async sendPasswordChangedAlert(email: string, userName: string) {
+    const subject = 'Security Alert: Your password was changed';
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+        <h2>Password Changed Successfully</h2>
+        <p>Hi ${this.escapeHtml(userName)},</p>
+        <p>This is a confirmation that the password for your Smart24 account was recently changed.</p>
+        <p>If you made this change, no further action is required.</p>
+        <div style="margin: 30px 0; padding: 15px; border: 1px solid #ff4d4f; border-radius: 4px; background-color: #fff1f0;">
+          <p style="margin: 0; color: #cf1322;"><strong>Didn't make this change?</strong></p>
+          <p style="margin: 10px 0 0 0;">Please contact our support team immediately or reset your password again to secure your account.</p>
+        </div>
       </div>
     `;
     return this.sendEmail(email, subject, html);

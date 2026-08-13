@@ -165,6 +165,13 @@ export class AuthService {
     // Exclude password from returned user object
     const { password, ...userWithoutPassword } = user;
 
+    // Send welcome email in background
+    if (user.emailNotifications) {
+      this.emailService
+        .sendWelcomeEmail(user.email, user.name)
+        .catch((err) => console.error('Failed to send welcome email:', err));
+    }
+
     return { 
       message: 'Email successfully verified. You are now logged in.',
       access_token,
@@ -289,9 +296,15 @@ export class AuthService {
       resetPasswordExpires: null,
     });
 
+    // Send security alert in background
+    if (user.emailNotifications !== false) {
+      this.emailService
+        .sendPasswordChangedAlert(user.email, user.name)
+        .catch((err) => console.error('Failed to send password changed alert:', err));
+    }
+
     return {
-      message:
-        'Password updated successfully. All other sessions have been logged out.',
+      message: 'Password has been successfully reset',
     };
   }
 

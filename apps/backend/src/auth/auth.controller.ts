@@ -141,4 +141,14 @@ export class AuthController {
   async turnOnTwoFactorAuth(@Req() req: any, @Body('code') code: string) {
     return this.authService.turnOnTwoFactorAuth(req.user, code);
   }
+
+  @Post('webhooks/resend')
+  async resendWebhook(@Body() body: any) {
+    // Basic handler for Resend Webhooks (e.g. email bounced)
+    if (body?.type === 'email.bounced') {
+      console.warn(`[WEBHOOK] Email bounced to ${body.data?.to}: ${body.data?.bounce_reason || 'Unknown reason'}`);
+      // In a real application, you might mark the user's email as invalid here
+    }
+    return { received: true };
+  }
 }
