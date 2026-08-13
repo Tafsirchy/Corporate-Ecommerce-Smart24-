@@ -38,11 +38,11 @@ export class AuthController {
     if (user.isTwoFactorEnabled) {
       return {
         twoFactorRequired: true,
-        tempToken: await this.authService.generateTempToken(user),
+        tempToken: this.authService.generateTempToken(user),
       };
     }
 
-    const { access_token, refresh_token } = await this.authService.login(user);
+    const { access_token, refresh_token } = this.authService.login(user);
 
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
@@ -67,7 +67,7 @@ export class AuthController {
       throw new UnauthorizedException('Invalid 2FA code or expired session');
     }
 
-    const { access_token, refresh_token } = await this.authService.login(user);
+    const { access_token, refresh_token } = this.authService.login(user);
 
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
@@ -104,7 +104,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.verifyEmail(token);
-    
+
     if (result.refresh_token) {
       res.cookie('refresh_token', result.refresh_token, {
         httpOnly: true,
@@ -114,10 +114,10 @@ export class AuthController {
       });
     }
 
-    return { 
-      message: result.message, 
-      access_token: result.access_token, 
-      user: result.user 
+    return {
+      message: result.message,
+      access_token: result.access_token,
+      user: result.user,
     };
   }
 
@@ -146,7 +146,9 @@ export class AuthController {
   async resendWebhook(@Body() body: any) {
     // Basic handler for Resend Webhooks (e.g. email bounced)
     if (body?.type === 'email.bounced') {
-      console.warn(`[WEBHOOK] Email bounced to ${body.data?.to}: ${body.data?.bounce_reason || 'Unknown reason'}`);
+      console.warn(
+        `[WEBHOOK] Email bounced to ${body.data?.to}: ${body.data?.bounce_reason || 'Unknown reason'}`,
+      );
       // In a real application, you might mark the user's email as invalid here
     }
     return { received: true };

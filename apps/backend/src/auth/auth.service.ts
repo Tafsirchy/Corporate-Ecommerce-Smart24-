@@ -6,7 +6,7 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { authenticator } from 'otplib';
 import * as crypto from 'crypto';
 import { EmailService } from '../common/email/email.service';
@@ -41,7 +41,7 @@ const decryptSecret = (encryptedText: string) => {
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
-  } catch (e) {
+  } catch {
     return encryptedText; // Fallback in case of corruption
   }
 };
@@ -63,7 +63,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  login(user: User) {
     if (!user.isEmailVerified) {
       throw new UnauthorizedException(
         'Please verify your email address before logging in.',
@@ -94,7 +94,7 @@ export class AuthService {
     }
   }
 
-  async signup(data: any) {
+  async signup(data: Record<string, any>) {
     const rawToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto
       .createHash('sha256')
@@ -161,7 +161,7 @@ export class AuthService {
     // Update the user object in memory so login() doesn't throw UnauthorizedException
     user.isEmailVerified = true;
 
-    const { access_token, refresh_token } = await this.login(user);
+    const { access_token, refresh_token } = this.login(user);
     // Exclude password from returned user object
     const { password, ...userWithoutPassword } = user;
 
@@ -172,11 +172,11 @@ export class AuthService {
         .catch((err) => console.error('Failed to send welcome email:', err));
     }
 
-    return { 
+    return {
       message: 'Email successfully verified. You are now logged in.',
       access_token,
       refresh_token,
-      user: userWithoutPassword
+      user: userWithoutPassword,
     };
   }
 
@@ -217,7 +217,7 @@ export class AuthService {
     };
   }
 
-  async generateTempToken(user: any) {
+  generateTempToken(user: User) {
     const payload = { sub: user.id, temp: true };
     return this.jwtService.sign(payload, { expiresIn: '5m' });
   }
@@ -234,7 +234,7 @@ export class AuthService {
       if (!isCodeValid) return null;
 
       return user;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -300,7 +300,9 @@ export class AuthService {
     if (user.emailNotifications !== false) {
       this.emailService
         .sendPasswordChangedAlert(user.email, user.name)
-        .catch((err) => console.error('Failed to send password changed alert:', err));
+        .catch((err) =>
+          console.error('Failed to send password changed alert:', err),
+        );
     }
 
     return {
@@ -308,7 +310,7 @@ export class AuthService {
     };
   }
 
-  async generateTwoFactorAuthSecret(user: any) {
+  async generateTwoFactorAuthSecret(user: User) {
     const secret = authenticator.generateSecret();
     const otpauthUrl = authenticator.keyuri(user.email, 'Smart24', secret);
     await this.usersService.update(user.id, {
@@ -317,7 +319,7 @@ export class AuthService {
     return { secret, otpauthUrl };
   }
 
-  async verifyTwoFactorAuthCode(user: any, code: string) {
+  async verifyTwoFactorAuthCode(user: User, code: string) {
     const dbUser = await this.usersService.findById(user.id);
     if (!dbUser || !dbUser.twoFactorSecret) {
       return false;
@@ -329,7 +331,7 @@ export class AuthService {
     });
   }
 
-  async turnOnTwoFactorAuth(user: any, code: string) {
+  async turnOnTwoFactorAuth(user: User, code: string) {
     const isCodeValid = await this.verifyTwoFactorAuthCode(user, code);
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code');
