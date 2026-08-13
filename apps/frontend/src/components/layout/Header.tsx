@@ -333,23 +333,30 @@ export default function Header() {
         {/* Mobile Full-Screen Menu Drawer */}
         {isMobileMenuOpen && (
           <div className="absolute top-full left-0 right-0 h-screen bg-white z-40 overflow-y-auto pb-[env(safe-area-inset-bottom)] md:hidden border-t border-border">
-             <div className="flex flex-col px-6 py-6 gap-6 min-h-full pb-32">
+             <div className="flex flex-col px-6 py-6 gap-6 min-h-[calc(100vh-140px)] pb-12">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Home</Link>
                 <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Shop</Link>
                 <Link href="/subscriptions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Subscriptions</Link>
                 <Link href="/account/rewards" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Rewards</Link>
-                
-                {user ? (
-                  <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">My Account</Link>
-                ) : (
-                  <>
-                    <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('login'); }} className="text-lg font-medium border-b border-border/40 pb-3 text-left">Sign In</button>
-                    <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('signup'); }} className="text-lg font-medium border-b border-border/40 pb-3 text-left text-primary">Sign Up</button>
-                  </>
-                )}
-                
                 <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Support & FAQ</Link>
                 <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">About Us</Link>
+                
+                <div className="mt-auto pt-6 flex flex-col gap-4">
+                  {user ? (
+                    <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3.5 bg-primary-600 text-white rounded-xl text-center font-bold text-lg hover:bg-primary-700 transition-colors shadow-sm">
+                      Go to My Account
+                    </Link>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                      <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('login'); }} className="w-full py-3.5 border-2 border-primary-600 text-primary-600 rounded-xl text-center font-bold text-lg hover:bg-primary-50 transition-colors">
+                        Sign In
+                      </button>
+                      <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('signup'); }} className="w-full py-3.5 bg-primary-600 text-white rounded-xl text-center font-bold text-lg hover:bg-primary-700 transition-colors shadow-sm">
+                        Sign Up
+                      </button>
+                    </div>
+                  )}
+                </div>
              </div>
           </div>
         )}
