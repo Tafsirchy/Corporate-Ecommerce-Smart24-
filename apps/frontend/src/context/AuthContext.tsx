@@ -207,14 +207,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (data: any) => {
     try {
       const res = await apiClient.post('/auth/signup', data);
-      localStorage.setItem('access_token', res.data.access_token);
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
-      setToken(res.data.access_token);
       
-      const parsedUser = UserSchema.parse(res.data.user);
-      setUser(parsedUser);
-      
-      toast.success('Signed up successfully!');
+      // Backend returns { message, userId } - email verification is required before login
+      toast.success(res.data.message || 'Signed up successfully! Please check your email to verify.');
       closeAuthModal();
       return { success: true };
     } catch (e: any) {
