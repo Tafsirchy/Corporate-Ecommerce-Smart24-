@@ -84,6 +84,16 @@ export class AuthService {
     };
   }
 
+  async logout(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (user) {
+      const nextTokenVersion = (user.tokenVersion || 0) + 1;
+      await this.usersService.update(userId, {
+        tokenVersion: nextTokenVersion,
+      });
+    }
+  }
+
   async signup(data: any) {
     const rawToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto
