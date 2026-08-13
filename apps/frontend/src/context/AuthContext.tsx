@@ -52,10 +52,16 @@ apiClient.interceptors.response.use(
       if (isClient) {
         localStorage.removeItem('access_token');
         delete apiClient.defaults.headers.common['Authorization'];
-        // Prevent redirect loop if already on login page
-        if (window.location.pathname !== '/login') {
+        
+        // Do not redirect if the failure was from a login attempt
+        if (error.config && error.config.url && (error.config.url.includes('/auth/login') || error.config.url.includes('/auth/verify-2fa-login'))) {
+          return Promise.reject(error);
+        }
+
+        // Prevent redirect loop if already on home page
+        if (window.location.pathname !== '/') {
           toast.error("Your session has expired. Please log in again.");
-          window.location.href = '/login';
+          window.dispatchEvent(new Event('unauthorized'));
         }
       }
     } else if (status === 403) {
@@ -138,6 +144,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setToken(null);
+      setUser(null);
+      openAuthModal('login');
+      if (window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/my-account')) {
+        router.push('/');
+      }
+    };
+    window.addEventListener('unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('unauthorized', handleUnauthorized);
+  }, [router]);
+
   const login = async (data: any) => {
     try {
       const res = await apiClient.post('/auth/login', data);
@@ -160,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const msg = e.response?.data?.message;
       const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Login failed');
       toast.error(errorText);
-      return { success: false };
+      return { success: false, error: errorText };
     }
   };
 
@@ -181,7 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const msg = e.response?.data?.message;
       const errorText = Array.isArray(msg) ? msg[0] : (msg || '2FA Verification failed');
       toast.error(errorText);
-      return { success: false };
+      return { success: false, error: errorText };
     }
   };
 
@@ -212,7 +231,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(null);
       setUser(null);
       toast.info('Logged out');
-      router.push('/login');
+      router.push('/');
     } catch (e) {
       toast.error('Logout failed');
     }
