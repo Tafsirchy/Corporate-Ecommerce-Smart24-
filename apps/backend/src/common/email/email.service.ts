@@ -55,7 +55,7 @@ export class EmailService {
       return;
     }
 
-    const replyTo = process.env.SUPPORT_EMAIL || 'support@smart24.com';
+    const replyTo = process.env.SUPPORT_EMAIL || 'support@smart24.live';
     let attempt = 0;
 
     while (attempt < retries) {
@@ -67,6 +67,10 @@ export class EmailService {
           html,
           text,
           replyTo,
+          headers: {
+            'List-Unsubscribe': `<mailto:unsubscribe@smart24.live?subject=unsubscribe>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
         });
 
         this.logger.log(
