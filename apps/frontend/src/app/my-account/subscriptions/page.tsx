@@ -15,7 +15,7 @@ export default function MySubscriptions() {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => res.json())
-      .then(data => setSubscriptions(data))
+      .then(resData => setSubscriptions(resData.data || []))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, [token]);
