@@ -171,7 +171,7 @@ export default function Header() {
 
   return (
     <>
-      {!isHome && <div className="h-[90px] md:h-[80px] w-full" />}
+      {!isHome && <div className="h-14 md:h-[80px] w-full" />}
       <header
         className={`fixed top-0 left-0 right-0 z-50 flex flex-col transition-colors duration-300 ${
           isMobileMenuOpen ? 'bg-white' : ''
@@ -188,8 +188,10 @@ export default function Header() {
           </Link>
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`p-2 -mr-2 ${(isTransparent && !isMobileMenuOpen) ? 'text-white' : 'text-foreground'}`}
-            aria-label="Toggle menu"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            className={`-mr-2 flex h-11 w-11 items-center justify-center ${(isTransparent && !isMobileMenuOpen) ? 'text-white' : 'text-foreground'}`}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -215,7 +217,7 @@ export default function Header() {
                     onFocus={() => setIsSearchFocused(true)}
                     onKeyDown={handleKeyDown}
                     placeholder="Search for any product and similar products..."
-                    className={`w-full pl-10 pr-24 py-1.5 text-sm border focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all rounded ${
+                    className={`h-11 w-full pl-10 pr-24 text-base border focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all rounded ${
                       (isTransparent && !isMobileMenuOpen)
                         ? 'bg-transparent border-white/40 text-white placeholder:text-white/80'
                         : 'bg-white border-border text-foreground'
@@ -223,13 +225,13 @@ export default function Header() {
                     autoComplete="off"
                   />
                   {searchQuery && (
-                    <button type="button" onClick={clearSearch} className={`absolute right-24 top-1/2 -translate-y-1/2 p-1 transition ${
+                    <button type="button" onClick={clearSearch} aria-label="Clear search" className={`absolute right-24 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center transition ${
                       (isTransparent && !isMobileMenuOpen) ? 'text-white/80 hover:text-white' : 'text-muted-foreground hover:text-foreground'
                     }`}>
                       <X className="w-4 h-4" />
                     </button>
                   )}
-                  <button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 px-3 py-1 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors rounded-sm">
+                  <button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 flex h-9 items-center px-3 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors rounded-sm">
                     Search
                   </button>
                 </form>
@@ -289,18 +291,18 @@ export default function Header() {
               </div>
 
               <div className="flex items-center gap-4 ml-2">
-                <Link href="/wishlist" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative`}>
+                <Link href="/wishlist" aria-label={`Wishlist (${wishlistItems.length} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
                   <Heart className="w-5 h-5" />
                   {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                    <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                       {wishlistItems.length}
                     </span>
                   )}
                 </Link>
-                <Link href="/cart" className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative`}>
+                <Link href="/cart" aria-label={`Cart (${totalItems} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
                   <ShoppingCart className="w-5 h-5" />
                   {totalItems > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                    <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                       {totalItems}
                     </span>
                   )}
@@ -332,54 +334,54 @@ export default function Header() {
 
         {/* Mobile Full-Screen Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 h-screen bg-white z-40 overflow-y-auto pb-[env(safe-area-inset-bottom)] md:hidden border-t border-border">
-             <div className="flex flex-col px-6 py-6 gap-6 min-h-[calc(100vh-140px)] pb-12">
-                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Home</Link>
-                <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Shop</Link>
-                <Link href="/subscriptions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Subscriptions</Link>
-                <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">About Us</Link>
+          <div id="mobile-menu" aria-label="Mobile navigation" className="absolute top-full left-0 right-0 h-screen bg-white z-40 overflow-y-auto pb-[env(safe-area-inset-bottom)] md:hidden border-t border-border">
+             <div className="flex flex-col px-4 py-6 gap-6 min-h-[calc(100vh-140px)] pb-12">
+                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Home</Link>
+                <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Shop</Link>
+                <Link href="/subscriptions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Subscriptions</Link>
+                <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">About Us</Link>
                 
                 <details className="group border-b border-border/40 pb-3">
-                  <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none py-2 [&::-webkit-details-marker]:hidden">
                     Rewards
                     <span className="transition group-open:rotate-180">▾</span>
                   </summary>
                   <div className="flex flex-col gap-3 mt-4 pl-4 border-l-2 border-primary/20">
-                    <Link href="/account/membership" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Membership</Link>
-                    <Link href="/account/rewards" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Reward Marketplace</Link>
-                    <Link href="/account/points-history" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Points History</Link>
+                    <Link href="/account/membership" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Membership</Link>
+                    <Link href="/account/rewards" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Reward Marketplace</Link>
+                    <Link href="/account/points-history" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Points History</Link>
                   </div>
                 </details>
 
                 <details className="group border-b border-border/40 pb-3">
-                  <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none py-2 [&::-webkit-details-marker]:hidden">
                     Support
                     <span className="transition group-open:rotate-180">▾</span>
                   </summary>
                   <div className="flex flex-col gap-3 mt-4 pl-4 border-l-2 border-primary/20">
-                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Help Center Hub</Link>
-                    <Link href="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Track an Order</Link>
-                    <Link href="/support/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Contact Us</Link>
-                    <Link href="/support/faq" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">FAQs</Link>
+                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Help Center Hub</Link>
+                    <Link href="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Track an Order</Link>
+                    <Link href="/support/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Contact Us</Link>
+                    <Link href="/support/faq" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">FAQs</Link>
                   </div>
                 </details>
 
                 {user && (
                   <details className="group border-b border-border/40 pb-3">
-                    <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none py-2 [&::-webkit-details-marker]:hidden">
                       Account
                       <span className="transition group-open:rotate-180">▾</span>
                     </summary>
                     <div className="flex flex-col gap-3 mt-4 pl-4 border-l-2 border-primary/20">
-                      <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Manage My Account</Link>
-                      <Link href="/account/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Profile</Link>
-                      <Link href="/account/address" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Address Book</Link>
-                      <Link href="/account/payment" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Payment Options</Link>
-                      <Link href="/account/orders" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Orders</Link>
-                      <Link href="/account/returns" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Returns</Link>
-                      <Link href="/account/cancellations" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Cancellations</Link>
-                      <Link href="/account/reviews" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Reviews</Link>
-                      <Link href="/account/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Wishlist & Followed Stores</Link>
+                      <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Manage My Account</Link>
+                      <Link href="/account/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Profile</Link>
+                      <Link href="/account/address" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">Address Book</Link>
+                      <Link href="/account/payment" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Payment Options</Link>
+                      <Link href="/account/orders" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Orders</Link>
+                      <Link href="/account/returns" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Returns</Link>
+                      <Link href="/account/cancellations" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Cancellations</Link>
+                      <Link href="/account/reviews" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Reviews</Link>
+                      <Link href="/account/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary flex items-center min-h-11">My Wishlist & Followed Stores</Link>
                     </div>
                   </details>
                 )}
