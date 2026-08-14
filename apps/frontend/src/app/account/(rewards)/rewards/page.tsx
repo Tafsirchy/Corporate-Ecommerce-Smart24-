@@ -50,7 +50,7 @@ export default function RewardsPage() {
         </div>
       </div>
       
-      <div className="flex space-x-4 border-b border-border mb-6">
+      <div className="flex space-x-4 border-b border-border mb-6 overflow-x-auto w-full whitespace-nowrap scrollbar-hide">
         <button
           className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MARKETPLACE' ? 'border-b-2 border-primary-600 text-primary/90' : 'text-muted-foreground hover:text-foreground'}`}
           onClick={() => setActiveTab('MARKETPLACE')}
@@ -84,7 +84,7 @@ export default function RewardsPage() {
                   <button 
                     onClick={() => handleClaim(reward.id)}
                     disabled={points < reward.pointCost}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    className={`px-4 py-3 rounded-lg font-semibold transition-colors ${
                       points >= reward.pointCost 
                         ? 'bg-primary-600 text-white hover:bg-primary-700' 
                         : 'bg-muted/80 text-muted-foreground cursor-not-allowed'

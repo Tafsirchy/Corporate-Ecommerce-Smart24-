@@ -48,7 +48,7 @@ export default function MembershipPage() {
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <p className="text-muted-foreground text-sm uppercase tracking-widest mb-1">Current Tier</p>
-            <h2 className="text-4xl font-extrabold mb-4 flex items-center gap-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4 flex items-center gap-3">
               {currentLevel ? currentLevel.name : 'Basic'} Member
               {currentLevel?.badgeUrl && (
                 <OptimizedImage src={currentLevel.badgeUrl} alt="Badge" className="w-8 h-8 object-contain" />
@@ -79,7 +79,7 @@ export default function MembershipPage() {
           <div className="flex flex-col justify-center">
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/10">
               <p className="text-muted-foreground text-sm uppercase tracking-widest mb-1">Available Points</p>
-              <div className="text-4xl font-bold text-[#FBBF24] mb-2">{data?.rewardPoints || 0} pts</div>
+              <div className="text-3xl md:text-4xl font-bold text-[#FBBF24] mb-2">{data?.rewardPoints || 0} pts</div>
               <Link href="/account/rewards" className="text-sm font-semibold text-white hover:text-primary-300 flex items-center gap-1 transition-colors">
                 Redeem Points <span aria-hidden="true">&rarr;</span>
               </Link>

@@ -16,8 +16,9 @@ export default function PointsHistoryPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-sm">
-      <table className="w-full text-left border-collapse">
+    <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left border-collapse min-w-[500px]">
         <thead>
           <tr className="bg-muted border-b border-border">
             <th className="p-4 text-sm font-semibold text-muted-foreground">Date</th>
@@ -55,7 +56,8 @@ export default function PointsHistoryPage() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }
