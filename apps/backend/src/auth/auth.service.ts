@@ -95,12 +95,12 @@ export class AuthService {
   }
 
   async signup(data: Record<string, any>) {
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto
+    const rawOtp = crypto.randomInt(100000, 1000000).toString();
+    const hashedOtp = crypto
       .createHash('sha256')
-      .update(rawToken)
+      .update(rawOtp)
       .digest('hex');
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     const createData: Prisma.UserCreateInput = {
       email: data.email,
@@ -109,7 +109,7 @@ export class AuthService {
       phone: data.phone,
       role: 'BUYER',
       isEmailVerified: false,
-      verificationToken: hashedToken,
+      verificationToken: hashedOtp,
       verificationTokenExpires: expiresAt,
     };
 
@@ -128,28 +128,36 @@ export class AuthService {
 
     // Trigger verification email in background
     this.emailService
-      .sendVerificationEmail(user.email, rawToken)
+      .sendVerificationEmail(user.email, rawOtp)
       .catch((err) => {
         console.error('Failed to send verification email during signup:', err);
       });
 
     return {
       message:
-        'Registration successful. Please check your email to verify your account.',
+        'Registration successful. Please check your email for the verification code.',
       userId: user.id,
     };
   }
 
-  async verifyEmail(token: string) {
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    const user = await this.usersService.findByVerificationToken(hashedToken);
+  async verifyEmail(email: string, otp: string) {
+    const user = await this.usersService.findByEmail(email);
+    
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
 
     if (
-      !user ||
+      user.verificationToken !== hashedOtp ||
       !user.verificationTokenExpires ||
       user.verificationTokenExpires < new Date()
     ) {
-      throw new BadRequestException('Invalid or expired verification token');
+      throw new BadRequestException('Invalid or expired verification code');
     }
 
     await this.usersService.update(user.id, {
@@ -186,34 +194,34 @@ export class AuthService {
     if (!user)
       return {
         message:
-          'If this email is registered, a verification link has been sent.',
+          'If this email is registered, a verification code has been sent.',
       };
 
     if (user.isEmailVerified) {
       throw new BadRequestException('Email is already verified.');
     }
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto
+    const rawOtp = crypto.randomInt(100000, 1000000).toString();
+    const hashedOtp = crypto
       .createHash('sha256')
-      .update(rawToken)
+      .update(rawOtp)
       .digest('hex');
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await this.usersService.update(user.id, {
-      verificationToken: hashedToken,
+      verificationToken: hashedOtp,
       verificationTokenExpires: expiresAt,
     });
 
     this.emailService
-      .sendVerificationEmail(user.email, rawToken)
+      .sendVerificationEmail(user.email, rawOtp)
       .catch((err) => {
         console.error('Failed to resend verification email:', err);
       });
 
     return {
       message:
-        'If this email is registered, a verification link has been sent.',
+        'If this email is registered, a verification code has been sent.',
     };
   }
 

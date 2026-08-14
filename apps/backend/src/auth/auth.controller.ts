@@ -100,10 +100,10 @@ export class AuthController {
 
   @Post('verify-email')
   async verifyEmail(
-    @Body('token') token: string,
+    @Body() body: { email: string; otp: string },
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.verifyEmail(token);
+    const result = await this.authService.verifyEmail(body.email, body.otp);
 
     if (result.refresh_token) {
       res.cookie('refresh_token', result.refresh_token, {

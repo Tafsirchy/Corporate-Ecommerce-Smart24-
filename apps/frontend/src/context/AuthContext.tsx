@@ -82,6 +82,7 @@ interface AuthContextType {
   loading: boolean;
   login: (data: any) => Promise<any>;
   verify2faLogin: (data: any) => Promise<any>;
+  verifyOtp: (data: { email: string; otp: string }) => Promise<any>;
   signup: (data: any) => Promise<any>;
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<boolean>;
@@ -207,12 +208,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const verifyOtp = async (data: { email: string; otp: string }) => {
+    try {
+      const res = await apiClient.post('/auth/verify-email', data);
+      localStorage.setItem('access_token', res.data.access_token);
+      apiClient.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+      setToken(res.data.access_token);
+      
+      const parsedUser = UserSchema.parse(res.data.user);
+      setUser(parsedUser);
+      
+      toast.success(res.data.message || 'Email verified successfully!');
+      closeAuthModal();
+      return { success: true };
+    } catch (e: any) {
+      const msg = e.response?.data?.message;
+      const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Verification failed');
+      toast.error(errorText);
+      return { success: false, error: errorText };
+    }
+  };
+
   const signup = async (data: any) => {
     try {
       const res = await apiClient.post('/auth/signup', data);
       
       // Backend returns { message, userId } - email verification is required before login
-      toast.success(res.data.message || 'Signed up successfully! Please check your email to verify.');
+      toast.success(res.data.message || 'Signed up successfully! Please check your email for the code.');
       setAuthModalView('verification-pending');
       return { success: true };
     } catch (e: any) {
@@ -252,7 +274,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView, setToken, setUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, verifyOtp, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView, setToken, setUser }}>
       {children}
     </AuthContext.Provider>
   );

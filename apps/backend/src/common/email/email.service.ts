@@ -93,18 +93,16 @@ export class EmailService {
     }
   }
 
-  async sendVerificationEmail(email: string, token: string) {
-    const verificationUrl = `${this.frontendUrl}/verify-email?token=${token}`;
-
+  async sendVerificationEmail(email: string, otpCode: string): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
       this.logger.log(
-        `\\n======================================================\\n[TESTING] Verification URL for ${email}:\\n${verificationUrl}\\n======================================================\\n`,
+        `\n======================================================\n[TESTING] OTP Code for ${email}: ${otpCode}\n======================================================\n`,
       );
     }
 
     const subject = 'Verify your email address - Smart24';
-    const { html, text } = getVerificationEmail(verificationUrl);
-    return this.sendEmail(email, subject, html, text);
+    const { html, text } = getVerificationEmail(otpCode);
+    await this.sendEmail(email, subject, html, text);
   }
 
   async sendWelcomeEmail(email: string, userName: string) {

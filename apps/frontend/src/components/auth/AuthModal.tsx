@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 
 export function AuthModal() {
-  const { isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, login, signup, verify2faLogin } = useAuth();
+  const { isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, login, signup, verify2faLogin, verifyOtp } = useAuth();
   
   // Login State
   const [loginEmail, setLoginEmail] = useState('');
@@ -21,6 +21,8 @@ export function AuthModal() {
   const [signupStep, setSignupStep] = useState(1);
   const [accountType, setAccountType] = useState<'BUYER' | 'BUSINESS'>('BUYER');
   const [isLoading, setIsLoading] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [otpError, setOtpError] = useState('');
   
   const [name, setName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -59,6 +61,8 @@ export function AuthModal() {
       setBusinessName('');
       setOwnerName('');
       setAddress('');
+      setOtpInput('');
+      setOtpError('');
     }
   }, [isAuthModalOpen]);
 
@@ -139,6 +143,20 @@ export function AuthModal() {
       
       if (res?.error) {
         setSignupError(res.error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setOtpError('');
+    setIsLoading(true);
+    try {
+      const res = await verifyOtp({ email: signupEmail, otp: otpInput });
+      if (res?.error) {
+        setOtpError(res.error);
       }
     } finally {
       setIsLoading(false);
@@ -257,15 +275,37 @@ export function AuthModal() {
             </div>
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                Check your email
+                Verify your email
               </h2>
               <p className="mt-4 text-muted-foreground">
-                We've sent a verification link to <span className="font-semibold text-foreground">{signupEmail}</span>.
-              </p>
-              <p className="mt-3 text-sm text-muted-foreground bg-gray-50 p-4 rounded-lg text-left">
-                Please check your inbox and click the link to verify your account. Once verified, this window will automatically close and you will be signed in.
+                We've sent a 6-digit verification code to <span className="font-semibold text-foreground">{signupEmail}</span>.
               </p>
             </div>
+            <form onSubmit={handleVerifyOtpSubmit} className="max-w-xs mx-auto space-y-4">
+              <div>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  className="relative block w-full rounded-md border-0 py-3 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary-600 text-center tracking-[0.5em] text-2xl font-semibold px-3"
+                  placeholder="------"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\\D/g, ''))}
+                />
+              </div>
+              {otpError && (
+                <div className="rounded-md bg-red-50 p-2">
+                  <p className="text-sm text-red-700 font-medium">{otpError}</p>
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={isLoading || otpInput.length < 6}
+                className="w-full flex justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Verify Code'}
+              </button>
+            </form>
           </div>
         ) : (
           <div className="space-y-4 md:space-y-6">
