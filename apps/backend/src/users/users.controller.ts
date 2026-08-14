@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Patch,
   Body,
   Param,
@@ -15,6 +16,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -75,6 +77,20 @@ export class UsersController {
     if (!userId) throw new UnauthorizedException();
     await this.usersService.delete(userId);
     return { message: 'Account deleted successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('me/password')
+  async changePassword(
+    @CurrentUser() userId: string,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    if (!userId) throw new UnauthorizedException();
+    return this.usersService.changePassword(
+      userId,
+      dto.currentPassword,
+      dto.newPassword,
+    );
   }
 
   // --- Admin Endpoints ---
