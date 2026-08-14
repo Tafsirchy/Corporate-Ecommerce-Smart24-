@@ -141,6 +141,10 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
+    if (!email || !otp) {
+      throw new BadRequestException('Email and verification code are required');
+    }
+
     const user = await this.usersService.findByEmail(email);
     
     if (!user) {

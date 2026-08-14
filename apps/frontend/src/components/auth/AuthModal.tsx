@@ -242,8 +242,30 @@ export function AuthModal() {
               </div>
 
               {loginError && (
-                <div className="rounded-md bg-red-50 p-3">
-                  <p className="text-sm text-red-700 font-medium text-center">{loginError}</p>
+                <div className="rounded-md bg-red-50 p-3 text-center space-y-2">
+                  <p className="text-sm text-red-700 font-medium">{loginError}</p>
+                  {loginError.includes('verify your email') && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setSignupEmail(loginEmail);
+                        setAuthModalView('verification-pending');
+                        try {
+                          await fetch(process.env.NEXT_PUBLIC_API_URL + '/auth/resend-verification' || 'http://localhost:4000/api/v1/auth/resend-verification', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: loginEmail })
+                          });
+                          toast.success('A new verification code has been sent!');
+                        } catch (e) {
+                          toast.error('Failed to resend code');
+                        }
+                      }}
+                      className="text-sm font-semibold text-primary-600 hover:text-primary-700"
+                    >
+                      Enter Code or Resend Verification
+                    </button>
+                  )}
                 </div>
               )}
 
