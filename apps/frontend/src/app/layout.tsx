@@ -39,6 +39,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-[300] focus:bg-white focus:px-4 focus:py-2 focus:text-foreground focus:shadow-lg"
+        >
+          Skip to content
+        </a>
         <NextTopLoader color="#000" showSpinner={false} />
         <Providers>
           <AuthProvider>
@@ -47,7 +53,7 @@ export default function RootLayout({
               <Header />
             </Suspense>
             <StickySidebar />
-            <main className="flex-1 flex flex-col">
+            <main id="main-content" className="flex-1 flex flex-col">
               {children}
             </main>
 
