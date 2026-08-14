@@ -17,7 +17,36 @@ export default function PointsHistoryPage() {
 
   return (
     <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
-      <div className="overflow-x-auto w-full">
+      {/* Mobile Card View */}
+      <div className="md:hidden flex flex-col">
+        {transactions.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground">No transactions found.</div>
+        )}
+        {transactions.map((tx) => (
+          <div key={tx.id} className="p-4 border-b border-border last:border-0 hover:bg-muted/50 transition">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex-1 pr-4">
+                <p className="text-sm font-semibold text-foreground">{tx.description}</p>
+                <p className="text-xs text-muted-foreground mt-1">{new Date(tx.createdAt).toLocaleDateString()}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-sm font-bold text-foreground">Bal: {tx.balance}</p>
+                <div className="flex gap-2 justify-end mt-1 text-xs font-semibold">
+                  {tx.earn > 0 && <span className="text-success-text">+{tx.earn} pts</span>}
+                  {tx.redeem > 0 && <span className="text-destructive">-{tx.redeem} pts</span>}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {tx.reason === 'ORDER_EARN' && <span className="text-[10px] font-semibold bg-success-bg text-green-800 px-2 py-0.5 rounded">ORDER</span>}
+              {tx.reason === 'REWARD_REDEEM' && <span className="text-[10px] font-semibold bg-info-bg text-blue-800 px-2 py-0.5 rounded">REWARD</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto w-full">
         <table className="w-full text-left border-collapse min-w-[500px]">
         <thead>
           <tr className="bg-muted border-b border-border">
