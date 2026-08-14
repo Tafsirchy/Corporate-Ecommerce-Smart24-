@@ -1,6 +1,21 @@
+'use client';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function AboutPage() {
+  const { user, openAuthModal } = useAuth();
+  const router = useRouter();
+
+  const handleJoinClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user) {
+      router.push('/account');
+    } else {
+      openAuthModal('login');
+    }
+  };
+
   return (
     <div className="bg-white">
       {/* Hero */}
@@ -46,12 +61,12 @@ export default function AboutPage() {
 
             <div className="mt-16 text-center border-t border-border pt-12">
               <h3 className="text-2xl font-bold text-foreground mb-4">Ready to upgrade your procurement?</h3>
-              <Link 
-                href="/signup"
+              <button 
+                onClick={handleJoinClick}
                 className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors shadow-sm"
               >
                 Join Smart24 Today
-              </Link>
+              </button>
             </div>
           </div>
         </div>
