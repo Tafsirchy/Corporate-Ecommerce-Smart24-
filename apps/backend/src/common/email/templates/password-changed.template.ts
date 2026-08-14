@@ -2,7 +2,7 @@ import { baseTemplate } from './base.template';
 
 export const getPasswordChangedEmail = (userName: string) => {
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">Password Changed Successfully</h2>
+    <h2 style="margin-top: 0; color: #003D46;">Password Changed Successfully</h2>
     <p>Hi ${userName},</p>
     <p>This is a confirmation that the password for your Smart24 account was recently changed.</p>
     <p>If you made this change, no further action is required.</p>

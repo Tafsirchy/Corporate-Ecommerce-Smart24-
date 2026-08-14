@@ -5,7 +5,7 @@ export const getBackInStockEmail = (
   frontendUrl: string,
 ) => {
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">Great news!</h2>
+    <h2 style="margin-top: 0; color: #003D46;">Great news!</h2>
     <p>The product you were waiting for, <strong>${productName}</strong>, is back in stock.</p>
     <p>Grab it before it runs out again!</p>
     <div style="margin: 32px 0; text-align: center;">

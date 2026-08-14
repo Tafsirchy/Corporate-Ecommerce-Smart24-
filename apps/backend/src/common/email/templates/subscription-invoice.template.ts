@@ -7,7 +7,7 @@ export const getSubscriptionInvoiceEmail = (
   frontendUrl: string,
 ) => {
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">Hello ${userName},</h2>
+    <h2 style="margin-top: 0; color: #003D46;">Hello ${userName},</h2>
     <p>Your monthly subscription order has been generated.</p>
     <div style="background-color: #f8fafc; border-radius: 6px; padding: 20px; margin: 24px 0;">
       <p style="margin: 0; font-size: 16px;"><strong>Order ID:</strong> #${orderId.slice(-6).toUpperCase()}</p>

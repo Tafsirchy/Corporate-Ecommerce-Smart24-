@@ -61,7 +61,7 @@ export const baseTemplate = (content: string, previewText?: string) => `
     
     .header h1 {
       margin: 0;
-      color: #0284c7; /* Primary Color */
+      color: #FF9600; /* Primary Color */
       font-size: 28px;
       font-weight: 800;
       letter-spacing: -0.5px;
@@ -69,7 +69,7 @@ export const baseTemplate = (content: string, previewText?: string) => `
     
     .body {
       padding: 40px 30px;
-      color: #334155;
+      color: #4A5A5C;
       font-size: 16px;
       line-height: 1.6;
     }
@@ -92,7 +92,7 @@ export const baseTemplate = (content: string, previewText?: string) => `
     .btn {
       display: inline-block;
       padding: 14px 28px;
-      background-color: #0284c7;
+      background-color: #FF9600;
       color: #ffffff !important;
       text-decoration: none;
       border-radius: 6px;
@@ -101,7 +101,7 @@ export const baseTemplate = (content: string, previewText?: string) => `
       font-size: 16px;
     }
     .btn:hover {
-      background-color: #0369a1;
+      background-color: #CC7700;
     }
     
     .alert-box {

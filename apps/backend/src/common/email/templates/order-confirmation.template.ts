@@ -8,7 +8,7 @@ export const getOrderConfirmationEmail = (
 ) => {
   const displayId = orderId.slice(-6).toUpperCase();
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">Thank you for your order, ${userName}!</h2>
+    <h2 style="margin-top: 0; color: #003D46;">Thank you for your order, ${userName}!</h2>
     <p>Your order <strong>#${displayId}</strong> has been received and is now being processed.</p>
     <div style="background-color: #f8fafc; border-radius: 6px; padding: 20px; margin: 24px 0;">
       <p style="margin: 0; font-size: 18px;"><strong>Total Amount:</strong> ৳${grandTotal.toLocaleString()}</p>

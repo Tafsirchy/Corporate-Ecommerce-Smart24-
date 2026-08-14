@@ -2,7 +2,7 @@ import { baseTemplate } from './base.template';
 
 export const getWelcomeEmail = (userName: string, frontendUrl: string) => {
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">Welcome aboard, ${userName}! 🎉</h2>
+    <h2 style="margin-top: 0; color: #003D46;">Welcome aboard, ${userName}! 🎉</h2>
     <p>Your email has been successfully verified, and your account is now fully active.</p>
     <p>We are thrilled to have you join the Smart24 platform. Start exploring our wide range of products and enjoy exclusive deals just for you.</p>
     <div style="margin: 32px 0; text-align: center;">

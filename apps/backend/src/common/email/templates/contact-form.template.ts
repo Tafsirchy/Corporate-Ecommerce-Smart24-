@@ -7,7 +7,7 @@ export const getContactFormEmail = (data: {
   message: string;
 }) => {
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">New Contact Message</h2>
+    <h2 style="margin-top: 0; color: #003D46;">New Contact Message</h2>
     <table style="width: 100%; margin-bottom: 24px;">
       <tr><td style="padding: 4px 0;"><strong>Name:</strong> ${data.name}</td></tr>
       <tr><td style="padding: 4px 0;"><strong>Email:</strong> ${data.email}</td></tr>

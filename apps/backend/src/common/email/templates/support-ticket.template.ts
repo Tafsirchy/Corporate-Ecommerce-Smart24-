@@ -3,11 +3,11 @@ import { baseTemplate } from './base.template';
 export const getSupportTicketEmail = (ticket: any) => {
   const attachmentsHtml =
     ticket.attachments && ticket.attachments.length > 0
-      ? `<p><strong>Attachments:</strong></p><ul>${ticket.attachments.map((url: string) => `<li><a href="${url}" style="color: #0284c7;">${url}</a></li>`).join('')}</ul>`
+      ? `<p><strong>Attachments:</strong></p><ul>${ticket.attachments.map((url: string) => `<li><a href="${url}" style="color: #FF9600;">${url}</a></li>`).join('')}</ul>`
       : '';
 
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">New Support Ticket</h2>
+    <h2 style="margin-top: 0; color: #003D46;">New Support Ticket</h2>
     <table style="width: 100%; margin-bottom: 24px;">
       <tr><td style="padding: 4px 0;"><strong>From:</strong> ${ticket.name} (${ticket.email})</td></tr>
       <tr><td style="padding: 4px 0;"><strong>Subject:</strong> ${ticket.subject}</td></tr>

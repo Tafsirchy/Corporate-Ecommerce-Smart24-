@@ -6,7 +6,7 @@ export const getOrderDeliveredEmail = (
 ) => {
   const displayId = orderId.slice(-6).toUpperCase();
   const htmlContent = `
-    <h2 style="margin-top: 0; color: #0f172a;">Your order has arrived!</h2>
+    <h2 style="margin-top: 0; color: #003D46;">Your order has arrived!</h2>
     <p>Your order <strong>#${displayId}</strong> has been successfully delivered.</p>
     <p>We hope you enjoy your products!</p>
     <div style="margin: 32px 0; text-align: center;">
