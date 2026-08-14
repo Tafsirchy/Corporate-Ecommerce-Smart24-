@@ -337,14 +337,57 @@ export default function Header() {
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Home</Link>
                 <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Shop</Link>
                 <Link href="/subscriptions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Subscriptions</Link>
-                <Link href="/account/rewards" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Rewards</Link>
-                <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">Support & FAQ</Link>
                 <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 pb-3">About Us</Link>
+                
+                <details className="group border-b border-border/40 pb-3">
+                  <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    Rewards
+                    <span className="transition group-open:rotate-180">▾</span>
+                  </summary>
+                  <div className="flex flex-col gap-3 mt-4 pl-4 border-l-2 border-primary/20">
+                    <Link href="/account/membership" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Membership</Link>
+                    <Link href="/account/rewards" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Reward Marketplace</Link>
+                    <Link href="/account/points-history" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Points History</Link>
+                  </div>
+                </details>
+
+                <details className="group border-b border-border/40 pb-3">
+                  <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    Support
+                    <span className="transition group-open:rotate-180">▾</span>
+                  </summary>
+                  <div className="flex flex-col gap-3 mt-4 pl-4 border-l-2 border-primary/20">
+                    <Link href="/support" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Help Center Hub</Link>
+                    <Link href="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Track an Order</Link>
+                    <Link href="/support/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Contact Us</Link>
+                    <Link href="/support/faq" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">FAQs</Link>
+                  </div>
+                </details>
+
+                {user && (
+                  <details className="group border-b border-border/40 pb-3">
+                    <summary className="text-lg font-medium flex justify-between items-center cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                      Account
+                      <span className="transition group-open:rotate-180">▾</span>
+                    </summary>
+                    <div className="flex flex-col gap-3 mt-4 pl-4 border-l-2 border-primary/20">
+                      <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Manage My Account</Link>
+                      <Link href="/account/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Profile</Link>
+                      <Link href="/account/address" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">Address Book</Link>
+                      <Link href="/account/payment" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Payment Options</Link>
+                      <Link href="/account/orders" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Orders</Link>
+                      <Link href="/account/returns" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Returns</Link>
+                      <Link href="/account/cancellations" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Cancellations</Link>
+                      <Link href="/account/reviews" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Reviews</Link>
+                      <Link href="/account/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="text-base text-muted-foreground hover:text-primary">My Wishlist & Followed Stores</Link>
+                    </div>
+                  </details>
+                )}
                 
                 <div className="mt-auto pt-6 flex flex-col gap-4">
                   {user ? (
                     <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3.5 bg-primary-600 text-white rounded-xl text-center font-bold text-lg hover:bg-primary-700 transition-colors shadow-sm">
-                      Go to My Account
+                      Go to My Account Dashboard
                     </Link>
                   ) : (
                     <div className="grid grid-cols-2 gap-4">
