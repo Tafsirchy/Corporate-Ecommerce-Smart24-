@@ -77,14 +77,14 @@ export default function SupportHubPage() {
             
             {/* Live Search Results */}
             {searchQuery.trim() !== '' && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-border overflow-hidden text-left z-50 max-h-96 overflow-y-auto">
+              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-border overflow-hidden text-left z-50 max-h-[40vh] md:max-h-96 overflow-y-auto">
                 {filteredFaqs.length > 0 ? (
                   <ul className="divide-y divide-gray-100">
                     {filteredFaqs.map(faq => (
                       <li key={faq.id}>
                         <Link href={`/support/faq#faq-${faq.id}`} className="block px-6 py-4 hover:bg-muted transition-colors">
-                          <p className="font-semibold text-foreground text-sm">{faq.question}</p>
-                          <p className="text-muted-foreground text-xs mt-1 line-clamp-1">{faq.answer}</p>
+                          <p className="font-semibold text-foreground text-base">{faq.question}</p>
+                          <p className="text-muted-foreground text-sm mt-1 line-clamp-1">{faq.answer}</p>
                         </Link>
                       </li>
                     ))}

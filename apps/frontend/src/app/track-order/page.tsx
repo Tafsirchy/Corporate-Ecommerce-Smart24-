@@ -90,7 +90,7 @@ function TrackOrderContent() {
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 bg-white ${isCompleted ? 'border-black text-black shadow-md shadow-black/10 scale-110' : 'border-border text-muted-foreground'}`}>
                     <Icon size={18} strokeWidth={isCompleted ? 2.5 : 2} />
                   </div>
-                  <span className={`mt-3 text-xs sm:text-sm font-bold transition-colors duration-300 ${isCompleted ? 'text-black' : 'text-muted-foreground'}`}>{step.label}</span>
+                  <span className={`mt-3 text-base sm:text-lg font-bold transition-colors duration-300 ${isCompleted ? 'text-black' : 'text-muted-foreground'}`}>{step.label}</span>
                 </div>
               );
             })}
