@@ -60,7 +60,7 @@ export class OrdersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user orders (Admin sees all)' })
   getOrders(
@@ -79,7 +79,7 @@ export class OrdersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get order details' })
   getOrderDetails(@Req() req: any, @Param('id') id: string) {
@@ -91,7 +91,7 @@ export class OrdersController {
   }
 
   @Patch(':id/cancel')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cancel a pending order' })
   cancelOrder(
