@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Package, RefreshCcw, HelpCircle, Mail, FileText, ChevronRight, MessageCircle } from 'lucide-react';
+import { Search, Package, RefreshCcw, HelpCircle, Mail, FileText, ChevronRight } from 'lucide-react';
 import { apiClient } from '@/context/AuthContext';
 
 interface Faq {
@@ -60,19 +60,25 @@ export default function SupportHubPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-muted pb-20 relative">
+    <div className="space-y-12 pb-24 lg:pb-0">
       {/* Hero Section */}
-      <div className="bg-primary-900 text-white py-20 px-4 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">How can we help you?</h1>
-          <div className="relative max-w-2xl mx-auto">
+      <div className="bg-primary-900 text-white rounded-3xl py-16 px-6 text-center shadow-lg relative overflow-hidden">
+        {/* Background Decoration */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-10">
+           <div className="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-white blur-3xl"></div>
+           <div className="absolute bottom-0 right-10 w-48 h-48 rounded-full bg-white blur-3xl"></div>
+        </div>
+
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold mb-6">How can we help you?</h1>
+          <div className="relative max-w-xl mx-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for answers (e.g., 'refunds', 'shipping times')..."
-              className="w-full bg-white pl-14 pr-6 py-4 rounded-full text-lg text-foreground focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-lg"
+              placeholder="Search for answers (e.g., 'refunds')..."
+              className="w-full bg-white pl-14 pr-6 py-4 rounded-full text-base text-foreground focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-lg"
             />
             
             {/* Live Search Results - Desktop */}
@@ -135,40 +141,31 @@ export default function SupportHubPage() {
       )}
 
       {/* Categories Grid */}
-      <div className="max-w-6xl mx-auto px-4 -mt-10 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((cat, i) => (
-            <Link key={i} href={cat.link} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow border border-border flex flex-col items-center text-center group">
-              <div className="p-4 bg-primary-50 rounded-full mb-4 group-hover:scale-110 transition-transform">
-                {cat.icon}
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">{cat.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{cat.description}</p>
-            </Link>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {categories.map((cat, i) => (
+          <Link key={i} href={cat.link} className="bg-white rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow border border-border flex flex-col items-center text-center group">
+            <div className="p-4 bg-primary-50 rounded-full mb-4 group-hover:scale-110 transition-transform">
+              {cat.icon}
+            </div>
+            <h3 className="text-xl font-bold text-foreground mb-2">{cat.title}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">{cat.description}</p>
+          </Link>
+        ))}
       </div>
 
       {/* Contact Section */}
-      <div className="max-w-4xl mx-auto px-4 mt-24 text-center">
-        <div className="bg-white rounded-3xl p-10 md:p-16 shadow-sm border border-border">
-          <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Mail className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-bold text-foreground mb-4">Still need help?</h2>
-          <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
-            Our support team is always ready to help you with any issues or questions you might have. We aim to respond within 24 hours.
-          </p>
-          <Link href="/support/contact" className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 transition-colors shadow-md hover:shadow-lg">
-            Contact Support <ChevronRight className="w-5 h-5 ml-2" />
-          </Link>
+      <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-border text-center">
+        <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Mail className="w-8 h-8" />
         </div>
+        <h2 className="text-2xl font-bold text-foreground mb-4">Still need help?</h2>
+        <p className="text-muted-foreground text-base mb-8 max-w-xl mx-auto">
+          Our support team is always ready to help you with any issues or questions you might have. We aim to respond within 24 hours.
+        </p>
+        <Link href="/support/contact" className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 transition-colors shadow-md hover:shadow-lg">
+          Contact Support <ChevronRight className="w-5 h-5 ml-2" />
+        </Link>
       </div>
-
-      {/* Floating Action Button */}
-      <Link href="/support/contact" className="fixed bottom-8 right-8 w-14 h-14 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-primary-700 transition-colors hover:scale-110 z-50">
-        <MessageCircle className="w-6 h-6" />
-      </Link>
     </div>
   );
 }

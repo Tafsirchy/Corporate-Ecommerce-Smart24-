@@ -3,7 +3,7 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { apiClient } from '../../context/AuthContext';
+import { apiClient } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { ClipboardList, Package, Truck, CheckCircle2, XCircle } from 'lucide-react';

@@ -65,51 +65,51 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted py-12 md:py-20 px-4">
+    <div className="min-h-screen bg-muted py-8 md:py-12 px-4">
       <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Get in Touch</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">Get in Touch</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-[1.6]">
             We'd love to hear from you. Please fill out this form or shoot us an email.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Contact Information */}
-          <div className="space-y-8 lg:col-span-1">
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-border">
-              <h3 className="text-2xl font-bold text-foreground mb-8">Contact Info</h3>
+          <div className="space-y-4 lg:col-span-1">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-border">
+              <h3 className="text-2xl font-bold text-foreground mb-4 leading-[1.5]">Contact Info</h3>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center text-primary/90 flex-shrink-0 mr-4">
-                    <Mail className="w-6 h-6" />
+                  <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center text-primary/90 flex-shrink-0 mr-3">
+                    <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground mb-1">Email</p>
-                    <p className="text-muted-foreground text-sm">support@smart24.com</p>
+                    <p className="text-sm font-semibold text-foreground mb-0.5 leading-[1.4]">Email</p>
+                    <p className="text-muted-foreground text-sm leading-[1.6]">support@smart24.com</p>
                     <p className="text-muted-foreground text-xs mt-1">We'll respond within 24 hours.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center text-primary/90 flex-shrink-0 mr-4">
-                    <Phone className="w-6 h-6" />
+                  <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center text-primary/90 flex-shrink-0 mr-3">
+                    <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground mb-1">Phone</p>
-                    <p className="text-muted-foreground text-sm">+880 1234 567890</p>
+                    <p className="text-sm font-semibold text-foreground mb-0.5 leading-[1.4]">Phone</p>
+                    <p className="text-muted-foreground text-sm leading-[1.6]">+880 1234 567890</p>
                     <p className="text-muted-foreground text-xs mt-1">Sat-Thu from 9am to 6pm.</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center text-primary/90 flex-shrink-0 mr-4">
-                    <MapPin className="w-6 h-6" />
+                  <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center text-primary/90 flex-shrink-0 mr-3">
+                    <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground mb-1">Office</p>
-                    <p className="text-muted-foreground text-sm">123 Business Avenue,<br/>Dhaka, Bangladesh</p>
+                    <p className="text-sm font-semibold text-foreground mb-0.5 leading-[1.4]">Office</p>
+                    <p className="text-muted-foreground text-sm leading-[1.6]">123 Business Avenue,<br/>Dhaka, Bangladesh</p>
                   </div>
                 </div>
               </div>
@@ -118,60 +118,60 @@ export default function ContactPage() {
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-border">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-border">
               {status === 'success' ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 bg-success-bg text-success-text rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="w-10 h-10" />
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-success-bg text-success-text rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h3 className="text-3xl font-bold text-foreground mb-4">Message Sent!</h3>
-                  <p className="text-muted-foreground text-lg mb-8">
+                  <h3 className="text-3xl font-bold text-foreground mb-2 leading-[1.5]">Message Sent!</h3>
+                  <p className="text-muted-foreground text-lg mb-6 leading-[1.6]">
                     Thanks for reaching out. A member of our support team will get back to you shortly.
                   </p>
                   <button 
                     onClick={() => setStatus('idle')}
-                    className="px-8 py-3 bg-muted text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-colors"
+                    className="px-6 py-2.5 bg-muted text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-colors"
                   >
                     Send another message
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Your Name</label>
+                      <label className="block text-sm font-medium text-foreground mb-1.5 leading-[1.4]">Your Name</label>
                       <input 
                         required
                         type="text" 
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                        className="w-full px-3 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
                         placeholder="John Doe"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
+                      <label className="block text-sm font-medium text-foreground mb-1.5 leading-[1.4]">Email Address</label>
                       <input 
                         required
                         type="email" 
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                        className="w-full px-3 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
                         placeholder="john@example.com"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Subject</label>
+                    <label className="block text-sm font-medium text-foreground mb-1.5 leading-[1.4]">Subject</label>
                     <select
                       required
                       name="subject"
                       value={formData.subject}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none bg-white"
+                      className="w-full px-3 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none bg-white"
                     >
                       <option value="" disabled>Select a topic</option>
                       <option value="Order Issue">Order Issue</option>
@@ -183,26 +183,26 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Message</label>
+                    <label className="block text-sm font-medium text-foreground mb-1.5 leading-[1.4]">Message</label>
                     <textarea 
                       required
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      rows={6}
-                      className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
+                      rows={5}
+                      className="w-full px-3 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
                       placeholder="How can we help you?"
                     />
                   </div>
 
                   {formData.subject === 'Order Issue' && user && (
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Select Order (Optional)</label>
+                      <label className="block text-sm font-medium text-foreground mb-1.5 leading-[1.4]">Select Order (Optional)</label>
                       <select
                         name="orderId"
                         value={formData.orderId}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none bg-white"
+                        className="w-full px-3 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none bg-white"
                       >
                         <option value="">-- I don't see my order / Not related to a specific order --</option>
                         {fetchingOrders ? (
@@ -219,7 +219,7 @@ export default function ContactPage() {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Attachment Image (Optional)</label>
+                    <label className="block text-sm font-medium text-foreground mb-1.5 leading-[1.4]">Attachment Image (Optional)</label>
                     <input 
                       type="file"
                       accept="image/*"
@@ -230,20 +230,20 @@ export default function ContactPage() {
                           setFormData(prev => ({ ...prev, attachmentUrl: objectUrl }));
                         }
                       }}
-                      className="w-full px-4 py-3 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                      className="w-full px-3 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                     />
                     {formData.attachmentUrl && (
-                      <div className="mt-4">
+                      <div className="mt-3">
                         <OptimizedImage src={formData.attachmentUrl} 
                           alt="Preview" 
-                          style={{ maxWidth: '100%', maxHeight: '300px' }} 
+                          style={{ maxWidth: '100%', maxHeight: '200px' }} 
                           className="rounded border" />
                       </div>
                     )}
                   </div>
                   
                   {status === 'error' && (
-                    <div className="p-4 bg-danger-bg text-destructive rounded-lg text-sm">
+                    <div className="p-3 bg-danger-bg text-destructive rounded-lg text-sm">
                       {errorMessage}
                     </div>
                   )}
@@ -251,7 +251,7 @@ export default function ContactPage() {
                   <button 
                     type="submit" 
                     disabled={status === 'loading'}
-                    className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center disabled:opacity-70"
+                    className="w-full sm:w-auto px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center disabled:opacity-70 mt-4"
                   >
                     {status === 'loading' ? (
                       <Loader2 className="w-5 h-5 animate-spin mr-2" />
