@@ -21,7 +21,7 @@ export default function RewardsPage() {
         apiClient.get('/loyalty/me')
       ]);
       setAvailableRewards(availableRes.data);
-      setMyRewards(myRes.data);
+      setMyRewards(myRes.data.data || []);
       setPoints(meRes.data.rewardPoints);
     } catch (e) {
       console.error(e);

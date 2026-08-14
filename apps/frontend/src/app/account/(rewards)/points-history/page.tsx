@@ -8,7 +8,7 @@ export default function PointsHistoryPage() {
 
   useEffect(() => {
     apiClient.get('/loyalty/transactions')
-      .then(res => setTransactions(res.data))
+      .then(res => setTransactions(res.data.data || []))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);
