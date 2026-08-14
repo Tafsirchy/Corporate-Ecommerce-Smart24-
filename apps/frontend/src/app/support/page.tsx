@@ -75,9 +75,9 @@ export default function SupportHubPage() {
               className="w-full bg-white pl-14 pr-6 py-4 rounded-full text-lg text-foreground focus:outline-none focus:ring-4 focus:ring-primary-500/50 shadow-lg"
             />
             
-            {/* Live Search Results */}
+            {/* Live Search Results - Desktop */}
             {searchQuery.trim() !== '' && (
-              <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-border overflow-hidden text-left z-50 max-h-[40vh] md:max-h-96 overflow-y-auto">
+              <div className="hidden md:block absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-border overflow-hidden text-left z-50 max-h-96 overflow-y-auto">
                 {filteredFaqs.length > 0 ? (
                   <ul className="divide-y divide-gray-100">
                     {filteredFaqs.map(faq => (
@@ -101,6 +101,38 @@ export default function SupportHubPage() {
           </div>
         </div>
       </div>
+
+      {/* Live Search Results - Mobile Bottom Sheet */}
+      {searchQuery.trim() !== '' && (
+        <div className="md:hidden fixed inset-x-0 bottom-0 z-[100] bg-white rounded-t-3xl shadow-[0_-20px_40px_rgba(0,0,0,0.15)] border-t border-border flex flex-col overflow-hidden animate-in slide-in-from-bottom-full duration-300 max-h-[50vh]">
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 mb-2 shrink-0" />
+          <div className="px-6 pb-2 shrink-0 border-b border-border flex justify-between items-center">
+             <span className="font-bold text-sm text-muted-foreground">Search Results</span>
+             <button onClick={() => setSearchQuery('')} className="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">Close</button>
+          </div>
+          <div className="overflow-y-auto w-full text-left pb-8">
+            {filteredFaqs.length > 0 ? (
+              <ul className="divide-y divide-gray-100">
+                {filteredFaqs.map(faq => (
+                  <li key={faq.id}>
+                    <Link href={`/support/faq#faq-${faq.id}`} className="block px-6 py-4 hover:bg-muted transition-colors active:bg-primary/5">
+                      <p className="font-semibold text-foreground text-base">{faq.question}</p>
+                      <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{faq.answer}</p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="p-8 text-center text-muted-foreground">
+                <p className="mb-4">No matching answers found for "{searchQuery}".</p>
+                <Link href="/support/contact" className="px-6 py-3 bg-primary-600 text-white rounded-full font-medium inline-block shadow-md">
+                  Contact Support
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Categories Grid */}
       <div className="max-w-6xl mx-auto px-4 -mt-10 relative z-10">
