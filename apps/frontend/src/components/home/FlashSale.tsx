@@ -1,31 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/context/AuthContext';
 import { ProductCard, Product } from '@/components/ProductCard';
 import Link from 'next/link';
 import { Timer, ArrowRight } from 'lucide-react';
 
-export const FlashSale = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface FlashSaleProps {
+  products: Product[];
+}
 
-  // For a visual effect, a dummy countdown timer
+export const FlashSale = ({ products }: FlashSaleProps) => {
+  // For a visual effect, a countdown timer
   const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 45, seconds: 30 });
-
-  useEffect(() => {
-    const fetchFlashSaleProducts = async () => {
-      try {
-        const res = await apiClient.get('/products?isFlashSale=true&limit=6');
-        setProducts(res.data.data || []);
-      } catch (error) {
-        console.error('Failed to fetch flash sale products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFlashSaleProducts();
-  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,22 +31,6 @@ export const FlashSale = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse flex space-x-4">
-          <div className="flex-1 space-y-4 py-1">
-            <div className="h-4 bg-muted/80 rounded w-3/4"></div>
-            <div className="space-y-2">
-              <div className="h-4 bg-muted/80 rounded"></div>
-              <div className="h-4 bg-muted/80 rounded w-5/6"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (products.length === 0) return null;
 
@@ -103,7 +72,7 @@ export const FlashSale = () => {
         {/* Products List (Swipeable Carousel on Mobile, Grid on Desktop) */}
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-3 xl:grid-cols-6 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {products.slice(0, 6).map((product) => (
-            <div key={product.id} className="min-w-[280px] w-[80vw] md:w-auto shrink-0 snap-start">
+            <div key={product.id} className="min-w-[280px] w-[80vw] md:min-w-0 md:w-auto shrink-0 snap-start">
               <ProductCard product={product} />
             </div>
           ))}

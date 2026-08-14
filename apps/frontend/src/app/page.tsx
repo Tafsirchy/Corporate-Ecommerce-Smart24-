@@ -42,7 +42,23 @@ const DUMMY_ADS: HeroAd[] = [
   }
 ];
 
-export default function Home() {
+export default async function Home() {
+  let banners: any[] = [];
+  let flashSaleProducts: any[] = [];
+  try {
+    const [bannersRes, flashSaleRes] = await Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/banners?activeOnly=true&type=MAIN_CAROUSEL`, { next: { revalidate: 60 } }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/products?isFlashSale=true&limit=6`, { next: { revalidate: 60 } })
+    ]);
+    if (bannersRes.ok) banners = await bannersRes.json();
+    if (flashSaleRes.ok) {
+      const data = await flashSaleRes.json();
+      flashSaleProducts = data.data || [];
+    }
+  } catch (error) {
+    console.error('Failed to fetch homepage data:', error);
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -54,7 +70,7 @@ export default function Home() {
       <WhyChooseUsMarquee />
 
       {/* Offer Slider */}
-      <OfferSlider />
+      <OfferSlider banners={banners} />
 
       {/* Subscription Advertisement */}
       <SubscriptionAd />
@@ -63,7 +79,7 @@ export default function Home() {
       <SpecialOfferBanner />
 
       {/* Flash Sale */}
-      <FlashSale />
+      <FlashSale products={flashSaleProducts} />
 
       {/* Membership Advertisement */}
       <MembershipAd />

@@ -1,3 +1,4 @@
+import { createKeyv } from '@keyv/redis';
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -45,11 +46,24 @@ import { AuditLogModule } from './audit-log/audit-log.module';
 import { HeroContentModule } from './hero-content/hero-content.module';
 import { EmailModule } from './common/email/email.module';
 
+import { HttpCacheInterceptor } from './common/interceptors/http-cache.interceptor';
+
 @Module({
   imports: [
-    CacheModule.register({
+    CacheModule.registerAsync({
       isGlobal: true,
-      ttl: 60000, // 1 minute global cache
+      useFactory: () => {
+        const redisUrl = process.env.REDIS_URL;
+        if (redisUrl) {
+          return {
+            stores: [createKeyv(redisUrl)],
+            ttl: 60000, // 1 minute global cache
+          } as any;
+        }
+        return {
+          ttl: 60000,
+        } as any;
+      },
     }),
     ThrottlerModule.forRoot([
       {
@@ -103,7 +117,7 @@ import { EmailModule } from './common/email/email.module';
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
+      useClass: HttpCacheInterceptor,
     },
     {
       provide: APP_GUARD,

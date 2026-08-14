@@ -2,10 +2,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useState, useEffect } from 'react';
 
 export default function HeaderNav({ isTransparent = false }: { isTransparent?: boolean }) {
-  const { user, logout, openAuthModal } = useAuth();
+  const { user, loading, logout, openAuthModal } = useAuth();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const getLinkClass = (path: string, hideOnMobile = false) => {
     const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -59,7 +65,12 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
           </div>
         </div>
       </div>
-      {user ? (
+      {!mounted || loading ? (
+        <div className="flex gap-2 items-center opacity-50">
+          <div className="w-16 h-8 bg-muted animate-pulse rounded"></div>
+          <div className="w-16 h-8 bg-muted animate-pulse rounded"></div>
+        </div>
+      ) : user ? (
         <>
           <div className="relative group py-2">
             <Link href="/account" className={getLinkClass('/account')}>Account</Link>

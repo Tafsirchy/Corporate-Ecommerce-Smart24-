@@ -10,11 +10,11 @@ import { z } from 'zod';
 export const UserSchema = z.object({
   id: z.string().or(z.number()),
   email: z.string().email(),
-  name: z.string().optional(),
+  name: z.string().nullish(),
   role: z.string(),
-  phone: z.string().nullable().optional(),
-  gender: z.string().optional(),
-  birthday: z.string().optional(),
+  phone: z.string().nullish(),
+  gender: z.string().nullish(),
+  birthday: z.string().nullish(),
 }).catchall(z.any());
 
 const baseApiClient = axios.create({

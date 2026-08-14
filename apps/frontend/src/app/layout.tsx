@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
+import Providers from "@/components/providers";
 import { AuthProvider } from "@/context/AuthContext";
 import { StoreInitializer } from "@/components/StoreInitializer";
 import Header from "@/components/layout/Header";
@@ -39,20 +40,22 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <NextTopLoader color="#000" showSpinner={false} />
-        <AuthProvider>
-          <StoreInitializer />
-          <Suspense fallback={<div className="h-16 bg-white border-b border-border shadow-sm"></div>}>
-            <Header />
-          </Suspense>
-          <StickySidebar />
-          <main className="flex-1 flex flex-col">
-            {children}
-          </main>
+        <Providers>
+          <AuthProvider>
+            <StoreInitializer />
+            <Suspense fallback={<div className="h-16 bg-white border-b border-border shadow-sm"></div>}>
+              <Header />
+            </Suspense>
+            <StickySidebar />
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
 
-          <Footer />
-          <AuthModal />
-          <ToastContainer position="bottom-right" />
-        </AuthProvider>
+            <Footer />
+            <AuthModal />
+            <ToastContainer position="bottom-right" />
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

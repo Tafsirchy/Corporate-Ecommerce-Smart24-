@@ -1,23 +1,29 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-  private resend: Resend;
+  private transporter: nodemailer.Transporter;
   private readonly logger = new Logger(EmailService.name);
 
   // Set default fallback domain for sender if EMAIL_FROM is not set
   private readonly defaultFrom =
-    process.env.EMAIL_FROM || 'Smart24 Support <onboarding@resend.dev>';
+    process.env.EMAIL_FROM || 'Smart24 Support <official.smart24.live@gmail.com>';
   private readonly frontendUrl =
     process.env.FRONTEND_URL || 'http://localhost:3000';
 
   constructor() {
-    if (process.env.RESEND_API_KEY) {
-      this.resend = new Resend(process.env.RESEND_API_KEY);
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      this.transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
     } else {
       this.logger.warn(
-        'RESEND_API_KEY is not set. EmailService will mock email sends.',
+        'SMTP_USER or SMTP_PASS is not set. EmailService will mock email sends.',
       );
     }
   }
@@ -42,7 +48,7 @@ export class EmailService {
     text?: string,
     retries = 3,
   ) {
-    if (!this.resend) {
+    if (!this.transporter) {
       this.logger.debug(`[MOCK EMAIL] To: ${to} | Subject: ${subject}`);
       this.logger.debug(`[MOCK EMAIL CONTENT]\n${html}`);
       return;
@@ -53,7 +59,7 @@ export class EmailService {
 
     while (attempt < retries) {
       try {
-        const response = await this.resend.emails.send({
+        const response = await this.transporter.sendMail({
           from: this.defaultFrom,
           to,
           subject,
@@ -62,12 +68,8 @@ export class EmailService {
           replyTo: replyTo,
         });
 
-        if (response.error) {
-          throw new Error(response.error.message || 'Unknown Resend error');
-        }
-
         this.logger.log(
-          `Email sent successfully to ${to}. ID: ${response.data?.id}`,
+          `Email sent successfully to ${to}. ID: ${response.messageId}`,
         );
         return response;
       } catch (error) {

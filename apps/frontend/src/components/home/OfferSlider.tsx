@@ -5,35 +5,20 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import React, { useEffect, useState, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import { apiClient } from '@/context/AuthContext';
 import { ChevronLeft, ChevronRight, Star, Truck, ShieldCheck, Package, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { OfferSliderSkeleton } from './Skeletons';
 
-export const OfferSlider = () => {
-  const [banners, setBanners] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface OfferSliderProps {
+  banners: any[];
+}
+
+export const OfferSlider = ({ banners }: OfferSliderProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' }, [
     Autoplay({ delay: 5000, stopOnInteraction: false }),
   ]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        setIsLoading(true);
-        const res = await apiClient.get('/banners?activeOnly=true&type=MAIN_CAROUSEL');
-        setBanners(res.data);
-      } catch (error) {
-        console.error('Failed to fetch banners:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchBanners();
-  }, []);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -51,11 +36,7 @@ export const OfferSlider = () => {
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
   const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
 
-  if (isLoading) {
-    return <OfferSliderSkeleton />;
-  }
-
-  if (banners.length === 0) return null;
+  if (!banners || banners.length === 0) return null;
 
   return (
     <section className="py-6 bg-muted overflow-hidden">

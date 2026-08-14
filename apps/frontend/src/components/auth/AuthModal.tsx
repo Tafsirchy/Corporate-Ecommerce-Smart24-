@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { X, Eye, EyeOff, Mail } from 'lucide-react';
+import { X, Eye, EyeOff, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 
@@ -20,6 +20,7 @@ export function AuthModal() {
   // Signup State
   const [signupStep, setSignupStep] = useState(1);
   const [accountType, setAccountType] = useState<'BUYER' | 'BUSINESS'>('BUYER');
+  const [isLoading, setIsLoading] = useState(false);
   
   const [name, setName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -88,17 +89,22 @@ export function AuthModal() {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    if (show2fa) {
-      const res = await verify2faLogin({ tempToken, code });
-      if (res?.error) setLoginError(res.error);
-    } else {
-      const res = await login({ email: loginEmail, password: loginPassword });
-      if (res?.twoFactorRequired) {
-        setShow2fa(true);
-        setTempToken(res.tempToken);
-      } else if (res?.error) {
-        setLoginError(res.error);
+    setIsLoading(true);
+    try {
+      if (show2fa) {
+        const res = await verify2faLogin({ tempToken, code });
+        if (res?.error) setLoginError(res.error);
+      } else {
+        const res = await login({ email: loginEmail, password: loginPassword });
+        if (res?.twoFactorRequired) {
+          setShow2fa(true);
+          setTempToken(res.tempToken);
+        } else if (res?.error) {
+          setLoginError(res.error);
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -110,27 +116,32 @@ export function AuthModal() {
       return;
     }
 
-    let res;
-    if (accountType === 'BUYER') {
-      res = await signup({ name, email: signupEmail, phone, password: signupPassword });
-    } else {
-      res = await signup({
-        name,
-        email: signupEmail,
-        phone,
-        password: signupPassword,
-        role: 'BUSINESS',
-        businessProfile: {
-          businessType,
-          businessName,
-          ownerName: ownerName || name,
-          address
-        }
-      });
-    }
-    
-    if (res?.error) {
-      setSignupError(res.error);
+    setIsLoading(true);
+    try {
+      let res;
+      if (accountType === 'BUYER') {
+        res = await signup({ name, email: signupEmail, phone, password: signupPassword });
+      } else {
+        res = await signup({
+          name,
+          email: signupEmail,
+          phone,
+          password: signupPassword,
+          role: 'BUSINESS',
+          businessProfile: {
+            businessType,
+            businessName,
+            ownerName: ownerName || name,
+            address
+          }
+        });
+      }
+      
+      if (res?.error) {
+        setSignupError(res.error);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -221,9 +232,10 @@ export function AuthModal() {
               <div>
                 <button
                   type="submit"
-                  className="group relative flex w-full justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors"
+                  disabled={isLoading}
+                  className="group relative flex w-full justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {show2fa ? 'Verify Code' : 'Sign in'}
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (show2fa ? 'Verify Code' : 'Sign in')}
                 </button>
               </div>
               {!show2fa && (
@@ -456,9 +468,10 @@ export function AuthModal() {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors"
+                    disabled={isLoading}
+                    className="flex-1 flex justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    Sign up
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign up'}
                   </button>
                 </div>
                 

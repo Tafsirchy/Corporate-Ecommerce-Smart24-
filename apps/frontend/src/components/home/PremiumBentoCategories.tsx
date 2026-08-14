@@ -1,9 +1,6 @@
-'use client';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { apiClient } from '@/context/AuthContext';
 
 interface BentoCardProps {
   title: React.ReactNode;
@@ -85,24 +82,16 @@ const fallbackData = [
   { position: 8, title: "HOME LIFESTYLE", subtitle: "Decor & More", buttonText: "View Collection", targetUrl: "/shop?category=home-lifestyle", imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=600&h=600" }
 ];
 
-export const PremiumBentoCategories = () => {
-  const [collections, setCollections] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const res = await apiClient.get('/business-collections');
-        setCollections(res.data || []);
-      } catch (error) {
-        console.error('Failed to fetch business collections:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCollections();
-  }, []);
+export async function PremiumBentoCategories() {
+  let collections: any[] = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/business-collections`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      collections = await res.json();
+    }
+  } catch (error) {
+    console.error('Failed to fetch business collections:', error);
+  }
 
   // Merge fetched data with layout configuration. Use fallback data if DB data is missing for a slot.
   const cards = layoutConfig.map(config => {
@@ -138,30 +127,21 @@ export const PremiumBentoCategories = () => {
 
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 auto-rows-[200px] md:auto-rows-[180px]">
-          {isLoading ? (
-            layoutConfig.map(config => (
-              <div 
-                key={config.position} 
-                className={`bg-muted/80 animate-pulse rounded-[24px] min-h-[180px] ${config.className}`}
-              ></div>
-            ))
-          ) : (
-            cards.map(card => (
-              <BentoCard
-                key={card.position}
-                title={card.title}
-                subtitle={card.subtitle}
-                buttonText={card.buttonText}
-                imageUrl={card.imageUrl}
-                href={card.targetUrl}
-                className={card.className}
-                imageClassName={card.imageClassName}
-                isLarge={card.isLarge}
-              />
-            ))
-          )}
+          {cards.map(card => (
+            <BentoCard
+              key={card.position}
+              title={card.title}
+              subtitle={card.subtitle}
+              buttonText={card.buttonText}
+              imageUrl={card.imageUrl}
+              href={card.targetUrl}
+              className={card.className}
+              imageClassName={card.imageClassName}
+              isLarge={card.isLarge}
+            />
+          ))}
         </div>
       </div>
     </section>
   );
-};
+}

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 import { ProductCard, Product } from '../../components/ProductCard';
 import { CategorySidebar, Category } from '../../components/CategorySidebar';
 import { BrandSidebar, Brand } from '../../components/BrandSidebar';
@@ -14,21 +15,12 @@ import { Filter, X } from 'lucide-react';
 
 function ShopContent() {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [activeFiltersDefs, setActiveFilterDefs] = useState<any[]>([]);
-  const [facets, setFacets] = useState<Record<string, Record<string, number>>>({});
-  
-  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const categorySlug = searchParams.get('category');
   
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(16);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
   const [sortBy, setSortBy] = useState('best-match');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
@@ -41,12 +33,17 @@ function ShopContent() {
   // Dynamic filters state: Record<filterKey, string[]>
   const [selectedDynamicFilters, setSelectedDynamicFilters] = useState<Record<string, string[]>>({});
 
-  useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-    
-    // Fetch categories
-    axios.get(`${apiUrl}/categories`).then(res => {
-      const data = res.data;
+  // 1. Static Metadata (Categories, Brands, Filter Defs)
+  const { data: metadata } = useQuery({
+    queryKey: ['shop-metadata'],
+    queryFn: async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+      const [catRes, brandRes, filterRes] = await Promise.all([
+        axios.get(`${apiUrl}/categories`),
+        axios.get(`${apiUrl}/brands`),
+        axios.get(`${apiUrl}/filters/active`)
+      ]);
+      const data = catRes.data;
       const map = new Map<string, Category>();
       const roots: Category[] = [];
       data.forEach((item: any) => map.set(item.id, { ...item, children: [] }));
@@ -58,67 +55,61 @@ function ShopContent() {
           roots.push(map.get(item.id)!);
         }
       });
-      setCategories(roots);
-    }).catch(console.error);
-      
-    // Fetch brands
-    axios.get(`${apiUrl}/brands`).then(res => setBrands(res.data?.data || res.data)).catch(console.error);
+      return { 
+        categories: roots, 
+        brands: brandRes.data?.data || brandRes.data, 
+        activeFiltersDefs: filterRes.data?.data || filterRes.data 
+      };
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-    // Fetch dynamic filter definitions
-    axios.get(`${apiUrl}/filters/active`).then(res => setActiveFilterDefs(res.data?.data || res.data)).catch(console.error);
-  }, []);
+  const categories = metadata?.categories || [];
+  const brands = metadata?.brands || [];
+  const activeFiltersDefs = metadata?.activeFiltersDefs || [];
 
-  // Fetch Facets whenever category or search changes (facets represent available options)
-  useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-    let url = `${apiUrl}/products/facets?`;
-    if (categorySlug) url += `categoryId=${categorySlug}&`;
-    if (searchQuery) url += `q=${searchQuery}&`;
-    
-    axios.get(url).then(res => {
-      setFacets(res.data);
-    }).catch(console.error);
-  }, [categorySlug, searchQuery]);
+  // 2. Facets
+  const { data: facetsData } = useQuery({
+    queryKey: ['facets', categorySlug, searchQuery],
+    queryFn: async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+      let url = `${apiUrl}/products/facets?`;
+      if (categorySlug) url += `categoryId=${categorySlug}&`;
+      if (searchQuery) url += `q=${searchQuery}&`;
+      const res = await axios.get(url);
+      return res.data;
+    },
+    staleTime: 60 * 1000,
+  });
+  
+  const facets = facetsData || {};
 
-  // Fetch Products (Server-side filtering)
-  useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-    setLoading(true);
-    
-    // Base URL depends on whether there is a search query
-    let url = searchQuery && searchQuery.trim().length > 0 
-      ? `${apiUrl}/products/search?q=${encodeURIComponent(searchQuery)}&` 
-      : `${apiUrl}/products?`;
+  // 3. Products
+  const { data: productsData, isLoading: loading } = useQuery({
+    queryKey: ['products', categorySlug, searchQuery, page, limit, sortBy, selectedDynamicFilters, selectedBrands, minPrice, maxPrice, selectedRating],
+    queryFn: async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+      let url = searchQuery && searchQuery.trim().length > 0 
+        ? `${apiUrl}/products/search?q=${encodeURIComponent(searchQuery)}&` 
+        : `${apiUrl}/products?`;
 
-    url += `page=${page}&limit=${limit}&sort=${sortBy}&`;
-    
-    if (categorySlug) {
-      url += `categoryId=${categorySlug}&`;
-    }
-    
-    // Add dynamic filters to query
-    if (Object.keys(selectedDynamicFilters).length > 0) {
-      url += `dynamicFilters=${encodeURIComponent(JSON.stringify(selectedDynamicFilters))}&`;
-    }
+      url += `page=${page}&limit=${limit}&sort=${sortBy}&`;
+      if (categorySlug) url += `categoryId=${categorySlug}&`;
+      if (Object.keys(selectedDynamicFilters).length > 0) url += `dynamicFilters=${encodeURIComponent(JSON.stringify(selectedDynamicFilters))}&`;
+      if (minPrice !== null) url += `minPrice=${minPrice}&`;
+      if (maxPrice !== null) url += `maxPrice=${maxPrice}&`;
+      if (selectedRating !== null) url += `rating=${selectedRating}&`;
+      if (selectedBrands.length > 0) url += `brands=${encodeURIComponent(JSON.stringify(selectedBrands))}&`;
 
-    // Add standard filters
-    if (minPrice !== null) url += `minPrice=${minPrice}&`;
-    if (maxPrice !== null) url += `maxPrice=${maxPrice}&`;
-    if (selectedRating !== null) url += `rating=${selectedRating}&`;
-    if (selectedBrands.length > 0) url += `brands=${encodeURIComponent(JSON.stringify(selectedBrands))}&`;
+      const res = await axios.get(url);
+      return res.data;
+    },
+    placeholderData: (previousData) => previousData, // keep previous data while fetching new (prevents layout shift)
+  });
 
-    axios.get(url)
-      .then(res => {
-        const fetchedProducts = res.data.data;
-        const meta = res.data.meta;
-        
-        setProducts(fetchedProducts);
-        setTotalPages(meta.totalPages);
-        setTotalProducts(meta.total);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [categorySlug, searchQuery, page, limit, sortBy, selectedDynamicFilters, selectedBrands, minPrice, maxPrice, selectedRating]);
+  const products = productsData?.data || [];
+  const totalPages = productsData?.meta?.totalPages || 1;
+  const totalProducts = productsData?.meta?.total || 0;
 
   // Reset pagination when filters change
   useEffect(() => {
@@ -151,7 +142,7 @@ function ShopContent() {
     };
     const catId = findCatId(categories, categorySlug);
     
-    return activeFiltersDefs.filter(f => 
+    return activeFiltersDefs.filter((f: any) => 
       !f.categoryIds || f.categoryIds.length === 0 || (catId && f.categoryIds.includes(catId))
     );
   }, [activeFiltersDefs, categorySlug, categories]);
@@ -228,7 +219,7 @@ function ShopContent() {
           />
           
           {/* Dynamic Filters rendering */}
-          {applicableFilterDefs.map(filterDef => {
+          {applicableFilterDefs.map((filterDef: any) => {
             if (!filterDef.values || filterDef.values.length === 0) return null;
             
             const options = filterDef.values.map((v: any) => {
@@ -335,8 +326,8 @@ function ShopContent() {
             }
             
             Object.entries(selectedDynamicFilters).forEach(([filterKey, values]) => {
-              const def = applicableFilterDefs.find(f => f.key === filterKey);
-              values.forEach(v => {
+              const def = applicableFilterDefs.find((f: any) => f.key === filterKey);
+              values.forEach((v: any) => {
                 const label = def?.values?.find((opt: any) => opt.value === v)?.label || v;
                 activeTags.push({
                   id: `${filterKey}-${v}`,
@@ -379,7 +370,7 @@ function ShopContent() {
             </div>
           ) : products.length > 0 ? (
             <div className={viewMode === 'grid' ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
-              {products.map(product => (
+              {products.map((product: Product) => (
                 <ProductCard key={product.id} product={product} viewMode={viewMode} />
               ))}
             </div>

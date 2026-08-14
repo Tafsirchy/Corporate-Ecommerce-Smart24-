@@ -299,6 +299,10 @@ model Product {
   quotations        Quotation[]
   reviews           Review[]
   backInStockAlerts BackInStockAlert[]
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([price])
 }
 
 model Cart {
@@ -330,6 +334,7 @@ model CartItem {
   updatedAt DateTime @updatedAt
   
   @@unique([cartId, productId])
+  @@index([productId])
 }
 
 model Wishlist {
@@ -354,6 +359,7 @@ model WishlistItem {
   updatedAt  DateTime @updatedAt
   
   @@unique([wishlistId, productId])
+  @@index([productId])
 }
 
 enum OrderStatus {
@@ -422,6 +428,9 @@ model Order {
   returnRequests  ReturnRequest[]
   supportTickets  SupportTicket[]
   businessInvoice BusinessInvoice?
+
+  @@index([userId])
+  @@index([status])
 }
 
 model OrderItem {
