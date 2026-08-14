@@ -103,6 +103,9 @@
   --background: #F7F9F8;          /* page background — off-white, cool tone */
   --foreground: #003D46;          /* primary body text — deep teal */
 
+  /* Single horizontal gutter for the whole app (SM-first) */
+  --gutter: 16px;
+
   --card: #FFFFFF;                /* card/panel background */
   --card-foreground: #003D46;
 
@@ -196,6 +199,29 @@
   * {
     @apply border-border outline-ring/50;
     border-radius: 0 !important;
+  }
+
+  /* Visible, consistent keyboard focus indicator */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Respect reduced-motion preferences globally */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /* Hide navbar & footer on the 404 (Page Not Found) page */
