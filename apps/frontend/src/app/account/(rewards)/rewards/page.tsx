@@ -17,7 +17,7 @@ export default function RewardsPage() {
     try {
       const [availableRes, myRes, meRes] = await Promise.all([
         apiClient.get('/loyalty/rewards/available'),
-        apiClient.get('/loyalty/rewards/me'),
+        apiClient.get('/loyalty/my-rewards'),
         apiClient.get('/loyalty/me')
       ]);
       setAvailableRewards(availableRes.data);
