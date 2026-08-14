@@ -1,11 +1,20 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository.service';
+import { EmailService } from '../common/email/email.service';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly emailService: EmailService,
+  ) {}
 
   async create(data: Prisma.UserCreateInput) {
     const existing = await this.userRepository.findByEmail(data.email);
@@ -76,5 +85,39 @@ export class UsersService {
       phone: null,
       isActive: false,
     });
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (
+      !user.password ||
+      !(await bcrypt.compare(currentPassword, user.password))
+    ) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.update(userId, {
+      password: hashedPassword,
+    });
+
+    // Send security alert in background
+    if (user.emailNotifications !== false) {
+      this.emailService
+        .sendPasswordChangedAlert(user.email, user.name)
+        .catch((err) =>
+          console.error('Failed to send password changed alert:', err),
+        );
+    }
+
+    return { message: 'Password changed successfully' };
   }
 }
