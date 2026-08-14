@@ -6,7 +6,13 @@ export class HttpCacheInterceptor extends CacheInterceptor {
   protected trackBy(context: ExecutionContext): any {
     const request = context.switchToHttp().getRequest();
     const isGetRequest = request.method === 'GET';
-    const excludePaths = ['/api/v1/auth', '/api/v1/cart', '/api/v1/orders', '/api/v1/users/profile', '/api/v1/wishlist'];
+    const excludePaths = [
+      '/api/v1/auth',
+      '/api/v1/cart',
+      '/api/v1/orders',
+      '/api/v1/users/profile',
+      '/api/v1/wishlist',
+    ];
 
     // Only cache GET requests
     if (!isGetRequest) {
@@ -14,7 +20,7 @@ export class HttpCacheInterceptor extends CacheInterceptor {
     }
 
     // Skip caching for specific paths
-    if (excludePaths.some(path => request.url.startsWith(path))) {
+    if (excludePaths.some((path) => request.url.startsWith(path))) {
       return undefined;
     }
 
