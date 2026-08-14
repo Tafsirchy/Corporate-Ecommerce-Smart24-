@@ -96,10 +96,7 @@ export class AuthService {
 
   async signup(data: Record<string, any>) {
     const rawOtp = crypto.randomInt(100000, 1000000).toString();
-    const hashedOtp = crypto
-      .createHash('sha256')
-      .update(rawOtp)
-      .digest('hex');
+    const hashedOtp = crypto.createHash('sha256').update(rawOtp).digest('hex');
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     const createData: Prisma.UserCreateInput = {
@@ -127,11 +124,9 @@ export class AuthService {
     const user = await this.usersService.create(createData);
 
     // Trigger verification email in background
-    this.emailService
-      .sendVerificationEmail(user.email, rawOtp)
-      .catch((err) => {
-        console.error('Failed to send verification email during signup:', err);
-      });
+    this.emailService.sendVerificationEmail(user.email, rawOtp).catch((err) => {
+      console.error('Failed to send verification email during signup:', err);
+    });
 
     return {
       message:
@@ -146,7 +141,7 @@ export class AuthService {
     }
 
     const user = await this.usersService.findByEmail(email);
-    
+
     if (!user) {
       throw new BadRequestException('User not found');
     }
@@ -206,10 +201,7 @@ export class AuthService {
     }
 
     const rawOtp = crypto.randomInt(100000, 1000000).toString();
-    const hashedOtp = crypto
-      .createHash('sha256')
-      .update(rawOtp)
-      .digest('hex');
+    const hashedOtp = crypto.createHash('sha256').update(rawOtp).digest('hex');
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await this.usersService.update(user.id, {
@@ -217,11 +209,9 @@ export class AuthService {
       verificationTokenExpires: expiresAt,
     });
 
-    this.emailService
-      .sendVerificationEmail(user.email, rawOtp)
-      .catch((err) => {
-        console.error('Failed to resend verification email:', err);
-      });
+    this.emailService.sendVerificationEmail(user.email, rawOtp).catch((err) => {
+      console.error('Failed to resend verification email:', err);
+    });
 
     return {
       message:
