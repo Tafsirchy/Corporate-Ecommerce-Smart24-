@@ -10,7 +10,7 @@ import axios from "axios";
 import { CategorySidebar, Category } from "@/components/CategorySidebar";
 import { BrandSidebar, Brand } from "@/components/BrandSidebar";
 import { PriceFilter } from "@/components/PriceFilter";
-import { Filter } from "lucide-react";
+import { Filter, X, Search, ShoppingBag } from "lucide-react";
 import { Suspense } from "react";
 
 function BuilderContent() {
@@ -22,6 +22,8 @@ function BuilderContent() {
   // Search and Filtering states
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isCartMobileOpen, setIsCartMobileOpen] = useState(false);
+  const [isSearchMobileOpen, setIsSearchMobileOpen] = useState(false);
   
   const [categories, setCategories] = useState<Category[]>([]);
   
@@ -185,7 +187,7 @@ function BuilderContent() {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 relative">
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 relative">
       <div className="lg:col-span-2 space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -195,7 +197,7 @@ function BuilderContent() {
         </div>
 
         {/* Search & Filter Toggle Bar */}
-        <div className="flex gap-2 mb-4 relative z-10">
+        <div className="gap-2 mb-4 relative z-10 hidden lg:flex">
           <Input 
             placeholder="Search products..." 
             value={searchQuery}
@@ -212,9 +214,31 @@ function BuilderContent() {
           </Button>
         </div>
 
+        {/* Mobile Search Input */}
+        {isSearchMobileOpen && (
+          <div className="fixed bottom-[calc(64px+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white p-3 lg:hidden shadow-[0_-4px_10px_rgba(0,0,0,0.05)] border-t">
+            <div className="flex items-center gap-2">
+              <Input 
+                placeholder="Search products..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-muted min-h-[44px]"
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" onClick={() => setIsSearchMobileOpen(false)} className="shrink-0">
+                 <X className="w-5 h-5"/>
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Filter Panel (Collapsible) */}
         {isFilterOpen && (
-          <div className="bg-white p-4 rounded-lg shadow-sm border mb-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="fixed inset-0 z-[100] bg-white lg:relative lg:z-auto lg:bg-white p-4 lg:rounded-lg lg:shadow-sm lg:border mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-4">
+            <div className="flex justify-between items-center lg:hidden mb-4 col-span-1 border-b pb-4 pt-[env(safe-area-inset-top)]">
+               <h2 className="text-xl font-bold">Filters</h2>
+               <Button variant="ghost" onClick={() => setIsFilterOpen(false)}><X className="w-6 h-6"/></Button>
+            </div>
             <div>
               <h3 className="font-semibold mb-3">Categories</h3>
               <div className="max-h-60 overflow-y-auto pr-2">
@@ -243,6 +267,9 @@ function BuilderContent() {
                   setMaxPrice(max);
                 }}
               />
+            </div>
+            <div className="lg:hidden col-span-1 mt-auto pt-4 border-t sticky bottom-0 bg-white pb-[env(safe-area-inset-bottom)]">
+               <Button className="w-full min-h-[44px]" onClick={() => setIsFilterOpen(false)}>Apply Filters</Button>
             </div>
           </div>
         )}
@@ -294,8 +321,14 @@ function BuilderContent() {
         )}
       </div>
 
-      <div className="bg-muted p-4 sm:p-6 rounded-lg h-fit border sticky lg:top-24 mt-6 lg:mt-0 order-last lg:order-none">
-        <h2 className="text-xl font-bold mb-4">Your Package</h2>
+      <div className={`bg-white lg:bg-muted p-4 sm:p-6 rounded-t-2xl lg:rounded-lg h-fit border-t lg:border fixed bottom-0 left-0 right-0 z-[90] lg:z-10 lg:sticky lg:top-24 lg:mt-0 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] lg:shadow-none max-h-[85vh] overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-6 transform transition-transform duration-300 ${isCartMobileOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}`}>
+        <div className="flex justify-between items-center mb-4 lg:mb-4 pt-2 lg:pt-0">
+          <h2 className="text-xl font-bold">Your Package</h2>
+          <div className="flex items-center gap-4 lg:hidden">
+            <div className="font-bold text-primary text-lg">৳{totalPrice}</div>
+            <Button variant="ghost" size="icon" onClick={() => setIsCartMobileOpen(false)}><X className="w-5 h-5"/></Button>
+          </div>
+        </div>
         {selectedItems.length === 0 ? (
           <p className="text-muted-foreground text-sm mb-4">No items added yet.</p>
         ) : (
@@ -352,7 +385,7 @@ function BuilderContent() {
         <form onSubmit={handleSubmit} className="space-y-4 mt-6 border-t pt-4">
           <div>
             <label className="text-sm font-medium">Delivery Day (Every Month)</label>
-            <Input type="number" min={1} max={28} className="min-h-[44px]" value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
+            <Input type="number" inputMode="numeric" pattern="[0-9]*" min={1} max={28} className="min-h-[44px]" value={deliveryDay} onChange={(e) => setDeliveryDay(e.target.value === '' ? '' : parseInt(e.target.value))} required />
             <p className="text-xs text-muted-foreground mt-1">Select a date between 1 and 28.</p>
           </div>
           <div>
@@ -361,12 +394,44 @@ function BuilderContent() {
           </div>
           <div>
             <label className="text-sm font-medium">Contact Number</label>
-            <Input className="min-h-[44px]" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} required />
+            <Input type="tel" inputMode="numeric" pattern="[0-9]*" className="min-h-[44px]" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} required />
           </div>
           <Button type="submit" className="w-full min-h-[44px]" disabled={selectedItems.length < 2}>
             Confirm Subscription
           </Button>
         </form>
+      </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-50 flex justify-around items-center h-[64px] pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+        <button 
+          onClick={() => { setIsFilterOpen(false); setIsCartMobileOpen(false); setIsSearchMobileOpen(true); }}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isSearchMobileOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          <Search className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Search</span>
+        </button>
+        <button 
+          onClick={() => { setIsSearchMobileOpen(false); setIsCartMobileOpen(false); setIsFilterOpen(true); }}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isFilterOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          <Filter className="w-5 h-5" />
+          <span className="text-[10px] font-medium">Filters</span>
+        </button>
+        <button 
+          onClick={() => { setIsFilterOpen(false); setIsSearchMobileOpen(false); setIsCartMobileOpen(true); }}
+          className={`flex flex-col items-center justify-center w-full h-full space-y-1 relative ${isCartMobileOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          <div className="relative">
+            <ShoppingBag className="w-5 h-5" />
+            {selectedItems.length > 0 && (
+              <span className="absolute -top-1.5 -right-2.5 bg-accent text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                {selectedItems.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-medium">Package</span>
+        </button>
       </div>
     </div>
   );
