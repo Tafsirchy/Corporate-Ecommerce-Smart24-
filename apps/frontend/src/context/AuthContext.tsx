@@ -87,10 +87,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<boolean>;
   isAuthModalOpen: boolean;
-  authModalView: 'login' | 'signup' | 'verification-pending';
-  openAuthModal: (view?: 'login' | 'signup' | 'verification-pending') => void;
+  authModalView: 'login' | 'signup' | 'verification-pending' | 'forgot-password';
+  openAuthModal: (view?: 'login' | 'signup' | 'verification-pending' | 'forgot-password') => void;
   closeAuthModal: () => void;
-  setAuthModalView: (view: 'login' | 'signup' | 'verification-pending') => void;
+  setAuthModalView: (view: 'login' | 'signup' | 'verification-pending' | 'forgot-password') => void;
   setToken: (token: string | null) => void;
   setUser: (user: z.infer<typeof UserSchema> | null) => void;
 }
@@ -102,10 +102,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalView, setAuthModalView] = useState<'login' | 'signup' | 'verification-pending'>('login');
+  const [authModalView, setAuthModalView] = useState<'login' | 'signup' | 'verification-pending' | 'forgot-password'>('login');
   const router = useRouter();
 
-  const openAuthModal = (view: 'login' | 'signup' | 'verification-pending' = 'login') => {
+  const openAuthModal = (view: 'login' | 'signup' | 'verification-pending' | 'forgot-password' = 'login') => {
     setAuthModalView(view);
     setIsAuthModalOpen(true);
   };
