@@ -50,6 +50,10 @@ export class SignupDto {
   @ValidateNested()
   @Type(() => BusinessProfileDto)
   businessProfile?: BusinessProfileDto;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }
 
 export class LoginDto {
