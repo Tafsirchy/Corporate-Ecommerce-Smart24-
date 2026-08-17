@@ -26,6 +26,8 @@ function useDebounce<T>(value: T, delay: number): T {
 export default function Header() {
   const { user, openAuthModal } = useAuth();
   const pathname = usePathname();
+  const isWishlistActive = pathname === '/wishlist' || pathname === '/account/wishlist';
+  const isCartActive = pathname === '/cart';
   const router = useRouter();
   const searchParams = useSearchParams();
   const isHome = pathname === '/';
@@ -171,7 +173,7 @@ export default function Header() {
 
   return (
     <>
-      {!isHome && <div className="h-14 md:h-[80px] w-full" />}
+      {!isHome && <div className="h-[116px] md:h-[80px] w-full" />}
       <header
         className={`fixed top-0 left-0 right-0 z-50 flex flex-col transition-colors duration-300 ${
           isMobileMenuOpen ? 'bg-white' : ''
@@ -291,16 +293,16 @@ export default function Header() {
               </div>
 
               <div className="flex items-center gap-4 ml-2">
-                <Link href="/wishlist" aria-label={`Wishlist (${wishlistItems.length} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
-                  <Heart className="w-5 h-5" />
+                <Link href="/wishlist" aria-label={`Wishlist (${wishlistItems.length} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : (isWishlistActive ? 'text-primary' : 'text-foreground hover:text-primary/90')} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
+                  <Heart className={`w-5 h-5 ${isWishlistActive ? 'fill-current' : ''}`} />
                   {wishlistItems.length > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                       {wishlistItems.length}
                     </span>
                   )}
                 </Link>
-                <Link href="/cart" aria-label={`Cart (${totalItems} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : 'text-foreground hover:text-primary/90'} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
-                  <ShoppingCart className="w-5 h-5" />
+                <Link href="/cart" aria-label={`Cart (${totalItems} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : (isCartActive ? 'text-primary' : 'text-foreground hover:text-primary/90')} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
+                  <ShoppingCart className={`w-5 h-5 ${isCartActive ? 'fill-current' : ''}`} />
                   {totalItems > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                       {totalItems}
