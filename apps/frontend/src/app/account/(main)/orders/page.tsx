@@ -74,55 +74,58 @@ export default function MyOrdersPage() {
           <h2 className="text-[22px] text-foreground font-normal mb-6">My Orders</h2>
           
           <div className="bg-white rounded-md shadow-sm border border-border">
-            {/* Tabs */}
-<div role="tablist" aria-label="Order filters" className="flex border-b border-border px-2 overflow-x-auto scrollbar-hide">
-              {tabs.map((tab, tabIndex) => {
-                 let countText = tab;
-                 if (tab === 'To Review' && activeTab === tab) {
-                    const count = orders.filter(o => o.status === 'DELIVERED').length;
-                    countText = `${tab}(${count})`;
-                 }
-                  
-                 return (
-                  <button
-                    key={tab}
-                    id={`tab-${tab}`}
-                    role="tab"
-                    aria-selected={activeTab === tab}
-                    aria-controls="order-list"
-                    onKeyDown={(e) => {
-                      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-                      e.preventDefault();
-                      const next = e.key === 'ArrowRight'
-                        ? (tabIndex + 1) % tabs.length
-                        : (tabIndex - 1 + tabs.length) % tabs.length;
-                      setActiveTab(tabs[next]);
-                      document.getElementById(`tab-${tabs[next]}`)?.focus();
-                    }}
-                    className={`px-6 py-4 text-[15px] font-medium whitespace-nowrap transition ${activeTab === tab ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                    onClick={() => setActiveTab(tab)}
-                  >
-                    {countText}
-                  </button>
-                 );
-              })}
-            </div>
+            {/* Sticky Header Group for Orders */}
+            <div className="sticky top-14 md:top-[80px] z-30 bg-white rounded-t-md shadow-sm border-b border-border">
+              {/* Tabs */}
+              <div role="tablist" aria-label="Order filters" className="flex border-b border-border px-2 pr-8 overflow-x-auto scrollbar-hide">
+                {tabs.map((tab, tabIndex) => {
+                   let countText = tab;
+                   if (tab === 'To Review' && activeTab === tab) {
+                      const count = orders.filter(o => o.status === 'DELIVERED').length;
+                      countText = `${tab}(${count})`;
+                   }
+                    
+                   return (
+                    <button
+                      key={tab}
+                      id={`tab-${tab}`}
+                      role="tab"
+                      aria-selected={activeTab === tab}
+                      aria-controls="order-list"
+                      onKeyDown={(e) => {
+                        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+                        e.preventDefault();
+                        const next = e.key === 'ArrowRight'
+                          ? (tabIndex + 1) % tabs.length
+                          : (tabIndex - 1 + tabs.length) % tabs.length;
+                        setActiveTab(tabs[next]);
+                        document.getElementById(`tab-${tabs[next]}`)?.focus();
+                      }}
+                      className={`px-6 py-4 text-[15px] font-medium whitespace-nowrap transition ${activeTab === tab ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      onClick={() => setActiveTab(tab)}
+                    >
+                      {countText}
+                    </button>
+                   );
+                })}
+              </div>
 
-            {/* Search Bar */}
-            <div className="p-4 bg-muted border-b border-border">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+              {/* Search Bar */}
+              <div className="p-4 bg-muted">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search by seller name, order ID or product name"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="block w-full pl-10 pr-3 h-12 text-base border border-border rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-primary"
+                  />
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search by seller name, order ID or product name"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-full pl-10 pr-3 h-12 text-base border border-border rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-primary"
-                />
               </div>
             </div>
 
@@ -136,14 +139,17 @@ export default function MyOrdersPage() {
                 filteredOrders.map(order => (
                   <div key={order.id} className="border border-border rounded-sm bg-white overflow-hidden">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b border-border flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 bg-purple-800 rounded-full flex items-center justify-center text-white text-[9px] font-bold tracking-tighter">
+                    <div className="px-4 py-3 border-b border-border flex justify-between items-start">
+                      <div className="flex items-start gap-2">
+                        <div className="w-5 h-5 bg-purple-800 rounded-full flex items-center justify-center text-white text-[9px] font-bold tracking-tighter shrink-0 mt-0.5">
                           S24
                         </div>
-                        <span className="font-semibold text-[14px] text-foreground">Smart24 Official</span>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-[14px] text-foreground leading-tight">Smart24 Official</span>
+                          <span className="text-[12px] text-muted-foreground leading-tight mt-1">Order ID: {order.id.substring(0, 10)}</span>
+                        </div>
                       </div>
-                      <span className="bg-muted text-muted-foreground text-[12px] px-3 py-1 rounded-full font-medium uppercase tracking-wide">
+                      <span className="bg-muted text-muted-foreground text-[11px] px-2.5 py-1 rounded-full font-medium uppercase tracking-wide shrink-0 ml-2">
                         {order.status === 'PENDING' ? 'Pending' : order.status === 'CONFIRMED' ? 'Confirmed' : order.status === 'SHIPPED' ? 'Shipped' : order.status === 'DELIVERED' ? 'Completed' : 'Cancelled'}
                       </span>
                     </div>
@@ -182,26 +188,27 @@ export default function MyOrdersPage() {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-4 py-3 bg-muted border-t border-border flex flex-wrap justify-end gap-2 items-center">
-                      <span className="mr-auto text-[13px] text-muted-foreground">Order ID: {order.id.substring(0, 10)}</span>
-                      <Link href={`/track-order?id=${order.id}`} className="flex min-h-11 items-center px-4 text-base text-foreground border border-border bg-white rounded-sm hover:bg-muted transition font-medium">
-                        View Order
-                      </Link>
-                      {order.status === 'PENDING' && (
-                        <Link href={`/account/cancellations/request?orderId=${order.id}`} className="flex min-h-11 items-center px-4 text-base text-destructive border border-red-600 bg-white rounded-sm hover:bg-danger-bg transition font-medium">
-                          Cancel Order
+                    <div className="px-4 py-3 bg-white border-t border-border flex flex-col sm:flex-row justify-end gap-2 sm:items-center">
+                      <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
+                        <Link href={`/track-order?id=${order.id}`} className="flex-1 sm:flex-none justify-center flex min-h-[44px] items-center px-4 text-[14px] text-foreground border border-border bg-white rounded-sm hover:bg-muted transition font-medium">
+                          View Order
                         </Link>
-                      )}
-                      {order.status === 'DELIVERED' && (
-                        <>
-                          <Link href={`/account/returns/request?orderId=${order.id}`} className="flex min-h-11 items-center px-4 text-base text-primary border border-primary bg-white rounded-sm hover:bg-[#e6f4f7] transition font-medium">
-                            Return Order
+                        {order.status === 'PENDING' && (
+                          <Link href={`/account/cancellations/request?orderId=${order.id}`} className="flex-1 sm:flex-none justify-center flex min-h-[44px] items-center px-4 text-[14px] text-destructive border border-red-600 bg-white rounded-sm hover:bg-danger-bg transition font-medium">
+                            Cancel Order
                           </Link>
-                          <Link href="/account/reviews" className="flex min-h-11 items-center px-4 text-base text-white bg-primary-600 border border-primary-600 rounded-sm hover:bg-primary-700 transition font-medium">
-                            Write a Review
-                          </Link>
-                        </>
-                      )}
+                        )}
+                        {order.status === 'DELIVERED' && (
+                          <>
+                            <Link href={`/account/returns/request?orderId=${order.id}`} className="flex-1 sm:flex-none justify-center flex min-h-[44px] items-center px-4 text-[14px] text-primary border border-primary bg-white rounded-sm hover:bg-[#e6f4f7] transition font-medium">
+                              Return Order
+                            </Link>
+                            <Link href="/account/reviews" className="flex-1 sm:flex-none justify-center flex min-h-[44px] items-center px-4 text-[14px] text-white bg-primary-600 border border-primary-600 rounded-sm hover:bg-primary-700 transition font-medium">
+                              Write a Review
+                            </Link>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))
