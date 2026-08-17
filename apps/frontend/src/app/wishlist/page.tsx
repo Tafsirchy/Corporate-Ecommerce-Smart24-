@@ -67,11 +67,11 @@ export default function WishlistPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex justify-between items-center bg-muted p-4 rounded-lg border border-border">
-            <span className="font-medium text-foreground">{items.length} items in wishlist</span>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-muted p-4 rounded-lg border border-border">
+            <span className="font-medium text-foreground text-center sm:text-left">{items.length} items in wishlist</span>
             <button 
               onClick={() => handleCheckoutAll()}
-              className="px-5 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium shadow-sm"
+              className="w-full sm:w-auto flex min-h-[44px] items-center justify-center px-5 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium shadow-sm text-base"
             >
               Checkout All Items
             </button>
@@ -108,17 +108,17 @@ export default function WishlistPage() {
                     <button 
                       onClick={() => updateQty(item.productId, -1, item.product?.stock ?? 1)}
                       disabled={(item.product?.stock ?? 0) === 0 || (quantities[item.productId] || 1) <= 1}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-muted/80 transition text-muted-foreground disabled:opacity-50"
+                      className="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center hover:bg-muted/80 transition text-muted-foreground disabled:opacity-50 text-lg md:text-base"
                     >
                       -
                     </button>
-                    <span className="w-6 text-center text-sm font-medium">
+                    <span className="w-8 text-center text-base md:text-sm font-medium">
                       {quantities[item.productId] || 1}
                     </span>
                     <button 
                       onClick={() => updateQty(item.productId, 1, item.product?.stock ?? 1)}
                       disabled={(item.product?.stock ?? 0) === 0 || (quantities[item.productId] || 1) >= (item.product?.stock ?? 0)}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-muted/80 transition text-muted-foreground disabled:opacity-50"
+                      className="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center hover:bg-muted/80 transition text-muted-foreground disabled:opacity-50 text-lg md:text-base"
                     >
                       +
                     </button>
@@ -130,13 +130,13 @@ export default function WishlistPage() {
                 <button
                   onClick={() => handleCheckoutItem(item.product)}
                   disabled={(item.product?.stock ?? 0) === 0}
-                  className="w-full sm:w-auto px-8 py-2.5 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed text-center"
+                  className="w-full sm:w-auto px-8 flex min-h-[44px] items-center justify-center bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed text-center"
                 >
                   Checkout
                 </button>
                 <button
                   onClick={() => toggleWishlist(item.product, !!user)}
-                  className="text-sm text-muted-foreground hover:text-destructive transition font-medium flex items-center gap-1 mt-2"
+                  className="text-sm text-muted-foreground hover:text-destructive transition font-medium flex items-center gap-1 mt-2 p-2 -m-2"
                 >
                   <Trash2 size={16} /> Remove
                 </button>
