@@ -84,10 +84,10 @@ export default function FlashSalePage() {
             <p className="text-muted-foreground">Grab these exclusive deals before time runs out!</p>
           </div>
           
-          <div className="mt-4 md:mt-0 flex items-center gap-2 text-destructive font-bold bg-danger-bg px-4 py-2 rounded-lg text-lg">
-            <Timer size={24} />
+          <div className="mt-4 md:mt-0 flex flex-wrap items-center justify-center gap-2 text-destructive font-bold bg-danger-bg px-4 py-2 rounded-lg text-base md:text-lg">
+            <Timer size={20} className="md:w-6 md:h-6" />
             <span>Ending in:</span>
-            <span className="flex items-center gap-1 text-xl">
+            <span className="flex items-center gap-1 text-lg md:text-xl">
               <span className="bg-rose-500 text-white px-2 py-0.5 rounded">{pad(timeLeft.hours)}</span>:
               <span className="bg-rose-500 text-white px-2 py-0.5 rounded">{pad(timeLeft.minutes)}</span>:
               <span className="bg-rose-500 text-white px-2 py-0.5 rounded">{pad(timeLeft.seconds)}</span>
@@ -108,7 +108,7 @@ export default function FlashSalePage() {
         ) : (
           <>
             {/* Products Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
               {products.map((product, index) => (
                 <div key={`${product.id}-${index}`}>
                   <ProductCard product={product} />
@@ -122,7 +122,7 @@ export default function FlashSalePage() {
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoading}
-                  className="px-16 py-3 border border-primary-600 text-primary/90 font-semibold rounded hover:bg-primary/10 transition-colors disabled:opacity-50 flex items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto min-w-[300px]"
+                  className="px-16 py-3 border border-primary-600 text-primary/90 font-semibold rounded hover:bg-primary/10 transition-colors disabled:opacity-50 flex min-h-[44px] items-center justify-center uppercase text-sm tracking-wider w-full sm:w-auto sm:min-w-[300px]"
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">
