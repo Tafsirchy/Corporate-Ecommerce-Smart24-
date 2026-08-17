@@ -44,7 +44,7 @@ function QuantityAdjuster({
       <button 
         onClick={() => changeQty(qty - 1)}
         disabled={qty <= 1}
-        className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted disabled:opacity-50"
+        className="w-11 h-11 md:w-8 md:h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted disabled:opacity-50 text-lg md:text-base"
       >
         -
       </button>
@@ -52,7 +52,7 @@ function QuantityAdjuster({
       <button 
         onClick={() => changeQty(qty + 1)}
         disabled={maxStock !== undefined && qty >= maxStock}
-        className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted disabled:opacity-50"
+        className="w-11 h-11 md:w-8 md:h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted disabled:opacity-50 text-lg md:text-base"
       >
         +
       </button>
@@ -102,7 +102,7 @@ export default function CartPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-4">
+          <div className="md:col-span-2 space-y-4 pb-48 md:pb-0">
             {items.map((item) => (
               <div key={item.productId} className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-border">
                 <div className="w-24 h-24 bg-muted border border-border rounded overflow-hidden flex-shrink-0 relative group">
@@ -135,16 +135,16 @@ export default function CartPage() {
                 <div className="text-right flex flex-col justify-between items-end h-full py-1 min-w-[80px]">
                   <p className="font-bold text-lg text-primary/90">৳{((item.product?.price || 0) * item.quantity).toLocaleString()}</p>
                   
-                  <div className="flex flex-col items-end gap-1 mt-auto">
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3 sm:gap-4 mt-auto">
                     <button 
                       onClick={() => handleSaveForLater(item)}
-                      className="text-muted-foreground text-xs font-medium hover:text-primary/90 transition"
+                      className="text-muted-foreground text-xs font-medium hover:text-primary/90 transition p-1 -m-1"
                     >
                       Save for later
                     </button>
                     <button 
                       onClick={() => removeFromCart(item.productId)}
-                      className="text-destructive text-xs font-medium hover:underline transition"
+                      className="text-destructive text-xs font-medium hover:underline transition p-1 -m-1"
                     >
                       Remove
                     </button>
@@ -154,9 +154,9 @@ export default function CartPage() {
             ))}
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-border h-fit sticky top-24">
-            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            <div className="space-y-3 mb-6">
+          <div className="bg-white p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-sm border-t md:border border-border h-fit fixed md:sticky bottom-0 left-0 w-full md:w-auto z-40 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] md:pb-6 top-auto md:top-24 rounded-t-2xl md:rounded-xl">
+            <h2 className="text-xl font-bold mb-4 hidden md:block">Order Summary</h2>
+            <div className="space-y-3 mb-6 hidden md:block">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">৳{cartTotal.toLocaleString()}</span>
@@ -165,15 +165,18 @@ export default function CartPage() {
                 <span className="text-muted-foreground">Delivery</span>
                 <span className="text-sm text-muted-foreground">Calculated at checkout</span>
               </div>
-              <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
+            </div>
+            <div className="border-t-0 md:border-t border-border pt-0 md:pt-3 flex justify-between items-center md:items-start font-bold text-lg mb-4 md:mb-6">
+              <div className="flex flex-col">
                 <span>Total</span>
-                <span className="text-primary/90">৳{cartTotal.toLocaleString()}</span>
+                <span className="text-xs font-normal text-muted-foreground md:hidden">Calculated at checkout</span>
               </div>
+              <span className="text-primary/90 text-xl md:text-lg">৳{cartTotal.toLocaleString()}</span>
             </div>
             
             <Link 
               href="/checkout"
-              className="w-full block text-center bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition shadow-sm"
+              className="w-full flex min-h-[44px] justify-center items-center bg-primary-600 text-white py-3 rounded-lg font-medium hover:bg-primary-700 transition shadow-sm text-base"
             >
               Proceed to Checkout
             </Link>
