@@ -66,9 +66,9 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
         </div>
       </div>
       {!mounted || loading ? (
-        <div className="flex gap-2 items-center opacity-50">
-          <div className="w-16 h-8 bg-muted animate-pulse rounded"></div>
-          <div className="w-16 h-8 bg-muted animate-pulse rounded"></div>
+        <div className="flex gap-4 items-center invisible pointer-events-none">
+          <div className="w-16 h-5"></div>
+          <div className="w-20 h-8"></div>
         </div>
       ) : user ? (
         <>
@@ -112,15 +112,18 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
             </div>
           </div>
           <button onClick={() => logout()} className={isTransparent ? "text-white/80 hover:text-white font-medium" : "text-muted-foreground hover:text-primary/90 font-medium"}>Sign Out</button>
+          {user.role === 'ADMIN' && (
+            <Link href="/admin" className={`${isTransparent ? 'text-blue-300 hover:text-blue-100' : 'text-blue-600 hover:text-blue-800'} font-bold hidden md:block`}>Admin Portal</Link>
+          )}
+          {user.role === 'BUSINESS' && (
+            <Link href="/business" className={`${isTransparent ? 'text-[#FF6E00] hover:opacity-80' : 'text-[#FF6E00] hover:opacity-80'} font-bold hidden md:block`}>B2B Portal</Link>
+          )}
         </>
       ) : (
         <>
           <button onClick={() => openAuthModal('login')} className={isTransparent ? "text-white/80 hover:text-white font-medium" : "text-muted-foreground hover:text-primary/90 font-medium"}>Sign In</button>
           <button onClick={() => openAuthModal('signup')} className={`${isTransparent ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary/90"} font-medium border ${isTransparent ? 'border-white/50 hover:bg-white/10' : 'border-border hover:bg-muted'} px-3 py-1.5 rounded transition-colors`}>Sign Up</button>
         </>
-      )}
-      {user?.role === 'ADMIN' && (
-        <Link href="/admin" className={`${isTransparent ? 'text-primary-300 hover:text-primary-100' : 'text-primary/90 hover:text-primary-800'} font-medium hidden md:block`}>Admin</Link>
       )}
     </nav>
   );
