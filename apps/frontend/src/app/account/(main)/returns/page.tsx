@@ -66,55 +66,58 @@ export default function MyReturnsPage() {
         <h2 className="text-[22px] text-foreground font-normal mb-6">My Returns</h2>
         
         <div className="bg-white rounded-md shadow-sm border border-border">
-          {/* Tabs */}
-          <div role="tablist" aria-label="Return filters" className="flex border-b border-border px-2 overflow-x-auto scrollbar-hide">
-            {tabs.map((tab, tabIndex) => {
-                let countText = tab;
-                if (tab !== 'All') {
-                  const count = returns.filter(r => r.status === tab).length;
-                  if (count > 0) countText = `${tab} (${count})`;
-                }
-                
-                return (
-                <button
-                  key={tab}
-                  id={`tab-${tab}`}
-                  role="tab"
-                  aria-selected={activeTab === tab}
-                  aria-controls="return-list"
-                  onKeyDown={(e) => {
-                    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-                    e.preventDefault();
-                    const next = e.key === 'ArrowRight'
-                      ? (tabIndex + 1) % tabs.length
-                      : (tabIndex - 1 + tabs.length) % tabs.length;
-                    setActiveTab(tabs[next]);
-                    document.getElementById(`tab-${tabs[next]}`)?.focus();
-                  }}
-                  className={`px-6 py-4 text-[15px] font-medium whitespace-nowrap transition ${activeTab === tab ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {countText}
-                </button>
-                );
-            })}
-          </div>
+          {/* Sticky Header Group for Returns */}
+          <div className="sticky top-14 md:top-[80px] z-30 bg-white rounded-t-md shadow-sm border-b border-border">
+            {/* Tabs */}
+            <div role="tablist" aria-label="Return filters" className="flex border-b border-border px-2 pr-8 overflow-x-auto scrollbar-hide">
+              {tabs.map((tab, tabIndex) => {
+                  let countText = tab;
+                  if (tab !== 'All') {
+                    const count = returns.filter(r => r.status === tab).length;
+                    if (count > 0) countText = `${tab} (${count})`;
+                  }
+                  
+                  return (
+                  <button
+                    key={tab}
+                    id={`tab-${tab}`}
+                    role="tab"
+                    aria-selected={activeTab === tab}
+                    aria-controls="return-list"
+                    onKeyDown={(e) => {
+                      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+                      e.preventDefault();
+                      const next = e.key === 'ArrowRight'
+                        ? (tabIndex + 1) % tabs.length
+                        : (tabIndex - 1 + tabs.length) % tabs.length;
+                      setActiveTab(tabs[next]);
+                      document.getElementById(`tab-${tabs[next]}`)?.focus();
+                    }}
+                    className={`px-6 py-4 text-[15px] font-medium whitespace-nowrap transition ${activeTab === tab ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {countText}
+                  </button>
+                  );
+              })}
+            </div>
 
-          {/* Search Bar */}
-          <div className="p-4 bg-muted border-b border-border">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            {/* Search Bar */}
+            <div className="p-4 bg-muted">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search by Return ID, Order ID or product name"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="block w-full pl-10 pr-3 h-12 text-base border border-border rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-primary"
+                />
               </div>
-              <input
-                type="text"
-                placeholder="Search by Return ID, Order ID or product name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-10 pr-3 h-12 text-base border border-border rounded-sm leading-5 bg-white placeholder-gray-500 focus:outline-none focus:border-primary"
-              />
             </div>
           </div>
 
@@ -177,12 +180,14 @@ export default function MyReturnsPage() {
                   </div>
 
                   {/* Footer Actions */}
-                  <div className="px-4 py-3 bg-muted border-t border-border flex flex-wrap justify-end gap-2 items-center">
-                    <span className="mr-auto text-[13px] text-muted-foreground">Order ID: {ret.orderId ? String(ret.orderId).substring(0, 10) : 'N/A'}</span>
-                    {ret.refundAmount && (
-                      <span className="text-[14px] font-bold text-foreground mr-4">Refund: ৳{ret.refundAmount.toLocaleString()}</span>
-                    )}
-                    <Link href={`/track-return?id=${ret.id}`} className="flex min-h-11 items-center px-4 text-base text-white bg-primary rounded-sm hover:bg-primary/90 transition font-medium shadow-sm">
+                  <div className="px-4 py-3 bg-white border-t border-border flex flex-col sm:flex-row justify-between gap-3 sm:items-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-center sm:text-left">
+                      <span className="text-[13px] text-muted-foreground">Order ID: {ret.orderId ? String(ret.orderId).substring(0, 10) : 'N/A'}</span>
+                      {ret.refundAmount && (
+                        <span className="text-[14px] font-bold text-foreground">Refund: ৳{ret.refundAmount.toLocaleString()}</span>
+                      )}
+                    </div>
+                    <Link href={`/track-return?id=${ret.id}`} className="w-full sm:w-auto justify-center flex min-h-[44px] items-center px-4 text-sm text-white bg-primary rounded-sm hover:bg-primary/90 transition font-medium shadow-sm">
                       Track Return
                     </Link>
                   </div>
