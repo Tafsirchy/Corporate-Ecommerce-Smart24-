@@ -57,43 +57,45 @@ export default function MyReviewsPage() {
           <h2 className="text-[22px] text-foreground font-normal mb-6">My Reviews</h2>
           
           <div className="bg-white rounded-md shadow-sm border border-border">
-            {/* Tabs */}
-            <div role="tablist" aria-label="Review filters" className="flex border-b border-border">
-              <button
-                id="reviews-tab-pending"
-                role="tab"
-                aria-selected={activeTab === 'pending'}
-                aria-controls="reviews-panel"
-                onKeyDown={(e) => handleTabKeyDown(e, 'pending')}
-                className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
-                  activeTab === 'pending'
-                    ? 'text-primary/90 border-b-2 border-primary-600'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-                onClick={() => setActiveTab('pending')}
-              >
-                To Review
-                {pendingReviews.length > 0 && (
-                  <span className="ml-2 bg-primary-100 text-primary-700 py-0.5 px-2 rounded-full text-[12px]">
-                    {pendingReviews.length}
-                  </span>
-                )}
-              </button>
-              <button
-                id="reviews-tab-history"
-                role="tab"
-                aria-selected={activeTab === 'history'}
-                aria-controls="reviews-panel"
-                onKeyDown={(e) => handleTabKeyDown(e, 'history')}
-                className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
-                  activeTab === 'history'
-                    ? 'text-primary/90 border-b-2 border-primary-600'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-                onClick={() => setActiveTab('history')}
-              >
-                History
-              </button>
+            {/* Sticky Tabs */}
+            <div className="sticky top-14 md:top-[80px] z-30 bg-white rounded-t-md shadow-sm border-b border-border">
+              <div role="tablist" aria-label="Review filters" className="flex">
+                <button
+                  id="reviews-tab-pending"
+                  role="tab"
+                  aria-selected={activeTab === 'pending'}
+                  aria-controls="reviews-panel"
+                  onKeyDown={(e) => handleTabKeyDown(e, 'pending')}
+                  className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
+                    activeTab === 'pending'
+                      ? 'text-primary/90 border-b-2 border-primary-600'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                  onClick={() => setActiveTab('pending')}
+                >
+                  To Review
+                  {pendingReviews.length > 0 && (
+                    <span className="ml-2 bg-primary-100 text-primary-700 py-0.5 px-2 rounded-full text-[12px]">
+                      {pendingReviews.length}
+                    </span>
+                  )}
+                </button>
+                <button
+                  id="reviews-tab-history"
+                  role="tab"
+                  aria-selected={activeTab === 'history'}
+                  aria-controls="reviews-panel"
+                  onKeyDown={(e) => handleTabKeyDown(e, 'history')}
+                  className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
+                    activeTab === 'history'
+                      ? 'text-primary/90 border-b-2 border-primary-600'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                  onClick={() => setActiveTab('history')}
+                >
+                  History
+                </button>
+              </div>
             </div>
 
             <div id="reviews-panel" className="p-4">
