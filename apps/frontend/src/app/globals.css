@@ -282,3 +282,70 @@ html {
   height: 0;
   width: 0;
 }
+
+/* ==========================================================================
+   React Toastify Theme Overrides
+   ========================================================================== */
+
+:root {
+  --toastify-color-light: var(--card);
+  --toastify-color-dark: var(--card);
+  --toastify-text-color-light: var(--foreground);
+  --toastify-text-color-dark: var(--foreground);
+  
+  --toastify-color-info: var(--color-info-fill);
+  --toastify-color-success: var(--color-success-fill);
+  --toastify-color-warning: var(--color-warning-fill);
+  --toastify-color-error: var(--color-danger-fill);
+  
+  --toastify-font-family: var(--font-sans);
+}
+
+.Toastify__toast {
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 12px 16px;
+}
+
+.Toastify__toast--info {
+  background-color: var(--color-info-bg);
+  border-left: 4px solid var(--color-info-fill);
+  color: var(--color-info-text);
+}
+.Toastify__toast--info .Toastify__progress-bar { background: var(--color-info-fill); }
+.Toastify__toast--info svg { fill: var(--color-info-fill); }
+
+.Toastify__toast--success {
+  background-color: var(--color-success-bg);
+  border-left: 4px solid var(--color-success-fill);
+  color: var(--color-success-text);
+}
+.Toastify__toast--success .Toastify__progress-bar { background: var(--color-success-fill); }
+.Toastify__toast--success svg { fill: var(--color-success-fill); }
+
+.Toastify__toast--warning {
+  background-color: var(--color-warning-bg);
+  border-left: 4px solid var(--color-warning-fill);
+  color: var(--color-warning-text);
+}
+.Toastify__toast--warning .Toastify__progress-bar { background: var(--color-warning-fill); }
+.Toastify__toast--warning svg { fill: var(--color-warning-fill); }
+
+.Toastify__toast--error {
+  background-color: var(--color-danger-bg);
+  border-left: 4px solid var(--color-danger-fill);
+  color: var(--color-danger-text);
+}
+.Toastify__toast--error .Toastify__progress-bar { background: var(--color-danger-fill); }
+.Toastify__toast--error svg { fill: var(--color-danger-fill); }
+
+.Toastify__close-button {
+  color: inherit;
+  opacity: 0.5;
+  align-self: center;
+}
+
+.Toastify__close-button:hover {
+  color: inherit;
+  opacity: 1;
+}
