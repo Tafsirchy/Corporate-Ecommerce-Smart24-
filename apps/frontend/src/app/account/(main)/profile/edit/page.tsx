@@ -94,6 +94,7 @@ export default function EditProfilePage() {
                     id="phone"
                     type="text" 
                     name="phone" 
+                    inputMode="tel"
                     value={formData.phone} 
                     onChange={handleChange} 
                     autoComplete="tel"
@@ -130,11 +131,11 @@ export default function EditProfilePage() {
                 </div>
               </div>
               
-              <div className="pt-6">
+              <div className="pt-4 mt-auto sticky bottom-0 bg-white pb-[max(1rem,env(safe-area-inset-bottom))] z-10 -mx-6 px-6 md:static md:bg-transparent md:pb-0 md:mx-0 md:px-0">
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="flex min-h-12 items-center bg-primary text-white px-8 py-3 text-base font-medium hover:bg-primary/90 transition uppercase disabled:opacity-50"
+                  className="flex w-full md:w-auto justify-center min-h-12 items-center bg-primary text-white px-8 py-3 text-base font-medium hover:bg-primary/90 transition uppercase disabled:opacity-50"
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </button>
