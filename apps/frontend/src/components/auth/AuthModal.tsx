@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, apiClient } from '@/context/AuthContext';
 import { X, Eye, EyeOff, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -38,6 +38,10 @@ export function AuthModal() {
   const [ownerName, setOwnerName] = useState('');
   const [address, setAddress] = useState('');
 
+  // Forgot Password State
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSubmitted, setForgotSubmitted] = useState(false);
+
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isAuthModalOpen) {
@@ -63,6 +67,8 @@ export function AuthModal() {
       setAddress('');
       setOtpInput('');
       setOtpError('');
+      setForgotEmail('');
+      setForgotSubmitted(false);
     }
   }, [isAuthModalOpen]);
 
@@ -158,6 +164,20 @@ export function AuthModal() {
       if (res?.error) {
         setOtpError(res.error);
       }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await apiClient.post('/auth/forgot-password', { email: forgotEmail });
+      toast.success('Reset link sent to your email');
+      setForgotSubmitted(true);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to send reset link');
     } finally {
       setIsLoading(false);
     }
@@ -280,9 +300,9 @@ export function AuthModal() {
               </div>
               {!show2fa && (
                 <div className="text-sm text-center flex flex-col gap-3 mt-4">
-                  <Link href="/forgot-password" onClick={closeAuthModal} className="font-medium text-muted-foreground hover:text-foreground">
+                  <button type="button" onClick={() => openAuthModal('forgot-password')} className="font-medium text-muted-foreground hover:text-foreground">
                     Forgot your password?
-                  </Link>
+                  </button>
                   <button type="button" onClick={() => openAuthModal('signup')} className="font-medium text-primary-600 hover:text-primary-700">
                     Don't have an account? Sign up
                   </button>
@@ -328,6 +348,52 @@ export function AuthModal() {
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Verify Code'}
               </button>
             </form>
+          </div>
+        ) : authModalView === 'forgot-password' ? (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-center text-3xl font-bold tracking-tight text-foreground">
+                Forgot Password
+              </h2>
+              <p className="mt-2 text-center text-sm text-muted-foreground">
+                Enter your email to receive a password reset link.
+              </p>
+            </div>
+            
+            {!forgotSubmitted ? (
+              <form className="mt-8 space-y-6" onSubmit={handleForgotSubmit}>
+                <div>
+                  <input
+                    type="email"
+                    required
+                    className="relative block w-full rounded-md border-0 py-2.5 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm px-3"
+                    placeholder="Email address"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="group relative flex w-full justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Send Reset Link'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="mt-8 bg-success-bg p-4 rounded-md">
+                <p className="text-green-800 text-center font-medium">
+                  If an account exists for {forgotEmail}, a reset link has been sent. Check your inbox.
+                </p>
+              </div>
+            )}
+            <div className="text-sm text-center flex flex-col gap-2 mt-4">
+              <button type="button" onClick={() => openAuthModal('login')} className="font-medium text-primary-600 hover:text-primary-700">
+                Back to sign in
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-4 md:space-y-6">
