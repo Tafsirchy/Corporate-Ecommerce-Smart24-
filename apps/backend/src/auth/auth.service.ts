@@ -111,6 +111,7 @@ export class AuthService {
     };
 
     if (data.role === 'BUSINESS' && data.businessProfile) {
+      createData.role = 'BUSINESS';
       createData.businessProfile = {
         create: {
           businessType: data.businessProfile.businessType,
