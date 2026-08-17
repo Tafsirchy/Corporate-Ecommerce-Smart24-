@@ -36,7 +36,7 @@ export default function SupportLayout({ children }: { children: React.ReactNode 
 
   return (
     <>
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h1 className="text-3xl font-bold text-foreground">
             {pageTitle}
