@@ -57,8 +57,8 @@ export default function BulkOrderPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8">
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+    <div className="max-w-4xl mx-auto py-4 md:py-8 mb-20 md:mb-0">
+      <div className="bg-white p-4 md:p-8 rounded-lg shadow-sm border-gray-100 md:border">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Bulk Order Builder</h2>
         <p className="text-gray-600 mb-8">
           Upload a CSV file with two columns: <strong>SKU</strong> and <strong>Quantity</strong>.
@@ -85,16 +85,7 @@ export default function BulkOrderPage() {
               {csvFile && <p className="mt-2 text-sm text-gray-600">Selected file: {csvFile.name}</p>}
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={processing || !csvFile}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
-              >
-                {processing ? 'Processing...' : 'Validate CSV'}
-              </button>
-            </div>
-            
+
             <div className="mt-4 p-4 bg-gray-50 border rounded-md">
               <h4 className="text-sm font-semibold mb-2">Example CSV Format:</h4>
               <pre className="text-xs text-gray-600 bg-white p-2 border rounded">
@@ -103,6 +94,16 @@ export default function BulkOrderPage() {
                 PEN-BLUE-05,1000<br />
                 INK-HP-21,50
               </pre>
+            </div>
+
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-30 pb-[env(safe-area-inset-bottom)] md:relative md:border-none md:p-0 md:bg-transparent md:pt-4">
+              <button
+                type="submit"
+                disabled={processing || !csvFile}
+                className="w-full flex justify-center py-3.5 px-4 min-h-[44px] border border-transparent rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.1)] md:shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
+              >
+                {processing ? 'Processing...' : 'Validate CSV'}
+              </button>
             </div>
           </form>
         ) : (
@@ -131,21 +132,21 @@ export default function BulkOrderPage() {
               </div>
             )}
 
-            <div className="flex gap-4 pt-4">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-30 flex gap-3 pb-[env(safe-area-inset-bottom)] md:relative md:border-none md:p-0 md:bg-transparent md:pt-4">
               <button
                 type="button"
                 onClick={() => { setValidationResult(null); setCsvFile(null); }}
-                className="flex-1 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="flex-1 bg-white py-3.5 px-2 min-h-[44px] border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition-all"
               >
-                Upload Different File
+                Upload Different
               </button>
               <button
                 type="button"
                 onClick={handleAddToCart}
                 disabled={processing || validationResult.validItems?.length === 0}
-                className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
+                className="flex-1 flex justify-center items-center py-3.5 px-2 min-h-[44px] border border-transparent rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.1)] md:shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 active:scale-95 transition-all disabled:bg-gray-400"
               >
-                {processing ? 'Adding...' : 'Add Valid Items to Cart'}
+                {processing ? 'Adding...' : 'Add Valid Items'}
               </button>
             </div>
           </div>
