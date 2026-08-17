@@ -99,43 +99,45 @@ export default function WishlistPage() {
           <h2 className="text-[22px] text-foreground font-normal mb-6">My Wishlist & Followed Stores</h2>
           
           <div className="bg-white rounded-md shadow-sm border border-border">
-            {/* Tabs */}
-            <div role="tablist" aria-label="Wishlist filters" className="flex border-b border-border">
-              <button
-                id="wishlist-tab-wishlist"
-                role="tab"
-                aria-selected={activeTab === 'wishlist'}
-                aria-controls="wishlist-panel"
-                onKeyDown={(e) => handleTabKeyDown(e, 'wishlist')}
-                className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
-                  activeTab === 'wishlist'
-                    ? 'text-primary/90 border-b-2 border-primary-600'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-                onClick={() => setActiveTab('wishlist')}
-              >
-                My Wishlist
-                {items.length > 0 && (
-                  <span className="ml-2 bg-primary-100 text-primary-700 py-0.5 px-2 rounded-full text-[12px]">
-                    {items.length}
-                  </span>
-                )}
-              </button>
-              <button
-                id="wishlist-tab-stores"
-                role="tab"
-                aria-selected={activeTab === 'stores'}
-                aria-controls="wishlist-panel"
-                onKeyDown={(e) => handleTabKeyDown(e, 'stores')}
-                className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
-                  activeTab === 'stores'
-                    ? 'text-primary/90 border-b-2 border-primary-600'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-                onClick={() => setActiveTab('stores')}
-              >
-                Followed Stores
-              </button>
+            {/* Sticky Tabs */}
+            <div className="sticky top-14 md:top-[80px] z-30 bg-white rounded-t-md shadow-sm border-b border-border">
+              <div role="tablist" aria-label="Wishlist filters" className="flex">
+                <button
+                  id="wishlist-tab-wishlist"
+                  role="tab"
+                  aria-selected={activeTab === 'wishlist'}
+                  aria-controls="wishlist-panel"
+                  onKeyDown={(e) => handleTabKeyDown(e, 'wishlist')}
+                  className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
+                    activeTab === 'wishlist'
+                      ? 'text-primary/90 border-b-2 border-primary-600'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                  onClick={() => setActiveTab('wishlist')}
+                >
+                  My Wishlist
+                  {items.length > 0 && (
+                    <span className="ml-2 bg-primary-100 text-primary-700 py-0.5 px-2 rounded-full text-[12px]">
+                      {items.length}
+                    </span>
+                  )}
+                </button>
+                <button
+                  id="wishlist-tab-stores"
+                  role="tab"
+                  aria-selected={activeTab === 'stores'}
+                  aria-controls="wishlist-panel"
+                  onKeyDown={(e) => handleTabKeyDown(e, 'stores')}
+                  className={`flex-1 py-4 text-[15px] font-medium text-center transition-colors ${
+                    activeTab === 'stores'
+                      ? 'text-primary/90 border-b-2 border-primary-600'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                  onClick={() => setActiveTab('stores')}
+                >
+                  Followed Stores
+                </button>
+              </div>
             </div>
 
             <div id="wishlist-panel" className="p-4">
@@ -164,11 +166,11 @@ export default function WishlistPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <div className="flex flex-wrap justify-between items-center gap-2 bg-muted p-4 rounded-lg border border-border">
-                        <span className="font-medium text-foreground">{items.length} items in wishlist</span>
+                      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-muted p-4 rounded-lg border border-border">
+                        <span className="font-medium text-foreground text-center sm:text-left">{items.length} items in wishlist</span>
                         <button 
                           onClick={() => handleCheckoutAll()}
-                          className="flex min-h-11 items-center px-4 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium text-base shadow-sm"
+                          className="w-full sm:w-auto justify-center flex min-h-[44px] items-center px-4 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition font-medium text-base shadow-sm"
                         >
                           Checkout All Items
                         </button>
