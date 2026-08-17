@@ -55,8 +55,8 @@ export default function PrivacyPolicyPage() {
           <p className="font-medium">Phone: +880 1700 000 000</p>
         </section>
 
-        <div className="mt-12 pt-8 border-t border-border">
-          <Link href="/" className="text-primary/90 hover:underline font-medium">
+        <div className="mt-12 pt-8 border-t border-border flex">
+          <Link href="/" className="inline-flex items-center min-h-[44px] py-2 px-1 -ml-1 text-primary/90 hover:text-primary transition-colors font-medium">
             &larr; Back to Home
           </Link>
         </div>
