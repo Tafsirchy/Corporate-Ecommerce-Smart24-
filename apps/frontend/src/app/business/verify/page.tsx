@@ -40,8 +40,8 @@ export default function BusinessVerifyPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white p-8 rounded-lg shadow-sm border">
+    <div className="max-w-2xl mx-auto py-4 md:py-12 mb-20 md:mb-0">
+      <div className="bg-white p-4 md:p-8 rounded-lg shadow-sm border-gray-100 md:border">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Business Verification</h2>
         <p className="text-gray-600 mb-8">
           Upload your business documents (Trade License, NID) to verify your account and unlock business pricing.
@@ -53,7 +53,7 @@ export default function BusinessVerifyPage() {
             <select
               value={documentType}
               onChange={(e) => setDocumentType(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 px-3 min-h-[44px] border"
             >
               <option value="TRADE_LICENSE">Trade License</option>
               <option value="NID">National ID (NID)</option>
@@ -81,13 +81,15 @@ export default function BusinessVerifyPage() {
             {file && <p className="mt-2 text-sm text-gray-600">Selected file: {file.name}</p>}
           </div>
 
-          <button
-            type="submit"
-            disabled={uploading || !file}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
-          >
-            {uploading ? 'Uploading...' : 'Submit Document'}
-          </button>
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-30 pb-[env(safe-area-inset-bottom)] md:relative md:border-none md:p-0 md:bg-transparent md:pt-4">
+            <button
+              type="submit"
+              disabled={uploading || !file}
+              className="w-full flex justify-center py-3.5 px-4 min-h-[44px] border border-transparent rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.1)] md:shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
+            >
+              {uploading ? 'Uploading...' : 'Submit Document'}
+            </button>
+          </div>
         </form>
       </div>
     </div>
