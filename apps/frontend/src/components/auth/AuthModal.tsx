@@ -249,7 +249,7 @@ export function AuthModal() {
                       type="button"
                       onClick={async () => {
                         setSignupEmail(loginEmail);
-                        setAuthModalView('verification-pending');
+                        openAuthModal('verification-pending');
                         try {
                           await fetch(process.env.NEXT_PUBLIC_API_URL + '/auth/resend-verification' || 'http://localhost:4000/api/v1/auth/resend-verification', {
                             method: 'POST',
