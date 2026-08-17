@@ -59,8 +59,8 @@ export default function MyCancellationsPage() {
           <h2 className="text-[22px] text-foreground font-normal mb-6">My Cancellations</h2>
           
           <div className="bg-white rounded-md shadow-sm border border-border">
-            {/* Search Bar */}
-            <div className="p-4 bg-muted border-b border-border">
+            {/* Sticky Search Bar */}
+            <div className="sticky top-14 md:top-[80px] z-30 bg-muted border-b border-border p-4 rounded-t-md shadow-sm">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -137,9 +137,9 @@ export default function MyCancellationsPage() {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-4 py-3 bg-muted border-t border-border flex flex-wrap justify-end gap-2 items-center">
-                      <span className="mr-auto text-[14px] font-bold text-foreground">Total: ৳{order.totalAmount.toLocaleString()}</span>
-                      <Link href={`/track-order?id=${order.id}`} className="flex min-h-11 items-center px-4 text-base text-foreground border border-border bg-white rounded-sm hover:bg-muted transition font-medium">
+                    <div className="px-4 py-3 bg-white border-t border-border flex flex-col sm:flex-row justify-between gap-3 sm:items-center">
+                      <span className="text-[14px] font-bold text-foreground text-center sm:text-left">Total: ৳{order.totalAmount.toLocaleString()}</span>
+                      <Link href={`/track-order?id=${order.id}`} className="w-full sm:w-auto justify-center flex min-h-[44px] items-center px-4 text-sm text-foreground border border-border bg-white rounded-sm hover:bg-muted transition font-medium">
                         View Order
                       </Link>
                     </div>
