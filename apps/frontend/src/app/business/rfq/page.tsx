@@ -58,8 +58,8 @@ export default function RFQPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8">
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+    <div className="max-w-4xl mx-auto py-4 md:py-8 mb-20 md:mb-0">
+      <div className="bg-white p-4 md:p-8 rounded-lg shadow-sm border-gray-100 md:border">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Request For Quotation (RFQ)</h2>
         <p className="text-gray-600 mb-8">
           Submit your bulk or custom requirements, and our team will provide a tailored quote within our 24-hour SLA.
@@ -77,7 +77,7 @@ export default function RFQPage() {
                   <input
                     type="text"
                     required
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 px-3 min-h-[44px] border"
                     value={item.productName}
                     onChange={(e) => handleChangeItem(index, 'productName', e.target.value)}
                     placeholder="e.g. A4 Paper Rim (Brand X)"
@@ -89,7 +89,7 @@ export default function RFQPage() {
                     type="number"
                     min="1"
                     required
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 px-3 min-h-[44px] border"
                     value={item.quantity}
                     onChange={(e) => handleChangeItem(index, 'quantity', parseInt(e.target.value))}
                   />
@@ -98,7 +98,7 @@ export default function RFQPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Specific Requirements</label>
                   <input
                     type="text"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 px-3 min-h-[44px] border"
                     value={item.specs}
                     onChange={(e) => handleChangeItem(index, 'specs', e.target.value)}
                     placeholder="Color, Size, etc."
@@ -108,7 +108,7 @@ export default function RFQPage() {
                   <button
                     type="button"
                     onClick={() => handleRemoveItem(index)}
-                    className="mt-6 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+                    className="mt-6 p-3 min-h-[44px] text-red-500 active:bg-red-50 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors w-full sm:w-auto"
                   >
                     Remove
                   </button>
@@ -118,7 +118,7 @@ export default function RFQPage() {
             <button
               type="button"
               onClick={handleAddItem}
-              className="text-sm font-medium text-primary-600 hover:text-primary-500"
+              className="text-sm font-medium text-primary-600 active:bg-primary-50 py-3 px-3 min-h-[44px] rounded-md transition-colors"
             >
               + Add another item
             </button>
@@ -134,7 +134,7 @@ export default function RFQPage() {
                 </div>
                 <input
                   type="number"
-                  className="block w-full rounded-md border-gray-300 pl-7 focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 border"
+                  className="block w-full rounded-md border-gray-300 pl-7 focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 min-h-[44px] border"
                   placeholder="0.00"
                   value={expectedBudget}
                   onChange={(e) => setExpectedBudget(e.target.value)}
@@ -145,7 +145,7 @@ export default function RFQPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Expected Delivery Date</label>
               <input
                 type="date"
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3 border"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-3 px-3 min-h-[44px] border"
                 value={expectedDate}
                 onChange={(e) => setExpectedDate(e.target.value)}
               />
@@ -156,16 +156,16 @@ export default function RFQPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Upload Specifications (Optional)</label>
             <input
               type="file"
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 min-h-[44px] cursor-pointer"
               onChange={(e) => setSpecFile(e.target.files?.[0] || null)}
             />
           </div>
 
-          <div className="pt-4">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-30 pb-[env(safe-area-inset-bottom)] md:relative md:border-none md:p-0 md:bg-transparent md:pt-4">
             <button
               type="submit"
               disabled={submitting}
-              className="w-full sm:w-auto flex justify-center py-2 px-8 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
+              className="w-full sm:w-auto flex justify-center py-3.5 px-8 min-h-[44px] border border-transparent rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.1)] md:shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400"
             >
               {submitting ? 'Submitting...' : 'Submit RFQ'}
             </button>
