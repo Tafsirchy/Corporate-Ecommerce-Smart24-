@@ -59,7 +59,7 @@ export default function RootLayout({
 
             <Footer />
             <AuthModal />
-            <ToastContainer position="bottom-right" />
+            <ToastContainer position="top-right" />
           </AuthProvider>
         </Providers>
       </body>
