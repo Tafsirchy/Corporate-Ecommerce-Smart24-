@@ -24,7 +24,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 export default function Header() {
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, logout } = useAuth();
   const pathname = usePathname();
   const isWishlistActive = pathname === '/wishlist' || pathname === '/account/wishlist';
   const isCartActive = pathname === '/cart';
@@ -173,7 +173,7 @@ export default function Header() {
 
   return (
     <>
-      {!isHome && <div className="h-[116px] md:h-[80px] w-full" />}
+      {!isHome && <div className="h-[116px] md:h-[124px] w-full shrink-0" />}
       <header
         className={`fixed top-0 left-0 right-0 z-50 flex flex-col transition-colors duration-300 ${
           isMobileMenuOpen ? 'bg-white' : ''
@@ -388,11 +388,26 @@ export default function Header() {
                   </details>
                 )}
                 
-                <div className="mt-auto pt-6 flex flex-col gap-4">
+                <div className="mt-auto pt-6 flex flex-col gap-3">
                   {user ? (
-                    <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3.5 bg-primary-600 text-white rounded-xl text-center font-bold text-lg hover:bg-primary-700 transition-colors shadow-sm">
-                      Go to My Account Dashboard
-                    </Link>
+                    <>
+                      {user.role === 'ADMIN' && (
+                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3.5 bg-gray-900 text-white rounded-xl text-center font-bold text-lg hover:bg-black transition-colors shadow-sm">
+                          Go to Admin Portal
+                        </Link>
+                      )}
+                      {user.role === 'BUSINESS' && (
+                        <Link href="/business" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3.5 bg-[#FF6E00] text-white rounded-xl text-center font-bold text-lg hover:opacity-90 transition-opacity shadow-sm">
+                          Go to B2B Portal
+                        </Link>
+                      )}
+                      <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3.5 bg-primary-600 text-white rounded-xl text-center font-bold text-lg hover:bg-primary-700 transition-colors shadow-sm">
+                        Go to My Account Dashboard
+                      </Link>
+                      <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="w-full py-3.5 border-2 border-red-100 text-red-600 bg-red-50 rounded-xl text-center font-bold text-lg hover:bg-red-100 transition-colors shadow-sm">
+                        Sign Out
+                      </button>
+                    </>
                   ) : (
                     <div className="grid grid-cols-2 gap-4">
                       <button onClick={() => { setIsMobileMenuOpen(false); openAuthModal('login'); }} className="w-full py-3.5 border-2 border-primary-600 text-primary-600 rounded-xl text-center font-bold text-lg hover:bg-primary-50 transition-colors">
