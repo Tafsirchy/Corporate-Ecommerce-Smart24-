@@ -113,7 +113,7 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
           </div>
           <button onClick={() => logout()} className={isTransparent ? "text-white/80 hover:text-white font-medium" : "text-muted-foreground hover:text-primary/90 font-medium"}>Sign Out</button>
           {user.role === 'ADMIN' && (
-            <Link href="/admin" className={`${isTransparent ? 'text-blue-300 hover:text-blue-100' : 'text-blue-600 hover:text-blue-800'} font-bold hidden md:block`}>Admin Portal</Link>
+            <Link href="/admin" className={`${isTransparent ? 'text-[#FF2056] hover:opacity-80' : 'text-[#FF2056] hover:opacity-80'} font-bold hidden md:block`}>Admin Portal</Link>
           )}
           {user.role === 'BUSINESS' && (
             <Link href="/business" className={`${isTransparent ? 'text-[#FF6E00] hover:opacity-80' : 'text-[#FF6E00] hover:opacity-80'} font-bold hidden md:block`}>B2B Portal</Link>
