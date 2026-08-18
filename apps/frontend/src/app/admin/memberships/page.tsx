@@ -134,10 +134,10 @@ export default function AdminMembershipsPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (loading) return <div className="text-center text-muted-foreground py-8">Loading...</div>;
 
   return (
-    <div className="p-6">
+    <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-foreground">Membership Tiers</h1>
         <button 
@@ -149,39 +149,68 @@ export default function AdminMembershipsPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-muted border-b border-border">
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Priority</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Name</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Req. Spend</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Multiplier</th>
-              <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {levels.map((level) => (
-              <tr key={level.id} className="border-b border-gray-50 hover:bg-muted">
-                <td className="p-4 text-sm text-foreground">{level.priority}</td>
-                <td className="p-4 text-sm font-bold text-foreground flex items-center gap-2">
-                  {level.badgeUrl && <OptimizedImage src={level.badgeUrl} alt="Badge" className="w-6 h-6 object-contain" />}
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-muted border-b border-border">
+                <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Priority</th>
+                <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Name</th>
+                <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Req. Spend</th>
+                <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Multiplier</th>
+                <th className="p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {levels.map((level) => (
+                <tr key={level.id} className="border-b border-gray-50 hover:bg-muted">
+                  <td className="p-4 text-sm text-foreground">{level.priority}</td>
+                  <td className="p-4 text-sm font-bold text-foreground flex items-center gap-2">
+                    {level.badgeUrl && <OptimizedImage src={level.badgeUrl} alt="Badge" width={24} height={24} className="w-6 h-6 object-contain" />}
+                    {level.name}
+                  </td>
+                  <td className="p-4 text-sm text-muted-foreground">৳{level.requiredAmount.toLocaleString()}</td>
+                  <td className="p-4 text-sm text-muted-foreground">{level.pointMultiplier}x</td>
+                  <td className="p-4 text-sm text-muted-foreground text-right space-x-3">
+                    <button onClick={() => handleOpenModal(level)} className="text-info-text hover:text-blue-800 font-semibold p-2 min-w-[44px] min-h-[44px]">Edit</button>
+                    <button onClick={() => handleDelete(level.id)} className="text-destructive hover:text-red-800 font-semibold p-2 min-w-[44px] min-h-[44px]">Delete</button>
+                  </td>
+                </tr>
+              ))}
+              {levels.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-muted-foreground">No membership tiers found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col divide-y divide-gray-100">
+          {levels.map((level) => (
+            <div key={level.id} className="p-4 flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <div className="font-bold text-lg text-foreground flex items-center gap-2">
+                  {level.badgeUrl && <OptimizedImage src={level.badgeUrl} alt="Badge" width={32} height={32} className="w-8 h-8 object-contain" />}
                   {level.name}
-                </td>
-                <td className="p-4 text-sm text-muted-foreground">৳{level.requiredAmount.toLocaleString()}</td>
-                <td className="p-4 text-sm text-muted-foreground">{level.pointMultiplier}x</td>
-                <td className="p-4 text-sm text-muted-foreground text-right space-x-3">
-                  <button onClick={() => handleOpenModal(level)} className="text-info-text hover:text-blue-800 font-semibold">Edit</button>
-                  <button onClick={() => handleDelete(level.id)} className="text-destructive hover:text-red-800 font-semibold">Delete</button>
-                </td>
-              </tr>
-            ))}
-            {levels.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-8 text-center text-muted-foreground">No membership tiers found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                </div>
+                <span className="bg-muted px-2 py-1 rounded text-xs font-bold text-muted-foreground">Pri: {level.priority}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div><span className="text-muted-foreground block">Spend:</span> ৳{level.requiredAmount.toLocaleString()}</div>
+                <div><span className="text-muted-foreground block">Multiplier:</span> {level.pointMultiplier}x</div>
+              </div>
+              <div className="flex gap-2 mt-2 pt-4 border-t border-border">
+                <button onClick={() => handleOpenModal(level)} className="flex-1 min-h-[44px] flex items-center justify-center text-primary-600 bg-primary-50 rounded-lg text-sm font-medium transition-colors">Edit</button>
+                <button onClick={() => handleDelete(level.id)} className="flex-1 min-h-[44px] flex items-center justify-center text-destructive bg-danger-bg rounded-lg text-sm font-medium transition-colors">Delete</button>
+              </div>
+            </div>
+          ))}
+          {levels.length === 0 && (
+            <div className="p-8 text-center text-muted-foreground">No membership tiers found.</div>
+          )}
+        </div>
       </div>
 
       {/* Add / Edit Modal */}
@@ -197,13 +226,13 @@ export default function AdminMembershipsPage() {
             
             <div className="p-6 overflow-y-auto flex-1">
               <form id="membership-form" onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Tier Name</label>
                     <input 
                       type="text" required
                       value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 min-h-[44px] text-base focus:ring-2 focus:ring-primary-500 outline-none"
                       placeholder="e.g. Gold"
                     />
                   </div>
@@ -212,18 +241,18 @@ export default function AdminMembershipsPage() {
                     <input 
                       type="number" required min="1"
                       value={formData.priority} onChange={e => setFormData({...formData, priority: parseInt(e.target.value)})}
-                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 min-h-[44px] text-base focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Required Spend (৳)</label>
                     <input 
                       type="number" required min="0"
                       value={formData.requiredAmount} onChange={e => setFormData({...formData, requiredAmount: parseInt(e.target.value)})}
-                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 min-h-[44px] text-base focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                   <div>
@@ -231,26 +260,26 @@ export default function AdminMembershipsPage() {
                     <input 
                       type="number" required step="0.1" min="1"
                       value={formData.pointMultiplier} onChange={e => setFormData({...formData, pointMultiplier: parseFloat(e.target.value)})}
-                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 min-h-[44px] text-base focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <label className="block text-sm font-medium text-foreground">Badge Icon</label>
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-2 text-sm w-full sm:w-auto">
                       <button
                         type="button"
                         onClick={() => setIsUploadMode(true)}
-                        className={`px-3 py-1 rounded-full transition-colors ${isUploadMode ? 'bg-black text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                        className={`flex-1 sm:flex-none min-h-[44px] px-4 rounded-lg font-medium transition-colors ${isUploadMode ? 'bg-black text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                       >
                         Upload File
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsUploadMode(false)}
-                        className={`px-3 py-1 rounded-full transition-colors ${!isUploadMode ? 'bg-black text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                        className={`flex-1 sm:flex-none min-h-[44px] px-4 rounded-lg font-medium transition-colors ${!isUploadMode ? 'bg-black text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                       >
                         Image URL
                       </button>
@@ -263,7 +292,7 @@ export default function AdminMembershipsPage() {
                       type="file"
                       accept="image/*"
                       onChange={e => setBadgeFile(e.target.files?.[0] || null)}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-muted file:text-black hover:file:bg-muted"
+                      className="w-full px-4 py-2 min-h-[44px] text-base border border-border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-muted file:text-black hover:file:bg-muted"
                     />
                   ) : (
                     <input 
@@ -272,7 +301,7 @@ export default function AdminMembershipsPage() {
                       value={formData.badgeUrl}
                       onChange={e => setFormData({...formData, badgeUrl: e.target.value})}
                       placeholder="https://example.com/badge.png"
-                      className="w-full border border-border rounded-lg p-2.5 focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full border border-border rounded-lg p-2.5 min-h-[44px] text-base focus:ring-2 focus:ring-primary-500 outline-none"
                     />
                   )}
                 </div>
@@ -280,7 +309,7 @@ export default function AdminMembershipsPage() {
                 <div>
                   <div className="flex justify-between items-center mb-2 mt-4">
                     <label className="block text-sm font-medium text-foreground">Benefits</label>
-                    <button type="button" onClick={handleAddBenefit} className="text-xs bg-muted hover:bg-muted/80 text-foreground px-2 py-1 rounded">
+                    <button type="button" onClick={handleAddBenefit} className="text-sm font-medium bg-muted hover:bg-muted/80 text-foreground px-4 min-h-[44px] rounded-lg transition-colors">
                       + Add Benefit
                     </button>
                   </div>
@@ -291,13 +320,13 @@ export default function AdminMembershipsPage() {
                           type="text" 
                           value={benefit} 
                           onChange={e => handleBenefitChange(index, e.target.value)}
-                          className="flex-1 border border-border rounded-lg p-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+                          className="flex-1 border border-border rounded-lg p-2.5 min-h-[44px] text-base focus:ring-2 focus:ring-primary-500 outline-none"
                           placeholder="e.g. Free Shipping"
                         />
                         <button 
                           type="button" 
                           onClick={() => handleRemoveBenefit(index)}
-                          className="px-3 text-muted-foreground hover:text-destructive bg-muted border border-border rounded-lg"
+                          className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-destructive bg-muted border border-border rounded-lg transition-colors font-bold text-lg"
                         >
                           &times;
                         </button>
@@ -308,11 +337,11 @@ export default function AdminMembershipsPage() {
               </form>
             </div>
 
-            <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted rounded-b-2xl">
-              <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-lg text-foreground hover:bg-muted/80 font-medium transition">
+            <div className="p-6 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-3 bg-muted rounded-b-2xl">
+              <button type="button" onClick={handleCloseModal} className="px-6 min-h-[44px] text-base rounded-lg text-foreground bg-white sm:bg-transparent border sm:border-none border-border hover:bg-gray-100 sm:hover:bg-muted/80 font-medium transition w-full sm:w-auto">
                 Cancel
               </button>
-              <button type="submit" form="membership-form" className="px-5 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition shadow-sm">
+              <button type="submit" form="membership-form" className="px-6 min-h-[44px] text-base rounded-lg bg-black hover:bg-secondary text-white font-medium transition shadow-sm w-full sm:w-auto">
                 {editingId ? 'Save Changes' : 'Create Tier'}
               </button>
             </div>
