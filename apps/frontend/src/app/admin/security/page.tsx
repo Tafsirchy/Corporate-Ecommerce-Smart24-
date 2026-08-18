@@ -65,7 +65,7 @@ export default function AdminSecurityPage() {
                 type="button"
                 onClick={generate2FA}
                 disabled={loading}
-                className="inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                className="inline-flex items-center justify-center w-full sm:w-auto rounded-md bg-primary-600 px-6 py-2 min-h-[44px] text-base font-semibold text-white shadow-sm hover:bg-primary/100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
               >
                 Set up 2FA
               </button>
@@ -84,11 +84,11 @@ export default function AdminSecurityPage() {
               </div>
 
               <h4 className="mt-6 text-sm font-medium text-foreground">2. Enter the 6-digit code</h4>
-              <div className="mt-2 flex items-center gap-3">
+              <div className="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <input
                   type="text"
                   placeholder="000000"
-                  className="block w-32 rounded-md border-0 py-1.5 text-foreground ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6 px-3 tracking-widest text-center"
+                  className="block w-full sm:w-32 rounded-md border-0 py-2 min-h-[44px] text-foreground ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 text-base px-3 tracking-widest text-center"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                 />
@@ -96,7 +96,7 @@ export default function AdminSecurityPage() {
                   type="button"
                   onClick={enable2FA}
                   disabled={loading}
-                  className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                  className="inline-flex items-center justify-center w-full sm:w-auto rounded-md bg-green-600 px-6 py-2 min-h-[44px] text-base font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
                 >
                   Verify & Enable
                 </button>
