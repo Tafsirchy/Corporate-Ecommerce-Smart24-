@@ -71,7 +71,7 @@ export default function AdminSettings() {
               required
               value={supportEmail}
               onChange={(e) => setSupportEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none min-h-[44px] text-base"
               placeholder="e.g. support@smart24.com"
             />
           </div>
@@ -80,9 +80,9 @@ export default function AdminSettings() {
             <button 
               type="submit"
               disabled={saving}
-              className="flex items-center px-6 py-2.5 bg-black text-white rounded-lg hover:bg-secondary transition font-medium disabled:opacity-70"
+              className="flex justify-center items-center px-6 py-2 bg-black text-white rounded-lg hover:bg-secondary transition min-h-[44px] text-base font-medium disabled:opacity-70 w-full sm:w-auto"
             >
-              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              {saving ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Save className="w-5 h-5 mr-2" />}
               Save Settings
             </button>
           </div>
