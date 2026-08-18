@@ -109,7 +109,7 @@ export default function AdminSupportTickets() {
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-9 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+            className="w-full pl-9 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 min-h-[44px] text-base"
           />
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
@@ -120,7 +120,7 @@ export default function AdminSupportTickets() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="border border-border rounded-lg px-3 py-2 text-base min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-auto"
           >
             <option value="">All Statuses</option>
             <option value="OPEN">Open</option>
@@ -132,7 +132,8 @@ export default function AdminSupportTickets() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-border overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-muted border-b border-border">
@@ -197,7 +198,7 @@ export default function AdminSupportTickets() {
                         <select
                           value={ticket.status}
                           onChange={(e) => updateStatus(ticket.id, e.target.value)}
-                          className="text-sm border border-border rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                          className="text-base min-h-[44px] border border-border rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary-500"
                         >
                           <option value="OPEN">Open</option>
                           <option value="IN_PROGRESS">In Progress</option>
@@ -206,7 +207,7 @@ export default function AdminSupportTickets() {
                         </select>
                         <button
                           onClick={() => deleteTicket(ticket.id)}
-                          className="p-1.5 text-destructive hover:bg-danger-bg rounded-lg transition-colors"
+                          className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-destructive hover:bg-danger-bg rounded-lg transition-colors"
                           title="Delete Ticket"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -219,6 +220,77 @@ export default function AdminSupportTickets() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col divide-y divide-border">
+          {tickets.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">No support tickets found.</div>
+          ) : (
+            tickets.map((ticket) => (
+              <div key={ticket.id} className="p-4 flex flex-col gap-4">
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex items-start gap-2">
+                    <MessageSquare className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-bold text-base text-foreground">{ticket.subject}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-3 mt-1">{ticket.message}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-muted p-3 rounded-lg text-sm space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Customer:</span>
+                    <span className="font-medium text-foreground">{ticket.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Email:</span>
+                    <a href={`mailto:${ticket.email}`} className="text-primary/90 hover:underline">{ticket.email}</a>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date:</span>
+                    <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  {ticket.orderId && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Order:</span>
+                      <span className="font-medium">#{ticket.orderId.substring(0,8).toUpperCase()}</span>
+                    </div>
+                  )}
+                </div>
+
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {ticket.attachments.map((url, i) => (
+                      <a key={i} href={url} target="_blank" rel="noreferrer" className="text-sm bg-muted text-foreground px-3 py-2 rounded-md hover:bg-muted/80 flex items-center min-h-[44px]">
+                        Attachment {i + 1}
+                      </a>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2 border-t border-border">
+                  <select
+                    value={ticket.status}
+                    onChange={(e) => updateStatus(ticket.id, e.target.value)}
+                    className="flex-1 text-base min-h-[44px] border border-border rounded-lg px-3 focus:outline-none focus:ring-1 focus:ring-primary-500 font-medium"
+                  >
+                    <option value="OPEN">Open</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="CLOSED">Closed</option>
+                  </select>
+                  <button
+                    onClick={() => deleteTicket(ticket.id)}
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center text-destructive border border-red-200 hover:bg-danger-bg rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
         
         {/* Pagination Controls */}
         {totalPages > 1 && (
@@ -230,16 +302,16 @@ export default function AdminSupportTickets() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg border border-border hover:bg-white disabled:opacity-50 transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-border hover:bg-white disabled:opacity-50 transition-colors"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg border border-border hover:bg-white disabled:opacity-50 transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-border hover:bg-white disabled:opacity-50 transition-colors"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
