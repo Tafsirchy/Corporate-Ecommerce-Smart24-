@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Edit2, Check } from "lucide-react";
 
 export default function AdminSubscriptionPlans() {
   const [plans, setPlans] = useState<any[]>([]);
@@ -37,9 +37,13 @@ export default function AdminSubscriptionPlans() {
     if (!token) return;
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscriptions/plans`);
-      if (res.ok) setPlans(await res.json());
+      if (res.ok) {
+        const json = await res.json();
+        setPlans(json.data || json || []);
+      }
     } catch (err) {
       console.error(err);
+      setPlans([]);
     } finally {
       setLoading(false);
     }
@@ -174,14 +178,14 @@ export default function AdminSubscriptionPlans() {
     <div className="p-6">
       <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Subscription Plans</h1>
+          <h1 className="text-3xl font-bold">Subscription Plans</h1>
           <p className="text-muted-foreground text-base mt-1">Manage fixed subscription packages</p>
         </div>
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-4">
-          <Link href="/admin/subscriptions" className="w-full sm:w-auto">
-            <Button variant="outline" className="w-full">Back to Subscriptions</Button>
+          <Link href="/admin/subscriptions" className="w-full sm:w-auto block">
+            <button className="w-full sm:w-auto px-6 py-2 min-h-[44px] rounded font-medium border border-border hover:bg-muted transition-colors bg-white">Back to Subscriptions</button>
           </Link>
-          <Button onClick={openCreateModal} className="w-full sm:w-auto">Create New Plan</Button>
+          <button onClick={openCreateModal} className="w-full sm:w-auto bg-black text-white px-6 py-2 min-h-[44px] rounded font-medium hover:bg-secondary transition-colors">Create New Plan</button>
         </div>
       </div>
 
@@ -217,17 +221,19 @@ export default function AdminSubscriptionPlans() {
               <div className="text-xl font-bold border-t pt-4">
                 ৳{plan.price} <span className="text-sm font-normal text-muted-foreground">/ month</span>
               </div>
-              <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
-                <Button variant="outline" size="sm" onClick={() => handleEdit(plan)}>
-                  Edit
-                </Button>
-                <Button 
-                  variant={plan.isActive ? "destructive" : "default"} 
-                  size="sm" 
-                  onClick={() => handleToggleActive(plan.id, plan.isActive)}
+              <div className="flex items-center justify-between gap-4 mt-2 pt-4 border-t border-border">
+                <button 
+                  onClick={() => handleEdit(plan)} 
+                  className="flex-1 min-h-[44px] flex items-center justify-center gap-2 text-primary-600 bg-primary-50 rounded-lg transition-colors font-medium text-sm"
                 >
-                  {plan.isActive ? "Deactivate" : "Activate"}
-                </Button>
+                  <Edit2 size={18} /> Edit
+                </button>
+                <button 
+                  onClick={() => handleToggleActive(plan.id, plan.isActive)} 
+                  className={`flex-1 min-h-[44px] flex items-center justify-center gap-2 rounded-lg transition-colors font-medium text-sm ${plan.isActive ? 'text-destructive bg-danger-bg' : 'text-success-text bg-success-bg'}`}
+                >
+                  {plan.isActive ? <X size={18} /> : <Check size={18} />} {plan.isActive ? "Deactivate" : "Activate"}
+                </button>
               </div>
             </div>
           ))}
@@ -246,16 +252,16 @@ export default function AdminSubscriptionPlans() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-base font-medium">Plan Name</label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Office Basics" />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Office Basics" className="min-h-[44px] text-base mt-1" />
                 </div>
                 <div>
                   <label className="text-base font-medium">Monthly Price (৳)</label>
-                  <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="e.g. 5000" />
+                  <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="e.g. 5000" className="min-h-[44px] text-base mt-1" />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Description</label>
-                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} required placeholder="Briefly describe what's included..." />
+                <label className="text-base font-medium">Description</label>
+                <Textarea value={description} onChange={(e) => setDescription(e.target.value)} required placeholder="Briefly describe what's included..." className="min-h-[44px] text-base mt-1" />
               </div>
 
               <div className="border-t pt-4 mt-4">
@@ -281,7 +287,7 @@ export default function AdminSubscriptionPlans() {
                   placeholder="Search products to add..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mb-2"
+                  className="mb-2 min-h-[44px] text-base"
                 />
                 
                 {searchTerm && (
@@ -303,7 +309,7 @@ export default function AdminSubscriptionPlans() {
                 )}
               </div>
 
-              <Button type="submit" className="w-full mt-6">Save Plan</Button>
+              <Button type="submit" className="w-full mt-6 min-h-[44px] text-base">Save Plan</Button>
             </form>
           </div>
         </div>
