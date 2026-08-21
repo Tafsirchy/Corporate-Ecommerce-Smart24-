@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Edit2, Trash2, X } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminBrands() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -114,8 +115,8 @@ export default function AdminBrands() {
       </div>
       
       {isModalOpen && (
-        <div className="fixed inset-0 bg-white sm:bg-black/50 flex items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
-          <div className="bg-white sm:rounded-xl shadow-2xl p-4 w-full h-full sm:h-auto sm:max-h-[95vh] max-w-xl relative overflow-y-auto">
+        <ScrollFade className="fixed inset-0 bg-white sm:bg-black/50 flex items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto">
+          <ScrollFade className="bg-white sm:rounded-xl shadow-2xl p-4 w-full h-full sm:h-auto sm:max-h-[95vh] max-w-xl relative overflow-y-auto">
             <div className="flex justify-between items-center mb-4 sticky top-0 bg-white z-10 pb-2 border-b border-border">
               <h2 className="text-xl font-bold">{editingId ? 'Edit Brand' : 'Add New Brand'}</h2>
               <button 
@@ -199,13 +200,13 @@ export default function AdminBrands() {
             {isLoading ? 'Saving...' : (editingId ? 'Update Brand' : 'Add Brand')}
           </button>
         </form>
-      </div>
-    </div>
+      </ScrollFade>
+    </ScrollFade>
     )}
 
     <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
             <thead className="bg-muted border-b border-border">
               <tr>
@@ -247,7 +248,7 @@ export default function AdminBrands() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
