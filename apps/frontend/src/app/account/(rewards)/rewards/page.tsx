@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/context/AuthContext';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function RewardsPage() {
   const [activeTab, setActiveTab] = useState<'MARKETPLACE' | 'MY_REWARDS'>('MARKETPLACE');
@@ -50,7 +51,7 @@ export default function RewardsPage() {
         </div>
       </div>
       
-      <div className="flex space-x-4 border-b border-border mb-6 overflow-x-auto w-full whitespace-nowrap scrollbar-hide">
+      <ScrollFade className="flex space-x-4 border-b border-border mb-6 overflow-x-auto w-full whitespace-nowrap scrollbar-hide">
         <button
           className={`py-2 px-4 font-semibold transition-colors ${activeTab === 'MARKETPLACE' ? 'border-b-2 border-primary-600 text-primary/90' : 'text-muted-foreground hover:text-foreground'}`}
           onClick={() => setActiveTab('MARKETPLACE')}
@@ -63,7 +64,7 @@ export default function RewardsPage() {
         >
           My Claimed Rewards
         </button>
-      </div>
+      </ScrollFade>
 
       {activeTab === 'MARKETPLACE' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
