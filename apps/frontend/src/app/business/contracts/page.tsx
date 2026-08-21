@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function BusinessContractsPage() {
   const [contracts, setContracts] = useState<any[]>([]);
@@ -92,7 +93,7 @@ export default function BusinessContractsPage() {
               You haven't uploaded any contracts yet.
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden border border-border overflow-x-auto">
+            <ScrollFade className="bg-white rounded-lg shadow overflow-hidden border border-border overflow-x-auto">
               <table className="min-w-full divide-y divide-border">
                 <thead className="bg-muted">
                   <tr>
@@ -125,7 +126,7 @@ export default function BusinessContractsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </ScrollFade>
           )}
         </div>
       </div>
