@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { Pagination } from '@/components/Pagination';
 import { Trash2 } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -78,7 +79,7 @@ export default function AdminOrders() {
       
       <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead className="bg-muted border-b border-border">
               <tr>
@@ -174,7 +175,7 @@ export default function AdminOrders() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
