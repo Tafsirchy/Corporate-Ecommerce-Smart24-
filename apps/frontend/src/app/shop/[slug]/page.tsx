@@ -9,6 +9,7 @@ import { generateMockData, Product } from '../../../components/ProductCard';
 import { Star, MapPin, Truck, ShieldCheck, MessageSquare, Info, ChevronRight, Plus, Minus, Image as ImageIcon, Trash2, Edit2 } from 'lucide-react';
 import { useAuth, apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -264,7 +265,7 @@ export default function ProductDetailPage() {
           {/* Column 1: Image Gallery (40%) */}
           <div className="w-[calc(100%+2rem)] -mx-4 lg:mx-0 lg:w-[40%] bg-white p-0 lg:p-4 rounded-none lg:rounded-xl shadow-none lg:shadow-sm border-none lg:border lg:border-border flex flex-col">
             {/* Mobile swipeable, Desktop static */}
-            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide lg:block w-full">
+            <ScrollFade className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide lg:block w-full">
               {/* Desktop Active Image */}
               <div className="hidden lg:block aspect-square rounded-lg overflow-hidden border border-border mb-4 bg-muted relative group cursor-crosshair w-full">
                 <OptimizedImage src={activeImage || 'https://placehold.co/800x800?text=No+Image'} 
@@ -286,11 +287,11 @@ export default function ProductDetailPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </ScrollFade>
             
             {/* Desktop Thumbnails */}
             {product.images && product.images.length > 1 && (
-              <div className="hidden lg:flex gap-3 overflow-x-auto pb-2 scrollbar-hide mt-4 lg:mt-0">
+              <ScrollFade className="hidden lg:flex gap-3 overflow-x-auto pb-2 scrollbar-hide mt-4 lg:mt-0">
                 {product.images.map((img: string, i: number) => (
                   <button 
                     key={i} 
@@ -300,7 +301,7 @@ export default function ProductDetailPage() {
                     <OptimizedImage src={img} alt={`${product.name} ${i+1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
-              </div>
+              </ScrollFade>
             )}
           </div>
 
