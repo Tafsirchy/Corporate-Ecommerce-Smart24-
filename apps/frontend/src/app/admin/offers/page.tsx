@@ -1,4 +1,5 @@
 "use client";
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -173,7 +174,7 @@ export default function AdminOffersPage() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start sm:items-center gap-4 mb-3">
         <h1 className="text-2xl font-bold">Offer Management</h1>
         <Button onClick={() => {
           resetForm();
@@ -181,7 +182,7 @@ export default function AdminOffersPage() {
         }} className="w-full sm:w-auto min-h-[44px]">Create New Offer</Button>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <Input 
           placeholder="Search offers by name..." 
           value={searchTerm}
@@ -192,7 +193,7 @@ export default function AdminOffersPage() {
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-muted border-b">
               <tr>
@@ -237,7 +238,7 @@ export default function AdminOffersPage() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
@@ -299,7 +300,7 @@ export default function AdminOffersPage() {
             <button onClick={() => { setIsModalOpen(false); resetForm(); }} className="absolute top-4 right-4"><X className="w-5 h-5 text-muted-foreground" /></button>
             <h2 className="text-2xl font-bold mb-4">{editOfferId ? "Edit Offer" : "Create Offer"}</h2>
             
-            <div className="flex flex-col sm:flex-row gap-4 mb-6 mt-2">
+            <div className="flex flex-col sm:flex-row gap-4 mb-3 mt-2">
               <Button 
                 variant={offerType === "AMOUNT_BASED" ? "default" : "outline"} 
                 onClick={() => setOfferType("AMOUNT_BASED")}
