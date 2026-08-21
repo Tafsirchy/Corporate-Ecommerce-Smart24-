@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Pagination } from '@/components/Pagination';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function MyOrdersPage() {
   const { user, loading, logout } = useAuth();
@@ -77,7 +78,7 @@ export default function MyOrdersPage() {
             {/* Sticky Header Group for Orders */}
             <div className="sticky top-14 md:top-[80px] z-30 bg-white rounded-t-md shadow-sm border-b border-border">
               {/* Tabs */}
-              <div role="tablist" aria-label="Order filters" className="flex border-b border-border px-2 pr-8 overflow-x-auto scrollbar-hide">
+              <ScrollFade role="tablist" aria-label="Order filters" className="flex border-b border-border px-2 pr-8 overflow-x-auto scrollbar-hide">
                 {tabs.map((tab, tabIndex) => {
                    let countText = tab;
                    if (tab === 'To Review' && activeTab === tab) {
@@ -108,7 +109,7 @@ export default function MyOrdersPage() {
                     </button>
                    );
                 })}
-              </div>
+              </ScrollFade>
 
               {/* Search Bar */}
               <div className="p-4 bg-muted">
