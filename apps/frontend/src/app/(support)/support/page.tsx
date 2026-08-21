@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, Package, RefreshCcw, HelpCircle, Mail, FileText, ChevronRight } from 'lucide-react';
 import { apiClient } from '@/context/AuthContext';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 interface Faq {
   id: string;
@@ -83,7 +84,7 @@ export default function SupportHubPage() {
             
             {/* Live Search Results - Desktop */}
             {searchQuery.trim() !== '' && (
-              <div className="hidden md:block absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-border overflow-hidden text-left z-50 max-h-96 overflow-y-auto">
+              <ScrollFade className="hidden md:block absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-border overflow-hidden text-left z-50 max-h-96 overflow-y-auto">
                 {filteredFaqs.length > 0 ? (
                   <ul className="divide-y divide-gray-100">
                     {filteredFaqs.map(faq => (
@@ -102,7 +103,7 @@ export default function SupportHubPage() {
                     <Link href="/support/contact" className="text-primary/90 font-medium hover:underline mt-2 inline-block">Contact Support</Link>
                   </div>
                 )}
-              </div>
+              </ScrollFade>
             )}
           </div>
         </div>
@@ -116,7 +117,7 @@ export default function SupportHubPage() {
              <span className="font-bold text-sm text-muted-foreground">Search Results</span>
              <button onClick={() => setSearchQuery('')} className="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full">Close</button>
           </div>
-          <div className="overflow-y-auto w-full text-left pb-8">
+          <ScrollFade className="overflow-y-auto w-full text-left pb-8">
             {filteredFaqs.length > 0 ? (
               <ul className="divide-y divide-gray-100">
                 {filteredFaqs.map(faq => (
@@ -136,7 +137,7 @@ export default function SupportHubPage() {
                 </Link>
               </div>
             )}
-          </div>
+          </ScrollFade>
         </div>
       )}
 
