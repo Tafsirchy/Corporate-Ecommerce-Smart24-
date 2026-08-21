@@ -12,6 +12,7 @@ import { CategoryDropdown } from '@/components/CategoryDropdown';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { apiClient, useAuth } from '@/context/AuthContext';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -336,7 +337,7 @@ export default function Header() {
 
         {/* Mobile Full-Screen Menu Drawer */}
         {isMobileMenuOpen && (
-          <div id="mobile-menu" aria-label="Mobile navigation" className="absolute top-full left-0 right-0 h-screen bg-white z-40 overflow-y-auto pb-[env(safe-area-inset-bottom)] md:hidden border-t border-border">
+          <ScrollFade id="mobile-menu" aria-label="Mobile navigation" className="absolute top-full left-0 right-0 h-screen bg-white z-40 overflow-y-auto pb-[env(safe-area-inset-bottom)] md:hidden border-t border-border">
              <div className="flex flex-col px-4 py-6 gap-6 min-h-[calc(100vh-140px)] pb-12">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Home</Link>
                 <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Shop</Link>
@@ -420,7 +421,7 @@ export default function Header() {
                   )}
                 </div>
              </div>
-          </div>
+          </ScrollFade>
         )}
       </header>
     </>
