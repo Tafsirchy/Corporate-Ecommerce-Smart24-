@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Plus, Edit2, Trash2, Loader2, Check } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 interface FilterDefinition {
   id: string;
@@ -230,7 +231,7 @@ export default function AdminFilters() {
                 className="px-3 py-1.5 min-h-[44px] text-base border rounded focus:ring-black focus:border-black w-full sm:w-64"
               />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border p-3 rounded">
+            <ScrollFade className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border p-3 rounded">
               {[...categories]
                 .filter(c => c.name.toLowerCase().includes(categorySearch.toLowerCase()))
                 .sort((a, b) => a.name.localeCompare(b.name))
@@ -247,7 +248,7 @@ export default function AdminFilters() {
               {categories.filter(c => c.name.toLowerCase().includes(categorySearch.toLowerCase())).length === 0 && (
                 <div className="col-span-full text-sm text-muted-foreground p-2">No categories match your search.</div>
               )}
-            </div>
+            </ScrollFade>
           </div>
 
           {type !== 'RANGE' && (
@@ -342,7 +343,7 @@ export default function AdminFilters() {
 
       <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm min-w-[700px]">
             <thead className="bg-muted border-b border-border">
               <tr>
@@ -387,7 +388,7 @@ export default function AdminFilters() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
