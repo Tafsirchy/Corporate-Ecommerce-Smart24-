@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Trash2, Image as ImageIcon, Edit2, X } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminBanners() {
   const [banners, setBanners] = useState<any[]>([]);
@@ -155,7 +156,7 @@ export default function AdminBanners() {
       </div>
       
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <ScrollFade className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl relative my-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">{editingId ? 'Edit Banner' : 'Add New Banner'}</h2>
@@ -249,12 +250,12 @@ export default function AdminBanners() {
               </div>
             </form>
           </div>
-        </div>
+        </ScrollFade>
       )}
 
       <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left min-w-[700px]">
             <thead className="bg-muted border-b border-border">
               <tr>
@@ -324,7 +325,7 @@ export default function AdminBanners() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
