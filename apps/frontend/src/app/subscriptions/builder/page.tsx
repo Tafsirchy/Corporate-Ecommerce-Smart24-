@@ -12,6 +12,7 @@ import { BrandSidebar, Brand } from "@/components/BrandSidebar";
 import { PriceFilter } from "@/components/PriceFilter";
 import { Filter, X, Search, ShoppingBag } from "lucide-react";
 import { Suspense } from "react";
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 function BuilderContent() {
   const [products, setProducts] = useState<any[]>([]);
@@ -234,27 +235,27 @@ function BuilderContent() {
 
         {/* Filter Panel (Collapsible) */}
         {isFilterOpen && (
-          <div className="fixed inset-0 z-[100] bg-white lg:relative lg:z-auto lg:bg-white p-4 lg:rounded-lg lg:shadow-sm lg:border mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-4">
+          <ScrollFade className="fixed inset-0 z-[100] bg-white lg:relative lg:z-auto lg:bg-white p-4 lg:rounded-lg lg:shadow-sm lg:border mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-4">
             <div className="flex justify-between items-center lg:hidden mb-4 col-span-1 border-b pb-4 pt-[env(safe-area-inset-top)]">
                <h2 className="text-xl font-bold">Filters</h2>
                <Button variant="ghost" onClick={() => setIsFilterOpen(false)}><X className="w-6 h-6"/></Button>
             </div>
             <div>
               <h3 className="font-semibold mb-3">Categories</h3>
-              <div className="max-h-60 overflow-y-auto pr-2">
+              <ScrollFade className="max-h-60 overflow-y-auto pr-2">
                 <CategorySidebar categories={categories} basePath="/subscriptions/builder" />
-              </div>
+              </ScrollFade>
             </div>
             {brands.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-3">Brands</h3>
-                <div className="max-h-60 overflow-y-auto pr-2">
+                <ScrollFade className="max-h-60 overflow-y-auto pr-2">
                   <BrandSidebar 
                     brands={brands} 
                     selectedBrands={selectedBrands} 
                     onChange={setSelectedBrands} 
                   />
-                </div>
+                </ScrollFade>
               </div>
             )}
             <div>
@@ -271,7 +272,7 @@ function BuilderContent() {
             <div className="lg:hidden col-span-1 mt-auto pt-4 border-t sticky bottom-0 bg-white pb-[env(safe-area-inset-bottom)]">
                <Button className="w-full min-h-[44px]" onClick={() => setIsFilterOpen(false)}>Apply Filters</Button>
             </div>
-          </div>
+          </ScrollFade>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -321,7 +322,7 @@ function BuilderContent() {
         )}
       </div>
 
-      <div className={`bg-white lg:bg-muted p-4 sm:p-6 rounded-t-2xl lg:rounded-lg h-fit border-t lg:border fixed bottom-0 left-0 right-0 z-[90] lg:z-10 lg:sticky lg:top-24 lg:mt-0 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] lg:shadow-none max-h-[85vh] overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-6 transform transition-transform duration-300 ${isCartMobileOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}`}>
+      <ScrollFade className={`bg-white lg:bg-muted p-4 sm:p-6 rounded-t-2xl lg:rounded-lg h-fit border-t lg:border fixed bottom-0 left-0 right-0 z-[90] lg:z-10 lg:sticky lg:top-24 lg:mt-0 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] lg:shadow-none max-h-[85vh] overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-6 transform transition-transform duration-300 ${isCartMobileOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}`}>
         <div className="flex justify-between items-center mb-4 lg:mb-4 pt-2 lg:pt-0">
           <h2 className="text-xl font-bold">Your Package</h2>
           <div className="flex items-center gap-4 lg:hidden">
@@ -400,7 +401,7 @@ function BuilderContent() {
             Confirm Subscription
           </Button>
         </form>
-      </div>
+      </ScrollFade>
 
       {/* Mobile Bottom Navigation Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-50 flex justify-around items-center h-[64px] pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
