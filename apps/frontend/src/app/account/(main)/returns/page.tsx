@@ -5,6 +5,7 @@ import { useAuth, apiClient } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function MyReturnsPage() {
   const { user, loading, logout } = useAuth();
@@ -69,7 +70,7 @@ export default function MyReturnsPage() {
           {/* Sticky Header Group for Returns */}
           <div className="sticky top-14 md:top-[80px] z-30 bg-white rounded-t-md shadow-sm border-b border-border">
             {/* Tabs */}
-            <div role="tablist" aria-label="Return filters" className="flex border-b border-border px-2 pr-8 overflow-x-auto scrollbar-hide">
+            <ScrollFade role="tablist" aria-label="Return filters" className="flex border-b border-border px-2 pr-8 overflow-x-auto scrollbar-hide">
               {tabs.map((tab, tabIndex) => {
                   let countText = tab;
                   if (tab !== 'All') {
@@ -100,7 +101,7 @@ export default function MyReturnsPage() {
                   </button>
                   );
               })}
-            </div>
+            </ScrollFade>
 
             {/* Search Bar */}
             <div className="p-4 bg-muted">
