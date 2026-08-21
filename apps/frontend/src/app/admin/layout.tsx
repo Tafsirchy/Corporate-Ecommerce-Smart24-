@@ -1,4 +1,5 @@
 'use client';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -79,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <p className="text-sm text-gray-500 mt-1 truncate">{user.email}</p>
         </div>
         
-        <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
+        <ScrollFade as="nav" className="flex-1 p-4 space-y-6 overflow-y-auto">
           {navGroups.map((group) => (
             <div key={group.title}>
               <h3 className="px-2 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
@@ -105,15 +106,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
             </div>
           ))}
-        </nav>
+        </ScrollFade>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6 md:p-8 overflow-y-auto">
+      <ScrollFade as="main" className="flex-1 px-4 py-6 md:p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           {children}
         </div>
-      </main>
+      </ScrollFade>
 
       {/* Mobile Floating Menu Button */}
       <div className={`fixed right-4 z-40 flex md:hidden pointer-events-none transition-all duration-300 bottom-[calc(1.5rem+env(safe-area-inset-bottom))]`}>
@@ -136,7 +137,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="px-4 py-4 overflow-y-auto">
+          <ScrollFade className="px-4 py-4 overflow-y-auto">
             <nav className="space-y-6">
               {navGroups.map((group) => (
                 <div key={group.title}>
@@ -167,7 +168,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
               ))}
             </nav>
-          </div>
+          </ScrollFade>
         </div>
       </div>
     </div>
