@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function MainAccountLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -153,7 +154,7 @@ export default function MainAccountLayout({ children }: { children: React.ReactN
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="px-6 pt-6 pb-4 overflow-y-auto">
+          <ScrollFade className="px-6 pt-6 pb-4 overflow-y-auto">
             <div className="mb-6 border-b border-border pb-4">
               <p className="text-muted-foreground text-base mb-1">Hello, {user.phone || (user.email ? user.email.split('@')[0] : 'User')}</p>
               <div className="inline-flex items-center gap-1 bg-success-text text-white text-sm font-semibold px-2 py-1 rounded-sm">
@@ -165,7 +166,7 @@ export default function MainAccountLayout({ children }: { children: React.ReactN
             </div>
             
             {renderNavLinks(true)}
-          </div>
+          </ScrollFade>
         </div>
       </div>
     </>
