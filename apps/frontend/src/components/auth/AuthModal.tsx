@@ -4,6 +4,7 @@ import { useAuth, apiClient } from '@/context/AuthContext';
 import { X, Eye, EyeOff, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export function AuthModal() {
   const { isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, login, signup, verify2faLogin, verifyOtp } = useAuth();
@@ -199,7 +200,7 @@ export function AuthModal() {
   const strength = calculatePasswordStrength(signupPassword);
 
   return (
-    <div className="fixed inset-0 z-[100] flex p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+    <ScrollFade className="fixed inset-0 z-[100] flex p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
       <div className={`relative w-full ${authModalView === 'signup' && signupStep === 2 ? 'max-w-xl' : 'max-w-md'} bg-white rounded-2xl shadow-xl p-6 m-auto transition-all`}>
         <button 
           onClick={closeAuthModal}
@@ -613,6 +614,6 @@ export function AuthModal() {
           </div>
         )}
       </div>
-    </div>
+    </ScrollFade>
   );
 }
