@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function RewardsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -83,7 +84,7 @@ export default function RewardsLayout({ children }: { children: React.ReactNode 
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="p-6 overflow-y-auto">
+          <ScrollFade className="p-6 overflow-y-auto">
             <ul className="space-y-4 text-lg">
               <li>
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/account/membership" className={`block transition-colors ${pathname.includes('membership') ? 'text-primary/90 font-bold' : 'text-muted-foreground hover:text-primary/90'}`}>
@@ -101,7 +102,7 @@ export default function RewardsLayout({ children }: { children: React.ReactNode 
                 </Link>
               </li>
             </ul>
-          </div>
+          </ScrollFade>
         </div>
       </div>
     </>
