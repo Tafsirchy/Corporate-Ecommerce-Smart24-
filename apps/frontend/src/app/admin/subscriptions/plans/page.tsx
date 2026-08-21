@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import { X, Plus, Edit2, Check } from "lucide-react";
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminSubscriptionPlans() {
   const [plans, setPlans] = useState<any[]>([]);
@@ -242,7 +243,7 @@ export default function AdminSubscriptionPlans() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto relative">
+          <ScrollFade className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto relative">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-muted-foreground">
               <X className="w-5 h-5" />
             </button>
@@ -291,7 +292,7 @@ export default function AdminSubscriptionPlans() {
                 />
                 
                 {searchTerm && (
-                  <div className="bg-white border rounded shadow-md max-h-40 overflow-y-auto">
+                  <ScrollFade className="bg-white border rounded shadow-md max-h-40 overflow-y-auto">
                     {filteredProducts.slice(0, 10).map((product: any) => (
                       <div 
                         key={product.id} 
@@ -305,13 +306,13 @@ export default function AdminSubscriptionPlans() {
                     {filteredProducts.length === 0 && (
                       <div className="p-2 text-sm text-muted-foreground">No products found</div>
                     )}
-                  </div>
+                  </ScrollFade>
                 )}
               </div>
 
               <Button type="submit" className="w-full mt-6 min-h-[44px] text-base">Save Plan</Button>
             </form>
-          </div>
+          </ScrollFade>
         </div>
       )}
     </div>
