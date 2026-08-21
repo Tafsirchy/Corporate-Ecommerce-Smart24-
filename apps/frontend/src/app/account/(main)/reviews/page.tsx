@@ -5,6 +5,7 @@ import { useAuth, apiClient } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function MyReviewsPage() {
   const { user, loading, logout } = useAuth();
@@ -171,11 +172,11 @@ export default function MyReviewsPage() {
                           </div>
                           <p className="text-sm text-foreground whitespace-pre-wrap">{review.comment}</p>
                           {review.images && review.images.length > 0 && (
-                            <div className="flex gap-2 mt-3 overflow-x-auto">
+                            <ScrollFade className="flex gap-2 mt-3 overflow-x-auto">
                               {review.images.map((img: string, idx: number) => (
                                 <OptimizedImage key={idx} src={img} alt="Review" className="h-16 w-16 object-cover rounded border border-border" />
                               ))}
-                            </div>
+                            </ScrollFade>
                           )}
                         </div>
                       </div>
