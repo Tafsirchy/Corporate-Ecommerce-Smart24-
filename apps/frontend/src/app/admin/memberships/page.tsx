@@ -3,6 +3,7 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/context/AuthContext';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminMembershipsPage() {
   const [levels, setLevels] = useState<any[]>([]);
@@ -150,7 +151,7 @@ export default function AdminMembershipsPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-muted border-b border-border">
@@ -184,7 +185,7 @@ export default function AdminMembershipsPage() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
@@ -224,7 +225,7 @@ export default function AdminMembershipsPage() {
               <button onClick={handleCloseModal} className="text-muted-foreground hover:text-muted-foreground text-2xl leading-none">&times;</button>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1">
+            <ScrollFade className="p-6 overflow-y-auto flex-1">
               <form id="membership-form" onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -335,7 +336,7 @@ export default function AdminMembershipsPage() {
                   </div>
                 </div>
               </form>
-            </div>
+            </ScrollFade>
 
             <div className="p-6 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-3 bg-muted rounded-b-2xl">
               <button type="button" onClick={handleCloseModal} className="px-6 min-h-[44px] text-base rounded-lg text-foreground bg-white sm:bg-transparent border sm:border-none border-border hover:bg-gray-100 sm:hover:bg-muted/80 font-medium transition w-full sm:w-auto">
