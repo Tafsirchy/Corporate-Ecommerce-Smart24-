@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminPricingRulesPage() {
   const [rules, setRules] = useState<any[]>([]);
@@ -190,7 +191,7 @@ export default function AdminPricingRulesPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+        <ScrollFade className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 my-8">
             <h2 className="text-xl font-bold mb-4">{editMode ? 'Edit Pricing Rule' : 'Create Pricing Rule'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -289,7 +290,7 @@ export default function AdminPricingRulesPage() {
               </div>
             </form>
           </div>
-        </div>
+        </ScrollFade>
       )}
     </div>
   );
