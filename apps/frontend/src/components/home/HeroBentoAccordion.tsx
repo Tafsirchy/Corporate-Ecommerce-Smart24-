@@ -5,6 +5,7 @@ import { apiClient } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export interface HeroAd {
   id: string;
@@ -196,7 +197,7 @@ export function HeroBentoAccordion({ ads: initialAds }: HeroBentoAccordionProps)
 
           {/* Remaining Ads in a Horizontal Row */}
           {ads.length > 1 && (
-            <div className="flex w-full overflow-x-auto snap-x snap-mandatory gap-4 scrollbar-hide pb-2">
+            <ScrollFade className="flex w-full overflow-x-auto snap-x snap-mandatory gap-4 scrollbar-hide pb-2">
               {ads.filter(a => a.id !== activeAd.id).map((ad) => (
                 <button
                   key={ad.id}
@@ -216,7 +217,7 @@ export function HeroBentoAccordion({ ads: initialAds }: HeroBentoAccordionProps)
                   </div>
                 </button>
               ))}
-            </div>
+            </ScrollFade>
           )}
         </div>
       </div>
