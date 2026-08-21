@@ -4,6 +4,7 @@ import { useAuth, apiClient } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AccountPage() {
   const { user, loading } = useAuth();
@@ -113,7 +114,7 @@ export default function AccountPage() {
             </div>
 
             {/* Desktop Table Layout */}
-            <div className="hidden md:block overflow-x-auto">
+            <ScrollFade className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="bg-muted text-muted-foreground text-sm font-semibold uppercase tracking-wider">
@@ -142,7 +143,7 @@ export default function AccountPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </ScrollFade>
           </>
         )}
       </div>
