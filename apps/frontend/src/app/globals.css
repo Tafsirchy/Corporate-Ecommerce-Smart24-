@@ -283,6 +283,38 @@ html {
   width: 0;
 }
 
+/* Reusable utility class to fully hide scrollbars visually */
+@utility no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Visual affordance for hidden scrollbars (Edge Fade Effect) */
+@utility scroll-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
+}
+
+@utility scroll-fade-y {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent);
+}
+
+@utility scroll-fade-right {
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+}
+
+@utility scroll-fade-left {
+  -webkit-mask-image: linear-gradient(to left, black calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to left, black calc(100% - 40px), transparent);
+}
+
 /* ==========================================================================
    React Toastify Theme Overrides
    ========================================================================== */
