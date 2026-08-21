@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function SupportLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -95,7 +96,7 @@ export default function SupportLayout({ children }: { children: React.ReactNode 
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="p-6 overflow-y-auto">
+          <ScrollFade className="p-6 overflow-y-auto">
             <ul className="space-y-4 text-lg">
               {navLinks.map((link) => {
                 const isActive = link.href === '/support' 
@@ -115,7 +116,7 @@ export default function SupportLayout({ children }: { children: React.ReactNode 
                 );
               })}
             </ul>
-          </div>
+          </ScrollFade>
         </div>
       </div>
     </>
