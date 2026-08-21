@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { ProductCard, Product } from '@/components/ProductCard';
 import Link from 'next/link';
 import { Timer, ArrowRight } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 interface FlashSaleProps {
   products: Product[];
@@ -70,13 +71,13 @@ export const FlashSale = ({ products }: FlashSaleProps) => {
         </div>
         
         {/* Products List (Swipeable Carousel on Mobile, Grid on Desktop) */}
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-3 xl:grid-cols-6 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+        <ScrollFade className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-3 xl:grid-cols-6 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {products.slice(0, 6).map((product) => (
             <div key={product.id} className="min-w-[280px] w-[80vw] md:min-w-0 md:w-auto shrink-0 snap-start">
               <ProductCard product={product} />
             </div>
           ))}
-        </div>
+        </ScrollFade>
 
       </div>
     </section>
