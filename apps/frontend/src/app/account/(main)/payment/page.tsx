@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function PaymentOptionsPage() {
   const { user, loading, logout } = useAuth();
@@ -140,7 +141,7 @@ export default function PaymentOptionsPage() {
                 ))}
               </ul>
             ) : (
-              <div className="overflow-x-auto">
+              <ScrollFade className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-border">
@@ -172,14 +173,14 @@ export default function PaymentOptionsPage() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </ScrollFade>
             )}
     </div>
       </div>
       {/* Add Payment Method Modal */}
       {isModalOpen && (
         <div role="dialog" aria-modal="true" aria-label="Add payment method" className="fixed inset-0 bg-black bg-opacity-50 flex flex-col justify-end md:justify-center md:items-center z-50">
-          <div className="bg-white shadow-xl w-full max-w-md rounded-t-2xl md:rounded-xl max-h-[90vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:fade-in duration-300">
+          <ScrollFade className="bg-white shadow-xl w-full max-w-md rounded-t-2xl md:rounded-xl max-h-[90vh] overflow-y-auto pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:fade-in duration-300">
             <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10 rounded-t-2xl md:rounded-t-xl">
               <h2 className="text-xl font-semibold">Add Payment Method</h2>
               <button onClick={() => setIsModalOpen(false)} aria-label="Close dialog" autoFocus className="flex min-h-[44px] min-w-[44px] items-center justify-center text-muted-foreground hover:text-black">
@@ -222,7 +223,7 @@ export default function PaymentOptionsPage() {
                 <button type="submit" className="flex min-h-12 items-center bg-primary px-8 font-medium text-white hover:bg-primary/90 transition">SAVE</button>
               </div>
             </form>
-          </div>
+          </ScrollFade>
         </div>
       )}
       {/* Delete Confirmation Modal */}
