@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/context/AuthContext';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function PointsHistoryPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -46,7 +47,7 @@ export default function PointsHistoryPage() {
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block overflow-x-auto w-full">
+      <ScrollFade className="hidden md:block overflow-x-auto w-full">
         <table className="w-full text-left border-collapse min-w-[500px]">
         <thead>
           <tr className="bg-muted border-b border-border">
@@ -86,7 +87,7 @@ export default function PointsHistoryPage() {
           ))}
         </tbody>
         </table>
-      </div>
+      </ScrollFade>
     </div>
   );
 }
