@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function BusinessLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, openAuthModal } = useAuth();
@@ -70,11 +71,11 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 px-4 py-6 md:p-8 overflow-y-auto">
+      <ScrollFade className="flex-1 px-4 py-6 md:p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           {children}
         </div>
-      </div>
+      </ScrollFade>
 
       {/* Mobile Floating Menu Button */}
       <div className={`fixed right-4 z-40 flex md:hidden pointer-events-none transition-all duration-300 ${
@@ -101,7 +102,7 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
               <X className="w-6 h-6" />
             </button>
           </div>
-          <div className="px-4 py-4 overflow-y-auto">
+          <ScrollFade className="px-4 py-4 overflow-y-auto">
             <nav className="space-y-2">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
@@ -123,7 +124,7 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
                 );
               })}
             </nav>
-          </div>
+          </ScrollFade>
         </div>
       </div>
     </div>
