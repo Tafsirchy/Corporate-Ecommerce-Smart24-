@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -98,7 +99,7 @@ export default function AdminSubscriptions() {
       
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-muted border-b">
@@ -147,7 +148,7 @@ export default function AdminSubscriptions() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
