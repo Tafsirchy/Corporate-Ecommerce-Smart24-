@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
 import { Loader2, Plus, Edit2, Trash2, Check, X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 interface Faq {
   id: string;
@@ -134,8 +135,8 @@ export default function AdminFaqs() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-white sm:bg-black/50 z-50 flex items-center justify-center p-0 sm:p-4 overflow-y-auto">
-          <div className="bg-white sm:rounded-2xl w-full h-full sm:h-auto max-w-2xl sm:max-h-[95vh] flex flex-col shadow-2xl relative overflow-y-auto">
+        <ScrollFade className="fixed inset-0 bg-white sm:bg-black/50 z-50 flex items-center justify-center p-0 sm:p-4 overflow-y-auto">
+          <ScrollFade className="bg-white sm:rounded-2xl w-full h-full sm:h-auto max-w-2xl sm:max-h-[95vh] flex flex-col shadow-2xl relative overflow-y-auto">
             <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center sticky top-0 bg-white z-10">
               <h2 className="text-xl font-bold text-foreground">
                 {editingId ? 'Edit FAQ' : 'Add New FAQ'}
@@ -143,7 +144,7 @@ export default function AdminFaqs() {
               <button onClick={() => setIsModalOpen(false)} className="text-muted-foreground hover:text-foreground text-2xl leading-none">&times;</button>
             </div>
             
-            <div className="p-4 sm:p-6 overflow-y-auto flex-1 pt-2 sm:pt-4">
+            <ScrollFade className="p-4 sm:p-6 overflow-y-auto flex-1 pt-2 sm:pt-4">
               <form id="faq-form" onSubmit={handleSubmit} className="space-y-2 sm:space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
                   <div>
@@ -168,7 +169,7 @@ export default function AdminFaqs() {
                   <label htmlFor="isActive" className="text-base font-medium cursor-pointer flex-1" onClick={e => e.preventDefault()}>Active Status</label>
                 </div>
               </form>
-            </div>
+            </ScrollFade>
             
             <div className="p-4 sm:p-6 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 bg-muted sm:rounded-b-2xl mt-auto sm:mt-0">
               <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 min-h-[44px] text-base rounded-lg text-foreground bg-white sm:bg-transparent border sm:border-none border-border hover:bg-gray-100 sm:hover:bg-muted/80 font-medium transition w-full sm:w-auto">
@@ -178,13 +179,13 @@ export default function AdminFaqs() {
                 {editingId ? 'Save Changes' : 'Create FAQ'}
               </button>
             </div>
-          </div>
-        </div>
+          </ScrollFade>
+        </ScrollFade>
       )}
 
       <div className="bg-white rounded-lg shadow-sm border border-border">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-muted border-b border-border">
@@ -228,7 +229,7 @@ export default function AdminFaqs() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-border">
