@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/context/AuthContext';
 import { Loader2, Mail, MessageSquare, Clock, CheckCircle2, Trash2, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ScrollFade } from '@/components/ui/ScrollFade';
 
 interface Ticket {
   id: string;
@@ -133,7 +134,7 @@ export default function AdminSupportTickets() {
 
       <div className="bg-white rounded-lg shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
+        <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-muted border-b border-border">
@@ -219,7 +220,7 @@ export default function AdminSupportTickets() {
               )}
             </tbody>
           </table>
-        </div>
+        </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-border">
