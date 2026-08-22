@@ -19,7 +19,7 @@ export class EmailService {
 
   private readonly defaultFrom =
     process.env.EMAIL_FROM ||
-    'Smart24 Support <official.smart24.live@gmail.com>';
+    'Smart24 Support <support@smart24.live>';
   private readonly frontendUrl =
     process.env.FRONTEND_URL || 'http://localhost:3000';
 
