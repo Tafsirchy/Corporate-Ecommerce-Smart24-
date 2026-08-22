@@ -48,7 +48,7 @@ export class BusinessController {
       );
     }
 
-    const fileUrl = await this.uploadService.uploadImageToImgBB(file);
+    const fileUrl = await this.uploadService.uploadImage(file);
     const userId = req.user?.id || req.user?.userId || req.user?.sub;
 
     return this.businessService.addDocument(userId, documentType, fileUrl);

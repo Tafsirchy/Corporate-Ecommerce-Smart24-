@@ -56,7 +56,7 @@ export class RfqController {
           'Only image specifications are allowed in MVP',
         );
       }
-      specFileUrl = await this.uploadService.uploadImageToImgBB(specFile);
+      specFileUrl = await this.uploadService.uploadImage(specFile);
     }
 
     const dto = {
