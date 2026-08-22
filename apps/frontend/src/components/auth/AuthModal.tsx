@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export function AuthModal() {
-  const { isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, login, signup, verify2faLogin, verifyOtp } = useAuth();
+  const { isAuthModalOpen, authModalView, setAuthModalView, openAuthModal, closeAuthModal, login, signup, verify2faLogin, verifyOtp, resetPassword } = useAuth();
   
   // Login State
   const [loginEmail, setLoginEmail] = useState('');
@@ -41,7 +41,14 @@ export function AuthModal() {
 
   // Forgot Password State
   const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotSubmitted, setForgotSubmitted] = useState(false);
+
+  // Reset Password Verify State
+  const [resetOtp, setResetOtp] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetConfirmPassword, setResetConfirmPassword] = useState('');
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
+  const [resetError, setResetError] = useState('');
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -69,7 +76,12 @@ export function AuthModal() {
       setOtpInput('');
       setOtpError('');
       setForgotEmail('');
-      setForgotSubmitted(false);
+      setResetOtp('');
+      setResetNewPassword('');
+      setResetConfirmPassword('');
+      setShowResetPassword(false);
+      setShowResetConfirmPassword(false);
+      setResetError('');
     }
   }, [isAuthModalOpen]);
 
@@ -175,10 +187,28 @@ export function AuthModal() {
     setIsLoading(true);
     try {
       await apiClient.post('/auth/forgot-password', { email: forgotEmail });
-      toast.success('Reset link sent to your email');
-      setForgotSubmitted(true);
+      toast.success('Reset code sent to your email');
+      setAuthModalView('reset-password-verify');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to send reset link');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetError('');
+    if (resetNewPassword !== resetConfirmPassword) {
+      setResetError("Passwords do not match");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const result = await resetPassword({ email: forgotEmail, otp: resetOtp, password: resetNewPassword });
+      if (!result.success) {
+        setResetError(result.error || "Password reset failed");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -198,6 +228,7 @@ export function AuthModal() {
     return { width: '100%', color: 'bg-green-500', text: 'Strong' };
   };
   const strength = calculatePasswordStrength(signupPassword);
+  const resetStrength = calculatePasswordStrength(resetNewPassword);
 
   return (
     <ScrollFade className="fixed inset-0 z-[100] flex p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
@@ -294,9 +325,12 @@ export function AuthModal() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group relative flex w-full justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="group relative flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 py-3 px-4 text-sm font-semibold text-white hover:bg-primary-700 shadow-sm shadow-primary-200 transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (show2fa ? 'Verify Code' : 'Sign in')}
+                  {isLoading && (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  )}
+                  {isLoading ? 'Processing...' : (show2fa ? 'Verify Code' : 'Sign in')}
                 </button>
               </div>
               {!show2fa && (
@@ -344,9 +378,12 @@ export function AuthModal() {
               <button
                 type="submit"
                 disabled={isLoading || otpInput.length < 6}
-                className="w-full flex justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-3 px-4 text-sm font-semibold text-white hover:bg-primary-700 shadow-sm shadow-primary-200 transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Verify Code'}
+                {isLoading && (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                )}
+                {isLoading ? 'Processing...' : 'Verify Code'}
               </button>
             </form>
           </div>
@@ -361,40 +398,135 @@ export function AuthModal() {
               </p>
             </div>
             
-            {!forgotSubmitted ? (
-              <form className="mt-8 space-y-6" onSubmit={handleForgotSubmit}>
-                <div>
-                  <input
-                    type="email"
-                    required
-                    className="relative block w-full rounded-md border-0 py-2.5 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm px-3"
-                    placeholder="Email address"
-                    value={forgotEmail}
-                    onChange={(e) => setForgotEmail(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="group relative flex w-full justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Send Reset Link'}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="mt-8 bg-success-bg p-4 rounded-md">
-                <p className="text-green-800 text-center font-medium">
-                  If an account exists for {forgotEmail}, a reset link has been sent. Check your inbox.
-                </p>
+            <form className="mt-8 space-y-6" onSubmit={handleForgotSubmit}>
+              <div>
+                <input
+                  type="email"
+                  required
+                  className="relative block w-full rounded-md border-0 py-2.5 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm px-3"
+                  placeholder="Email address"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                />
               </div>
-            )}
+              <div>
+                <button
+                  type="submit"
+                  disabled={isLoading || !forgotEmail}
+                  className="group relative flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 py-3 px-4 text-sm font-semibold text-white hover:bg-primary-700 shadow-sm shadow-primary-200 transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isLoading && (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  )}
+                  {isLoading ? 'Processing...' : 'Send Reset Code'}
+                </button>
+              </div>
+            </form>
             <div className="text-sm text-center flex flex-col gap-2 mt-4">
               <button type="button" onClick={() => openAuthModal('login')} className="font-medium text-primary-600 hover:text-primary-700">
                 Back to sign in
               </button>
             </div>
+          </div>
+        ) : authModalView === 'reset-password-verify' ? (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-center text-3xl font-bold tracking-tight text-foreground">
+                Set New Password
+              </h2>
+              <p className="mt-2 text-center text-sm text-muted-foreground">
+                We've sent a verification code to <span className="font-semibold text-foreground">{forgotEmail}</span>. Enter it below along with your new password.
+              </p>
+            </div>
+            
+            <form className="mt-8 space-y-4" onSubmit={handleResetPasswordSubmit}>
+              <div>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  className="relative block w-full rounded-md border-0 py-3 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary-600 text-center tracking-[0.5em] text-2xl font-semibold px-3"
+                  placeholder="------"
+                  value={resetOtp}
+                  onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-0.5">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showResetPassword ? "text" : "password"}
+                    required
+                    className="relative block w-full rounded-md border-0 py-2 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm px-3 pr-10"
+                    placeholder="••••••••"
+                    value={resetNewPassword}
+                    onChange={(e) => setResetNewPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword(!showResetPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground z-20"
+                  >
+                    {showResetPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {resetNewPassword && (
+                  <div className="mt-2">
+                    <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-300 ${resetStrength.color}`} 
+                        style={{ width: resetStrength.width }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 text-right">{resetStrength.text}</p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-0.5">Confirm New Password</label>
+                <div className="relative">
+                  <input
+                    type={showResetConfirmPassword ? "text" : "password"}
+                    required
+                    className="relative block w-full rounded-md border-0 py-2 text-foreground ring-1 ring-inset ring-gray-300 placeholder:text-muted-foreground focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm px-3 pr-10"
+                    placeholder="••••••••"
+                    value={resetConfirmPassword}
+                    onChange={(e) => setResetConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowResetConfirmPassword(!showResetConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground z-20"
+                  >
+                    {showResetConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {resetConfirmPassword && resetNewPassword !== resetConfirmPassword && (
+                  <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
+                )}
+              </div>
+
+              {resetError && (
+                <div className="rounded-md bg-red-50 p-2">
+                  <p className="text-sm text-red-700 font-medium text-center">{resetError}</p>
+                </div>
+              )}
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={isLoading || resetOtp.length < 6}
+                  className="group relative flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 py-3 px-4 text-sm font-semibold text-white hover:bg-primary-700 shadow-sm shadow-primary-200 transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-70 disabled:cursor-not-allowed mt-4"
+                >
+                  {isLoading && (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  )}
+                  {isLoading ? 'Processing...' : 'Reset Password'}
+                </button>
+              </div>
+            </form>
           </div>
         ) : (
           <div className="space-y-4 md:space-y-6">
@@ -591,16 +723,19 @@ export function AuthModal() {
                   <button
                     type="button"
                     onClick={() => setSignupStep(1)}
-                    className="w-1/3 rounded-md bg-muted py-2.5 px-3 text-sm font-semibold text-foreground hover:bg-gray-200 border transition-colors"
+                    className="w-1/3 rounded-lg bg-muted py-3 px-4 text-sm font-semibold text-foreground hover:bg-gray-200 border transition-all active:scale-[0.98]"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="flex-1 flex justify-center rounded-md bg-primary-600 py-2.5 px-3 text-sm font-semibold text-white hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary-600 py-3 px-4 text-sm font-semibold text-white hover:bg-primary-700 shadow-sm shadow-primary-200 transition-all active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign up'}
+                    {isLoading && (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    )}
+                    {isLoading ? 'Processing...' : 'Sign up'}
                   </button>
                 </div>
                 

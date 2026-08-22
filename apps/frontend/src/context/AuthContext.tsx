@@ -86,11 +86,12 @@ interface AuthContextType {
   signup: (data: any) => Promise<any>;
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<boolean>;
+  resetPassword: (data: { email: string; otp: string; password: string }) => Promise<any>;
   isAuthModalOpen: boolean;
-  authModalView: 'login' | 'signup' | 'verification-pending' | 'forgot-password';
-  openAuthModal: (view?: 'login' | 'signup' | 'verification-pending' | 'forgot-password') => void;
+  authModalView: 'login' | 'signup' | 'verification-pending' | 'forgot-password' | 'reset-password-verify';
+  openAuthModal: (view?: 'login' | 'signup' | 'verification-pending' | 'forgot-password' | 'reset-password-verify') => void;
   closeAuthModal: () => void;
-  setAuthModalView: (view: 'login' | 'signup' | 'verification-pending' | 'forgot-password') => void;
+  setAuthModalView: (view: 'login' | 'signup' | 'verification-pending' | 'forgot-password' | 'reset-password-verify') => void;
   setToken: (token: string | null) => void;
   setUser: (user: z.infer<typeof UserSchema> | null) => void;
 }
@@ -102,10 +103,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalView, setAuthModalView] = useState<'login' | 'signup' | 'verification-pending' | 'forgot-password'>('login');
+  const [authModalView, setAuthModalView] = useState<'login' | 'signup' | 'verification-pending' | 'forgot-password' | 'reset-password-verify'>('login');
   const router = useRouter();
 
-  const openAuthModal = (view: 'login' | 'signup' | 'verification-pending' | 'forgot-password' = 'login') => {
+  const openAuthModal = (view: 'login' | 'signup' | 'verification-pending' | 'forgot-password' | 'reset-password-verify' = 'login') => {
     setAuthModalView(view);
     setIsAuthModalOpen(true);
   };
@@ -244,6 +245,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const resetPassword = async (data: { email: string; otp: string; password: string }) => {
+    try {
+      const res = await apiClient.post('/auth/reset-password', data);
+      toast.success(res.data.message || 'Password has been successfully reset');
+      setAuthModalView('login');
+      return { success: true };
+    } catch (e: any) {
+      const msg = e.response?.data?.message;
+      const errorText = Array.isArray(msg) ? msg[0] : (msg || 'Password reset failed');
+      toast.error(errorText);
+      return { success: false, error: errorText };
+    }
+  };
+
   const logout = async () => {
     try {
       await apiClient.post('/auth/logout');
@@ -274,7 +289,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, verifyOtp, signup, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView, setToken, setUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, verify2faLogin, verifyOtp, signup, resetPassword, logout, updateProfile, isAuthModalOpen, authModalView, openAuthModal, closeAuthModal, setAuthModalView, setToken, setUser }}>
       {children}
     </AuthContext.Provider>
   );
