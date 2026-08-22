@@ -13,6 +13,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   name: string;
 
+  @IsOptional()
+  @IsString()
+  sku?: string;
+
   @IsString()
   @IsNotEmpty()
   description: string;

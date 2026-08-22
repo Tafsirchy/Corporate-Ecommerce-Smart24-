@@ -34,9 +34,12 @@ export class ProductsService {
       createProductDto.attributes,
     );
 
+    const sku = createProductDto.sku || `SKU-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
     return this.productRepository.create({
       name: createProductDto.name,
       slug,
+      sku,
       description: createProductDto.description,
       price: createProductDto.price,
       stock: createProductDto.stock,
