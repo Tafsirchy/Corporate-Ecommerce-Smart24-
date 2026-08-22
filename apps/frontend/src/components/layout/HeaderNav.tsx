@@ -17,17 +17,17 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
     const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
     
     let baseClass = isTransparent 
-      ? "hover:text-white transition-colors" 
-      : "hover:text-primary/90 transition-colors";
+      ? "transition-all duration-200 hover:-translate-y-0.5 inline-block" 
+      : "transition-all duration-200 hover:-translate-y-0.5 inline-block";
       
     if (isActive) {
       baseClass += isTransparent 
-        ? " text-white font-bold" 
-        : " text-primary/90 font-bold";
+        ? " text-white font-bold drop-shadow-md" 
+        : " text-primary font-bold drop-shadow-sm";
     } else {
       baseClass += isTransparent
-        ? " text-white/80 font-medium"
-        : " text-muted-foreground font-medium";
+        ? " text-white/90 hover:text-white font-semibold"
+        : " text-foreground/80 hover:text-primary font-semibold";
     }
 
     if (hideOnMobile) {
