@@ -252,20 +252,17 @@ export class AuthService {
       };
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
+    const rawOtp = crypto.randomInt(100000, 1000000).toString();
+    const hashedOtp = crypto.createHash('sha256').update(rawOtp).digest('hex');
     const resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
     await this.usersService.update(user.id, {
-      resetPasswordToken: hashedToken,
+      resetPasswordToken: hashedOtp,
       resetPasswordExpires,
     });
 
     this.emailService
-      .sendPasswordResetEmail(user.email, resetToken)
+      .sendPasswordResetEmail(user.email, rawOtp)
       .catch((err) => {
         console.error('Failed to send reset email:', err);
       });
@@ -276,12 +273,17 @@ export class AuthService {
     };
   }
 
-  async resetPassword(token: string, newPassword: string) {
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-    const user = await this.usersService.findByResetToken(hashedToken);
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
 
     if (
-      !user ||
+      user.resetPasswordToken !== hashedOtp ||
       !user.resetPasswordExpires ||
       user.resetPasswordExpires < new Date()
     ) {

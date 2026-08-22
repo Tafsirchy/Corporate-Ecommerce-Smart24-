@@ -113,10 +113,14 @@ export class EmailService {
     return this.sendEmail(email, subject, html, text);
   }
 
-  async sendPasswordResetEmail(email: string, token: string) {
-    const resetUrl = `${this.frontendUrl}/reset-password?token=${token}`;
+  async sendPasswordResetEmail(email: string, otpCode: string) {
+    if (process.env.NODE_ENV !== 'production') {
+      this.logger.log(
+        `\n======================================================\n[TESTING] Password Reset OTP for ${email}: ${otpCode}\n======================================================\n`,
+      );
+    }
     const subject = 'Reset your password - Smart24';
-    const { html, text } = getPasswordResetEmail(resetUrl);
+    const { html, text } = getPasswordResetEmail(otpCode);
     return this.sendEmail(email, subject, html, text);
   }
 
