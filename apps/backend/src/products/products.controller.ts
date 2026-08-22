@@ -46,6 +46,7 @@ export class ProductsController {
     @Query('limit') limit?: string,
     @Query('sort') sort?: string,
     @Query('categoryId') categoryId?: string,
+    @Query('search') search?: string,
     @Query('dynamicFilters') dynamicFilters?: string,
   ) {
     return this.productsService.findAll(
@@ -54,6 +55,7 @@ export class ProductsController {
       sort,
       undefined, // isFlashSale
       categoryId,
+      search,
       dynamicFilters,
       undefined,
       undefined,
@@ -71,6 +73,7 @@ export class ProductsController {
     @Query('sort') sort?: string,
     @Query('isFlashSale') isFlashSale?: string,
     @Query('categoryId') categoryId?: string,
+    @Query('search') search?: string,
     @Query('dynamicFilters') dynamicFilters?: string,
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
@@ -83,6 +86,7 @@ export class ProductsController {
       sort,
       isFlashSale,
       categoryId,
+      search,
       dynamicFilters,
       minPrice,
       maxPrice,

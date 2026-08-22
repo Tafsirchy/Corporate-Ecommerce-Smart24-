@@ -4,7 +4,7 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-import { Edit2, Trash2, X } from 'lucide-react';
+import { Edit2, Trash2, X, Search, Filter } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
 import { ImageUpload } from '@/components/ui/ImageUpload';
 
@@ -32,10 +32,14 @@ export default function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  
+  // Search and Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategoryId, setFilterCategoryId] = useState('');
 
   useEffect(() => {
     fetchProducts();
-  }, [page]);
+  }, [page, searchQuery, filterCategoryId]);
 
   useEffect(() => {
     fetchInitialData();
@@ -43,7 +47,14 @@ export default function AdminProducts() {
 
   async function fetchProducts() {
     try {
-      const res = await apiClient.get(`/products/admin?page=${page}&limit=10`);
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '10'
+      });
+      if (searchQuery) queryParams.append('search', searchQuery);
+      if (filterCategoryId) queryParams.append('categoryId', filterCategoryId);
+
+      const res = await apiClient.get(`/products/admin?${queryParams.toString()}`);
       setProducts(res.data.data || res.data);
       if (res.data.meta) {
         setTotalPages(res.data.meta.totalPages);
@@ -203,6 +214,41 @@ export default function AdminProducts() {
         >
           Add New Product
         </button>
+      </div>
+      
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-border mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full md:w-96">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search size={18} className="text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search products by name..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setPage(1);
+            }}
+            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+          />
+        </div>
+        
+        <div className="flex w-full md:w-auto items-center gap-2">
+          <Filter size={18} className="text-muted-foreground hidden md:block" />
+          <select
+            value={filterCategoryId}
+            onChange={(e) => {
+              setFilterCategoryId(e.target.value);
+              setPage(1);
+            }}
+            className="w-full md:w-64 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-black bg-white"
+          >
+            <option value="">All Categories</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
       
       {isModalOpen && (

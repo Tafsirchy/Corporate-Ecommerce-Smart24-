@@ -119,6 +119,7 @@ export class ProductsService {
     sort?: string,
     isFlashSale?: string,
     categorySlugOrId?: string,
+    search?: string,
     dynamicFilters?: string,
     minPrice?: string,
     maxPrice?: string,
@@ -140,6 +141,9 @@ export class ProductsService {
       const where: any = { ...baseWhere };
       if (isFlashSale === 'true') {
         where.isFlashSale = true;
+      }
+      if (search) {
+        where.name = { contains: search, mode: 'insensitive' };
       }
       const data = await this.productRepository.findAll({ where, orderBy });
       return {
@@ -166,6 +170,10 @@ export class ProductsService {
 
     if (isFlashSale === 'true') {
       where.isFlashSale = true;
+    }
+
+    if (search) {
+      where.name = { contains: search, mode: 'insensitive' };
     }
 
     // Category resolution
