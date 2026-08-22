@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { Edit2, Trash2, X, Search, Filter } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { SearchableSelect } from '@/components/ui/SearchableSelect';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -72,11 +73,13 @@ export default function AdminProducts() {
         apiClient.get('/filters/admin/all')
       ]);
       const cats = catsRes.data?.data || catsRes.data || [];
-      const sortedCats = [...cats].sort((a: any, b: any) => a.name.localeCompare(b.name));
+      const uniqueCats = Array.from(new Map(cats.map((c: any) => [c.name, c])).values());
+      const sortedCats = [...uniqueCats].sort((a: any, b: any) => a.name.localeCompare(b.name));
       setCategories(sortedCats);
       
       const fetchedBrands = brandsRes.data?.data || brandsRes.data || [];
-      const sortedBrands = [...fetchedBrands].sort((a: any, b: any) => a.name.localeCompare(b.name));
+      const uniqueBrands = Array.from(new Map(fetchedBrands.map((b: any) => [b.name, b])).values());
+      const sortedBrands = [...uniqueBrands].sort((a: any, b: any) => a.name.localeCompare(b.name));
       setBrands(sortedBrands);
       
       setFilterDefs(filtersRes.data?.data || filtersRes.data);
@@ -241,19 +244,16 @@ export default function AdminProducts() {
         
         <div className="flex w-full md:w-auto items-center gap-2">
           <Filter size={18} className="text-muted-foreground hidden md:block" />
-          <select
+          <SearchableSelect
+            className="w-full md:w-64"
+            placeholder="All Categories"
             value={filterCategoryId}
-            onChange={(e) => {
-              setFilterCategoryId(e.target.value);
+            onChange={(val) => {
+              setFilterCategoryId(val);
               setPage(1);
             }}
-            className="w-full md:w-64 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-black bg-white"
-          >
-            <option value="">All Categories</option>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+            options={categories.map(c => ({ value: c.id, label: c.name }))}
+          />
         </div>
       </div>
       
@@ -285,27 +285,25 @@ export default function AdminProducts() {
           
           <div>
             <label className="block text-sm font-medium text-foreground mb-0.5">Category</label>
-            <select 
-              required value={categoryId} onChange={e => {
-                setCategoryId(e.target.value);
+            <SearchableSelect
+              placeholder="Select Category"
+              value={categoryId}
+              onChange={(val) => {
+                setCategoryId(val);
                 setProductAttributes({}); // Reset attributes on category change
               }}
-              className="w-full px-4 py-2 min-h-[44px] text-base border rounded focus:ring-black focus:border-black"
-            >
-              <option value="">Select Category</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+              options={categories.map(c => ({ value: c.id, label: c.name }))}
+            />
           </div>
           
           <div>
             <label className="block text-sm font-medium text-foreground mb-0.5">Brand (Optional)</label>
-            <select 
-              value={brandId} onChange={e => setBrandId(e.target.value)}
-              className="w-full px-4 py-2 min-h-[44px] text-base border rounded focus:ring-black focus:border-black"
-            >
-              <option value="">Select Brand</option>
-              {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
+            <SearchableSelect
+              placeholder="Select Brand"
+              value={brandId}
+              onChange={(val) => setBrandId(val)}
+              options={brands.map(b => ({ value: b.id, label: b.name }))}
+            />
           </div>
 
           <div className="flex gap-2">
