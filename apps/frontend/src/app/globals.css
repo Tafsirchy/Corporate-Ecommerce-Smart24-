@@ -52,9 +52,9 @@
   --color-danger-text: #7C2323;
   --color-danger-fill: #E24B4A;
 
-  --color-info-bg: #E1EDFB;
-  --color-info-text: #1E4E82;
-  --color-info-fill: #378ADD;
+  --color-info-bg: var(--color-primary-50);
+  --color-info-text: var(--color-primary-700);
+  --color-info-fill: var(--color-primary-500);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

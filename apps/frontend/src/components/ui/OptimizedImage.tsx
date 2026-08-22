@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image, { ImageProps } from 'next/image';
+import { RefreshCcw } from 'lucide-react';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'src' | 'alt' | 'width' | 'height'> {
   src: string | undefined | null;
@@ -30,6 +31,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   ...rest
 }) => {
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // If no source is provided or if it errors, use fallback
   const imageSrc = !src || hasError ? GENERIC_PLACEHOLDER : src;
@@ -40,7 +42,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   return (
     <div 
-      className={`relative bg-[#f0f0f0] overflow-hidden ${containerClassName}`} 
+      className={`relative bg-[#f0f0f0] overflow-hidden ${isLoading && !hasError ? 'animate-pulse' : ''} ${containerClassName}`} 
       style={{ 
         minHeight: isFill ? undefined : (height || 200),
         width: isFill ? '100%' : (width || 'auto'),
@@ -54,12 +56,29 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         width={isFill ? undefined : Number(width)}
         height={isFill ? undefined : Number(height)}
         fill={isFill}
-        className={`object-cover object-center ${className}`}
+        className={`object-cover object-center ${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
         style={{ imageRendering: 'auto' }}
-        onError={() => setHasError(true)}
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setHasError(true);
+          setIsLoading(false);
+        }}
         sizes={isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
         {...rest}
       />
+      {hasError && (
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors z-10"
+          onClick={() => {
+            setHasError(false);
+            setIsLoading(true);
+          }}
+          title="Click to retry loading image"
+        >
+          <RefreshCcw className="w-5 h-5 text-gray-500 mb-1" />
+          <span className="text-[10px] text-gray-500 font-medium">Retry</span>
+        </div>
+      )}
     </div>
   );
 };
