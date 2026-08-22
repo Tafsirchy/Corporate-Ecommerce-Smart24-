@@ -17,17 +17,17 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
     const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
     
     let baseClass = isTransparent 
-      ? "transition-all duration-200 hover:-translate-y-0.5 inline-block" 
-      : "transition-all duration-200 hover:-translate-y-0.5 inline-block";
+      ? "transition-all duration-200 hover:-translate-y-0.5 inline-block pb-1 border-b-2" 
+      : "transition-all duration-200 hover:-translate-y-0.5 inline-block pb-1 border-b-2";
       
     if (isActive) {
       baseClass += isTransparent 
-        ? " text-white font-bold drop-shadow-md" 
-        : " text-primary font-bold drop-shadow-sm";
+        ? " border-white text-white font-bold drop-shadow-md" 
+        : " border-primary text-primary font-bold";
     } else {
       baseClass += isTransparent
-        ? " text-white/90 hover:text-white font-semibold"
-        : " text-foreground/80 hover:text-primary font-semibold";
+        ? " border-transparent text-white/90 hover:text-white hover:border-white/50 font-medium"
+        : " border-transparent text-muted-foreground hover:text-primary hover:border-primary/40 font-medium";
     }
 
     if (hideOnMobile) {
@@ -111,19 +111,19 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
               </div>
             </div>
           </div>
-          <button onClick={() => logout()} className={isTransparent ? "text-red-400 hover:text-red-300 font-medium" : "text-red-500 hover:text-red-600 font-bold"}>Sign Out</button>
           {user.role === 'ADMIN' && (
-            <Link href="/admin" className={`${isTransparent ? 'text-[#FF2056] hover:opacity-80' : 'text-[#FF2056] hover:opacity-80'} font-bold hidden md:block`}>Admin Portal</Link>
+            <Link href="/admin" className={`${isTransparent ? 'text-[#0D47A1] hover:opacity-80' : 'text-[#0D47A1] hover:opacity-80'} font-bold hidden md:block`}>Admin Portal</Link>
           )}
           {user.role === 'BUSINESS' && (
             <Link href="/business" className={`${isTransparent ? 'text-[#FF6E00] hover:opacity-80' : 'text-[#FF6E00] hover:opacity-80'} font-bold hidden md:block`}>B2B Portal</Link>
           )}
+          <button onClick={() => logout()} className={`px-4 py-1.5 rounded-md font-bold transition-all duration-300 border ${isTransparent ? 'border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000] hover:text-white' : 'border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000] hover:text-white'}`}>Sign Out</button>
         </>
       ) : (
-        <>
-          <button onClick={() => openAuthModal('login')} className={isTransparent ? "text-white/80 hover:text-white font-medium" : "text-muted-foreground hover:text-primary/90 font-medium"}>Sign In</button>
-          <button onClick={() => openAuthModal('signup')} className={`${isTransparent ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-primary/90"} font-medium border ${isTransparent ? 'border-white/50 hover:bg-white/10' : 'border-border hover:bg-muted'} px-3 py-1.5 rounded transition-colors`}>Sign Up</button>
-        </>
+        <div className="flex items-center gap-4">
+          <button onClick={() => openAuthModal('login')} className={isTransparent ? "text-white font-bold hover:text-accent" : "text-primary font-bold hover:text-primary-700"}>Sign In</button>
+          <button onClick={() => openAuthModal('signup')} className={`px-4 py-1.5 rounded-md font-medium transition-all duration-300 ${isTransparent ? 'border border-white/50 text-white hover:bg-primary-600 hover:text-white hover:border-primary-600' : 'border border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white'}`}>Sign Up</button>
+        </div>
       )}
     </nav>
   );

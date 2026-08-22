@@ -10,21 +10,25 @@ import { Star, MapPin, Truck, ShieldCheck, MessageSquare, Info, ChevronRight, Pl
 import { useAuth, apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { ScrollFade } from '@/components/ui/ScrollFade';
+import { useCartStore } from '@/store/useCartStore';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
   const { user, token, openAuthModal } = useAuth();
+  const { addToCart } = useCartStore();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details');
 
   // Review states
   const [reviews, setReviews] = useState<any[]>([]);
-  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', imageFile: null as File | null });
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', imageUrl: '' });
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [submittingReview, setSubmittingReview] = useState(false);
   
@@ -34,7 +38,6 @@ export default function ProductDetailPage() {
   const [isAlertSubscribed, setIsAlertSubscribed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 
@@ -50,7 +53,7 @@ export default function ProductDetailPage() {
         // Fetch reviews if product exists
         if (p) {
           apiClient.get(`/reviews/product/${p.id}`)
-            .then(reviewRes => setReviews(reviewRes.data))
+            .then(reviewRes => setReviews(reviewRes.data?.data || []))
             .catch(err => console.error("Failed to fetch reviews", err));
         }
       })
@@ -102,18 +105,7 @@ export default function ProductDetailPage() {
     
     setSubmittingReview(true);
     try {
-      const imageUrls: string[] = [];
-      
-      // Upload image if selected
-      if (reviewForm.imageFile) {
-        const formData = new FormData();
-        formData.append('file', reviewForm.imageFile);
-        const uploadRes = await apiClient.post('/upload/image', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        imageUrls.push(uploadRes.data.url);
-      }
-      
+      const imageUrls: string[] = reviewForm.imageUrl ? [reviewForm.imageUrl] : [];
       if (editingReviewId) {
         // Edit mode
         const payload: any = { 
@@ -145,8 +137,7 @@ export default function ProductDetailPage() {
       fetchProductAndReviews();
       
       // Reset form
-      setReviewForm({ rating: 5, comment: '', imageFile: null });
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setReviewForm({ rating: 5, comment: '', imageUrl: '' });
       
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to submit review");
@@ -172,7 +163,7 @@ export default function ProductDetailPage() {
     setReviewForm({ 
       rating: review.rating, 
       comment: review.comment, 
-      imageFile: null 
+      imageUrl: review.images?.[0] || '' 
     });
     // scroll to form
     document.getElementById('review-form')?.scrollIntoView({ behavior: 'smooth' });
@@ -246,6 +237,21 @@ export default function ProductDetailPage() {
   const handleQtyChange = (type: 'inc' | 'dec') => {
     if (type === 'inc') setQuantity(q => q + 1);
     if (type === 'dec' && quantity > 1) setQuantity(q => q - 1);
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, quantity);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (product) {
+      setIsBuyingNow(true);
+      await addToCart(product, quantity);
+      router.push('/checkout');
+      setIsBuyingNow(false);
+    }
   };
 
   return (
@@ -387,10 +393,17 @@ export default function ProductDetailPage() {
             <div className="fixed bottom-0 left-0 right-0 z-[90] bg-white border-t border-border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:static lg:p-0 lg:border-none lg:z-auto lg:pb-0">
               {((product as any).stock ?? 50) > 0 ? (
                 <div className="flex gap-3">
-                  <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98]">
-                    Buy Now
+                  <button 
+                    onClick={handleBuyNow} 
+                    disabled={isBuyingNow}
+                    className="flex-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold py-3 px-4 rounded-lg shadow-sm shadow-primary-200 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                  >
+                    {isBuyingNow && (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    )}
+                    {isBuyingNow ? 'Processing...' : 'Buy Now'}
                   </button>
-                  <button className="flex-1 bg-accent/10 text-primary/90 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
+                  <button onClick={handleAddToCart} className="flex-1 bg-accent/10 text-primary/90 border border-primary-200 hover:bg-orange-100 font-medium py-3 px-4 rounded-lg transition-all active:scale-[0.98]">
                     Add to Cart
                   </button>
                 </div>
@@ -639,30 +652,20 @@ export default function ProductDetailPage() {
                         ></textarea>
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">Add Photo (Optional)</label>
-                        <div className="flex items-center gap-4">
-                          <label className="cursor-pointer flex items-center justify-center w-16 h-16 bg-white border-2 border-dashed border-border rounded-lg hover:border-primary-500 transition-colors text-muted-foreground">
-                            <ImageIcon size={24} />
-                            <input 
-                              type="file" 
-                              accept="image/*" 
-                              className="hidden" 
-                              ref={fileInputRef}
-                              onChange={(e) => setReviewForm({ ...reviewForm, imageFile: e.target.files?.[0] || null })}
-                            />
-                          </label>
-                          {reviewForm.imageFile && (
-                            <span className="text-sm text-muted-foreground font-medium">{reviewForm.imageFile.name}</span>
-                          )}
-                        </div>
+                      <div className="md:col-span-2">
+                        <ImageUpload 
+                          images={reviewForm.imageUrl ? [reviewForm.imageUrl] : []}
+                          setImages={(imgs) => setReviewForm({ ...reviewForm, imageUrl: imgs[0] || '' })}
+                          multiple={false}
+                          label="Add Photo (Optional)"
+                        />
                       </div>
 
                       <div className="flex justify-end gap-3 pt-2">
                         {editingReviewId && (
                           <button 
                             type="button"
-                            onClick={() => { setEditingReviewId(null); setReviewForm({ rating: 5, comment: '', imageFile: null }); }}
+                            onClick={() => { setEditingReviewId(null); setReviewForm({ rating: 5, comment: '', imageUrl: '' }); }}
                             className="px-6 py-2 border border-border text-foreground rounded-lg hover:bg-muted font-medium"
                           >
                             Cancel

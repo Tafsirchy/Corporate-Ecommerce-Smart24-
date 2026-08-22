@@ -48,17 +48,19 @@ export const OfferSlider = ({ banners }: OfferSliderProps) => {
           <div className="w-full lg:w-[78%] relative group h-[300px] lg:h-full">
             <div className="overflow-hidden shadow-sm h-full rounded-none" ref={emblaRef}>
               <div className="flex touch-pan-y h-full">
-                {banners.map((banner) => (
+                {banners.map((banner, index) => (
                   <div key={banner.id} className="min-w-0 flex-[0_0_100%] h-full relative">
                     {banner.targetUrl ? (
                       <Link href={banner.targetUrl} className="block w-full h-full">
                         <OptimizedImage src={banner.imageUrl} 
                           alt={banner.title} 
+                          priority={index === 0}
                           className="w-full h-full object-cover bg-white" />
                       </Link>
                     ) : (
                       <OptimizedImage src={banner.imageUrl} 
                         alt={banner.title} 
+                        priority={index === 0}
                         className="w-full h-full object-cover bg-white" />
                     )}
                   </div>
