@@ -4,21 +4,20 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-import { Trash2, Image as ImageIcon, Edit2, X } from 'lucide-react';
+import { Trash2, Edit2, X } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 export default function AdminBanners() {
   const [banners, setBanners] = useState<any[]>([]);
   const [title, setTitle] = useState('');
   const [targetUrl, setTargetUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [localPreview, setLocalPreview] = useState<string | null>(null);
   const [type, setType] = useState('MAIN_CAROUSEL');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [isLoadingTable, setIsLoadingTable] = useState(true);
 
   useEffect(() => {
@@ -37,35 +36,10 @@ export default function AdminBanners() {
     }
   };
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    const file = e.target.files[0];
-    const objectUrl = URL.createObjectURL(file);
-    setLocalPreview(objectUrl);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setIsUploading(true);
-    try {
-      const res = await apiClient.post('/upload/image', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setImageUrl(res.data.url);
-      toast.success('Image uploaded');
-    } catch (error) {
-      toast.error('Failed to upload image');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
   const handleEdit = (banner: any) => {
     setTitle(banner.title);
     setTargetUrl(banner.targetUrl || '');
     setImageUrl(banner.imageUrl);
-    setLocalPreview(null);
     setType(banner.type);
     setEditingId(banner.id);
     setIsModalOpen(true);
@@ -75,7 +49,6 @@ export default function AdminBanners() {
     setTitle('');
     setTargetUrl('');
     setImageUrl('');
-    setLocalPreview(null);
     setType('MAIN_CAROUSEL');
     setEditingId(null);
     setIsModalOpen(false);
@@ -110,7 +83,6 @@ export default function AdminBanners() {
       }
       
       handleCancelEdit();
-      setLocalPreview(null);
       fetchBanners();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to save banner');
@@ -121,11 +93,17 @@ export default function AdminBanners() {
 
   async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this banner?')) return;
+    
+    // Optimistic UI Update
+    const previousBanners = [...banners];
+    setBanners(banners.filter(b => b.id !== id));
+
     try {
       await apiClient.delete(`/banners/${id}`);
       toast.success('Banner deleted');
-      fetchBanners();
     } catch (error) {
+      // Rollback
+      setBanners(previousBanners);
       toast.error('Failed to delete banner');
     }
   };
@@ -195,54 +173,17 @@ export default function AdminBanners() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Upload Banner Image
-                  <span className="block text-xs text-muted-foreground font-normal mt-0.5">
-                    {type === 'SPECIAL_OFFER' 
-                      ? 'Recommended: 1920x320 pixels (6:1 aspect ratio) to prevent cropping.'
-                      : 'Recommended: 1200x400 pixels (3:1 aspect ratio) to prevent cropping.'}
-                  </span>
-                </label>
-                <div className="flex items-center gap-4">
-                  <input 
-                    id="banner-image-upload"
-                    type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading}
-                    className="block w-full text-base text-muted-foreground file:mr-4 file:py-2 file:px-4 file:min-h-[44px] file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                  />
-                  {isUploading && <span className="text-sm text-muted-foreground font-medium">Uploading to ImgBB...</span>}
-                </div>
-                {(localPreview || imageUrl) && (
-                  <div className="mt-4 relative inline-block">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageUrl('');
-                        setLocalPreview(null);
-                        const fileInput = document.getElementById('banner-image-upload') as HTMLInputElement;
-                        if (fileInput) fileInput.value = '';
-                      }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10"
-                      title="Remove Image"
-                    >
-                      <X size={16} />
-                    </button>
-                    {isUploading && (
-                      <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded z-0">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
-                      </div>
-                    )}
-                    {localPreview ? (
-                      <img src={localPreview} alt="Preview" className="h-32 object-contain rounded border bg-muted p-2 relative z-0" />
-                    ) : (
-                      <OptimizedImage src={imageUrl} alt="Preview" className="h-32 object-contain rounded border bg-muted p-2 relative z-0" />
-                    )}
-                  </div>
-                )}
+                <ImageUpload 
+                  images={imageUrl ? [imageUrl] : []}
+                  setImages={(imgs) => setImageUrl(imgs[0] || '')}
+                  multiple={false}
+                  label={`Upload Banner Image (Recommended: ${type === 'SPECIAL_OFFER' ? '1920x320 pixels' : '1200x400 pixels'})`}
+                />
               </div>
               
               <div className="md:col-span-2 pt-4 flex gap-2">
                 <button 
-                  type="submit" disabled={isLoading || isUploading}
+                  type="submit" disabled={isLoading}
                   className="w-full bg-primary-600 text-white px-6 py-2 min-h-[44px] rounded font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors"
                 >
                   {isLoading ? 'Saving...' : (editingId ? 'Update Banner' : 'Add Banner')}

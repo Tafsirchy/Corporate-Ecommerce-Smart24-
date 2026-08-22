@@ -6,6 +6,7 @@ import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Edit2, Trash2, X } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 export default function AdminBrands() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -13,7 +14,6 @@ export default function AdminBrands() {
   const [description, setDescription] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [isUploadMode, setIsUploadMode] = useState(true);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,21 +35,10 @@ export default function AdminBrands() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      let finalLogoUrl = logoUrl;
-      
-      if (isUploadMode && logoFile) {
-        const formData = new FormData();
-        formData.append('file', logoFile);
-        const uploadRes = await apiClient.post('/upload/image', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        finalLogoUrl = uploadRes.data.url;
-      }
-
       const payload = {
         name,
         description,
-        logoUrl: finalLogoUrl || undefined
+        logoUrl: logoUrl || undefined
       };
 
       if (editingId) {
@@ -64,7 +53,6 @@ export default function AdminBrands() {
       setName('');
       setDescription('');
       setLogoUrl('');
-      setLogoFile(null);
       setIsModalOpen(false);
       fetchBrands();
     } catch (error: any) {
@@ -79,7 +67,6 @@ export default function AdminBrands() {
     setName(brand.name);
     setDescription(brand.description || '');
     setLogoUrl(brand.logoUrl || '');
-    setLogoFile(null);
     setIsUploadMode(false); // Default to URL mode when editing to show existing URL
     setIsModalOpen(true);
   };
@@ -105,7 +92,6 @@ export default function AdminBrands() {
             setName('');
             setDescription('');
             setLogoUrl('');
-            setLogoFile(null);
             setIsModalOpen(true);
           }}
           className="w-full sm:w-auto bg-black text-white px-6 py-2 min-h-[44px] rounded font-medium hover:bg-secondary transition-colors"
@@ -125,7 +111,6 @@ export default function AdminBrands() {
                   setName('');
                   setDescription('');
                   setLogoUrl('');
-                  setLogoFile(null);
                   setIsModalOpen(false);
                 }} 
                 className="text-muted-foreground hover:text-foreground"
@@ -174,12 +159,11 @@ export default function AdminBrands() {
             </div>
             
             {isUploadMode ? (
-              <input
-                key="file-input"
-                type="file"
-                accept="image/*"
-                onChange={e => setLogoFile(e.target.files?.[0] || null)}
-                className="w-full px-4 py-2 text-base min-h-[44px] border rounded focus:ring-black focus:border-black file:mr-4 file:py-2 file:px-4 file:min-h-[44px] file:rounded-full file:border-0 file:font-semibold file:bg-muted file:text-black hover:file:bg-muted"
+              <ImageUpload 
+                images={logoUrl ? [logoUrl] : []}
+                setImages={(imgs) => setLogoUrl(imgs[0] || '')}
+                multiple={false}
+                label=""
               />
             ) : (
               <input 
