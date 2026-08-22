@@ -1,42 +1,64 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { v2 as cloudinary } from 'cloudinary';
+import * as streamifier from 'streamifier';
 
 @Injectable()
 export class UploadService {
-  async uploadImageToImgBB(file: Express.Multer.File): Promise<string> {
-    const apiKey = process.env.IMGBB_API_KEY;
-    if (!apiKey) {
-      throw new InternalServerErrorException('ImgBB API key is missing');
+  constructor() {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+  }
+
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      throw new InternalServerErrorException('Cloudinary credentials are not configured');
     }
 
-    const formData = new FormData();
-    // ImgBB requires base64 string without the data:image prefix, or a file object.
-    // Using base64 is easiest when passing buffer from multer.
-    formData.append('image', file.buffer.toString('base64'));
-
-    try {
-      const response = await fetch(
-        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
         {
-          method: 'POST',
-          body: formData,
+          folder: 'corporate-ecommerce',
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) {
+            reject(new InternalServerErrorException(`Cloudinary upload failed: ${error.message}`));
+          } else if (result) {
+            resolve(result.secure_url);
+          } else {
+            reject(new InternalServerErrorException('Unknown error during upload'));
+          }
         },
       );
 
-      const data = await response.json();
+      streamifier.createReadStream(file.buffer).pipe(uploadStream);
+    });
+  }
 
-      if (data.success) {
-        return data.data.url;
-      } else {
-        console.warn(
-          `ImgBB upload failed: ${data.error?.message}. Using placeholder image instead.`,
-        );
-        return 'https://placehold.co/600x400/eeeeee/333333?text=Review+Image';
-      }
-    } catch (error: any) {
-      console.warn(
-        `Failed to upload image to ImgBB: ${error.message}. Using placeholder image instead.`,
-      );
-      return 'https://placehold.co/600x400/eeeeee/333333?text=Review+Image';
+  async deleteImage(imageUrl: string): Promise<boolean> {
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      throw new InternalServerErrorException('Cloudinary credentials are not configured');
+    }
+
+    try {
+      // Extract public ID from Cloudinary URL
+      // Example: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/corporate-ecommerce/filename.jpg
+      const urlParts = imageUrl.split('/');
+      const filename = urlParts[urlParts.length - 1];
+      const folder = urlParts[urlParts.length - 2];
+      
+      if (!filename || !folder) return false;
+      
+      const publicId = `${folder}/${filename.split('.')[0]}`;
+
+      const result = await cloudinary.uploader.destroy(publicId);
+      return result.result === 'ok';
+    } catch (error) {
+      console.error('Failed to delete image from Cloudinary:', error);
+      return false;
     }
   }
 }
