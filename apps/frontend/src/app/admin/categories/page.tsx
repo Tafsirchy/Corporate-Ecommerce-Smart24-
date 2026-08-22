@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-import { Edit2, Trash2, X } from 'lucide-react';
+import { Edit2, Trash2, X, Search } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
 
 export default function AdminCategories() {
@@ -16,6 +16,7 @@ export default function AdminCategories() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -98,22 +99,53 @@ export default function AdminCategories() {
     }
   };
 
+  const getCategoryPath = (categoryId: string) => {
+    const path = [];
+    let currentId = categoryId;
+    while (currentId) {
+      const cat = allCategories.find(c => c.id === currentId);
+      if (cat) {
+        path.unshift(cat.name);
+        currentId = cat.parentId;
+      } else {
+        break;
+      }
+    }
+    return path.join(' > ');
+  };
+
+  const displayedCategories = searchTerm 
+    ? allCategories.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.slug.toLowerCase().includes(searchTerm.toLowerCase()))
+    : categories;
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-start sm:justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">Manage Categories</h1>
-        <button 
-          onClick={() => {
-            setEditingId(null);
-            setName('');
-            setParentId('');
-            setIsActive(true);
-            setIsModalOpen(true);
-          }}
-          className="w-full sm:w-auto bg-black text-white px-6 py-2 min-h-[44px] rounded font-medium hover:bg-secondary transition-colors"
-        >
-          Add New Category
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 min-h-[44px] border rounded focus:ring-black focus:border-black"
+            />
+          </div>
+          <button 
+            onClick={() => {
+              setEditingId(null);
+              setName('');
+              setParentId('');
+              setIsActive(true);
+              setIsModalOpen(true);
+            }}
+            className="w-full sm:w-auto bg-black text-white px-6 py-2 min-h-[44px] rounded font-medium hover:bg-secondary transition-colors"
+          >
+            Add New Category
+          </button>
+        </div>
       </div>
       
       {isModalOpen && (
@@ -153,7 +185,7 @@ export default function AdminCategories() {
               className="w-full px-4 py-2 min-h-[44px] text-base border rounded focus:ring-black focus:border-black bg-white"
             >
               <option value="">None (Top Level)</option>
-              {allCategories.map(c => <option key={c.id} value={c.id} disabled={editingId === c.id}>{c.name}</option>)}
+              {allCategories.map(c => <option key={c.id} value={c.id} disabled={editingId === c.id}>{getCategoryPath(c.id)}</option>)}
             </select>
           </div>
           <label className="flex items-center gap-3 cursor-pointer min-h-[44px] w-max">
@@ -185,7 +217,7 @@ export default function AdminCategories() {
           <table className="w-full text-left min-w-[700px]">
             <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="p-4 font-medium text-muted-foreground">Name</th>
+                <th className="p-4 font-medium text-muted-foreground">Name & Path</th>
                 <th className="p-4 font-medium text-muted-foreground">Slug</th>
                 <th className="p-4 font-medium text-muted-foreground">Level</th>
                 <th className="p-4 font-medium text-muted-foreground">Parent</th>
@@ -194,11 +226,18 @@ export default function AdminCategories() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {categories.map(cat => {
+              {displayedCategories.map(cat => {
                 const parentName = allCategories.find(c => c.id === cat.parentId)?.name || '-';
                 return (
                   <tr key={cat.id} className="hover:bg-muted">
-                    <td className="p-4 font-medium">{cat.name}</td>
+                    <td className="p-4">
+                      <div className="font-medium">{cat.name}</div>
+                      {cat.parentId && (
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {getCategoryPath(cat.id)}
+                        </div>
+                      )}
+                    </td>
                     <td className="p-4 text-muted-foreground">{cat.slug}</td>
                     <td className="p-4 text-muted-foreground">{cat.level}</td>
                     <td className="p-4 text-muted-foreground">{parentName}</td>
@@ -236,13 +275,20 @@ export default function AdminCategories() {
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
-          {categories.map(cat => {
+          {displayedCategories.map(cat => {
             const parentName = allCategories.find(c => c.id === cat.parentId)?.name || '-';
             return (
               <div key={cat.id} className="p-4 flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between items-start gap-4">
-                    <div className="font-bold text-base text-foreground">{cat.name}</div>
+                    <div>
+                      <div className="font-bold text-base text-foreground">{cat.name}</div>
+                      {cat.parentId && (
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {getCategoryPath(cat.id)}
+                        </div>
+                      )}
+                    </div>
                     <span className={`px-2 py-1 rounded text-xs font-medium shrink-0 ${cat.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                       {cat.isActive ? 'Active' : 'Hidden'}
                     </span>
@@ -273,13 +319,13 @@ export default function AdminCategories() {
               </div>
             );
           })}
-          {categories.length === 0 && (
+          {displayedCategories.length === 0 && (
             <div className="p-8 text-center text-muted-foreground">No categories found</div>
           )}
         </div>
         
         {/* Pagination */}
-        {totalPages > 1 && (
+        {!searchTerm && totalPages > 1 && (
           <div className="flex justify-center items-center p-4 border-t border-border gap-4">
             <button 
               disabled={page === 1}

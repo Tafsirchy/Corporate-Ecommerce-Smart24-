@@ -4,12 +4,11 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-import { Image as ImageIcon } from 'lucide-react';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 export default function AdminBusinessCollections() {
   const [collections, setCollections] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [expandedSlot, setExpandedSlot] = useState<number | null>(1); // Accordion state
 
@@ -38,36 +37,6 @@ export default function AdminBusinessCollections() {
     };
   };
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, position: number) {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setIsUploading(true);
-    try {
-      const res = await apiClient.post('/upload/image', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      
-      // Update local state temporarily so user sees the new image before saving
-      setCollections(prev => {
-        const existing = prev.find(c => c.position === position);
-        if (existing) {
-          return prev.map(c => c.position === position ? { ...c, imageUrl: res.data.url } : c);
-        } else {
-          return [...prev, { position, imageUrl: res.data.url, title: '', subtitle: '', buttonText: '', targetUrl: '', isActive: true }];
-        }
-      });
-      
-      toast.success('Image uploaded');
-    } catch (error) {
-      toast.error('Failed to upload image');
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   async function handleSubmit(e: React.FormEvent, position: number) {
     e.preventDefault();
@@ -220,22 +189,17 @@ export default function AdminBusinessCollections() {
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-foreground mb-1">Image</label>
-                    <div className="flex items-center gap-4">
-                      <input 
-                        type="file" accept="image/*" 
-                        onChange={(e) => handleImageUpload(e, pos)} disabled={isUploading}
-                        className="block w-full text-base text-muted-foreground file:mr-4 file:py-2 file:px-4 file:min-h-[44px] file:rounded file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
-                      />
-                      {data.imageUrl && (
-                        <OptimizedImage src={data.imageUrl} alt="Preview" className="h-16 w-16 object-cover rounded border" />
-                      )}
-                    </div>
+                    <ImageUpload 
+                      images={data.imageUrl ? [data.imageUrl] : []}
+                      setImages={(imgs) => updateLocalField(pos, 'imageUrl', imgs[0] || '')}
+                      multiple={false}
+                      label="Image"
+                    />
                   </div>
                   
                   <div className="md:col-span-2 pt-4 text-right">
                     <button 
-                      type="submit" disabled={isLoading || isUploading}
+                      type="submit" disabled={isLoading}
                       className="bg-primary-600 text-white px-6 py-2 min-h-[44px] text-base rounded font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors w-full md:w-auto"
                     >
                       Save Slot {pos}
