@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { getVerificationEmail } from './templates/verification.template';
 import { getWelcomeEmail } from './templates/welcome.template';
 import { getPasswordResetEmail } from './templates/password-reset.template';
@@ -14,7 +14,7 @@ import { getContactFormEmail } from './templates/contact-form.template';
 
 @Injectable()
 export class EmailService {
-  private transporter: nodemailer.Transporter;
+  private resend: Resend;
   private readonly logger = new Logger(EmailService.name);
 
   private readonly defaultFrom =
@@ -24,17 +24,11 @@ export class EmailService {
     process.env.FRONTEND_URL || 'http://localhost:3000';
 
   constructor() {
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-      this.transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
+    if (process.env.RESEND_API_KEY) {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
     } else {
       this.logger.warn(
-        'SMTP_USER or SMTP_PASS is not set. EmailService will mock email sends.',
+        'RESEND_API_KEY is not set. EmailService will mock email sends.',
       );
     }
   }
@@ -49,9 +43,9 @@ export class EmailService {
     text: string,
     retries = 3,
   ) {
-    if (!this.transporter) {
+    if (!this.resend) {
       this.logger.debug(`[MOCK EMAIL] To: ${to} | Subject: ${subject}`);
-      this.logger.debug(`[MOCK EMAIL CONTENT]\\n${html}`);
+      this.logger.debug(`[MOCK EMAIL CONTENT]\n${html}`);
       return;
     }
 
@@ -60,21 +54,25 @@ export class EmailService {
 
     while (attempt < retries) {
       try {
-        const response = await this.transporter.sendMail({
+        const response = await this.resend.emails.send({
           from: this.defaultFrom,
           to,
           subject,
           html,
           text,
-          replyTo,
+          replyTo: replyTo,
           headers: {
             'List-Unsubscribe': `<mailto:unsubscribe@smart24.live?subject=unsubscribe>`,
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
           },
         });
 
+        if (response.error) {
+          throw new Error(response.error.message);
+        }
+
         this.logger.log(
-          `Email sent successfully to ${to}. ID: ${response.messageId}`,
+          `Email sent successfully to ${to}. ID: ${response.data?.id}`,
         );
         return response;
       } catch (error) {
