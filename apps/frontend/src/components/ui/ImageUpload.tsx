@@ -53,9 +53,7 @@ export function ImageUpload({ images, setImages, multiple = false, disabled = fa
       formData.append('file', file);
 
       try {
-        const res = await apiClient.post('/upload/image', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await apiClient.post('/upload/image', formData);
         if (res.data?.url) {
           uploadedUrls.push(res.data.url);
         }
