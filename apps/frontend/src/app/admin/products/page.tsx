@@ -6,6 +6,7 @@ import { apiClient } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Edit2, Trash2, X } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -67,26 +68,7 @@ export default function AdminProducts() {
     }
   };
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setIsUploading(true);
-    try {
-      const res = await apiClient.post('/upload/image', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setImages([...images, res.data.url]);
-      toast.success('Image uploaded');
-    } catch (error) {
-      toast.error('Failed to upload image');
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  // Removed handleImageUpload in favor of ImageUpload component
 
   const handleAttributeChange = (key: string, value: any) => {
     setProductAttributes(prev => ({ ...prev, [key]: value }));
@@ -378,30 +360,12 @@ export default function AdminProducts() {
           )}
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-0.5">Product Images (Upload to ImgBB)</label>
-            <div className="flex items-center gap-2">
-              <input 
-                type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading}
-                className="block w-full text-base text-muted-foreground file:mr-4 file:py-2 file:px-4 file:min-h-[44px] file:rounded file:border-0 file:font-semibold file:bg-muted file:text-black hover:file:bg-muted"
-              />
-              {isUploading && <span className="text-sm text-muted-foreground">Uploading...</span>}
-            </div>
-            {images.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {images.map((img, i) => (
-                  <div key={i} className="relative group">
-                    <OptimizedImage src={img} alt="Preview" width={96} height={96} containerClassName="h-24 w-24 shrink-0 rounded-lg border shadow-sm" className="object-cover rounded-lg" />
-                    <button
-                      type="button"
-                      onClick={() => setImages(images.filter((_, index) => index !== i))}
-                      className="absolute -top-3 -right-3 min-w-[44px] min-h-[44px] flex items-center justify-center bg-red-500 text-white rounded-full opacity-100 shadow-md hover:bg-red-600"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <ImageUpload 
+              images={images}
+              setImages={setImages}
+              multiple={true}
+              label="Product Images"
+            />
           </div>
           
           <div className="md:col-span-2 pt-2">

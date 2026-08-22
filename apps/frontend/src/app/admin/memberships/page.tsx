@@ -4,6 +4,7 @@ import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/context/AuthContext';
 import { ScrollFade } from '@/components/ui/ScrollFade';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 export default function AdminMembershipsPage() {
   const [levels, setLevels] = useState<any[]>([]);
@@ -22,7 +23,6 @@ export default function AdminMembershipsPage() {
     badgeUrl: ''
   });
   const [isUploadMode, setIsUploadMode] = useState(true);
-  const [badgeFile, setBadgeFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchLevels();
@@ -50,7 +50,6 @@ export default function AdminMembershipsPage() {
         benefits: level.benefits.length > 0 ? [...level.benefits] : [''],
         badgeUrl: level.badgeUrl || ''
       });
-      setBadgeFile(null);
       setIsUploadMode(false);
     } else {
       setEditingId(null);
@@ -62,7 +61,6 @@ export default function AdminMembershipsPage() {
         benefits: [''],
         badgeUrl: ''
       });
-      setBadgeFile(null);
       setIsUploadMode(true);
     }
     setIsModalOpen(true);
@@ -91,22 +89,10 @@ export default function AdminMembershipsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      let finalBadgeUrl = formData.badgeUrl;
-      
-      // Upload file first if in upload mode
-      if (isUploadMode && badgeFile) {
-        const formDataUpload = new FormData();
-        formDataUpload.append('file', badgeFile);
-        const uploadRes = await apiClient.post('/upload/image', formDataUpload, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        finalBadgeUrl = uploadRes.data.url;
-      }
-
       // clean empty benefits
       const cleanedData = {
         ...formData,
-        badgeUrl: finalBadgeUrl || undefined,
+        badgeUrl: formData.badgeUrl || undefined,
         requiredAmount: Number(formData.requiredAmount),
         pointMultiplier: Number(formData.pointMultiplier),
         priority: Number(formData.priority),
@@ -288,12 +274,11 @@ export default function AdminMembershipsPage() {
                   </div>
                   
                   {isUploadMode ? (
-                    <input
-                      key="badge-file-input"
-                      type="file"
-                      accept="image/*"
-                      onChange={e => setBadgeFile(e.target.files?.[0] || null)}
-                      className="w-full px-4 py-2 min-h-[44px] text-base border border-border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-muted file:text-black hover:file:bg-muted"
+                    <ImageUpload 
+                      images={formData.badgeUrl ? [formData.badgeUrl] : []}
+                      setImages={(imgs) => setFormData({...formData, badgeUrl: imgs[0] || ''})}
+                      multiple={false}
+                      label=""
                     />
                   ) : (
                     <input 
