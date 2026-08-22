@@ -71,8 +71,14 @@ export default function AdminProducts() {
         apiClient.get('/brands'),
         apiClient.get('/filters/admin/all')
       ]);
-      setCategories(catsRes.data?.data || catsRes.data);
-      setBrands(brandsRes.data?.data || brandsRes.data);
+      const cats = catsRes.data?.data || catsRes.data || [];
+      const sortedCats = [...cats].sort((a: any, b: any) => a.name.localeCompare(b.name));
+      setCategories(sortedCats);
+      
+      const fetchedBrands = brandsRes.data?.data || brandsRes.data || [];
+      const sortedBrands = [...fetchedBrands].sort((a: any, b: any) => a.name.localeCompare(b.name));
+      setBrands(sortedBrands);
+      
       setFilterDefs(filtersRes.data?.data || filtersRes.data);
     } catch (error) {
       toast.error('Failed to load initial data. Form might not work correctly.');
