@@ -48,6 +48,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Products', path: '/admin/products' },
         { name: 'Categories', path: '/admin/categories' },
         { name: 'Brands', path: '/admin/brands' },
+        { name: 'Our Clients', path: '/admin/clients' },
+        { name: 'Our Partnerships', path: '/admin/partnerships' },
         { name: 'Filters', path: '/admin/filters' },
       ]
     },

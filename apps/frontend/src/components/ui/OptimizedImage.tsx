@@ -63,6 +63,16 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
           setHasError(true);
           setIsLoading(false);
         }}
+        unoptimized={Boolean(
+          rest.unoptimized ||
+          (typeof imageSrc === "string" &&
+            (imageSrc.includes("placeholder.com") ||
+              imageSrc.includes("placehold.co") ||
+              imageSrc.includes("wikimedia.org") ||
+              imageSrc.includes("wikipedia.org") ||
+              imageSrc.startsWith("data:") ||
+              imageSrc.startsWith("blob:")))
+        )}
         sizes={isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
         {...rest}
       />

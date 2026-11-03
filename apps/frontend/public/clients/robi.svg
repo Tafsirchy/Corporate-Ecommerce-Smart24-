@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 54" fill="none">
+  <!-- Robi Flame Geometric Mark -->
+  <g transform="translate(6, 7)">
+    <polygon points="12,0 26,10 18,22" fill="#ED1C24"/>
+    <polygon points="26,10 38,18 24,28" fill="#F15A24"/>
+    <polygon points="0,16 18,22 8,36" fill="#ED1C24"/>
+    <polygon points="18,22 24,28 14,40" fill="#FFA800"/>
+    <polygon points="24,28 34,36 14,40" fill="#FFC800"/>
+  </g>
+  <!-- Robi Wordmark -->
+  <text x="48" y="32" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="900" fill="#ED1C24" letter-spacing="-1">robi</text>
+</svg>
+

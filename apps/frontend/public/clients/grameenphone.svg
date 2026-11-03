@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 54" fill="none">
+  <!-- Grameenphone Petal Logo Mark -->
+  <g transform="translate(4, 5)">
+    <path d="M22 2C13 2 6 8 4 17C2 26 8 35 17 38C20 39 23 37 23 34C23 26 23 14 22 2Z" fill="#0072CE"/>
+    <path d="M22 2C31 2 38 8 40 17C42 26 36 35 27 38C24 39 21 37 21 34C21 26 21 14 22 2Z" fill="#00A9E0"/>
+    <path d="M22 42C14 42 7 36 6 27C5 24 7 21 10 21C18 22 30 22 34 27C37 36 30 42 22 42Z" fill="#0090D0"/>
+  </g>
+  <!-- Grameenphone Wordmark -->
+  <text x="56" y="32" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#0072CE" letter-spacing="-0.3">grameen<tspan fill="#00A9E0">phone</tspan></text>
+</svg>
+

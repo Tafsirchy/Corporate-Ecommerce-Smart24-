@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import Image from 'next/image';
 
@@ -36,6 +36,7 @@ export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalItems = useCartStore(state => state.totalItems());
@@ -50,6 +51,11 @@ export default function Header() {
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  // Set mounted to avoid hydration mismatch for store-based badge counts
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Sync URL query to input when navigating
   useEffect(() => {
@@ -296,15 +302,15 @@ export default function Header() {
               <div className="flex items-center gap-4 ml-2">
                 <Link href="/wishlist" aria-label={`Wishlist (${wishlistItems.length} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : (isWishlistActive ? 'text-primary' : 'text-foreground hover:text-primary/90')} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
                   <Heart className={`w-5 h-5 ${isWishlistActive ? 'fill-current' : ''}`} />
-                  {wishlistItems.length > 0 && (
+                  {mounted && wishlistItems.length > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                       {wishlistItems.length}
                     </span>
                   )}
                 </Link>
-                <Link href="/cart" aria-label={`Cart (${totalItems} items)`} className={`${isTransparent ? 'text-white hover:text-white/80' : (isCartActive ? 'text-primary' : 'text-foreground hover:text-primary/90')} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
+                <Link href="/cart" aria-label={mounted ? `Cart (${totalItems} items)` : `Cart`} className={`${isTransparent ? 'text-white hover:text-white/80' : (isCartActive ? 'text-primary' : 'text-foreground hover:text-primary/90')} transition-colors flex-shrink-0 relative flex h-11 w-11 items-center justify-center`}>
                   <ShoppingCart className={`w-5 h-5 ${isCartActive ? 'fill-current' : ''}`} />
-                  {totalItems > 0 && (
+                  {mounted && totalItems > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                       {totalItems}
                     </span>
@@ -341,6 +347,10 @@ export default function Header() {
              <div className="flex flex-col px-4 py-6 gap-6 min-h-[calc(100vh-140px)] pb-12">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Home</Link>
                 <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Shop</Link>
+                <Link href="/clients" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Our Clients</Link>
+                {mounted && user?.role === 'ADMIN' && (
+                  <Link href="/partnerships" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center text-primary font-bold">Our Partnerships (Admin)</Link>
+                )}
                 <Link href="/subscriptions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">Subscriptions</Link>
                 <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium border-b border-border/40 py-2.5 flex items-center">About Us</Link>
                 

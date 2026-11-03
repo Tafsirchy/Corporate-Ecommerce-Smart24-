@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 54" fill="none">
+  <!-- bKash Origami Bird -->
+  <g transform="translate(6, 8)">
+    <polygon points="18,0 36,18 24,18" fill="#E2136E"/>
+    <polygon points="18,0 0,18 12,18" fill="#B30D54"/>
+    <polygon points="12,18 24,18 18,36" fill="#E2136E"/>
+    <polygon points="18,36 30,24 24,18" fill="#F03387"/>
+    <polygon points="6,24 18,36 12,18" fill="#C2105F"/>
+  </g>
+  <!-- bKash Typography -->
+  <text x="48" y="32" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" fill="#E2136E" letter-spacing="-0.5">bKash</text>
+</svg>
+

@@ -12,9 +12,12 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const isAdmin = mounted && user?.role === 'ADMIN';
   
   const getLinkClass = (path: string, hideOnMobile = false) => {
     const isActive = path === '/' ? pathname === '/' : pathname.startsWith(path);
+    const fontSizeClass = isAdmin ? " text-[13px]" : " text-sm";
     
     let baseClass = isTransparent 
       ? "transition-all duration-200 hover:-translate-y-0.5 inline-block pb-1 border-b-2" 
@@ -27,19 +30,24 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
     } else {
       baseClass += isTransparent
         ? " border-transparent text-white/90 hover:text-white hover:border-white/50 font-medium"
-        : " border-transparent text-muted-foreground hover:text-primary hover:border-primary/40 font-medium";
+        : " border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-900/30 font-medium";
     }
 
     if (hideOnMobile) {
       baseClass += " hidden sm:block";
     }
-    return baseClass;
+    return baseClass + fontSizeClass;
   };
 
   return (
-    <nav className="flex items-center gap-6">
+    <nav className={`flex items-center ${isAdmin ? "gap-4" : "gap-6"}`}>
+      {/* Navigation items (compact font for Admin) */}
       <Link href="/" className={getLinkClass('/')}>Home</Link>
       <Link href="/shop" className={getLinkClass('/shop')}>Shop</Link>
+      <Link href="/clients" className={getLinkClass('/clients')}>Our Clients</Link>
+      {mounted && user?.role === 'ADMIN' && (
+        <Link href="/partnerships" className={getLinkClass('/partnerships')}>Partnerships</Link>
+      )}
       <Link href="/subscriptions" className={getLinkClass('/subscriptions')}>Subscriptions</Link>
       <div className="relative group py-2">
         <Link href="/account/rewards" className={getLinkClass('/account/rewards')}>Rewards</Link>
@@ -112,12 +120,12 @@ export default function HeaderNav({ isTransparent = false }: { isTransparent?: b
             </div>
           </div>
           {user.role === 'ADMIN' && (
-            <Link href="/admin" className={`${isTransparent ? 'text-[#0D47A1] hover:opacity-80' : 'text-[#0D47A1] hover:opacity-80'} font-bold hidden md:block`}>Admin Portal</Link>
+            <Link href="/admin" className={`${isTransparent ? 'text-[#0D47A1] hover:opacity-80' : 'text-[#0D47A1] hover:opacity-80'} font-bold hidden md:block ${isAdmin ? 'text-[13px]' : 'text-sm'}`}>Admin Portal</Link>
           )}
           {user.role === 'BUSINESS' && (
             <Link href="/business" className={`${isTransparent ? 'text-[#FF6E00] hover:opacity-80' : 'text-[#FF6E00] hover:opacity-80'} font-bold hidden md:block`}>B2B Portal</Link>
           )}
-          <button onClick={() => logout()} className={`px-4 py-1.5 rounded-md font-bold transition-all duration-300 border ${isTransparent ? 'border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000] hover:text-white' : 'border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000] hover:text-white'}`}>Sign Out</button>
+          <button onClick={() => logout()} className={`${isAdmin ? 'px-3 py-1 text-xs' : 'px-4 py-1.5 text-sm'} rounded-md font-bold transition-all duration-300 border ${isTransparent ? 'border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000] hover:text-white' : 'border-[#FF0000] text-[#FF0000] hover:bg-[#FF0000] hover:text-white'}`}>Sign Out</button>
         </>
       ) : (
         <div className="flex items-center gap-4">

@@ -100,7 +100,7 @@ export default function AccountPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-muted/80 rounded-lg overflow-hidden shrink-0 border border-border">
-                      <OptimizedImage src="https://via.placeholder.com/48" alt="Item" className="w-full h-full object-cover" />
+                      <OptimizedImage src="https://placehold.co/48x48/f3f4f6/9ca3af?text=Item" alt="Item" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 flex justify-between items-center">
                       <span className="text-lg font-bold text-foreground">৳ {order.totalAmount}</span>
@@ -132,7 +132,7 @@ export default function AccountPage() {
                       <td className="py-5 px-4 text-base text-muted-foreground">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
                       <td className="py-5 px-4">
                         <div className="w-12 h-12 bg-muted/80 rounded-md border border-border overflow-hidden">
-                          <OptimizedImage src="https://via.placeholder.com/48" alt="Item" className="w-full h-full object-cover" />
+                          <OptimizedImage src="https://placehold.co/48x48/f3f4f6/9ca3af?text=Item" alt="Item" className="w-full h-full object-cover" />
                         </div>
                       </td>
                       <td className="py-5 px-4 text-base font-bold text-foreground text-right">৳ {order.totalAmount}</td>

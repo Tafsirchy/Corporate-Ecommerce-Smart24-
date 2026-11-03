@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 54" fill="none">
+  <!-- Walton Globe Logo Mark -->
+  <g transform="translate(6, 9)">
+    <circle cx="18" cy="18" r="17" fill="#00529B"/>
+    <path d="M4 18C4 18 10 11 18 11C26 11 32 18 32 18C32 18 26 25 18 25C10 25 4 18 4 18Z" fill="#FFF"/>
+    <circle cx="18" cy="18" r="5" fill="#00A0E9"/>
+  </g>
+  <!-- Walton Wordmark -->
+  <text x="48" y="32" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" font-style="italic" fill="#00529B" letter-spacing="1">WALTON</text>
+</svg>
+

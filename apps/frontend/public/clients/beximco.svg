@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 54" fill="none">
+  <!-- Beximco Hexagon Crest -->
+  <g transform="translate(6, 9)">
+    <polygon points="18,0 36,9 36,27 18,36 0,27 0,9" fill="#1E3A8A"/>
+    <polygon points="18,6 30,12 30,24 18,30 6,24 6,12" fill="#D97706"/>
+    <circle cx="18" cy="18" r="4" fill="#FFF"/>
+  </g>
+  <!-- Beximco Typography -->
+  <text x="48" y="27" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="900" fill="#1E3A8A" letter-spacing="2">BEXIMCO</text>
+  <text x="49" y="40" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="700" fill="#D97706" letter-spacing="1.5">GROUP &#8226; BANGLADESH</text>
+</svg>

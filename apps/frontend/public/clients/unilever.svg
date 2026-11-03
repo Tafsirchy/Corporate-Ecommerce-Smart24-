@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 54" fill="none">
+  <!-- Unilever 'U' -->
+  <g transform="translate(6, 6)">
+    <path d="M7 6C7 18 8 28 17 35C24 40 30 38 34 32C37 27 37 18 37 6" stroke="#1F36C7" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="12" cy="12" r="2.5" fill="#1F36C7"/>
+    <circle cx="32" cy="12" r="2.5" fill="#1F36C7"/>
+    <circle cx="22" cy="30" r="3" fill="#1F36C7"/>
+  </g>
+  <!-- Unilever Typography -->
+  <text x="50" y="32" font-family="'Times New Roman', Times, serif" font-size="23" font-weight="700" fill="#1F36C7" letter-spacing="0.5">Unilever</text>
+</svg>
+

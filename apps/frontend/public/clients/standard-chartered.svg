@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 54" fill="none">
+  <!-- Standard Chartered Double Helix -->
+  <g transform="translate(6, 10)">
+    <path d="M6 24C6 14 14 6 24 6C28 6 30 9 27 12C24 15 20 18 15 24C10 30 18 34 22 34C26 34 30 30 30 26" stroke="#0090D0" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M12 12C16 12 20 16 20 20C20 25 15 28 10 32C5 36 10 40 18 40C28 40 34 32 34 22" stroke="#00A651" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  </g>
+  <!-- Standard Chartered Typography -->
+  <text x="46" y="25" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" fill="#0090D0" letter-spacing="-0.2">Standard</text>
+  <text x="46" y="40" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" fill="#00A651" letter-spacing="-0.2">Chartered</text>
+</svg>
+

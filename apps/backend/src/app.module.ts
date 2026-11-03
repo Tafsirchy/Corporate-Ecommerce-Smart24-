@@ -44,6 +44,8 @@ import { PricingRuleModule } from './pricing-rule/pricing-rule.module';
 import { SavedListModule } from './saved-list/saved-list.module';
 import { AuditLogModule } from './audit-log/audit-log.module';
 import { HeroContentModule } from './hero-content/hero-content.module';
+import { ClientsModule } from './clients/clients.module';
+import { PartnershipsModule } from './partnerships/partnerships.module';
 import { EmailModule } from './common/email/email.module';
 
 import { HttpCacheInterceptor } from './common/interceptors/http-cache.interceptor';
@@ -111,6 +113,8 @@ import { HttpCacheInterceptor } from './common/interceptors/http-cache.intercept
     SavedListModule,
     AuditLogModule,
     HeroContentModule,
+    ClientsModule,
+    PartnershipsModule,
   ],
   controllers: [AppController],
   providers: [

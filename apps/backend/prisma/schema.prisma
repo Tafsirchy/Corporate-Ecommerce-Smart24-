@@ -1028,3 +1028,66 @@ model HeroContent {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+
+model Client {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  name         String    @unique
+  slug         String    @unique
+  logoUrl      String
+  websiteUrl   String?
+  industry     String?
+  description  String?
+  productIds   String[]  @db.ObjectId
+  purchaseNote String?
+  isActive     Boolean   @default(true)
+  order        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+
+type PartnerSuppliedItem {
+  productId     String?
+  productName   String
+  sku           String?
+  category      String?
+  price         Float?
+  supplyPrice   Float?
+  availability  String?
+  warranty      String?
+  imageUrl      String?
+  description   String?
+}
+
+type PartnerProcurementItem {
+  productId     String?
+  productName   String
+  quantity      Int      @default(1)
+  purchasePrice Float
+  totalAmount   Float?
+  purchaseDate  String?
+  invoiceNo     String?
+  notes         String?
+}
+
+model Partner {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String   @unique
+  slug                String   @unique
+  logoUrl             String
+  websiteUrl          String?
+  industry            String?
+  tier                String?
+  description         String?
+  mouDetails          String?
+  suppliedProductIds  String[] @db.ObjectId
+  procuredProductIds  String[] @db.ObjectId
+  procurementNote     String?
+  suppliedItems       PartnerSuppliedItem[]
+  procuredItems       PartnerProcurementItem[]
+  isActive            Boolean  @default(true)
+  order               Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 54" fill="none">
+  <!-- BRAC 4-square geometric mark -->
+  <g transform="translate(6, 11)">
+    <rect x="0" y="0" width="14" height="14" rx="2" fill="#005BAA"/>
+    <rect x="17" y="0" width="14" height="14" rx="2" fill="#ED1C24"/>
+    <rect x="0" y="17" width="14" height="14" rx="2" fill="#FDB913"/>
+    <rect x="17" y="17" width="14" height="14" rx="2" fill="#009639"/>
+  </g>
+  <!-- BRAC BANK Typography -->
+  <text x="48" y="27" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="900" fill="#005BAA" letter-spacing="0.5">BRAC BANK</text>
+  <text x="49" y="40" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="600" fill="#ED1C24" letter-spacing="1">ASTHA &#8226; VALUES</text>
+</svg>

@@ -36,6 +36,16 @@ if (typeof window !== 'undefined') {
   apiClient.defaults.headers.common['x-session-id'] = sessionId;
 }
 
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 54" fill="none">
+  <!-- University Crest -->
+  <g transform="translate(6, 6)">
+    <circle cx="21" cy="21" r="20" fill="#8B0000" stroke="#DAA520" stroke-width="2"/>
+    <circle cx="21" cy="21" r="16" fill="none" stroke="#DAA520" stroke-width="1" stroke-dasharray="2,2"/>
+    <!-- Center Book and Lamp -->
+    <path d="M14 18C17 16 21 17 21 24C21 17 25 16 28 18V26C25 24 21 25 21 27C21 25 17 24 14 26V18Z" fill="#FFF"/>
+    <circle cx="21" cy="14" r="2" fill="#DAA520"/>
+  </g>
+  <!-- DU Typography -->
+  <text x="56" y="27" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, serif" font-size="17" font-weight="800" fill="#8B0000" letter-spacing="0.3">University of Dhaka</text>
+  <text x="56" y="41" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#B45309" letter-spacing="1.5">ESTD. 1921 &#8226; BANGLADESH</text>
+</svg>

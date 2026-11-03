@@ -9,6 +9,7 @@ import { PremiumBentoCategories } from "@/components/home/PremiumBentoCategories
 import { JustForYou } from "@/components/home/JustForYou";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { SubscriptionAd } from "@/components/home/SubscriptionAd";
+import { OurClientsMarquee } from "@/components/home/OurClientsMarquee";
 import { MembershipAd } from "@/components/home/MembershipAd";
 import { CTA } from "@/components/CTA";
 const DUMMY_ADS: HeroAd[] = [
@@ -45,12 +46,18 @@ const DUMMY_ADS: HeroAd[] = [
 export default async function Home() {
   let banners: any[] = [];
   let flashSaleProducts: any[] = [];
+  let clients: any[] = [];
   try {
-    const [bannersRes, flashSaleRes] = await Promise.all([
+    const [bannersRes, flashSaleRes, clientsRes] = await Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/banners?activeOnly=true&type=MAIN_CAROUSEL`, { next: { revalidate: 60 } }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/products?isFlashSale=true&limit=6`, { next: { revalidate: 60 } })
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/products?isFlashSale=true&limit=6`, { next: { revalidate: 60 } }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/clients?activeOnly=true&limit=50`, { next: { revalidate: 60 } })
     ]);
     if (bannersRes.ok) banners = await bannersRes.json();
+    if (clientsRes?.ok) {
+      const cData = await clientsRes.json();
+      clients = cData.data || cData || [];
+    }
     if (flashSaleRes.ok) {
       const data = await flashSaleRes.json();
       flashSaleProducts = data.data || [];
@@ -74,6 +81,9 @@ export default async function Home() {
 
       {/* Subscription Advertisement */}
       <SubscriptionAd />
+
+      {/* Our Clients Marquee */}
+      <OurClientsMarquee clients={clients} />
 
       {/* Special Offer Banner before Business Collections */}
       <SpecialOfferBanner />
