@@ -138,14 +138,14 @@ export const OurClientsMarquee: React.FC<OurClientsMarqueeProps> = ({ clients })
             <Link
               key={`track1-${client.slug || index}`}
               href={client.slug ? `/clients/${client.slug}` : '/clients'}
-              className="flex items-center justify-center h-16 sm:h-20 min-w-[160px] sm:min-w-[190px] px-6 sm:px-8 py-2.5 rounded-2xl bg-white hover:bg-gray-50 border border-gray-200/80 hover:border-gray-300 shadow-2xs hover:shadow-sm transition-colors duration-200 group shrink-0 cursor-pointer"
+              className="flex items-center justify-center h-16 sm:h-20 min-w-[160px] sm:min-w-[190px] px-6 sm:px-8 py-2.5 rounded-2xl bg-white hover:bg-gray-50/80 border border-gray-200/80 hover:border-gray-300 shadow-2xs hover:shadow-sm transition-all duration-300 group shrink-0 cursor-pointer"
               title={client.name}
             >
               <img
                 src={client.logoUrl}
                 alt={client.name}
                 loading="eager"
-                className="h-8 sm:h-10 md:h-11 w-auto max-w-[130px] sm:max-w-[160px] object-contain transform-gpu will-change-transform transition-transform duration-200 group-hover:scale-105"
+                className="h-8 sm:h-10 md:h-11 w-auto max-w-[130px] sm:max-w-[160px] object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
           ))}
@@ -158,14 +158,14 @@ export const OurClientsMarquee: React.FC<OurClientsMarqueeProps> = ({ clients })
               key={`track2-${client.slug || index}`}
               href={client.slug ? `/clients/${client.slug}` : '/clients'}
               tabIndex={-1}
-              className="flex items-center justify-center h-16 sm:h-20 min-w-[160px] sm:min-w-[190px] px-6 sm:px-8 py-2.5 rounded-2xl bg-white hover:bg-gray-50 border border-gray-200/80 hover:border-gray-300 shadow-2xs hover:shadow-sm transition-colors duration-200 group shrink-0 cursor-pointer"
+              className="flex items-center justify-center h-16 sm:h-20 min-w-[160px] sm:min-w-[190px] px-6 sm:px-8 py-2.5 rounded-2xl bg-white hover:bg-gray-50/80 border border-gray-200/80 hover:border-gray-300 shadow-2xs hover:shadow-sm transition-all duration-300 group shrink-0 cursor-pointer"
               title={client.name}
             >
               <img
                 src={client.logoUrl}
                 alt={client.name}
                 loading="eager"
-                className="h-8 sm:h-10 md:h-11 w-auto max-w-[130px] sm:max-w-[160px] object-contain transform-gpu will-change-transform transition-transform duration-200 group-hover:scale-105"
+                className="h-8 sm:h-10 md:h-11 w-auto max-w-[130px] sm:max-w-[160px] object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
           ))}

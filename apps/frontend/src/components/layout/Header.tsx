@@ -189,11 +189,11 @@ export default function Header() {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Mobile Top Bar (Logo + Hamburger) - Hidden on MD */}
-        <div className={`relative z-30 w-full flex md:hidden items-center justify-between px-4 py-1.5 transition-colors ${
+        <div className={`relative z-30 w-full flex md:hidden items-center justify-between px-4 py-2 transition-colors ${
           (isTransparent && !isMobileMenuOpen) ? 'bg-transparent' : 'bg-white/90 backdrop-blur-md border-b border-border'
         }`}>
           <Link href="/" className="flex items-center">
-             <Image src="/asset/Logo.png" alt="Smart24" width={170} height={60} priority unoptimized={true} className={`h-11 w-auto object-contain origin-left ${(isTransparent && !isMobileMenuOpen) ? 'brightness-0 invert' : ''}`} />
+             <Image src="/asset/Logo.png" alt="Smart24" width={150} height={50} priority unoptimized={true} className={`h-10 w-auto object-contain origin-left ${(isTransparent && !isMobileMenuOpen) ? 'brightness-0 invert' : ''}`} />
           </Link>
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -331,9 +331,9 @@ export default function Header() {
           style={{ top: '100%' }}
         >
           <div className="container mx-auto px-4 flex justify-between items-center">
-            <div className="flex items-center gap-8 py-0.5">
+            <div className="flex items-center gap-8 py-1">
               <a href="/" className="flex items-center">
-                <Image src="/asset/Logo.png" alt="Smart24" width={240} height={95} priority unoptimized={true} className={`h-12 lg:h-[50px] w-auto object-contain origin-left transition-transform duration-200 hover:scale-105 ${isTransparent ? 'brightness-0 invert' : ''}`} />
+                <Image src="/asset/Logo.png" alt="Smart24" width={200} height={80} priority unoptimized={true} className={`h-11 w-auto object-contain origin-left ${isTransparent ? 'brightness-0 invert' : ''}`} />
               </a>
               {!isHome && <CategoryDropdown isTransparent={isTransparent} />}
             </div>
