@@ -9,7 +9,14 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { SignupDto, LoginDto, ResetPasswordDto } from './dto/auth.dto';
+import {
+  SignupDto,
+  LoginDto,
+  ResetPasswordDto,
+  ForgotPasswordDto,
+  ResendVerificationDto,
+  VerifyEmailDto,
+} from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import type { Response, Request } from 'express';
 import * as QRCode from 'qrcode';
@@ -89,21 +96,23 @@ export class AuthController {
 
   @Post('forgot-password')
   @Throttle({ default: { limit: 3, ttl: 60000 } })
-  async forgotPassword(@Body('email') email: string) {
-    return this.authService.forgotPassword(email);
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.authService.forgotPassword(body.email);
   }
 
   @Post('reset-password')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async resetPassword(@Body() body: ResetPasswordDto) {
     return this.authService.resetPassword(body.email, body.otp, body.password);
   }
 
   @Post('verify-email')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async verifyEmail(
-    @Body() body: { email: string; otp: string },
+    @Body() body: VerifyEmailDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.verifyEmail(body.email, body.otp);
+    const result = await this.authService.verifyEmail(body);
 
     if (result.refresh_token) {
       res.cookie('refresh_token', result.refresh_token, {
@@ -123,8 +132,8 @@ export class AuthController {
 
   @Post('resend-verification')
   @Throttle({ default: { limit: 3, ttl: 60000 } })
-  async resendVerification(@Body('email') email: string) {
-    return this.authService.resendVerification(email);
+  async resendVerification(@Body() body: ResendVerificationDto) {
+    return this.authService.resendVerification(body.email);
   }
 
   @UseGuards(JwtAuthGuard)

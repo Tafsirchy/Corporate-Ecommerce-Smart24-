@@ -6,9 +6,8 @@ import {
   IsOptional,
   ValidateNested,
   IsEnum,
-  IsIn,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { Role, BusinessType } from '@prisma/client';
 
 export class BusinessProfileDto {
@@ -29,6 +28,7 @@ export class BusinessProfileDto {
 }
 
 export class SignupDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty()
   email: string;
@@ -57,6 +57,7 @@ export class SignupDto {
 }
 
 export class LoginDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty()
   email: string;
@@ -66,17 +67,47 @@ export class LoginDto {
   password: string;
 }
 
+export class ForgotPasswordDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsNotEmpty({ message: 'Email address is required' })
+  email: string;
+}
+
+export class ResendVerificationDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsNotEmpty({ message: 'Email address is required' })
+  email: string;
+}
+
+export class VerifyEmailDto {
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  otp?: string;
+
+  @IsOptional()
+  @IsString()
+  token?: string;
+}
+
 export class ResetPasswordDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty()
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Verification OTP code is required' })
   otp: string;
 
   @IsString()
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'New password is required' })
   password: string;
 }

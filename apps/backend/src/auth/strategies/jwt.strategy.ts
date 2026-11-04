@@ -19,6 +19,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account has been deactivated');
+    }
+
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException(
+        'Please verify your email address to access this resource',
+      );
+    }
+
     // Validate token version to support session invalidation (e.g. after password reset)
     if (
       payload.version !== undefined &&
