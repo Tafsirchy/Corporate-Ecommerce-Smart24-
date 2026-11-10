@@ -175,8 +175,13 @@ export default function AdminProducts() {
       await apiClient.delete(`/products/${id}`);
       toast.success('Product deleted');
       fetchProducts();
-    } catch (error) {
-      toast.error('Failed to delete product');
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        toast.info('Product was already deleted or not found. Refreshing list...');
+        fetchProducts();
+      } else {
+        toast.error(error?.response?.data?.message || 'Failed to delete product');
+      }
     }
   };
 

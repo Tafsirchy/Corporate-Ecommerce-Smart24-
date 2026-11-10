@@ -6,11 +6,15 @@ import {
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryRepository } from '../repositories/category.repository.service';
+import { PrismaService } from '../prisma/prisma.service';
 import slugify from 'slugify';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private categoryRepository: CategoryRepository) {}
+  constructor(
+    private categoryRepository: CategoryRepository,
+    private prisma: PrismaService,
+  ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
     const slug = slugify(createCategoryDto.name, { lower: true, strict: true });
@@ -116,24 +120,44 @@ export class CategoriesService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, force: boolean = false) {
     const category = await this.categoryRepository.findById(id);
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    if (category.children.length > 0) {
-      throw new ConflictException('Cannot delete category with children');
+
+    // Check if category has subcategories
+    if (category.children && category.children.length > 0) {
+      if (!force) {
+        throw new ConflictException(
+          `Cannot delete category "${category.name}" because it has ${category.children.length} subcategory(ies). Delete or move them first, or confirm force delete.`,
+        );
+      }
+      // If force delete is confirmed, promote subcategories to this category's parent or make them top-level
+      await this.prisma.category.updateMany({
+        where: { parentId: id },
+        data: { parentId: category.parentId || null },
+      });
     }
-    const productsCount = await (
-      this.categoryRepository as any
-    ).prisma.product.count({
+
+    // Check if category has products
+    const productsCount = await this.prisma.product.count({
       where: { categoryId: id },
     });
+
     if (productsCount > 0) {
-      throw new ConflictException(
-        'Cannot delete category with associated products',
-      );
+      if (!force) {
+        throw new ConflictException(
+          `Cannot delete category "${category.name}" because it has ${productsCount} associated product(s). Reassign them first, or confirm force delete to unlink them.`,
+        );
+      }
+      // If force delete is confirmed, unlink products (set categoryId = null)
+      await this.prisma.product.updateMany({
+        where: { categoryId: id },
+        data: { categoryId: null },
+      });
     }
+
     return this.categoryRepository.delete(id);
   }
 }

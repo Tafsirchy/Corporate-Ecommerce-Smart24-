@@ -83,14 +83,21 @@ export class CategoriesController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a category (Admin only)' })
-  async remove(@Param('id') id: string, @Req() req: any) {
-    const category = await this.categoriesService.remove(id);
+  async remove(
+    @Param('id') id: string,
+    @Query('force') force: string,
+    @Req() req: any,
+  ) {
+    const isForce = force === 'true' || force === '1';
+    const category = await this.categoriesService.remove(id, isForce);
     await this.auditLogService.create({
       adminId: req.user?.id || req.user?.userId || req.user?.sub,
       action: 'DELETE',
       targetType: 'CATEGORY',
       targetId: category.id,
-      reason: 'Deleted category ' + category.name,
+      reason: isForce
+        ? `Force deleted category ${category.name} (unlinked associated products/children)`
+        : `Deleted category ${category.name}`,
     });
     return category;
   }

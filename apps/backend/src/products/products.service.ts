@@ -451,8 +451,16 @@ export class ProductsService {
   async remove(id: string) {
     const product = await this.productRepository.findById(id);
     if (!product) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException('Product not found or already deleted');
     }
+
+    // Clean up dependent user references safely to prevent orphaned items
+    await Promise.allSettled([
+      this.prisma.cartItem.deleteMany({ where: { productId: id } }),
+      this.prisma.wishlistItem.deleteMany({ where: { productId: id } }),
+      this.prisma.backInStockAlert.deleteMany({ where: { productId: id } }),
+    ]);
+
     return this.productRepository.delete(id);
   }
 

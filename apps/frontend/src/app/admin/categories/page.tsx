@@ -87,15 +87,25 @@ export default function AdminCategories() {
     setIsModalOpen(true);
   };
 
-  async function handleDelete(id: string) {
-    if (!window.confirm('Are you sure you want to delete this category?')) return;
+  async function handleDelete(id: string, force = false) {
+    if (!force && !window.confirm('Are you sure you want to delete this category?')) return;
     try {
-      await apiClient.delete(`/categories/${id}`);
-      toast.success('Category deleted');
+      await apiClient.delete(`/categories/${id}${force ? '?force=true' : ''}`);
+      toast.success(force ? 'Category deleted and associated products unlinked' : 'Category deleted');
       fetchCategories();
       fetchAllCategories();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to delete category');
+      const msg = error?.response?.data?.message || 'Failed to delete category';
+      if (error?.response?.status === 409) {
+        if (
+          window.confirm(
+            `${msg}\n\nDo you want to FORCE delete this category? This will safely unlink its products and promote any subcategories.`
+          )
+        ) {
+          return handleDelete(id, true);
+        }
+      }
+      toast.error(msg);
     }
   };
 
