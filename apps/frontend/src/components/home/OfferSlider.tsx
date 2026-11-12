@@ -57,7 +57,18 @@ export const OfferSlider = ({ banners, initialBusinessConfig }: OfferSliderProps
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
   const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
 
-  if (!banners || banners.length === 0) return null;
+  const slides =
+    banners && banners.length > 0
+      ? banners
+      : [
+          {
+            id: 'default-offer-slide',
+            title: 'Smart24 Corporate & Bulk Deals',
+            imageUrl:
+              'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop',
+            targetUrl: '/shop',
+          },
+        ];
 
   return (
     <section className="py-6 bg-muted overflow-hidden">
@@ -69,7 +80,7 @@ export const OfferSlider = ({ banners, initialBusinessConfig }: OfferSliderProps
           <div className="w-full lg:w-[78%] relative group h-[300px] lg:h-full">
             <div className="overflow-hidden shadow-sm h-full rounded-none" ref={emblaRef}>
               <div className="flex touch-pan-y h-full">
-                {banners.map((banner, index) => (
+                {slides.map((banner, index) => (
                   <div key={banner.id} className="min-w-0 flex-[0_0_100%] h-full relative">
                     {banner.targetUrl ? (
                       <Link href={banner.targetUrl} className="block w-full h-full">
@@ -90,7 +101,7 @@ export const OfferSlider = ({ banners, initialBusinessConfig }: OfferSliderProps
             </div>
 
             {/* Navigation Arrows */}
-            {banners.length > 1 && (
+            {slides.length > 1 && (
               <>
                 <button 
                   onClick={scrollPrev}
@@ -109,7 +120,7 @@ export const OfferSlider = ({ banners, initialBusinessConfig }: OfferSliderProps
 
                 {/* Pagination Dots */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                  {banners.map((_, index) => (
+                  {slides.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => scrollTo(index)}
