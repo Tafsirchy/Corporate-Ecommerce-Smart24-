@@ -70,7 +70,7 @@ import { HttpCacheInterceptor } from './common/interceptors/http-cache.intercept
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 100, // 100 requests per minute
+        limit: 300, // 300 requests per minute per IP
       },
     ]),
     EventEmitterModule.forRoot(),

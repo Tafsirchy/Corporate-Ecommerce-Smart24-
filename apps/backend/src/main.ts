@@ -6,6 +6,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
+  // Trust Render / reverse proxy headers so rate limiting tracks real client IPs
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
   // Enable validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
