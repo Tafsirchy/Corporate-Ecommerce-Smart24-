@@ -38,7 +38,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       title: 'Home Page Settings',
       items: [
+        { name: 'Hero Section', path: '/admin/hero' },
+        { name: 'Why Choose Smart24', path: '/admin/why-choose' },
         { name: 'Banners (Slider)', path: '/admin/banners' },
+        { name: 'Smart24 Business', path: '/admin/smart24-business' },
+        { name: 'Flash Sale', path: '/admin/flash-sale' },
         { name: 'Business Collections', path: '/admin/business-collections' },
       ]
     },

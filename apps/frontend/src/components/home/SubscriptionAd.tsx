@@ -5,6 +5,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Repeat, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { apiClient } from '@/context/AuthContext';
+import {
+  DEFAULT_SMART24_BUSINESS_CONFIG,
+  Smart24BusinessConfig,
+  parseSettingJson,
+} from '@/lib/home-settings';
 
 const DEFAULT_PACKAGES = [
   { 
@@ -60,8 +65,20 @@ const DEFAULT_PACKAGES = [
 
 export const SubscriptionAd = () => {
   const [packages, setPackages] = useState(DEFAULT_PACKAGES);
+  const [bizConfig, setBizConfig] = useState<Smart24BusinessConfig>(
+    DEFAULT_SMART24_BUSINESS_CONFIG
+  );
 
   useEffect(() => {
+    apiClient
+      .get('/settings/home_smart24_business')
+      .then((res) => {
+        if (res.data?.value) {
+          setBizConfig(parseSettingJson(res.data.value, DEFAULT_SMART24_BUSINESS_CONFIG));
+        }
+      })
+      .catch(() => {});
+
     const fetchPackages = async () => {
       try {
         const response = await apiClient.get('/subscriptions/plans');
@@ -97,6 +114,8 @@ export const SubscriptionAd = () => {
     fetchPackages();
   }, []);
 
+  if (!bizConfig.adShow) return null;
+
   return (
     <section className="container mx-auto px-4 py-8">
       <div className="relative w-full rounded-2xl overflow-hidden bg-slate-950 border border-indigo-500/10 shadow-2xl flex flex-col xl:flex-row items-stretch">
@@ -109,19 +128,19 @@ export const SubscriptionAd = () => {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-400/20 text-xs sm:text-sm font-bold tracking-[0.1em] text-indigo-300 uppercase mb-6">
               <Repeat className="w-3 h-3" />
-              <span>Smart24 Auto-Refill</span>
+              <span>{bizConfig.adBadge}</span>
             </div>
             
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif italic tracking-tight mb-4 text-white drop-shadow-sm">
-              Easy Restocking
+              {bizConfig.adHeading}
             </h3>
             <p className="text-indigo-200/80 text-base sm:text-lg mb-10 leading-relaxed font-light max-w-sm">
-              Get your office supplies delivered automatically with special business prices. A simple process made for modern companies.
+              {bizConfig.adDescription}
             </p>
             
-            <Link href="/subscriptions">
+            <Link href={bizConfig.adPrimaryCtaUrl || '/subscriptions'}>
               <Button variant="outline" className="text-indigo-300 hover:bg-indigo-500 hover:border-indigo-500 hover:text-white active:scale-95 border-indigo-400/30 font-medium rounded-none h-12 px-8 text-sm sm:text-base transition-all duration-300 group w-full sm:w-auto uppercase tracking-widest bg-transparent">
-                Explore Plans
+                {bizConfig.adPrimaryCtaLabel}
                 <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform duration-300" />
               </Button>
             </Link>

@@ -2,20 +2,60 @@
 import { useState, useEffect } from 'react';
 import { ProductCard, Product } from '@/components/ProductCard';
 import Link from 'next/link';
-import { Timer, ArrowRight } from 'lucide-react';
 import { ScrollFade } from '@/components/ui/ScrollFade';
+import { apiClient } from '@/context/AuthContext';
+import {
+  DEFAULT_FLASH_SALE_CONFIG,
+  FlashSaleConfig,
+  parseSettingJson,
+} from '@/lib/home-settings';
 
 interface FlashSaleProps {
   products: Product[];
 }
 
 export const FlashSale = ({ products }: FlashSaleProps) => {
-  // For a visual effect, a countdown timer
+  const [config, setConfig] = useState<FlashSaleConfig>(DEFAULT_FLASH_SALE_CONFIG);
   const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 45, seconds: 30 });
 
   useEffect(() => {
+    apiClient
+      .get('/settings/home_flash_sale')
+      .then((res) => {
+        if (res.data?.value) {
+          setConfig(parseSettingJson(res.data.value, DEFAULT_FLASH_SALE_CONFIG));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const computeRemaining = () => {
+      if (!config.endsAt) return null;
+      const diffMs = new Date(config.endsAt).getTime() - Date.now();
+      if (Number.isNaN(diffMs) || diffMs <= 0) {
+        return { hours: 0, minutes: 0, seconds: 0 };
+      }
+      const totalSeconds = Math.floor(diffMs / 1000);
+      return {
+        hours: Math.floor(totalSeconds / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      };
+    };
+
+    const initial = computeRemaining();
+    if (initial) {
+      setTimeLeft(initial);
+    }
+
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      const real = computeRemaining();
+      if (real) {
+        setTimeLeft(real);
+        return;
+      }
+      setTimeLeft((prev) => {
         let { hours, minutes, seconds } = prev;
         seconds--;
         if (seconds < 0) {
@@ -31,9 +71,9 @@ export const FlashSale = ({ products }: FlashSaleProps) => {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [config.endsAt]);
 
-  if (products.length === 0) return null;
+  if (!config.isActive || products.length === 0) return null;
 
   const pad = (num: number) => num.toString().padStart(2, '0');
 
@@ -44,7 +84,7 @@ export const FlashSale = ({ products }: FlashSaleProps) => {
         {/* Header Section */}
         <div className="mb-6 pb-2 border-b border-border">
           <h2 className="text-2xl font-bold text-foreground mb-3">
-            Flash Sale
+            {config.title || 'Flash Sale'}
           </h2>
           <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4 sm:gap-0">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 w-full sm:w-auto">

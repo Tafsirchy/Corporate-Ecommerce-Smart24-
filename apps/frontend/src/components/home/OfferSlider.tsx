@@ -8,6 +8,12 @@ import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight, Star, Truck, ShieldCheck, Package, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { apiClient } from '@/context/AuthContext';
+import {
+  DEFAULT_SMART24_BUSINESS_CONFIG,
+  Smart24BusinessConfig,
+  parseSettingJson,
+} from '@/lib/home-settings';
 
 interface OfferSliderProps {
   banners: any[];
@@ -19,6 +25,20 @@ export const OfferSlider = ({ banners }: OfferSliderProps) => {
   ]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [bizConfig, setBizConfig] = useState<Smart24BusinessConfig>(
+    DEFAULT_SMART24_BUSINESS_CONFIG
+  );
+
+  useEffect(() => {
+    apiClient
+      .get('/settings/home_smart24_business')
+      .then((res) => {
+        if (res.data?.value) {
+          setBizConfig(parseSettingJson(res.data.value, DEFAULT_SMART24_BUSINESS_CONFIG));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -114,18 +134,26 @@ export const OfferSlider = ({ banners }: OfferSliderProps) => {
                 <div className="bg-primary-600 text-white p-1.5 rounded-md">
                   <ShieldCheck size={20} />
                 </div>
-                <span className="font-bold text-foreground text-base">Smart24 Business</span>
+                <span className="font-bold text-foreground text-base">{bizConfig.sliderCardTitle}</span>
               </div>
 
-              {/* Gradient Middle Section */}
+              {/* Gradient Middle Section (with optional custom image) */}
               <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-blue-900 p-4 lg:py-3 text-white flex-1 flex flex-col justify-start relative overflow-hidden">
-                <div className="flex items-center gap-2 text-sm font-semibold mb-1.5 text-primary-100">
+                {bizConfig.sliderCardImageUrl && (
+                  <OptimizedImage
+                    src={bizConfig.sliderCardImageUrl}
+                    alt={bizConfig.sliderCardTitle}
+                    fill
+                    className="object-cover opacity-30 pointer-events-none"
+                  />
+                )}
+                <div className="flex items-center gap-2 text-sm font-semibold mb-1.5 text-primary-100 relative z-10">
                   <Star size={14} className="fill-primary-200 text-primary-200" />
-                  Trusted by 500+ Brands
+                  {bizConfig.sliderCardBadge}
                 </div>
                 
-                <div className="text-center font-bold text-base mb-2.5">
-                  Exclusive Benefits
+                <div className="text-center font-bold text-base mb-2.5 relative z-10">
+                  {bizConfig.sliderCardSubtitle}
                 </div>
 
                 <div className="space-y-2 mb-1 relative z-10">
@@ -133,14 +161,14 @@ export const OfferSlider = ({ banners }: OfferSliderProps) => {
                     <div className="bg-white rounded-full p-1.5 text-primary/90 shrink-0">
                       <Truck size={16} />
                     </div>
-                    <span className="font-semibold text-sm leading-tight">Free Bulk<br/>Delivery</span>
+                    <span className="font-semibold text-sm leading-tight">{bizConfig.sliderHighlight1}</span>
                   </div>
                   
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg p-2">
                     <div className="bg-white rounded-full p-1.5 text-info-text shrink-0">
                       <CreditCard size={16} />
                     </div>
-                    <span className="font-semibold text-sm leading-tight">Flexible<br/>Payments</span>
+                    <span className="font-semibold text-sm leading-tight">{bizConfig.sliderHighlight2}</span>
                   </div>
                 </div>
                 
@@ -152,15 +180,15 @@ export const OfferSlider = ({ banners }: OfferSliderProps) => {
               <div className="p-4 bg-muted shrink-0">
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-row lg:flex-col xl:flex-row gap-2 lg:gap-3">
-                    <Link href="/contact" className="flex-1 flex items-center justify-center bg-primary-600 text-white py-3 px-2 lg:py-2 xl:py-3 rounded-lg hover:bg-primary-700 transition-colors text-[13px] sm:text-base lg:text-sm xl:text-base font-semibold shadow-sm text-center leading-tight">
-                      Request Quote
+                    <Link href={bizConfig.sliderPrimaryCtaUrl || '/contact'} className="flex-1 flex items-center justify-center bg-primary-600 text-white py-3 px-2 lg:py-2 xl:py-3 rounded-lg hover:bg-primary-700 transition-colors text-[13px] sm:text-base lg:text-sm xl:text-base font-semibold shadow-sm text-center leading-tight">
+                      {bizConfig.sliderPrimaryCtaLabel}
                     </Link>
-                    <Link href="/shop" className="flex-1 flex items-center justify-center bg-white border border-border text-foreground py-3 px-2 lg:py-2 xl:py-3 rounded-lg hover:bg-muted transition-colors text-[13px] sm:text-base lg:text-sm xl:text-base font-semibold text-center leading-tight">
-                      Browse Catalog
+                    <Link href={bizConfig.sliderSecondaryCtaUrl || '/shop'} className="flex-1 flex items-center justify-center bg-white border border-border text-foreground py-3 px-2 lg:py-2 xl:py-3 rounded-lg hover:bg-muted transition-colors text-[13px] sm:text-base lg:text-sm xl:text-base font-semibold text-center leading-tight">
+                      {bizConfig.sliderSecondaryCtaLabel}
                     </Link>
                   </div>
                   <div className="text-sm text-muted-foreground font-medium text-center">
-                    Need customized supplies?
+                    {bizConfig.sliderFooterNote}
                   </div>
                 </div>
               </div>

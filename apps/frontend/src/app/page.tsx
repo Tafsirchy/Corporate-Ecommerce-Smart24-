@@ -85,12 +85,37 @@ async function FlashSaleSection() {
   return <FlashSale products={flashSaleProducts} />;
 }
 
+async function HeroSection() {
+  let ads: HeroAd[] = DUMMY_ADS;
+  try {
+    const res = await fetch(`${API_URL}/hero-contents?activeOnly=true`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
+      const list = data?.data || data;
+      if (Array.isArray(list) && list.length > 0) {
+        ads = list.map((content: any) => ({
+          id: content.id,
+          title: content.title,
+          subtitle: content.subtitle,
+          imageUrl: content.imageUrl,
+          categoryUrl: content.categoryUrl || '/shop',
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch hero contents:', error);
+  }
+  return <HeroBentoAccordion ads={ads} />;
+}
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <div className="bg-muted border-b border-border">
-        <HeroBentoAccordion ads={DUMMY_ADS} />
+        <Suspense fallback={<div className="container mx-auto px-4 py-6"><div className="h-[420px] rounded-2xl bg-muted/60 animate-pulse" /></div>}>
+          <HeroSection />
+        </Suspense>
       </div>
 
       {/* Features Section */}
