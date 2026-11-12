@@ -16,13 +16,13 @@ export class HeroContentService {
     const where = activeOnly ? { isActive: true } : {};
 
     const [data, total] = await Promise.all([
-      this.prisma.banner.findMany({
+      this.prisma.heroContent.findMany({
         where,
         skip,
         take: limit,
         orderBy: { order: 'asc' },
       }),
-      this.prisma.banner.count({ where }),
+      this.prisma.heroContent.count({ where }),
     ]);
 
     return {
@@ -32,7 +32,7 @@ export class HeroContentService {
   }
 
   async findOne(id: string) {
-    const content = await this.prisma.banner.findUnique({
+    const content = await this.prisma.heroContent.findUnique({
       where: { id },
     });
     if (!content) throw new NotFoundException('HeroContent not found');
@@ -40,14 +40,14 @@ export class HeroContentService {
   }
 
   async create(data: any) {
-    return this.prisma.banner.create({
+    return this.prisma.heroContent.create({
       data,
     });
   }
 
   async update(id: string, data: any) {
     await this.findOne(id);
-    return this.prisma.banner.update({
+    return this.prisma.heroContent.update({
       where: { id },
       data,
     });
@@ -55,7 +55,7 @@ export class HeroContentService {
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.banner.delete({
+    return this.prisma.heroContent.delete({
       where: { id },
     });
   }
