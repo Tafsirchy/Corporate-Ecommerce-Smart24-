@@ -11,7 +11,7 @@ export const JustForYou = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const limit = 48; // 6 products per row * 8 rows = 48 products
+  const limit = 18; // 6 products per row * 3 rows = 18 products
 
   const fetchProducts = async (pageNumber: number) => {
     setIsLoading(true);

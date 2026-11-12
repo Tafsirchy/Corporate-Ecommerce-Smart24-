@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Package, Truck, ShieldCheck, CreditCard } from "lucide-react";
 import { HeroBentoAccordion, HeroAd } from "@/components/home/HeroBentoAccordion";
@@ -43,29 +44,48 @@ const DUMMY_ADS: HeroAd[] = [
   }
 ];
 
-export default async function Home() {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+
+async function OfferSliderSection() {
   let banners: any[] = [];
-  let flashSaleProducts: any[] = [];
+  try {
+    const res = await fetch(`${API_URL}/banners?activeOnly=true&type=MAIN_CAROUSEL`, { next: { revalidate: 60 } });
+    if (res.ok) banners = await res.json();
+  } catch (error) {
+    console.error('Failed to fetch banners:', error);
+  }
+  return <OfferSlider banners={banners} />;
+}
+
+async function OurClientsSection() {
   let clients: any[] = [];
   try {
-    const [bannersRes, flashSaleRes, clientsRes] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/banners?activeOnly=true&type=MAIN_CAROUSEL`, { next: { revalidate: 60 } }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/products?isFlashSale=true&limit=6`, { next: { revalidate: 60 } }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1'}/clients?activeOnly=true&limit=50`, { next: { revalidate: 60 } })
-    ]);
-    if (bannersRes.ok) banners = await bannersRes.json();
-    if (clientsRes?.ok) {
-      const cData = await clientsRes.json();
+    const res = await fetch(`${API_URL}/clients?activeOnly=true&limit=50`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const cData = await res.json();
       clients = cData.data || cData || [];
     }
-    if (flashSaleRes.ok) {
-      const data = await flashSaleRes.json();
+  } catch (error) {
+    console.error('Failed to fetch clients:', error);
+  }
+  return <OurClientsMarquee clients={clients} />;
+}
+
+async function FlashSaleSection() {
+  let flashSaleProducts: any[] = [];
+  try {
+    const res = await fetch(`${API_URL}/products?isFlashSale=true&limit=6`, { next: { revalidate: 60 } });
+    if (res.ok) {
+      const data = await res.json();
       flashSaleProducts = data.data || [];
     }
   } catch (error) {
-    console.error('Failed to fetch homepage data:', error);
+    console.error('Failed to fetch flash sale products:', error);
   }
+  return <FlashSale products={flashSaleProducts} />;
+}
 
+export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -77,25 +97,39 @@ export default async function Home() {
       <WhyChooseUsMarquee />
 
       {/* Offer Slider */}
-      <OfferSlider banners={banners} />
+      <Suspense fallback={<div className="container mx-auto px-4 py-6"><div className="h-44 rounded-xl bg-muted animate-pulse" /></div>}>
+        <OfferSliderSection />
+      </Suspense>
 
       {/* Subscription Advertisement */}
       <SubscriptionAd />
 
       {/* Our Clients Marquee */}
-      <OurClientsMarquee clients={clients} />
+      <Suspense fallback={<div className="container mx-auto px-4 py-6"><div className="h-24 rounded-xl bg-muted animate-pulse" /></div>}>
+        <OurClientsSection />
+      </Suspense>
 
       {/* Special Offer Banner before Business Collections */}
       <SpecialOfferBanner />
 
       {/* Flash Sale */}
-      <FlashSale products={flashSaleProducts} />
+      <Suspense fallback={<div className="container mx-auto px-4 py-8"><div className="h-64 rounded-xl bg-muted animate-pulse" /></div>}>
+        <FlashSaleSection />
+      </Suspense>
 
       {/* Membership Advertisement */}
       <MembershipAd />
 
       {/* Premium Categories Bento Box */}
-      <PremiumBentoCategories />
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4 py-8">
+            <div className="h-64 rounded-xl bg-muted animate-pulse" />
+          </div>
+        }
+      >
+        <PremiumBentoCategories />
+      </Suspense>
 
       {/* Just For You Products */}
       <JustForYou />

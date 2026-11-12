@@ -49,7 +49,13 @@ apiClient.interceptors.request.use((config) => {
 let refreshTokenPromise: Promise<string> | null = null;
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  async (response) => {
+    const method = response.config?.method?.toLowerCase();
+    if (method && method !== 'get') {
+      await apiClient.storage.clear?.();
+    }
+    return response;
+  },
   async (error) => {
     if (!error.response) {
       // Network error (e.g. server down)
