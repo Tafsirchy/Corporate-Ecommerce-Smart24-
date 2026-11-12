@@ -27,9 +27,10 @@ export class ProductsService {
       throw new ConflictException('Product with this name already exists');
     }
 
+    const description = createProductDto.description || '';
     const detectedAttributes = await this.autoDetectAttributes(
       createProductDto.name,
-      createProductDto.description,
+      description,
       createProductDto.categoryId,
       createProductDto.attributes,
     );
@@ -40,12 +41,15 @@ export class ProductsService {
       name: createProductDto.name,
       slug,
       sku,
-      description: createProductDto.description,
+      description,
       price: createProductDto.price,
-      stock: createProductDto.stock,
-      images: createProductDto.images,
+      stock: createProductDto.stock ?? 0,
+      images: createProductDto.images || [],
+      isActive: createProductDto.isActive ?? true,
       attributes: detectedAttributes,
-      category: { connect: { id: createProductDto.categoryId } },
+      ...(createProductDto.categoryId && {
+        category: { connect: { id: createProductDto.categoryId } },
+      }),
       ...(createProductDto.brandId && {
         brand: { connect: { id: createProductDto.brandId } },
       }),
@@ -497,7 +501,7 @@ export class ProductsService {
   private async autoDetectAttributes(
     name: string,
     description: string,
-    categoryId: string,
+    categoryId?: string,
     manualAttributes: any[] = [],
   ) {
     // 1. Get all active filter definitions that apply to this category
@@ -511,7 +515,7 @@ export class ProductsService {
       (f) =>
         !f.categoryIds ||
         f.categoryIds.length === 0 ||
-        f.categoryIds.includes(categoryId),
+        (categoryId ? f.categoryIds.includes(categoryId) : false),
     );
 
     const fullText = `${name} ${description}`.toLowerCase();

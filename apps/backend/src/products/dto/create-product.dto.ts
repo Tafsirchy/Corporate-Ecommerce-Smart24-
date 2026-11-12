@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsMongoId,
   IsArray,
+  IsBoolean,
   Min,
 } from 'class-validator';
 
@@ -17,9 +18,9 @@ export class CreateProductDto {
   @IsString()
   sku?: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  description?: string;
 
   @IsNumber()
   @Min(0)
@@ -35,9 +36,9 @@ export class CreateProductDto {
   @IsString({ each: true })
   images?: string[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsMongoId()
-  categoryId: string;
+  categoryId?: string;
 
   @IsOptional()
   @IsMongoId()
@@ -48,5 +49,6 @@ export class CreateProductDto {
   attributes?: any[];
 
   @IsOptional()
+  @IsBoolean()
   isActive?: boolean;
 }

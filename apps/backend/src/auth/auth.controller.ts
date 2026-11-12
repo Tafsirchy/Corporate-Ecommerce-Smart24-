@@ -25,6 +25,33 @@ import * as QRCode from 'qrcode';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  private getRefreshCookieOptions() {
+    const isProd = process.env.NODE_ENV === 'production';
+    return {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
+      path: '/api/v1/auth/refresh',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    };
+  }
+
+  private extractRefreshToken(req: Request): string | undefined {
+    const cookies = (req as any).cookies;
+    if (cookies?.refresh_token) {
+      return cookies.refresh_token;
+    }
+    const cookieHeader = req.headers?.cookie;
+    if (!cookieHeader) return undefined;
+    for (const part of cookieHeader.split(';')) {
+      const [key, ...valParts] = part.trim().split('=');
+      if (key === 'refresh_token') {
+        return decodeURIComponent(valParts.join('='));
+      }
+    }
+    return undefined;
+  }
+
   @Post('signup')
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   async signup(@Body() body: SignupDto) {
@@ -51,12 +78,7 @@ export class AuthController {
 
     const { access_token, refresh_token } = this.authService.login(user);
 
-    res.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/api/v1/auth/refresh',
-    });
+    res.cookie('refresh_token', refresh_token, this.getRefreshCookieOptions());
 
     return { access_token, user };
   }
@@ -76,21 +98,35 @@ export class AuthController {
 
     const { access_token, refresh_token } = this.authService.login(user);
 
-    res.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/api/v1/auth/refresh',
-    });
+    res.cookie('refresh_token', refresh_token, this.getRefreshCookieOptions());
 
     return { access_token, user };
+  }
+
+  @Post('refresh')
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = this.extractRefreshToken(req);
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token missing');
+    }
+
+    const { access_token, refresh_token } =
+      await this.authService.refresh(refreshToken);
+
+    res.cookie('refresh_token', refresh_token, this.getRefreshCookieOptions());
+
+    return { access_token };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     await this.authService.logout(req.user.id);
-    res.clearCookie('refresh_token', { path: '/api/v1/auth/refresh' });
+    const { maxAge: _, ...clearOptions } = this.getRefreshCookieOptions();
+    res.clearCookie('refresh_token', clearOptions);
     return { message: 'Logged out successfully' };
   }
 
@@ -115,12 +151,11 @@ export class AuthController {
     const result = await this.authService.verifyEmail(body);
 
     if (result.refresh_token) {
-      res.cookie('refresh_token', result.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/api/v1/auth/refresh',
-      });
+      res.cookie(
+        'refresh_token',
+        result.refresh_token,
+        this.getRefreshCookieOptions(),
+      );
     }
 
     return {

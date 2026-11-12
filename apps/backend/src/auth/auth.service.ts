@@ -84,8 +84,31 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(payload),
-      refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
+      refresh_token: this.jwtService.sign(payload, { expiresIn: '30d' }),
     };
+  }
+
+  async refresh(refreshToken: string) {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(refreshToken);
+    } catch {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    const user = await this.usersService.findById(payload.sub);
+    if (!user || !user.isActive || !user.isEmailVerified) {
+      throw new UnauthorizedException('Invalid or inactive user');
+    }
+
+    if (
+      payload.version !== undefined &&
+      user.tokenVersion !== payload.version
+    ) {
+      throw new UnauthorizedException('Session expired or revoked');
+    }
+
+    return this.login(user);
   }
 
   async logout(userId: string) {

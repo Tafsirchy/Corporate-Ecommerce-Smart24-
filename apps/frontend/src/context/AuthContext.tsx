@@ -46,9 +46,11 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+let refreshTokenPromise: Promise<string> | null = null;
+
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (!error.response) {
       // Network error (e.g. server down)
       toast.error("Unable to connect to the server. Please check your internet connection.");
@@ -57,22 +59,57 @@ apiClient.interceptors.response.use(
 
     const status = error.response.status;
     const isClient = typeof window !== 'undefined';
+    const originalRequest = error.config as any;
 
-    if (status === 401) {
-      if (isClient) {
-        localStorage.removeItem('access_token');
-        delete apiClient.defaults.headers.common['Authorization'];
-        
-        // Do not redirect if the failure was from a login attempt
-        if (error.config && error.config.url && (error.config.url.includes('/auth/login') || error.config.url.includes('/auth/verify-2fa-login'))) {
-          return Promise.reject(error);
-        }
+    if (status === 401 && isClient) {
+      const requestUrl = originalRequest?.url || '';
+      const isAuthEndpoint =
+        requestUrl.includes('/auth/login') ||
+        requestUrl.includes('/auth/verify-2fa-login') ||
+        requestUrl.includes('/auth/refresh');
 
-        // Prevent redirect loop if already on home page
-        if (window.location.pathname !== '/') {
-          toast.error("Your session has expired. Please log in again.");
-          window.dispatchEvent(new Event('unauthorized'));
+      // Do not redirect or refresh if the failure was from an auth endpoint
+      if (isAuthEndpoint) {
+        return Promise.reject(error);
+      }
+
+      // Attempt silent token refresh once before logging out
+      if (originalRequest && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          if (!refreshTokenPromise) {
+            refreshTokenPromise = baseApiClient
+              .post('/auth/refresh')
+              .then((res) => {
+                const newToken = res.data?.access_token;
+                if (!newToken) {
+                  throw new Error('No access token returned from refresh');
+                }
+                localStorage.setItem('access_token', newToken);
+                apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+                return newToken;
+              })
+              .finally(() => {
+                refreshTokenPromise = null;
+              });
+          }
+
+          const newToken = await refreshTokenPromise;
+          originalRequest.headers = originalRequest.headers || {};
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return apiClient(originalRequest);
+        } catch {
+          // Refresh failed; fall through to clear session and notify
         }
+      }
+
+      localStorage.removeItem('access_token');
+      delete apiClient.defaults.headers.common['Authorization'];
+
+      // Prevent redirect loop if already on home page
+      if (window.location.pathname !== '/') {
+        toast.error("Your session has expired. Please log in again.");
+        window.dispatchEvent(new Event('unauthorized'));
       }
     } else if (status === 403) {
       toast.error("You don't have permission to perform this action.");

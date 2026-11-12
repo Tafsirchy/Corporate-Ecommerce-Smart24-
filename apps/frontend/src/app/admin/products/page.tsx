@@ -112,6 +112,23 @@ export default function AdminProducts() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    const parsedPrice = parseFloat(price);
+    const parsedStock = stock !== '' ? parseInt(stock, 10) : 0;
+
+    if (!name.trim()) {
+      toast.error('Product name is required');
+      return;
+    }
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
+      toast.error('Please enter a valid price');
+      return;
+    }
+    if (isNaN(parsedStock) || parsedStock < 0) {
+      toast.error('Please enter a valid stock quantity');
+      return;
+    }
+
     setIsLoading(true);
     
     // Convert productAttributes object to array of ProductAttribute
@@ -128,11 +145,11 @@ export default function AdminProducts() {
 
     try {
       const payload = { 
-        name, 
-        description, 
-        price: parseFloat(price),
-        stock: parseInt(stock, 10),
-        categoryId,
+        name: name.trim(), 
+        description: description.trim(), 
+        price: parsedPrice,
+        stock: parsedStock,
+        categoryId: categoryId || undefined,
         brandId: brandId || undefined,
         images,
         isActive,
@@ -162,7 +179,8 @@ export default function AdminProducts() {
       
       fetchProducts();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to create product');
+      const msg = error?.response?.data?.message;
+      toast.error(Array.isArray(msg) ? msg[0] : (msg || 'Failed to save product'));
     } finally {
       setIsLoading(false);
     }
