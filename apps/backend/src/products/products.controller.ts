@@ -14,6 +14,7 @@ import { Throttle } from '@nestjs/throttler';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { BulkDeleteProductsDto } from './dto/bulk-delete-products.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -168,6 +169,15 @@ export class ProductsController {
   @ApiOperation({ summary: 'Update a product (Admin only)' })
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(id, updateProductDto);
+  }
+
+  @Post('bulk-delete')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Bulk delete products (Admin only)' })
+  bulkRemove(@Body() bulkDeleteProductsDto: BulkDeleteProductsDto) {
+    return this.productsService.bulkRemove(bulkDeleteProductsDto.ids);
   }
 
   @Delete(':id')

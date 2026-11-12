@@ -464,6 +464,35 @@ export class ProductsService {
     return this.productRepository.delete(id);
   }
 
+  async bulkRemove(ids: string[]) {
+    if (!ids || ids.length === 0) {
+      throw new BadRequestException('No product IDs provided');
+    }
+
+    const uniqueIds = Array.from(
+      new Set(ids.filter((id) => typeof id === 'string' && id.trim().length > 0)),
+    );
+    if (uniqueIds.length === 0) {
+      throw new BadRequestException('No valid product IDs provided');
+    }
+
+    // Clean up dependent user references safely for all selected products
+    await Promise.allSettled([
+      this.prisma.cartItem.deleteMany({ where: { productId: { in: uniqueIds } } }),
+      this.prisma.wishlistItem.deleteMany({ where: { productId: { in: uniqueIds } } }),
+      this.prisma.backInStockAlert.deleteMany({ where: { productId: { in: uniqueIds } } }),
+    ]);
+
+    const result = await this.prisma.product.deleteMany({
+      where: { id: { in: uniqueIds } },
+    });
+
+    return {
+      deletedCount: result.count,
+      message: `${result.count} product(s) deleted successfully`,
+    };
+  }
+
   // --- Auto Detection Engine (Rule-based Regex) ---
   private async autoDetectAttributes(
     name: string,

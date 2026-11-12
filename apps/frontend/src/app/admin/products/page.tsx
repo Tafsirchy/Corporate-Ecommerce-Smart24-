@@ -38,7 +38,12 @@ export default function AdminProducts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategoryId, setFilterCategoryId] = useState('');
 
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
   useEffect(() => {
+    setSelectedIds([]);
     fetchProducts();
   }, [page, searchQuery, filterCategoryId]);
 
@@ -174,16 +179,53 @@ export default function AdminProducts() {
     try {
       await apiClient.delete(`/products/${id}`);
       toast.success('Product deleted');
+      setSelectedIds(prev => prev.filter(item => item !== id));
       fetchProducts();
     } catch (error: any) {
       if (error?.response?.status === 404) {
         toast.info('Product was already deleted or not found. Refreshing list...');
+        setSelectedIds(prev => prev.filter(item => item !== id));
         fetchProducts();
       } else {
         toast.error(error?.response?.data?.message || 'Failed to delete product');
       }
     }
   };
+
+  const allVisibleSelected = products.length > 0 && products.every(p => selectedIds.includes(p.id));
+
+  const toggleSelectAll = () => {
+    if (allVisibleSelected) {
+      setSelectedIds(prev => prev.filter(id => !products.some(p => p.id === id)));
+    } else {
+      const visibleIds = products.map(p => p.id);
+      setSelectedIds(prev => Array.from(new Set([...prev, ...visibleIds])));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Are you sure you want to permanently delete ${selectedIds.length} selected product(s)?`)) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    try {
+      const res = await apiClient.post('/products/bulk-delete', { ids: selectedIds });
+      toast.success(res.data?.message || `${selectedIds.length} product(s) deleted`);
+      setSelectedIds([]);
+      fetchProducts();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Failed to delete selected products');
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  }
 
   const startEdit = (product: any) => {
     setEditingId(product.id);
@@ -436,12 +478,52 @@ export default function AdminProducts() {
     </ScrollFade>
   )}
 
-  <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+      {selectedIds.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-amber-600 text-white">
+              {selectedIds.length} selected
+            </span>
+            <span className="text-sm text-amber-900 font-medium">
+              {selectedIds.length === 1 ? '1 product' : `${selectedIds.length} products`} ready for bulk action
+            </span>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              className="flex-1 sm:flex-initial px-4 py-2 min-h-[40px] text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Clear Selection
+            </button>
+            <button
+              type="button"
+              disabled={isBulkDeleting}
+              onClick={handleBulkDelete}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2 min-h-[40px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+            >
+              <Trash2 size={16} />
+              {isBulkDeleting ? 'Deleting...' : `Delete Selected (${selectedIds.length})`}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         {/* Desktop Table View */}
         <ScrollFade className="hidden md:block overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead className="bg-muted border-b border-border">
               <tr>
+                <th className="p-4 w-12">
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectAll}
+                    aria-label="Select all visible products"
+                    className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
+                  />
+                </th>
                 <th className="p-4 font-medium text-muted-foreground">Image</th>
                 <th className="p-4 font-medium text-muted-foreground">Name</th>
                 <th className="p-4 font-medium text-muted-foreground">Status</th>
@@ -451,8 +533,19 @@ export default function AdminProducts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {products.map(prod => (
-                <tr key={prod.id} className="hover:bg-muted">
+              {products.map(prod => {
+                const isSelected = selectedIds.includes(prod.id);
+                return (
+                <tr key={prod.id} className={`transition-colors ${isSelected ? 'bg-amber-50/60' : 'hover:bg-muted'}`}>
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelect(prod.id)}
+                      aria-label={`Select ${prod.name}`}
+                      className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
+                    />
+                  </td>
                   <td className="p-4">
                     {prod.images?.[0] ? <OptimizedImage src={prod.images[0]} alt={prod.name} width={40} height={40} containerClassName="h-10 w-10 shrink-0 rounded" className="object-cover rounded" /> : '-'}
                   </td>
@@ -485,16 +578,42 @@ export default function AdminProducts() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </ScrollFade>
 
         {/* Mobile Card View */}
         <div className="md:hidden flex flex-col divide-y divide-gray-100">
-          {products.map(prod => (
-            <div key={prod.id} className="p-4 flex flex-col gap-4">
-              <div className="flex gap-4">
+          {products.length > 0 && (
+            <div className="p-4 bg-muted/60 flex items-center justify-between border-b border-border">
+              <label className="flex items-center gap-3 text-sm font-medium text-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  onChange={toggleSelectAll}
+                  className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black"
+                />
+                Select All ({products.length})
+              </label>
+              {selectedIds.length > 0 && (
+                <span className="text-xs font-semibold text-amber-700">{selectedIds.length} selected</span>
+              )}
+            </div>
+          )}
+          {products.map(prod => {
+            const isSelected = selectedIds.includes(prod.id);
+            return (
+            <div key={prod.id} className={`p-4 flex flex-col gap-4 transition-colors ${isSelected ? 'bg-amber-50/60' : ''}`}>
+              <div className="flex gap-3 items-start">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleSelect(prod.id)}
+                  aria-label={`Select ${prod.name}`}
+                  className="w-5 h-5 mt-1 rounded border-gray-300 text-black focus:ring-black shrink-0"
+                />
                 {prod.images?.[0] ? (
                   <OptimizedImage src={prod.images[0]} alt={prod.name} width={80} height={80} containerClassName="h-20 w-20 shrink-0 rounded-lg border bg-muted" className="object-cover rounded-lg" />
                 ) : (
@@ -531,7 +650,8 @@ export default function AdminProducts() {
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
           {products.length === 0 && (
             <div className="p-8 text-center text-muted-foreground">No products found</div>
           )}
