@@ -63,15 +63,15 @@ const DEFAULT_PACKAGES = [
   }
 ];
 
-export const SubscriptionAd = () => {
+export const SubscriptionAd = ({ initialBusinessConfig }: { initialBusinessConfig?: Smart24BusinessConfig }) => {
   const [packages, setPackages] = useState(DEFAULT_PACKAGES);
   const [bizConfig, setBizConfig] = useState<Smart24BusinessConfig>(
-    DEFAULT_SMART24_BUSINESS_CONFIG
+    initialBusinessConfig || DEFAULT_SMART24_BUSINESS_CONFIG
   );
 
   useEffect(() => {
     apiClient
-      .get('/settings/home_smart24_business')
+      .get('/settings/home_smart24_business', { cache: false })
       .then((res) => {
         if (res.data?.value) {
           setBizConfig(parseSettingJson(res.data.value, DEFAULT_SMART24_BUSINESS_CONFIG));

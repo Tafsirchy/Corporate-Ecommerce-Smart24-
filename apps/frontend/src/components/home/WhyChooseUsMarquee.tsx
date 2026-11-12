@@ -13,7 +13,7 @@ export const WhyChooseUsMarquee = () => {
 
   useEffect(() => {
     apiClient
-      .get('/settings/home_why_choose')
+      .get('/settings/home_why_choose', { cache: false })
       .then((res) => {
         if (res.data?.value) {
           setConfig(parseSettingJson(res.data.value, DEFAULT_WHY_CHOOSE_CONFIG));

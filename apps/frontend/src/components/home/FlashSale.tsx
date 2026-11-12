@@ -20,7 +20,7 @@ export const FlashSale = ({ products }: FlashSaleProps) => {
 
   useEffect(() => {
     apiClient
-      .get('/settings/home_flash_sale')
+      .get('/settings/home_flash_sale', { cache: false })
       .then((res) => {
         if (res.data?.value) {
           setConfig(parseSettingJson(res.data.value, DEFAULT_FLASH_SALE_CONFIG));

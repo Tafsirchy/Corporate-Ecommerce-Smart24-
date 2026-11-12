@@ -13,6 +13,10 @@ import { SubscriptionAd } from "@/components/home/SubscriptionAd";
 import { OurClientsMarquee } from "@/components/home/OurClientsMarquee";
 import { MembershipAd } from "@/components/home/MembershipAd";
 import { CTA } from "@/components/CTA";
+import {
+  DEFAULT_SMART24_BUSINESS_CONFIG,
+  parseSettingJson,
+} from "@/lib/home-settings";
 const DUMMY_ADS: HeroAd[] = [
   {
     id: "1",
@@ -48,13 +52,21 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1
 
 async function OfferSliderSection() {
   let banners: any[] = [];
+  let bizConfig = DEFAULT_SMART24_BUSINESS_CONFIG;
   try {
-    const res = await fetch(`${API_URL}/banners?activeOnly=true&type=MAIN_CAROUSEL`, { next: { revalidate: 60 } });
-    if (res.ok) banners = await res.json();
+    const [bannersRes, bizRes] = await Promise.all([
+      fetch(`${API_URL}/banners?activeOnly=true&type=MAIN_CAROUSEL`, { next: { revalidate: 60 } }),
+      fetch(`${API_URL}/settings/home_smart24_business`, { next: { revalidate: 10 } }),
+    ]);
+    if (bannersRes.ok) banners = await bannersRes.json();
+    if (bizRes.ok) {
+      const setting = await bizRes.json();
+      bizConfig = parseSettingJson(setting?.value, DEFAULT_SMART24_BUSINESS_CONFIG);
+    }
   } catch (error) {
     console.error('Failed to fetch banners:', error);
   }
-  return <OfferSlider banners={banners} />;
+  return <OfferSlider banners={banners} initialBusinessConfig={bizConfig} />;
 }
 
 async function OurClientsSection() {

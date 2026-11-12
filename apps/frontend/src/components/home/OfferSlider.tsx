@@ -17,21 +17,22 @@ import {
 
 interface OfferSliderProps {
   banners: any[];
+  initialBusinessConfig?: Smart24BusinessConfig;
 }
 
-export const OfferSlider = ({ banners }: OfferSliderProps) => {
+export const OfferSlider = ({ banners, initialBusinessConfig }: OfferSliderProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' }, [
     Autoplay({ delay: 5000, stopOnInteraction: false }),
   ]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [bizConfig, setBizConfig] = useState<Smart24BusinessConfig>(
-    DEFAULT_SMART24_BUSINESS_CONFIG
+    initialBusinessConfig || DEFAULT_SMART24_BUSINESS_CONFIG
   );
 
   useEffect(() => {
     apiClient
-      .get('/settings/home_smart24_business')
+      .get('/settings/home_smart24_business', { cache: false })
       .then((res) => {
         if (res.data?.value) {
           setBizConfig(parseSettingJson(res.data.value, DEFAULT_SMART24_BUSINESS_CONFIG));
@@ -140,12 +141,16 @@ export const OfferSlider = ({ banners }: OfferSliderProps) => {
               {/* Gradient Middle Section (with optional custom image) */}
               <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-blue-900 p-4 lg:py-3 text-white flex-1 flex flex-col justify-start relative overflow-hidden">
                 {bizConfig.sliderCardImageUrl && (
-                  <OptimizedImage
-                    src={bizConfig.sliderCardImageUrl}
-                    alt={bizConfig.sliderCardTitle}
-                    fill
-                    className="object-cover opacity-30 pointer-events-none"
-                  />
+                  <>
+                    <OptimizedImage
+                      src={bizConfig.sliderCardImageUrl}
+                      alt={bizConfig.sliderCardTitle}
+                      fill
+                      containerClassName="!absolute inset-0 z-0 !bg-transparent"
+                      className="object-cover pointer-events-none"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/30 z-[1] pointer-events-none" />
+                  </>
                 )}
                 <div className="flex items-center gap-2 text-sm font-semibold mb-1.5 text-primary-100 relative z-10">
                   <Star size={14} className="fill-primary-200 text-primary-200" />
